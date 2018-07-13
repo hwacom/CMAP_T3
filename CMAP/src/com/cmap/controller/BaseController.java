@@ -1,0 +1,232 @@
+package com.cmap.controller;
+
+import java.beans.PropertyDescriptor;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+
+import com.cmap.AppResponse;
+import com.cmap.service.CommonService;
+import com.google.gson.Gson;
+
+
+@Controller
+@RequestMapping("/base")
+public class BaseController {
+	private static final Logger log = LoggerFactory.getLogger(BaseController.class);
+	
+	SimpleDateFormat sdfYearMonth = new SimpleDateFormat("yyyyMM");
+    SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    
+    @Autowired
+	private CommonService commonService;
+	
+	public BaseController() {
+		super();
+		sdfYearMonth.setTimeZone(TimeZone.getTimeZone("GMT"));
+		sdfDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+		sdfDateTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
+	
+	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {
+		if (StringUtils.isBlank(queryGroup)) {
+			//如果未選擇特定群組，則須依照使用者權限，給予可查詢的群組清單
+			if (request.getSession() != null) {
+				Map<String, Map<String, String>> groupMap = 
+						(Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+				
+				List<String> groupList = new ArrayList<String>();
+				for (Iterator<String> it = groupMap.keySet().iterator(); it.hasNext();) {
+					groupList.add(it.next());
+				}
+				
+				new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, groupList);
+			}
+			
+		} else {
+			new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, queryGroup);
+		}
+	}
+	
+	protected void setQueryDeviceList(HttpServletRequest request, Object obj, String fieldName, String queryGroup, String queryDevice) throws Exception {
+		if (StringUtils.isBlank(queryDevice)) {
+			//如果未選擇特定群組，則須依照使用者權限，給予可查詢的群組清單
+			if (request.getSession() != null) {
+				Map<String, Map<String, String>> groupMap = 
+						(Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+				
+				List<String> deviceList = new ArrayList<String>();
+
+				if (StringUtils.isBlank(queryGroup)) {
+					//如果群組選擇ALL，則取出使用者有權限內的群組底下所有設備(Device)清單
+					for (Entry<String, Map<String, String>> groupEntry : groupMap.entrySet()) {
+						for (Entry<String, String> deviceEntry : groupEntry.getValue().entrySet()) {
+							deviceList.add(deviceEntry.getKey());
+						}
+					}
+					
+				} else {
+					//如果群組有選擇項目，則取出該群組底下使用者有權限的設備(Device)清單
+					for (Entry<String, String> deviceEntry : groupMap.get(queryGroup).entrySet()) {
+						deviceList.add(deviceEntry.getKey());
+					}
+				}
+				
+				new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, deviceList);
+			}
+			
+		} else {
+			new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, queryDevice);
+		}
+	}
+	
+	protected Map<String, String> getGroupList(HttpServletRequest request) {
+		Object[] groupMenuObj;
+		Map<String, String> groupListMap = null;
+		try {
+			groupMenuObj = commonService.getGroupAndDeviceMenu(request);
+			
+			Object[] groupLabel;
+			Object[] groupValue;
+			if (groupMenuObj != null && groupMenuObj[0] != null && groupMenuObj[1] != null) {
+				groupListMap = new HashMap<String, String>();
+				
+				groupLabel = (Object[])groupMenuObj[0];
+				groupValue = (Object[])groupMenuObj[1];
+				for (int i=0; i<groupLabel.length; i++) {
+					groupListMap.put(ObjectUtils.toString(groupValue[i]), ObjectUtils.toString(groupLabel[i]));
+				}
+			}
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.toString(), e);
+			}
+			e.printStackTrace();
+		}
+		
+		return groupListMap;
+	}
+	
+	@RequestMapping(value = "getDeviceMenu", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getDeviceMenu(
+			Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="groupId", required=true) String groupId) {
+		
+		Map<String, String> retMap;
+		try {
+			System.out.println("groupId: "+groupId);
+			
+			Map<String, Map<String, String>> deviceMap = (Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+			/*
+			if (StringUtils.isBlank(groupId)) {
+				//如果群組選擇ALL，則列出所有設備清單
+				retMap = new HashMap<String, String>();
+				
+				for (Map<String, String> dMap : deviceMap.values()) {
+					for (Entry<String, String> entry : dMap.entrySet()) {
+						if (!retMap.containsKey(entry.getKey())) {
+							//不同群組可能涵蓋相同設備，排除重複
+							retMap.put(entry.getKey(), entry.getValue());
+						}
+					}
+				}
+				
+			} else {
+				retMap = (Map<String, String>)deviceMap.get(groupId);
+			}
+			*/
+			
+			AppResponse appResponse;
+			if (deviceMap != null && !deviceMap.isEmpty()) {
+				retMap = (Map<String, String>)deviceMap.get(groupId);
+				
+				if (retMap != null && !retMap.isEmpty()) {
+					appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
+					appResponse.putData("device",  new Gson().toJson(retMap));
+					
+				} else {
+					appResponse = new AppResponse(HttpServletResponse.SC_NOT_FOUND, "無法取得設備清單");
+				}
+				
+			} else {
+				appResponse = new AppResponse(HttpServletResponse.SC_NOT_FOUND, "無法取得設備清單");
+			}
+			
+			return appResponse;
+			
+		} catch (Exception e) {
+			
+			return new AppResponse(999, e.getMessage());
+		}
+	}
+	
+    protected Date validateDate(String date) {
+        Date d = null;
+        if (null == date) {
+            return d;
+        }
+        try {
+            d = sdfDate.parse(date);
+        } catch (ParseException e) {
+            return d;
+        }
+        return d;
+    }
+
+    protected Date validateDateTime(String date) {
+        Date d = null;
+        if (null == date) {
+            return d;
+        }
+        try {
+            d = sdfDateTime.parse(date);
+        } catch (ParseException e) {
+            return d;
+        }
+        return d;
+    }
+    
+    public static int getLineNumber() {
+        return Thread.currentThread().getStackTrace()[2].getLineNumber();
+    }
+
+	//基于Cookie的国际化处理
+	protected void changeLang(HttpServletRequest request, HttpServletResponse response, Model model, String langType) {
+		if (!model.containsAttribute("contentModel")) {
+			if (langType.contains("zh")) {
+				Locale locale = new Locale("zh", "CN");
+				(new CookieLocaleResolver()).setLocale(request, response, locale);
+			} else if (langType.equals("en_US")) {
+				Locale locale = new Locale("en", "US");
+				(new CookieLocaleResolver()).setLocale(request, response, locale);
+			} else
+				(new CookieLocaleResolver()).setLocale(request, response, LocaleContextHolder.getLocale());
+		}
+	}
+}

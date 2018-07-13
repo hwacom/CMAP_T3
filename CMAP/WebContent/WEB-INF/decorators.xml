@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF">
+
+	<decorator name="main" page="common/main.jsp">
+		<pattern>/*</pattern>
+	</decorator>
+	<decorator name="login" page="views/login.jsp">
+		<pattern>/login*</pattern>
+		<pattern>/accessdenied*</pattern>
+	</decorator>
+	<decorator name="outsite" page="common/blank.jsp">
+		<pattern>/outsite*</pattern>
+	</decorator>
+	
+</decorators>
