@@ -9,6 +9,7 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.springframework.stereotype.Component;
 
+import com.cmap.Constants;
 import com.cmap.security.SecurityUtil;
 
 @Component
@@ -23,7 +24,13 @@ public class HibernateInterceptor extends EmptyInterceptor {
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
 			System.out.println("***[HibernateInterceptor]: onSave ***");
-			new PropertyDescriptor("updateBy", entity.getClass()).getWriteMethod().invoke(entity, SecurityUtil.getSecurityUser().getUsername());
+			String _user = Constants.SYS;
+			try {
+				_user = SecurityUtil.getSecurityUser().getUsername();
+			} catch (Exception e) {
+			}
+			
+			new PropertyDescriptor("updateBy", entity.getClass()).getWriteMethod().invoke(entity, _user);
 			new PropertyDescriptor("updateTime", entity.getClass()).getWriteMethod().invoke(entity, new Timestamp(new Date().getTime()));
 			
 		} catch (Exception e) {

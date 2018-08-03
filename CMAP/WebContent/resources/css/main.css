@@ -9,8 +9,12 @@ body {
   background-color: #f5f5f5;
   background-image: url("../images/tech_backgroud.jpg");
   background-size: auto 100%;
-  font-family: MicrosoftJhengHei;
+  font-family: MicrosoftJhengHei !important;
   /*overflow: auto;*/
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: MicrosoftJhengHei !important;
 }
 
 img {
@@ -20,6 +24,16 @@ img {
 span {
   vertical-align: middle;
   display: inline-block;
+}
+
+nav > ul {
+  flex-direction: row-reverse !important;
+  padding-right: 5px !important;
+}
+
+nav > ul > li {
+  margin-left: 5px !important;
+  margin-right: 0px !important;
 }
 
 @font-face {
@@ -38,12 +52,43 @@ span {
   font-weight: normal;
 }
 
+.conpare-line {
+  height: 400px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.conpare-content {
+  height: 400px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
 nav a {
   padding-left: 5px;
 }
 
 nav a:hover {
   text-decoration: none;
+}
+
+.subMenu-item {
+  margin-bottom: 5px;
+}
+
+.subMenu-item a {
+  font-size: 1.0rem;
+  color: #9ed7f7;
+}
+
+.subMenu-item a:hover {
+  color: yellow;
+}
+
+.subMenu-item .feather {
+  width: 20px;
+  height: 20px;
 }
 
 nav img {
@@ -54,6 +99,16 @@ nav img {
   /*width: 16px;*/
   /*height: 16px;*/
   vertical-align: text-bottom;
+}
+
+.feather-compare {
+  margin-top: 2.0rem;
+  margin-bottom: 3.0rem;
+  cursor: pointer;
+}
+
+.feather-compare:hover {
+  color: red;
 }
 
 /*
@@ -389,7 +444,11 @@ section {
 }
 
 .copyright > span {
-	vertical-align: middle;
+  vertical-align: middle;
+}
+
+.icon-hightlight {
+  color: #f9ff00;
 }
 
 @media (min-width: 320px) {

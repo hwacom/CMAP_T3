@@ -12,6 +12,7 @@ public class ConfigVersionInfoDAOVO {
 	private String queryDateEnd1;
 	private String queryDateBegin2;
 	private String queryDateEnd2;
+	private String queryConfigType;
 	
 	private List<String> queryGroup1List;
 	private List<String> queryGroup2List;
@@ -70,6 +71,12 @@ public class ConfigVersionInfoDAOVO {
 	}
 	public void setQueryDateEnd2(String queryDateEnd2) {
 		this.queryDateEnd2 = queryDateEnd2;
+	}
+	public String getQueryConfigType() {
+		return queryConfigType;
+	}
+	public void setQueryConfigType(String queryConfigType) {
+		this.queryConfigType = queryConfigType;
 	}
 	public List<String> getQueryGroup1List() {
 		return queryGroup1List;

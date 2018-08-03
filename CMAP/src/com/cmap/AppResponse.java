@@ -15,7 +15,7 @@ public class AppResponse {
 		this.message = message;
 	}
 	
-	public AppResponse(int code, String message, HashMap<String, Object> data) {
+	public AppResponse(int code, String message, Map<String, Object> data) {
 		super();
 		this.code = code;
 		this.message = message;

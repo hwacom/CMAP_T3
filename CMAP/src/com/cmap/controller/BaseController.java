@@ -16,7 +16,6 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import com.cmap.AppResponse;
+import com.cmap.Constants;
 import com.cmap.service.CommonService;
 import com.google.gson.Gson;
 
@@ -58,11 +58,11 @@ public class BaseController {
 		if (StringUtils.isBlank(queryGroup)) {
 			//如果未選擇特定群組，則須依照使用者權限，給予可查詢的群組清單
 			if (request.getSession() != null) {
-				Map<String, Map<String, String>> groupMap = 
-						(Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+				Map<String, Map<String, Map<String, String>>> groupDeviceMap = 
+						(Map<String, Map<String, Map<String, String>>>)request.getSession().getAttribute(Constants.GROUP_DEVICE_MAP);
 				
 				List<String> groupList = new ArrayList<String>();
-				for (Iterator<String> it = groupMap.keySet().iterator(); it.hasNext();) {
+				for (Iterator<String> it = groupDeviceMap.keySet().iterator(); it.hasNext();) {
 					groupList.add(it.next());
 				}
 				
@@ -78,22 +78,22 @@ public class BaseController {
 		if (StringUtils.isBlank(queryDevice)) {
 			//如果未選擇特定群組，則須依照使用者權限，給予可查詢的群組清單
 			if (request.getSession() != null) {
-				Map<String, Map<String, String>> groupMap = 
-						(Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+				Map<String, Map<String, Map<String, String>>> groupDeviceMap = 
+						(Map<String, Map<String, Map<String, String>>>)request.getSession().getAttribute(Constants.GROUP_DEVICE_MAP);
 				
 				List<String> deviceList = new ArrayList<String>();
 
 				if (StringUtils.isBlank(queryGroup)) {
 					//如果群組選擇ALL，則取出使用者有權限內的群組底下所有設備(Device)清單
-					for (Entry<String, Map<String, String>> groupEntry : groupMap.entrySet()) {
-						for (Entry<String, String> deviceEntry : groupEntry.getValue().entrySet()) {
+					for (Entry<String, Map<String, Map<String, String>>> groupEntry : groupDeviceMap.entrySet()) {
+						for (Entry<String, Map<String, String>> deviceEntry : groupEntry.getValue().entrySet()) {
 							deviceList.add(deviceEntry.getKey());
 						}
 					}
 					
 				} else {
 					//如果群組有選擇項目，則取出該群組底下使用者有權限的設備(Device)清單
-					for (Entry<String, String> deviceEntry : groupMap.get(queryGroup).entrySet()) {
+					for (Entry<String, Map<String, String>> deviceEntry : groupDeviceMap.get(queryGroup).entrySet()) {
 						deviceList.add(deviceEntry.getKey());
 					}
 				}
@@ -106,23 +106,11 @@ public class BaseController {
 		}
 	}
 	
-	protected Map<String, String> getGroupList(HttpServletRequest request) {
-		Object[] groupMenuObj;
-		Map<String, String> groupListMap = null;
+	protected Map<String, String> getConfigTypeMenu() {
+		Map<String, String> configTypeMap = null;
 		try {
-			groupMenuObj = commonService.getGroupAndDeviceMenu(request);
+			configTypeMap = commonService.getConfigTypeMenu();
 			
-			Object[] groupLabel;
-			Object[] groupValue;
-			if (groupMenuObj != null && groupMenuObj[0] != null && groupMenuObj[1] != null) {
-				groupListMap = new HashMap<String, String>();
-				
-				groupLabel = (Object[])groupMenuObj[0];
-				groupValue = (Object[])groupMenuObj[1];
-				for (int i=0; i<groupLabel.length; i++) {
-					groupListMap.put(ObjectUtils.toString(groupValue[i]), ObjectUtils.toString(groupLabel[i]));
-				}
-			}
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error(e.toString(), e);
@@ -130,7 +118,26 @@ public class BaseController {
 			e.printStackTrace();
 		}
 		
-		return groupListMap;
+		return configTypeMap;
+	}
+	
+	protected Map<String, String> getGroupList(HttpServletRequest request) {
+		Map<String, String> groupMap = null;
+		try {
+			groupMap = commonService.getGroupAndDeviceMenu(request);
+			
+			if (groupMap == null) {
+				groupMap = new HashMap<String, String>();
+			}
+			
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.toString(), e);
+			}
+			e.printStackTrace();
+		}
+		
+		return groupMap;
 	}
 	
 	@RequestMapping(value = "getDeviceMenu", method = RequestMethod.POST)
@@ -138,11 +145,16 @@ public class BaseController {
 			Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="groupId", required=true) String groupId) {
 		
-		Map<String, String> retMap;
+		Map<String, String> deviceMap;
 		try {
-			System.out.println("groupId: "+groupId);
+			AppResponse appResponse;
+			if (StringUtils.isBlank(groupId)) {
+				appResponse = new AppResponse(HttpServletResponse.SC_NO_CONTENT, "群組未選擇，設備保持為空");
+				return appResponse;
+			}
 			
-			Map<String, Map<String, String>> deviceMap = (Map<String, Map<String, String>>)request.getSession().getAttribute(CommonService.DEVICE_MENU_ATTR);
+			Map<String, Map<String, Map<String, String>>> groupDeviceMap 
+					= (Map<String, Map<String, Map<String, String>>>)request.getSession().getAttribute(Constants.GROUP_DEVICE_MAP);
 			/*
 			if (StringUtils.isBlank(groupId)) {
 				//如果群組選擇ALL，則列出所有設備清單
@@ -162,13 +174,12 @@ public class BaseController {
 			}
 			*/
 			
-			AppResponse appResponse;
-			if (deviceMap != null && !deviceMap.isEmpty()) {
-				retMap = (Map<String, String>)deviceMap.get(groupId);
+			if (groupDeviceMap != null && !groupDeviceMap.isEmpty()) {
+				deviceMap = composeDeviceMap4Menu(groupDeviceMap.get(groupId));
 				
-				if (retMap != null && !retMap.isEmpty()) {
+				if (deviceMap != null && !deviceMap.isEmpty()) {
 					appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
-					appResponse.putData("device",  new Gson().toJson(retMap));
+					appResponse.putData("device",  new Gson().toJson(deviceMap));
 					
 				} else {
 					appResponse = new AppResponse(HttpServletResponse.SC_NOT_FOUND, "無法取得設備清單");
@@ -184,6 +195,23 @@ public class BaseController {
 			
 			return new AppResponse(999, e.getMessage());
 		}
+	}
+	
+	private Map<String, String> composeDeviceMap4Menu(Map<String, Map<String, String>> deviceMap) {
+		Map<String, String> deviceMenuMap = new HashMap<String, String>();
+		try {
+			for (String deviceId : deviceMap.keySet()) {
+				deviceMenuMap.put(
+							deviceId																  //DEVICE_ID
+						   ,((Map<String, String>)deviceMap.get(deviceId)).get(Constants.DEVICE_NAME) //DEVICE_NAME
+					   );
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return deviceMenuMap;
 	}
 	
     protected Date validateDate(String date) {

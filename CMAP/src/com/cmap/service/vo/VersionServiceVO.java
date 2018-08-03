@@ -1,20 +1,32 @@
 package com.cmap.service.vo;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.cmap.Constants;
 
 public class VersionServiceVO {
 
+	private String queryGroup;
 	private String queryGroup1;
 	private String queryGroup2;
+	
+	private String queryDevice;
 	private String queryDevice1;
 	private String queryDevice2;
+	
 	private String queryDateBegin1;
 	private String queryDateEnd1;
 	private String queryDateBegin2;
 	private String queryDateEnd2;
 	
+	private String queryConfigType;
+	private boolean queryNewChkbox = false;
+	
+	private List<String> queryGroupList;
 	private List<String> queryGroup1List;
 	private List<String> queryGroup2List;
+	private List<String> queryDeviceList;
 	private List<String> queryDevice1List;
 	private List<String> queryDevice2List;
 	
@@ -34,9 +46,40 @@ public class VersionServiceVO {
 	private String deviceId;
 	private String deviceName;
 	private String systemVersion;
+	private String configType;
 	private String configVersion;
+	private String fileFullName;
 	private String backupTimeStr;
+	private String deviceIp;
+	private String configFileDirPath;
+	private String deviceListId;
 	
+	private String configFileContent;
+	private int lineNumber;
+	private String line = Constants.ADD_LINE;
+	private String line1;
+	private String line2;
+	private boolean lineDiff = false;
+	private boolean line1Diff = false;
+	private boolean line2Diff = false;
+	private List<VersionServiceVO> diffRetOriList = new ArrayList<VersionServiceVO>();
+	private List<VersionServiceVO> diffRetRevList = new ArrayList<VersionServiceVO>();
+	private String diffPos = "";
+	private String configDiffOriContent;
+	private String configDiffRevContent;
+	private String versionOri;
+	private String versionRev;
+	private String versionLineNum;
+	
+	private String retMsg;
+	private String errMsg;
+	
+	public String getQueryGroup() {
+		return queryGroup;
+	}
+	public void setQueryGroup(String queryGroup) {
+		this.queryGroup = queryGroup;
+	}
 	public String getQueryGroup1() {
 		return queryGroup1;
 	}
@@ -48,6 +91,12 @@ public class VersionServiceVO {
 	}
 	public void setQueryGroup2(String queryGroup2) {
 		this.queryGroup2 = queryGroup2;
+	}
+	public String getQueryDevice() {
+		return queryDevice;
+	}
+	public void setQueryDevice(String queryDevice) {
+		this.queryDevice = queryDevice;
 	}
 	public String getQueryDevice1() {
 		return queryDevice1;
@@ -85,6 +134,18 @@ public class VersionServiceVO {
 	public void setQueryDateEnd2(String queryDateEnd2) {
 		this.queryDateEnd2 = queryDateEnd2;
 	}
+	public boolean isQueryNewChkbox() {
+		return queryNewChkbox;
+	}
+	public void setQueryNewChkbox(boolean queryNewChkbox) {
+		this.queryNewChkbox = queryNewChkbox;
+	}
+	public List<String> getQueryGroupList() {
+		return queryGroupList;
+	}
+	public void setQueryGroupList(List<String> queryGroupList) {
+		this.queryGroupList = queryGroupList;
+	}
 	public List<String> getQueryGroup1List() {
 		return queryGroup1List;
 	}
@@ -96,6 +157,12 @@ public class VersionServiceVO {
 	}
 	public void setQueryGroup2List(List<String> queryGroup2List) {
 		this.queryGroup2List = queryGroup2List;
+	}
+	public List<String> getQueryDeviceList() {
+		return queryDeviceList;
+	}
+	public void setQueryDeviceList(List<String> queryDeviceList) {
+		this.queryDeviceList = queryDeviceList;
 	}
 	public List<String> getQueryDevice1List() {
 		return queryDevice1List;
@@ -199,10 +266,154 @@ public class VersionServiceVO {
 	public void setConfigVersion(String configVersion) {
 		this.configVersion = configVersion;
 	}
+	public String getFileFullName() {
+		return fileFullName;
+	}
+	public void setFileFullName(String fileFullName) {
+		this.fileFullName = fileFullName;
+	}
 	public String getBackupTimeStr() {
 		return backupTimeStr;
 	}
 	public void setBackupTimeStr(String backupTimeStr) {
 		this.backupTimeStr = backupTimeStr;
+	}
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+	public String getConfigFileDirPath() {
+		return configFileDirPath;
+	}
+	public void setConfigFileDirPath(String configFileDirPath) {
+		this.configFileDirPath = configFileDirPath;
+	}
+	public String getDeviceListId() {
+		return deviceListId;
+	}
+	public void setDeviceListId(String deviceListId) {
+		this.deviceListId = deviceListId;
+	}
+	public String getConfigFileContent() {
+		return configFileContent;
+	}
+	public void setConfigFileContent(String configFileContent) {
+		this.configFileContent = configFileContent;
+	}
+	public int getLineNumber() {
+		return lineNumber;
+	}
+	public void setLineNumber(int lineNumber) {
+		this.lineNumber = lineNumber;
+	}
+	public String getLine() {
+		return line;
+	}
+	public void setLine(String line) {
+		this.line = line;
+	}
+	public String getLine1() {
+		return line1;
+	}
+	public void setLine1(String line1) {
+		this.line1 = line1;
+	}
+	public String getLine2() {
+		return line2;
+	}
+	public void setLine2(String line2) {
+		this.line2 = line2;
+	}
+	public boolean isLineDiff() {
+		return lineDiff;
+	}
+	public void setLineDiff(boolean lineDiff) {
+		this.lineDiff = lineDiff;
+	}
+	public boolean isLine1Diff() {
+		return line1Diff;
+	}
+	public void setLine1Diff(boolean line1Diff) {
+		this.line1Diff = line1Diff;
+	}
+	public boolean isLine2Diff() {
+		return line2Diff;
+	}
+	public void setLine2Diff(boolean line2Diff) {
+		this.line2Diff = line2Diff;
+	}
+	public List<VersionServiceVO> getDiffRetOriList() {
+		return diffRetOriList;
+	}
+	public void setDiffRetOriList(List<VersionServiceVO> diffRetOriList) {
+		this.diffRetOriList = diffRetOriList;
+	}
+	public List<VersionServiceVO> getDiffRetRevList() {
+		return diffRetRevList;
+	}
+	public void setDiffRetRevList(List<VersionServiceVO> diffRetRevList) {
+		this.diffRetRevList = diffRetRevList;
+	}
+	public String getDiffPos() {
+		return diffPos;
+	}
+	public void setDiffPos(String diffPos) {
+		this.diffPos = diffPos;
+	}
+	public String getConfigDiffOriContent() {
+		return configDiffOriContent;
+	}
+	public void setConfigDiffOriContent(String configDiffOriContent) {
+		this.configDiffOriContent = configDiffOriContent;
+	}
+	public String getConfigDiffRevContent() {
+		return configDiffRevContent;
+	}
+	public void setConfigDiffRevContent(String configDiffRevContent) {
+		this.configDiffRevContent = configDiffRevContent;
+	}
+	public String getVersionOri() {
+		return versionOri;
+	}
+	public void setVersionOri(String versionOri) {
+		this.versionOri = versionOri;
+	}
+	public String getVersionRev() {
+		return versionRev;
+	}
+	public void setVersionRev(String versionRev) {
+		this.versionRev = versionRev;
+	}
+	public String getVersionLineNum() {
+		return versionLineNum;
+	}
+	public void setVersionLineNum(String versionLineNum) {
+		this.versionLineNum = versionLineNum;
+	}
+	public String getRetMsg() {
+		return retMsg;
+	}
+	public void setRetMsg(String retMsg) {
+		this.retMsg = retMsg;
+	}
+	public String getErrMsg() {
+		return errMsg;
+	}
+	public void setErrMsg(String errMsg) {
+		this.errMsg = errMsg;
+	}
+	public String getConfigType() {
+		return configType;
+	}
+	public void setConfigType(String configType) {
+		this.configType = configType;
+	}
+	public String getQueryConfigType() {
+		return queryConfigType;
+	}
+	public void setQueryConfigType(String queryConfigType) {
+		this.queryConfigType = queryConfigType;
 	}
 }

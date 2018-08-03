@@ -41,8 +41,14 @@ public class ConfigVersionInfo {
 	@Column(name = "system_version", nullable = false)
 	private String systemVersion;
 	
+	@Column(name = "config_type", nullable = false)
+	private String configType;
+	
 	@Column(name = "config_version", nullable = false)
 	private String configVersion;
+	
+	@Column(name = "file_full_name", nullable = false)
+	private String fileFullName;
 	
 	@Column(name = "delete_flag", nullable = false)
 	private String deleteFlag;
@@ -70,8 +76,9 @@ public class ConfigVersionInfo {
 	}
 
 	public ConfigVersionInfo(String versionId, String groupId, String groupName, String deviceId, String deviceName,
-			String systemVersion, String configVersion, String deleteFlag, Timestamp deleteTime, String deleteBy,
-			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+			String systemVersion, String configType, String configVersion, String fileFullName, String deleteFlag,
+			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
+			String updateBy) {
 		super();
 		this.versionId = versionId;
 		this.groupId = groupId;
@@ -79,7 +86,9 @@ public class ConfigVersionInfo {
 		this.deviceId = deviceId;
 		this.deviceName = deviceName;
 		this.systemVersion = systemVersion;
+		this.configType = configType;
 		this.configVersion = configVersion;
+		this.fileFullName = fileFullName;
 		this.deleteFlag = deleteFlag;
 		this.deleteTime = deleteTime;
 		this.deleteBy = deleteBy;
@@ -137,12 +146,28 @@ public class ConfigVersionInfo {
 		this.systemVersion = systemVersion;
 	}
 
+	public String getConfigType() {
+		return configType;
+	}
+
+	public void setConfigType(String configType) {
+		this.configType = configType;
+	}
+
 	public String getConfigVersion() {
 		return configVersion;
 	}
 
 	public void setConfigVersion(String configVersion) {
 		this.configVersion = configVersion;
+	}
+
+	public String getFileFullName() {
+		return fileFullName;
+	}
+
+	public void setFileFullName(String fileFullName) {
+		this.fileFullName = fileFullName;
 	}
 
 	public String getDeleteFlag() {

@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.cmap.Constants;
+import com.cmap.Env;
 import com.cmap.model.User;
 import com.cmap.prtg.PrtgDocument;
 import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2;
@@ -22,82 +24,89 @@ import com.cmap.utils.ApiUtils;
 
 public class PrtgApiUtils implements ApiUtils {
 	private static Log log = LogFactory.getLog(PrtgApiUtils.class);
-	private static final String PRTG_ROOT = "https://192.168.26.150/";
+	private static final String PRTG_ROOT = "https://192.168.26.153/";
 	private String API_LOGIN = "api/getpasshash.htm?username={username}&password={password}";
 	private String API_SENSOR_TREE = "api/table.xml?content=sensortree&output=xml&username={username}&passhash={passhash}";
 	
-	public Object[] getGroupAndDeviceMenu() throws Exception {
-		Object[] retObj = null;
-		Object[] groupLabelArray = null;
-		Object[] groupValueArray = null;
-		Map<String, Map<String, String>> groupDeviceMap = new HashMap<String, Map<String, String>>();
+	public Map[] getGroupAndDeviceMenu() throws Exception {
+		Map[] retObj = null;
+		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<String, Map<String, Map<String, String>>>();
+		Map<String, Map<String, String>> deviceMap = null;
+		Map<String, String> deviceInfoMap = null;
+		Map<String, String> groupInfoMap = null;
 		try {
 			checkPasshash();
 			
 			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{username}", SecurityUtil.getSecurityUser().getUser().getUserName());
 			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{passhash}", SecurityUtil.getSecurityUser().getUser().getPasshash());
-			System.out.println("API_SENSOR_TREE: "+API_SENSOR_TREE);
 			
 			String apiUrl = PRTG_ROOT.concat(API_SENSOR_TREE);
-			System.out.println("API_URL: "+apiUrl);
 			
 			String retVal = callPrtg(apiUrl);
 			if (StringUtils.isNotBlank(retVal)) {
-				System.out.println("Get sensor tree success !!");
 				
 				PrtgDocument prtgDoc = PrtgDocument.Factory.parse(retVal);
 				Group2[] groups = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenode().getGroupArray();
 				
+				groupInfoMap = new HashMap<String, String>();
 				List<String> groupLabelList = new ArrayList<String>();
 				List<String> groupValueList = new ArrayList<String>();
 				for (Group2 group : groups) {
 					if (!group.getName().equals("Network Discovery")) {
-						System.out.println("===== [ "+group.getId()+", "+group.getName()+" ] =====");
-						groupLabelList.add(group.getName());
-						groupValueList.add(String.valueOf(group.getId()));
+						
+						String groupId = String.valueOf(group.getId());	//群組ID
+						String groupName = group.getName();	//群組名稱
+						
+						groupInfoMap.put(groupId, groupName);
+						
+						groupLabelList.add(groupName);
+						groupValueList.add(groupId);
 						
 						Device[] devices = group.getDeviceArray();
-						String groupId = String.valueOf(group.getId());
 						
 						for (Device device : devices) {
-							System.out.println(">>>>> "+device.getId()+", "+getDeviceName(device.getName()));
+							deviceInfoMap = composeDeviceInfoMap(device);	//組成裝置資訊MAP
 							
 							if (groupDeviceMap.containsKey(groupId)) {
-								groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), getDeviceName(device.getName()));
+								groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), deviceInfoMap);
 								
 							} else {
-								Map<String, String> deviceMap = new HashMap<String, String>();
-								deviceMap.put(String.valueOf(device.getId()), getDeviceName(device.getName()));
+								deviceMap = new HashMap<String, Map<String, String>>();
+								deviceMap.put(String.valueOf(device.getId()), deviceInfoMap);
 								groupDeviceMap.put(groupId, deviceMap);
 							}
 						}
 					}
 				}
-				
-				groupLabelArray = groupLabelList.toArray();
-				groupValueArray = groupValueList.toArray();
 			}
 
-			for (Object o:groupLabelArray) {
-				System.out.println("groupLabelArray: "+o);
-			}
-			for (Object o:groupValueArray) {
-				System.out.println("groupValueArray: "+o);
-			}
-			System.out.println("groupDeviceMap: "+groupDeviceMap);
-			
 		} catch (Exception e) {
 			throw e;
 			
 		} finally {
-			retObj = new Object[] {
-				groupLabelArray
-			   ,groupValueArray
+			retObj = new Map[] {
+			    groupInfoMap
 			   ,groupDeviceMap
 			};
 		}
 		
 		return retObj;
+	}
+	
+	private Map<String, String> composeDeviceInfoMap(Device device) {
+		Map<String, String> deviceInfoMap = null;
+		try {
+			deviceInfoMap = new HashMap<String, String>();
+			deviceInfoMap.put(Constants.DEVICE_ID, String.valueOf(device.getId()));
+			deviceInfoMap.put(Constants.DEVICE_NAME, getDeviceName(device.getName()));
+			deviceInfoMap.put(Constants.DEVICE_IP, device.getHost());
+			deviceInfoMap.put(Constants.DEVICE_SYSTEM, getDeviceSystem(device.getName()));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return deviceInfoMap;
 	}
 	
 	private void login(String username, String password) throws Exception {
@@ -108,18 +117,13 @@ public class PrtgApiUtils implements ApiUtils {
 			} else {
 				API_LOGIN = StringUtils.replace(API_LOGIN, "{username}", username);
 				API_LOGIN = StringUtils.replace(API_LOGIN, "{password}", password);
-				System.out.println("API_LOGIN: "+API_LOGIN);
 				
 				String apiUrl = PRTG_ROOT.concat(API_LOGIN);
-				System.out.println("API_URL: "+apiUrl);
 				
 				String retVal = callPrtg(apiUrl);
 				if (StringUtils.isNotBlank(retVal)) {
-					System.out.println("Login authentication success !!");
-					
 					//PRTG驗證成功後將密碼hash_code存入Spring security USER物件內，供後續作業使用
 					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
-					
 				}
 			}
 			
@@ -144,12 +148,33 @@ public class PrtgApiUtils implements ApiUtils {
 		try {
 			/*
 			 * 原格式: 192.168.1.3 (R3) [Cisco Device Cisco IOS]
-			 * >>>>> [ip_address] (裝置名稱) [裝置作業系統]
-			 * >>>>> 分析取得中間的(裝置名稱)
+			 * >>>>> ip_address (裝置名稱) [裝置作業系統]
+			 * >>>>> 分析取得(裝置名稱)
 			 */
 			if (StringUtils.isNotBlank(oriDeviceName)) {
 				retVal = oriDeviceName.substring(
 						oriDeviceName.indexOf("(")+1, oriDeviceName.indexOf(")"));
+			}
+			
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return retVal;
+	}
+	
+	private String getDeviceSystem(String oriDeviceName) throws Exception {
+		String retVal = "";
+		
+		try {
+			/*
+			 * 原格式: 192.168.1.3 (R3) [Cisco Device Cisco IOS]
+			 * >>>>> ip_address (裝置名稱) [裝置作業系統]
+			 * >>>>> 分析取得[裝置作業系統]
+			 */
+			if (StringUtils.isNotBlank(oriDeviceName)) {
+				retVal = oriDeviceName.substring(
+						oriDeviceName.indexOf("[")+1, oriDeviceName.indexOf("]"));
 			}
 			
 		} catch (Exception e) {
@@ -167,11 +192,11 @@ public class PrtgApiUtils implements ApiUtils {
 
 		try {
             client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(CONNECTION_TIMEOUT);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(Env.HTTP_CONNECTION_TIME_OUT);
             
         	get = new GetMethod(apiUrl);
 			get.addRequestHeader("Content-Type", "text/html; charset=UTF-8");
-			get.getParams().setSoTimeout(SOCKET_TIMEOUT);
+			get.getParams().setSoTimeout(Env.HTTP_SOCKET_TIME_OUT);
 			
 			statusCode = client.executeMethod(get);
 			if (statusCode != HttpStatus.SC_OK) {

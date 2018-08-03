@@ -1,14 +1,17 @@
 package com.cmap.service;
 
-import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cmap.model.DeviceList;
+
 public interface CommonService {
 
-	public static final String DEVICE_MENU_ATTR = "DEVICE_MENU";
+	public Map<String, String> getGroupAndDeviceMenu(HttpServletRequest request);
 	
-	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MI = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+	public void updateDeviceList(List<DeviceList> deviceList);
 	
-	public Object[] getGroupAndDeviceMenu(HttpServletRequest request);
+	public Map<String, String> getConfigTypeMenu();
 }

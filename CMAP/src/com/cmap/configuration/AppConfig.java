@@ -24,9 +24,12 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
+import com.cmap.Env;
 import com.cmap.dao.I18nDAO;
 import com.cmap.dao.impl.I18nDAOImpl;
 import com.cmap.i18n.DatabaseMessageSourceBase;
+import com.cmap.utils.EnvUtils;
+import com.cmap.utils.impl.SysEnvUtils;
 
 @Configuration
 @EnableWebMvc
@@ -117,6 +120,11 @@ public class AppConfig implements WebMvcConfigurer {
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
         localeChangeInterceptor.setParamName("locale");
         return localeChangeInterceptor;
+    }
+    
+    public EnvUtils initEnv() {
+    	EnvUtils envUtils = new SysEnvUtils();
+    	return envUtils;
     }
     
     

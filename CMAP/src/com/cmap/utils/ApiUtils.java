@@ -1,6 +1,8 @@
 package com.cmap.utils;
 
-public interface ApiUtils extends Api {
+import java.util.Map;
 
-	public Object[] getGroupAndDeviceMenu() throws Exception;
+public interface ApiUtils extends Api {
+	
+	public Map[] getGroupAndDeviceMenu() throws Exception;
 }

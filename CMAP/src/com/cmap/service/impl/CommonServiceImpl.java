@@ -1,14 +1,28 @@
 package com.cmap.service.impl;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cmap.Constants;
+import com.cmap.Env;
+import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.MenuItemDAO;
+import com.cmap.model.DeviceList;
+import com.cmap.model.MenuItem;
 import com.cmap.service.CommonService;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
@@ -18,23 +32,102 @@ import com.cmap.utils.impl.PrtgApiUtils;
 public class CommonServiceImpl implements CommonService {
 	private static Log log = LogFactory.getLog(CommonServiceImpl.class);
 
+	@Autowired
+	DeviceListDAO deviceListDAO;
+	
+	@Autowired
+	MenuItemDAO menuItemDAO;
+	
+	/**
+	 * 呼叫PRTG API取得當前使用者權限下所有群組&設備清單
+	 */
 	@Override
-	public Object[] getGroupAndDeviceMenu(HttpServletRequest request) {
-		Object[] retObj = null;
+	public Map<String, String> getGroupAndDeviceMenu(HttpServletRequest request) {
+		Map<String, String> retMap = null;
 		ApiUtils prtgApi = null;
 		try {
 			prtgApi = new PrtgApiUtils();
-			Object[] prtgObj = prtgApi.getGroupAndDeviceMenu();
+			Map[] prtgMap = prtgApi.getGroupAndDeviceMenu();
 			
-			if (prtgObj != null) {
-				retObj = new Object[] {
-					prtgObj[0]
-				   ,prtgObj[1]
-				};
+			if (prtgMap != null) {
 				
-				if (prtgObj[2] != null && !((Map<String, Map<String, String>>)prtgObj[2]).isEmpty()) {
+				final Map<String, String> groupInfoMap = (Map<String, String>)prtgMap[0];
+				retMap = groupInfoMap;
+				
+				if (prtgMap[1] != null && !((Map<String, Map<String, Map<String, String>>>)prtgMap[1]).isEmpty()) {
 					if (request.getSession() != null) {
-						request.getSession().setAttribute(DEVICE_MENU_ATTR, prtgObj[2]);
+						request.getSession().setAttribute(Constants.GROUP_DEVICE_MAP, prtgMap[1]);
+						
+						List<DeviceList> deviceList = new ArrayList<DeviceList>();
+						
+						DeviceList dl = null;
+						Map<String, Map<String, Map<String, String>>> groupDeviceMap = (HashMap<String, Map<String, Map<String, String>>>)prtgMap[1];
+						for (String groupId : groupDeviceMap.keySet()) {
+							Map<String, Map<String, String>> deviceMap = groupDeviceMap.get(groupId);
+							
+							for (String deviceId : deviceMap.keySet()) {
+								
+								Map<String, String> deviceInfoMap = deviceMap.get(deviceId);
+								
+								// 先撈取查看此群組+設備ID資料是否已存在
+								dl = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+								
+								boolean noNeedToAddOrModify = true;
+								if (dl == null) {
+									// 不存在表示後面要新增
+									noNeedToAddOrModify = false;
+									
+									dl = new DeviceList();
+									dl.setGroupId(groupId);
+									dl.setDeviceId(deviceId);
+									
+									String dirPath = "/"
+													 .concat(StringUtils.replace(Env.DEFAULT_FTP_DIR_GROUP_NAME, "[gid]", groupId))
+													 .concat("/")
+													 .concat(StringUtils.replace(Env.DEFAULT_FTP_DIR_DEVICE_NAME, "[did]", deviceId));
+									
+									dl.setConfigFileDirPath(dirPath);
+									dl.setDeleteFlag(Constants.DATA_MARK_NOT_DELETE);
+									dl.setCreateBy(Constants.SYS);
+									dl.setCreateTime(new Timestamp((new Date()).getTime()));
+
+								} else {
+									// 若已存在，確認以下欄位是否有異動，若其中一項有異動的話則後面要進行更新
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify = 
+												(StringUtils.isBlank(dl.getGroupName()) ? "" : dl.getGroupName()).equals(groupInfoMap.get(groupId));
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify = 
+												(StringUtils.isBlank(dl.getDeviceName()) ? "" : dl.getDeviceName()).equals(deviceInfoMap.get(Constants.DEVICE_NAME));
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify = 
+												(StringUtils.isBlank(dl.getDeviceIp()) ? "" : dl.getDeviceIp()).equals(deviceInfoMap.get(Constants.DEVICE_IP));
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify = 
+												(StringUtils.isBlank(dl.getSystemVersion()) ? "" : dl.getSystemVersion()).equals(deviceInfoMap.get(Constants.DEVICE_SYSTEM));
+									}
+								}
+								
+								if (!noNeedToAddOrModify) {
+									dl.setGroupName(groupInfoMap.get(groupId));
+									dl.setDeviceName(deviceInfoMap.get(Constants.DEVICE_NAME));
+									dl.setDeviceIp(deviceInfoMap.get(Constants.DEVICE_IP));
+									dl.setSystemVersion(deviceInfoMap.get(Constants.DEVICE_SYSTEM));
+									dl.setUpdateBy(Constants.SYS);
+									dl.setUpdateTime(new Timestamp((new Date()).getTime()));
+									
+									deviceList.add(dl);
+								}
+							}
+						}
+						
+						// 更新 or 寫入 DEVICE_LIST 資料
+						if (deviceList != null && !deviceList.isEmpty()) {
+							updateDeviceList(deviceList);
+						}
 					}
 				}
 			}
@@ -45,6 +138,30 @@ public class CommonServiceImpl implements CommonService {
 			}
 			e.printStackTrace();
 		}
-		return retObj;
+		return retMap;
+	}
+
+	@Override
+	public void updateDeviceList(List<DeviceList> deviceList) {
+		// 更新 or 寫入 DEVICE_LIST 資料
+		deviceListDAO.saveOrUpdateDeviceListByModel(deviceList);
+	}
+
+	@Override
+	public Map<String, String> getConfigTypeMenu() {
+		Map<String, String> retMap = new LinkedHashMap<String, String>();
+		
+		try {
+			List<MenuItem> itemList = menuItemDAO.findMenuItemByMenuCode(Env.MENU_CODE_OF_CONFIG_TYPE);
+			
+			for (MenuItem item : itemList) {
+				retMap.put(item.getOptionValue(), item.getOptionLabel());
+			}
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return retMap;
 	}
 }

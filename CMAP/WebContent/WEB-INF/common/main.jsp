@@ -18,6 +18,10 @@
     
     <!-- Bootstrap Core CSS -->
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <!-- JQuery-UI -->
+    <!-- <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.min.css" rel="stylesheet"> -->
+    <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.structure.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet">
     <!-- materialize.css -->
     <!-- <link href="${pageContext.request.contextPath}/resources/css/materialize.min.css" rel="stylesheet"> -->
     <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet">
@@ -27,6 +31,7 @@
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/jquery-ui/jquery-ui.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/popper/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.min.js"></script>
     <!-- Icons -->
@@ -44,19 +49,25 @@
 <body>
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="#">
-      	<img class="img" src="${pageContext.request.contextPath}/resources/images/hwacom.png" width="100" height="40" />
+      	<img class="img" src="${pageContext.request.contextPath}/resources/images/hwacom.png" width="auto" height="40" />
       	<span class="font-weight-bold title-font" style="color:#1C2269">組態設定管理系統</span>	
       </a>
-      <ul class="navbar-nav px-3">
+      <ul class="navbar-nav">
         <li class="nav-item text-nowrap">
           <a class="nav-link" href="${pageContext.request.contextPath}/logout"><span data-feather="log-out"></span></a>
+        </li>
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="#" onclick="showProfile()"><span data-feather="user"></span></a>
+        </li>
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="#" onclick="toggleMenu()"><span id="menu-icon" data-feather="menu"></span></a>
         </li>
       </ul>
     </nav>
 
     <div class="container-fluid">
       <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar sidebar-bg">
+        <nav class="web-menu col-md-2 d-none d-md-block sidebar sidebar-bg">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
@@ -72,7 +83,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/version/recover">
+                <a class="nav-link" href="${pageContext.request.contextPath}/version/restore">
                   <span data-feather="upload"></span>
                   	<span>版本還原</span>
                 </a>
@@ -94,6 +105,29 @@
                   <span data-feather="search"></span>
                   	<span>供裝紀錄</span>
                 </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
+                  <span data-feather="settings"></span>
+                  	<span>後臺管理&nbsp;<span id="toggleMenu_admin_icon" data-feather="chevron-down"></span></span>
+                </a>
+                <ul aria-expanded="false" id="toggleMenu_admin_items" class="collapse">
+                    <li class="nav-item subMenu-item">
+                    	<a href="${pageContext.request.contextPath}/admin/env/main">
+                    		<span data-feather="command"></span> 系統參數維護
+                    	</a>
+                    </li>
+                    <li class="nav-item subMenu-item">
+                    	<a href="${pageContext.request.contextPath}/admin/script/main">
+                    		<span data-feather="hash"></span> 預設腳本維護
+                    	</a>
+                    </li>
+                    <li class="nav-item subMenu-item">
+                    	<a href="${pageContext.request.contextPath}/admin/job/main">
+                    		<span data-feather="check-square"></span> 排程設定維護
+                    	</a>
+                    </li>
+                </ul>
               </li>
             </ul>
           </div>
@@ -128,6 +162,48 @@
 			<decorator:body />
         </main>
         
+        <input type="hidden" id="queryFrom" name="queryFrom" />
+        
+        <!-- Modal [View] start -->
+		<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="exampleModalLabel"><span id="msgModal_title">版本內容預覽</span></h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		     	<div class="form-group row">
+		        	<label for="viewModal_group" class="col-md-2 col-sm-12 col-form-label">群組</label>
+		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_group" readonly>
+		        </div>
+		        <div class="form-group row">
+		        	<label for="viewModal_device" class="col-md-2 col-sm-12 col-form-label">設備</label>
+		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_device" readonly>
+		        </div>
+		        <div class="form-group row">
+		        	<label for="viewModal_version" class="col-md-2 col-sm-12 col-form-label">版本號碼</label>
+		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_version" readonly>
+		        </div>
+		        <div class="form-group row">
+		        	<label for="viewModal_content" class="col-md-2 col-sm-12 col-form-label">版本內容</label>
+		        	<!-- <textarea class="form-control col-md-9 col-sm-12" id="viewModal_content" rows="10" readonly></textarea> -->
+		        	<div class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_content" style="height: 300px;overflow: auto;"></div>
+		        </div>
+		        
+		      </div>
+		      <!-- 
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+		      </div>
+		       -->
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal [View] end -->
+        
         <footer role="footer" class="ml-sm-auto col-md-10 footer">
         	<span class="copyright">聯絡我們 | Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	
         </footer>
@@ -142,6 +218,12 @@
     <script>
     	feather.replace();
       	
+    	var resutTable;					//DataTable
+    	var navAndMenuAndFooterHeight;	//導覽列+Mobile選單+Footer區塊高度
+    	var deductHeight;				//額外扣除高度 for DataTable資料呈顯區塊高度
+    	var dataTableHeight;			//DataTable資料呈顯區塊高度
+    	var isWEB = true;
+    	
     	$(document).ready(function() {
     		// get current URL path and assign 'active' class
 			var pathname = window.location.pathname;
@@ -151,7 +233,214 @@
     		} else {
     			$('.nav > .nav-item > a[href="'+pathname+'"]').addClass('active');
     		}
+    		
+    		if ($('.mobile-menu').is(':visible')) {
+    			isWEB = false;
+    		}
+    		
+    		$('.toggleMenuLink').click(function() {
+    			var itemId = '#'+this.id+'_items';
+    			var iconId = '#'+this.id+' > span > svg.feather-';
+    			
+    			$(itemId).toggleClass('collapse');
+    			
+    			if ($(itemId).hasClass('collapse')) {
+    				iconId = iconId+'chevron-up';
+    				$(iconId).replaceWith(feather.icons['chevron-down'].toSvg());
+    			} else {
+    				iconId = iconId+'chevron-down';
+    				$(iconId).replaceWith(feather.icons['chevron-up'].toSvg());
+    			}
+    		});
+    		
+    		//計算DataTable區塊高度
+    		calHeight();
+    		
+    		//縮放視窗大小時，延遲1秒後重算DataTable區塊高度 & 重繪DataTable
+    	    $(window).resize(_.debounce(function() {
+    	    	if (typeof resutTable !== "undefined") {
+    	    		calHeight();
+    	    		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
+    	    		resutTable.clear().draw();
+    				resutTable.ajax.reload();
+    				
+    				if (typeof $("#checkAll") !== "undefined") {
+    					$('input[name=checkAll]').prop('checked', false);
+    				}
+    	    	}
+    	    }, 1000));
+    		
+    	  	//全選 or 取消全選
+    	    $('#checkAll').click(function (e) {
+    	    	if ($(this).is(':checked')) {
+    				$('input[name=chkbox]').prop('checked', true);
+    				$('tbody > tr').addClass('mySelected');
+    				
+    			} else {
+    				$('input[name=chkbox]').prop('checked', false);
+    				$('tbody > tr').removeClass('mySelected');
+    			}
+    	    });
+    	  
+    	  	//查詢按鈕(Web)點擊事件
+    	    $('#btnSearch_web').click(function (e) {
+    	    	findData('WEB');
+    	    });
+    	  	
+    	  	//查詢按鈕(Mobile)點擊事件
+    	    $('#btnSearch_mobile').click(function (e) {
+    	    	findData('MOBILE');
+    	    });
+    	  	
+    	    //[組態檔內容-Modal] >> 開啟時將卷軸置頂
+            $("#viewModal").on("shown.bs.modal", function () {
+            	setTimeout(function() {
+            		$('#viewModal_content').scrollTop(0);
+            	}, 30);
+            });
 		});
+    	
+    	//隱藏 or 顯示功能選單
+    	function toggleMenu() {
+    		if (isWEB) {
+   				$('.web-menu').toggleClass('d-md-block');
+       			$('main').toggleClass('col-md-10').toggleClass('col-md-12');
+       			$('footer').toggleClass('col-md-10').toggleClass('col-md-12');
+    			
+    		} else {
+    			$('.mobile-menu').toggleClass('d-none');
+    			$('#search-bar-small-btn').toggleClass('search-bar-small-btn');
+    		}
+    		
+    		changeMenuIconColor();
+    		
+    		//計算DataTable區塊高度
+    		calHeight();
+    		$(window).trigger('resize');
+    	}
+    	
+    	//改變當前功能選單項目style
+    	function changeMenuIconColor() {
+    		$("#menu-icon").toggleClass('icon-hightlight');
+    	}
+    	
+    	//勾選項目時調整該列資料<TR>底色
+    	function changeTrBgColor(obj) {
+    		var tr = obj.parentNode.parentNode;
+    		
+    		if (obj.checked) {
+    			tr.classList.add('mySelected');
+    		} else {
+    			tr.classList.remove('mySelected');
+    		}
+    	}
+    	
+    	/*
+    	$( "#resutTable" ).selectable(
+		  {
+		     distance: 10,
+		     stop: function()
+		     {
+		       $( this ).find( "tr" ).each(
+		         function () {
+		        	 console.log('hasClass: '+$( this ).hasClass( 'mySelected' ) );
+		           if ( !$( this ).hasClass( 'mySelected' ) )
+		             $( this ).addClass( 'mySelected' );
+		           else
+		             $( this ).removeClass( 'mySelected' );
+		         });
+		     }
+		  });
+    	*/
+    	
+    	//計算DataTable可呈顯的區塊高度
+    	function calHeight() {
+    		//計算dataTable區塊高度，以window高度扣除navbar、footer和mobile版選單高度
+    		if ($('.mobile-menu').css('display') != 'none') {
+    			navAndMenuAndFooterHeight = $('.navbar').outerHeight() + $(".footer").outerHeight() + $('.mobile-menu').outerHeight();
+    		} else {
+    			navAndMenuAndFooterHeight = $('.navbar').outerHeight() + $(".footer").outerHeight();
+    		}
+    		
+    		if ($('.search-bar-large').css('display') != 'none') {
+    			navAndMenuAndFooterHeight += $('.search-bar-large').outerHeight();
+    			deductHeight = 160;
+    		} else {
+    			deductHeight = 250;
+    		}
+    		
+    		dataTableHeight = (window.innerHeight-navAndMenuAndFooterHeight-deductHeight);
+    		
+    		//避免手機裝置橫向狀態下高度縮太小無法閱讀資料，設定最小高度限制為165px
+    		dataTableHeight = dataTableHeight < 165 ? 165 : dataTableHeight;
+    	}
+    	
+    	//群組選單連動設備選單
+    	function changeDeviceMenu(deviceMenuObjId, groupId) {
+    		$( "select[id^='"+deviceMenuObjId+"'] option" ).remove();
+    		$( "select[id^='"+deviceMenuObjId+"']" ).append("<option value=''>=== ALL ===</option>");
+    		
+    		$.ajax({
+    			url : '${pageContext.request.contextPath}/base/getDeviceMenu',
+    			data : {
+    				groupId: groupId
+    			},
+    			type : "POST",
+    			dataType : 'json',
+    			async: false,
+    			success : function(resp) {
+
+    				if (resp.code == '200') {
+    					var obj = $.parseJSON(resp.data.device);
+    					$.each(obj, function(key, value){
+    						$( "select[id^='"+deviceMenuObjId+"']" ).append("<option value='"+key+"'>"+value+"</option>");
+    					});
+    				}
+    			},
+
+    			error : function(xhr, ajaxOptions, thrownError) {
+    				alert("error");
+    				alert(xhr.status);
+    				alert(thrownError);
+    			}
+    		});
+    	}
+    	
+    	//查看組態檔內容
+    	function viewConfig(viewConfig) {
+    		var obj = new Object();
+    		obj.name = 'versionId';
+    		obj.value = viewConfig;
+    		
+    		$.ajax({
+    			url : '${pageContext.request.contextPath}/version/view',
+    			data : JSON.stringify(obj),
+    			headers: {
+    			    'Accept': 'application/json',
+    			    'Content-Type': 'application/json'
+    			},
+    			type : "POST",
+    			async: false,
+    			success : function(resp) {
+    				if (resp.code == '200') {
+    					$('#viewModal_group').val(resp.data.group);
+    					$('#viewModal_device').val(resp.data.device);
+    					$('#viewModal_version').val(resp.data.version);
+    					$('#viewModal_content').html(resp.data.content);
+    					
+    					$('#viewModal').modal('show');
+    					
+    				} else {
+    					alert(resp.message);
+    				}
+    			},
+
+    			error : function(xhr, ajaxOptions, thrownError) {
+    				alert('error');
+    				alert(xhr.status + "\n" + thrownError);
+    			}
+    		});
+    	}
 
     </script>
 

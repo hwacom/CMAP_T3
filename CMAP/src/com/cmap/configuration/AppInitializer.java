@@ -18,7 +18,7 @@ public class AppInitializer implements WebApplicationInitializer {
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
         ctx.register(AppConfig.class);
         ctx.register(HibernateConfiguration.class);
-//        ctx.register(WebSecurityConfig.class);
+        ctx.register(WebSecurityConfig.class);
         container.addListener(new ContextLoaderListener(ctx));
         ctx.setServletContext(container);
         

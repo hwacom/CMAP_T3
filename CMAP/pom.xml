@@ -207,7 +207,6 @@
 	    <artifactId>gson</artifactId>
 	    <version>2.8.5</version>
 	</dependency>
-		
 	<!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
 	<dependency>
 	    <groupId>commons-httpclient</groupId>
@@ -256,13 +255,6 @@
 	    <artifactId>javax.inject</artifactId>
 	    <version>1</version>
 	</dependency>
-	
-	<!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
-	<dependency>
-	    <groupId>commons-httpclient</groupId>
-	    <artifactId>commons-httpclient</artifactId>
-	    <version>3.1</version>
-	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans -->
 	<dependency>
 	    <groupId>org.apache.xmlbeans</groupId>
@@ -294,6 +286,29 @@
 	    <groupId>commons-net</groupId>
 	    <artifactId>commons-net</artifactId>
 	    <version>3.6</version>
+	</dependency>
+	<dependency> 
+		<groupId>com.googlecode.java-diff-utils</groupId> 
+		<artifactId>diffutils</artifactId> 
+		<version>1.2.1</version> 
+	</dependency> 
+	<!-- https://mvnrepository.com/artifact/org.snmp4j/snmp4j -->
+	<dependency>
+	    <groupId>org.snmp4j</groupId>
+	    <artifactId>snmp4j</artifactId>
+	    <version>2.6.2</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.hierynomus/sshj -->
+	<dependency>
+	    <groupId>com.hierynomus</groupId>
+	    <artifactId>sshj</artifactId>
+	    <version>0.26.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/net.sf.expectit/expectit-core -->
+	<dependency>
+	    <groupId>net.sf.expectit</groupId>
+	    <artifactId>expectit-core</artifactId>
+	    <version>0.9.0</version>
 	</dependency>
    </dependencies>
 </project>
