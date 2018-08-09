@@ -21,6 +21,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.MenuItemDAO;
+import com.cmap.exception.AuthenticateException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.MenuItem;
 import com.cmap.service.CommonService;
@@ -47,7 +48,7 @@ public class CommonServiceImpl implements CommonService {
 		ApiUtils prtgApi = null;
 		try {
 			prtgApi = new PrtgApiUtils();
-			Map[] prtgMap = prtgApi.getGroupAndDeviceMenu();
+			Map[] prtgMap = prtgApi.getGroupAndDeviceMenu(request);
 			
 			if (prtgMap != null) {
 				
@@ -132,6 +133,9 @@ public class CommonServiceImpl implements CommonService {
 				}
 			}
 			
+		} catch (AuthenticateException ae) {
+			System.out.println(ae.toString());
+			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error(e.toString(), e);
@@ -148,14 +152,17 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 	@Override
-	public Map<String, String> getConfigTypeMenu() {
+	public Map<String, String> getMenuItem(String menuCode, boolean combineOrderDotLabel) {
 		Map<String, String> retMap = new LinkedHashMap<String, String>();
 		
 		try {
-			List<MenuItem> itemList = menuItemDAO.findMenuItemByMenuCode(Env.MENU_CODE_OF_CONFIG_TYPE);
+			List<MenuItem> itemList = menuItemDAO.findMenuItemByMenuCode(menuCode);
 			
 			for (MenuItem item : itemList) {
-				retMap.put(item.getOptionValue(), item.getOptionLabel());
+				retMap.put(
+					item.getOptionValue(), 
+					combineOrderDotLabel ? String.valueOf(item.getOptionOrder()).concat(Env.MENU_ITEM_COMBINE_SYMBOL).concat(item.getOptionLabel())
+										 : item.getOptionLabel());
 			}
 			
 		} catch (Exception e) {

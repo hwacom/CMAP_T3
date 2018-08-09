@@ -11,6 +11,11 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * 系統環境變數Entity
+ * @author Ken Lin
+ *
+ */
 @Entity
 @Table(
 	name = "sys_config_setting",
@@ -35,6 +40,15 @@ public class SysConfigSetting {
 	@Column(name = "setting_remark", nullable = true)
 	private String settingRemark;
 	
+	@Column(name = "delete_flag", nullable = false)
+	private String deleteFlag;
+	
+	@Column(name = "delete_time", nullable = true)
+	private Timestamp deleteTime;
+	
+	@Column(name = "delete_by", nullable = true)
+	private String deleteBy;
+	
 	@Column(name = "create_time", nullable = true)
 	private Timestamp createTime;
 	
@@ -52,12 +66,16 @@ public class SysConfigSetting {
 	}
 
 	public SysConfigSetting(String settingId, String settingName, String settingValue, String settingRemark,
-			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
+			Timestamp updateTime, String updateBy) {
 		super();
 		this.settingId = settingId;
 		this.settingName = settingName;
 		this.settingValue = settingValue;
 		this.settingRemark = settingRemark;
+		this.deleteFlag = deleteFlag;
+		this.deleteTime = deleteTime;
+		this.deleteBy = deleteBy;
 		this.createTime = createTime;
 		this.createBy = createBy;
 		this.updateTime = updateTime;
@@ -94,6 +112,30 @@ public class SysConfigSetting {
 
 	public void setSettingRemark(String settingRemark) {
 		this.settingRemark = settingRemark;
+	}
+
+	public String getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(String deleteFlag) {
+		this.deleteFlag = deleteFlag;
+	}
+
+	public Timestamp getDeleteTime() {
+		return deleteTime;
+	}
+
+	public void setDeleteTime(Timestamp deleteTime) {
+		this.deleteTime = deleteTime;
+	}
+
+	public String getDeleteBy() {
+		return deleteBy;
+	}
+
+	public void setDeleteBy(String deleteBy) {
+		this.deleteBy = deleteBy;
 	}
 
 	public Timestamp getCreateTime() {

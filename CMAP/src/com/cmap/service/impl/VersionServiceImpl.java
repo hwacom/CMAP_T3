@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.comm.ConnectionMode;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
@@ -681,6 +680,7 @@ public class VersionServiceImpl implements VersionService {
 		} catch (Exception e) {
 		
 		}  finally {
+			/*
 			String retMsg = "此次備份共 "
 							.concat(String.valueOf(totalCount))
 							.concat(" 筆設備，成功 ")
@@ -688,8 +688,14 @@ public class VersionServiceImpl implements VersionService {
 							.concat(" 筆；失敗 ")
 							.concat(String.valueOf(errorCount))
 							.concat(" 筆");
+			*/
 			
-			retVO.setRetMsg(retMsg);
+			String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
+			String[] args = new String[] {
+				String.valueOf(totalCount), String.valueOf(totalCount-errorCount), String.valueOf(errorCount)
+			};
+			
+			retVO.setRetMsg(CommonUtils.converMsg(msg, args));
 		}
 		
 		return retVO;
@@ -843,7 +849,7 @@ public class VersionServiceImpl implements VersionService {
 					e.printStackTrace();
 				}
 			}
-			
+			/*
 			String retMsg = "此次備份共 "
 							.concat(String.valueOf(totalCount))
 							.concat(" 筆設備，成功 ")
@@ -851,8 +857,14 @@ public class VersionServiceImpl implements VersionService {
 							.concat(" 筆；失敗 ")
 							.concat(String.valueOf(errorCount))
 							.concat(" 筆");
+			*/
 			
-			retVO.setRetMsg(retMsg);
+			String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
+			String[] args = new String[] {
+				String.valueOf(totalCount), String.valueOf(totalCount-errorCount), String.valueOf(errorCount)
+			};
+			
+			retVO.setRetMsg(CommonUtils.converMsg(msg, args));
 		}
 		
 		return retVO;

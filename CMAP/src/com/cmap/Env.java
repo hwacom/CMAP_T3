@@ -1,12 +1,25 @@
 package com.cmap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.cmap.comm.ConnectionMode;
 import com.cmap.comm.Step;
 
 public class Env {
 	
-	public static String DECODE_FIELDS;
+	public static List<String> DECODE_FIELDS = new ArrayList<String>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
+	public static String LOGIN_AUTH_MODE;
+	public static String ADMIN_USERNAME;
+	public static String ADMIN_PASSWORD;
+	public static List<String> ADMIN_ROLE_USERNAME = new ArrayList<String>();
+	
+	public static String PRTG_SERVER_IP;
+	public static String PRTG_API_LOGIN;
+	public static String PRTG_API_SENSOR_TREE;
 	
 	public static Integer HTTP_CONNECTION_TIME_OUT;
 	public static Integer HTTP_SOCKET_TIME_OUT;
@@ -54,6 +67,10 @@ public class Env {
 	public static String SIGN_TFTP_OUTPUT_FILE_PATH;
 	
 	public static String MENU_CODE_OF_CONFIG_TYPE;
+	public static String MENU_CODE_OF_SCHED_TYPE;
+	public static String MENU_CODE_OF_MIS_FIRE_POLICY;
+	
+	public static String MENU_ITEM_COMBINE_SYMBOL;
 	
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT, 
@@ -84,27 +101,10 @@ public class Env {
 			Step.RECORD_DB
 	};
 	
+	public static Map<String, String> SCHED_TYPE_CLASS_MAPPING = new HashMap<String, String>();
+	
 	static {
 		//系統預設值，當SYS_CONFIG_SETTING未設定時採用
-		HTTP_CONNECTION_TIME_OUT = 1500;
-		HTTP_SOCKET_TIME_OUT = 1500;
-		
-		DEFAULT_FTP_DIR_GROUP_NAME = "GID_[gid]";
-		DEFAULT_FTP_DIR_DEVICE_NAME = "DID_[did]";
-		
-		FTP_HOST_PORT = 21;
-		FTP_DEFAULT_TIME_OUT = 5000;
-		FTP_CONNECT_TIME_OUT = 600000;
-		
-		TELNET_DEFAULT_TIME_OUT = 15000;
-		TELNET_CONNECT_TIME_OUT = 30000;
-		
-		SSH_CONNECT_TIME_OUT = 1000;
-		SSH_SOCKET_TIME_OUT = 30000;
-		SSH_DEFAULT_PORT = 22;
-		
-		COMM_SEPARATE_SYMBOL = "@~";
-		
-		TFTP_HOST_PORT = 69;
+		SCHED_TYPE_CLASS_MAPPING.put("backupConfig", "com.cmap.service.impl.jobs.JobBackupConfig");
 	}
 }

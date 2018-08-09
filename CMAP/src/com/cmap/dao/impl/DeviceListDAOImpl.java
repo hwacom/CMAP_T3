@@ -14,7 +14,7 @@ import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.vo.DeviceListDAOVO;
 import com.cmap.model.DeviceList;
 
-@Repository
+@Repository("deviceListDAO")
 @Transactional
 public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO {
 
@@ -237,5 +237,94 @@ public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO
 		for (DeviceList entity : entityList) {
 			getHibernateTemplate().saveOrUpdate(entity);
 		}
+	}
+
+	@Override
+	public List<DeviceList> findDistinctDeviceListByGroupIdsOrDeviceIds(List<String> groupIds, List<String> deviceIds) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select distinct dl ")
+		  .append(" from DeviceList dl ")
+		  .append(" where 1=1 ")
+		  .append(" and ( ");
+		
+		if (groupIds != null && !groupIds.isEmpty()) {
+			sb.append("   dl.groupId in (:groupIds) ");
+		}
+		if ((groupIds != null && !groupIds.isEmpty()) && (deviceIds != null && !deviceIds.isEmpty())) {
+			sb.append("   or ");
+		}
+		if (deviceIds != null && !deviceIds.isEmpty()) {
+			sb.append("   dl.deviceId in (:deviceIds) ");
+		} 
+		sb.append(" ) ")
+		  .append(" order by ");
+		
+		if (groupIds != null && !groupIds.isEmpty()) {
+			sb.append(" dl.groupId asc ");
+		}
+		if ((groupIds != null && !groupIds.isEmpty()) && (deviceIds != null && !deviceIds.isEmpty())) {
+			sb.append(" , ");
+		}
+		if (deviceIds != null && !deviceIds.isEmpty()) {
+			sb.append(" dl.deviceId asc ");
+		}
+		
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    
+	    if (groupIds != null && !groupIds.isEmpty()) {
+	    	q.setParameter("groupIds", groupIds);
+	    }
+	    if (deviceIds != null && !deviceIds.isEmpty()) {
+	    	q.setParameter("deviceIds", deviceIds);
+	    }
+	    
+		return (List<DeviceList>)q.list();
+	}
+
+	@Override
+	public List<Object[]> getGroupIdAndNameByGroupIds(List<String> groupIds) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select distinct dl.groupId, dl.groupName ")
+		  .append(" from DeviceList dl ")
+		  .append(" where 1=1 ");
+		
+		if (groupIds != null && !groupIds.isEmpty()) {
+			sb.append(" and dl.groupId in (:groupIds) ");
+		}
+		
+		sb.append(" order by dl.groupId asc ");
+		
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    
+	    if (groupIds != null && !groupIds.isEmpty()) {
+	    	q.setParameter("groupIds", groupIds);
+	    }
+	    
+		return (List<Object[]>)q.list();
+	}
+
+	@Override
+	public List<Object[]> getDeviceIdAndNameByDeviceIds(List<String> deviceIds) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select distinct dl.deviceId, dl.deviceName ")
+		  .append(" from DeviceList dl ")
+		  .append(" where 1=1 ");
+		
+		if (deviceIds != null && !deviceIds.isEmpty()) {
+			sb.append(" and dl.deviceId in (:deviceIds) ");
+		}
+		
+		sb.append(" order by dl.deviceId asc ");
+		
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    
+	    if (deviceIds != null && !deviceIds.isEmpty()) {
+	    	q.setParameter("deviceIds", deviceIds);
+	    }
+	    
+		return (List<Object[]>)q.list();
 	}
 }

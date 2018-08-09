@@ -91,6 +91,8 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 			  .append("       cvi.system_version like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
+			  .append("		  or ")
+			  .append("       cvi.config_type like :searchValue ")
 			  .append("     ) ");
 		}
 	    
@@ -230,6 +232,8 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 			  .append("       cvi.system_version like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
+			  .append("       or ")
+			  .append("       cvi.config_type like :searchValue ")
 			  .append("     ) ");
 		}
 	    
@@ -347,6 +351,8 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 			  .append("       cvi.system_version like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
+			  .append("       or ")
+			  .append("       cvi.config_type like :searchValue ")
 			  .append("     ) ");
 		}
 		
@@ -506,6 +512,8 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 			  .append("       cvi.system_version like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
+			  .append("       or ")
+			  .append("       cvi.config_type like :searchValue ")
 			  .append("     ) ");
 		}
 		

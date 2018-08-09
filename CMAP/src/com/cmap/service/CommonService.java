@@ -13,5 +13,5 @@ public interface CommonService {
 	
 	public void updateDeviceList(List<DeviceList> deviceList);
 	
-	public Map<String, String> getConfigTypeMenu();
+	public Map<String, String> getMenuItem(String menuCode, boolean combineOrderDotLabel);
 }

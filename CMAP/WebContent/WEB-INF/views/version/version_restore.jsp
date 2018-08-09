@@ -180,6 +180,9 @@
 						}
 						
 						return d;
+					},
+					"error" : function(xhr, ajaxOptions, thrownError) {
+						ajaxErrorHandler();
 					}
 				},
 				"order": [[2 , 'asc' ]],

@@ -10,6 +10,8 @@ public interface JobService {
 	
 	public List<JobServiceVO> findJobInfoByVO(JobServiceVO jsVO) throws Exception;
 	
+	public JobServiceVO findJobDetails(JobServiceVO jsVO) throws Exception;
+	
 	public void addJob(JobServiceVO jsVO) throws Exception;
 
 	public String pauseJob(List<JobServiceVO> jsVOList) throws Exception;

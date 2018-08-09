@@ -2,7 +2,10 @@ package com.cmap.security;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import com.cmap.Constants;
+import com.cmap.Env;
 import com.cmap.model.User;
 
 @Service
@@ -26,34 +31,31 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	SysLogService sysLogService;
 	*/
 	
+	@Autowired
+	private HttpServletRequest request;
+	
 	//登陸驗證時，通過username獲取使用者的所有權限資訊，  
     //並返回User放到spring的全域緩存SecurityContextHolder中，以供授權器使用
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-		User user = !username.equals("R2user") && !username.equals("admin") && !username.equals("prtgadmin") && !username.equals("R1user") ? null : new User();
-		if(null == user) throw new UsernameNotFoundException("User not found.");
+		boolean isAdmin = request.getSession().getAttribute(Constants.ISADMIN) != null 
+								? (boolean)request.getSession().getAttribute(Constants.ISADMIN) : false;
+		String password = (String)request.getSession().getAttribute(Constants.PASSWORD);
+		String passhash = (String)request.getSession().getAttribute(Constants.PASSHASH);
+		String role = (String)request.getSession().getAttribute(Constants.USERROLE);
+		String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
 		
-		if (StringUtils.equals(username, "R2user")) {
-			user.setUserName("R2user");
-			user.setPassword("R2user123");
-			user.setRole("USER");
-			
-		} else if (StringUtils.equals(username, "admin")) {
-			user.setUserName("admin");
-			user.setPassword("admin123");
-			user.setRole("USER");
-			
-		} else if (StringUtils.equals(username, "prtgadmin")) {
-			user.setUserName("prtgadmin");
-			user.setPassword("prtgadmin");
-			user.setRole("USER");
-			
-		} else if (StringUtils.equals(username, "R1user")) {
-			user.setUserName("R1user");
-			user.setPassword("R1user123");
-			user.setRole("USER");
+		if (StringUtils.equals(Env.LOGIN_AUTH_MODE, Constants.LOGIN_AUTH_MODE_PRTG)) {
+			if (!isAdmin && StringUtils.isBlank(passhash)) {
+				throw new UsernameNotFoundException("帳號或密碼輸入錯誤");
+			}
 		}
+		
+		User user = new User();
+		user.setUserName(username);
+		user.setPassword(password);
+		user.setRoles(roles);
+		user.setPasshash(passhash);
 		
 		boolean accountEnabled = true;
 		boolean accountNonExpired = true;
@@ -69,7 +71,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				accountNonExpired,
 				credentialsNonExpired,
 				accountNonLocked,
-				getAuthorities(user.getRole())
+				getAuthorities(user.getRoles())
 			);
 //		sysLogService.saveSysLog(new SysLog(user, SysLogService.LOGIN));
 		return securityUser;

@@ -2,7 +2,7 @@ package com.cmap.dao.vo;
 
 import java.util.List;
 
-public class ConfigVersionInfoDAOVO {
+public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 
 	private String queryGroup1;
 	private String queryGroup2;
@@ -19,10 +19,6 @@ public class ConfigVersionInfoDAOVO {
 	
 	private List<String> queryDevice1List;
 	private List<String> queryDevice2List;
-	
-	private String searchValue;
-	private String orderColumn;
-	private String orderDirection;
 	
 	public String getQueryGroup1() {
 		return queryGroup1;
@@ -101,23 +97,5 @@ public class ConfigVersionInfoDAOVO {
 	}
 	public void setQueryDevice2List(List<String> queryDevice2List) {
 		this.queryDevice2List = queryDevice2List;
-	}
-	public String getSearchValue() {
-		return searchValue;
-	}
-	public void setSearchValue(String searchValue) {
-		this.searchValue = searchValue;
-	}
-	public String getOrderColumn() {
-		return orderColumn;
-	}
-	public void setOrderColumn(String orderColumn) {
-		this.orderColumn = orderColumn;
-	}
-	public String getOrderDirection() {
-		return orderDirection;
-	}
-	public void setOrderDirection(String orderDirection) {
-		this.orderDirection = orderDirection;
 	}
 }

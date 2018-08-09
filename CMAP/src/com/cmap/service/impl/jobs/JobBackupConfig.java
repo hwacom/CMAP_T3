@@ -11,6 +11,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.cmap.Constants;
+import com.cmap.dao.DeviceListDAO;
+import com.cmap.model.DeviceList;
 import com.cmap.service.BaseJobService;
 import com.cmap.service.VersionService;
 import com.cmap.utils.impl.ApplicationContextUtil;
@@ -23,19 +25,41 @@ public class JobBackupConfig implements BaseJobService {
 	
 	private VersionService versionService;
 	
+	private DeviceListDAO deviceListDAO;
+	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		List<String> deviceListIds = new ArrayList<String>();
+		List<String> groupIds = new ArrayList<String>();
+		List<String> deviceIds = new ArrayList<String>();
+		
 		try {
 			JobDataMap jMap = context.getJobDetail().getJobDataMap();
-			String deviceListId = jMap.getString(Constants.QUARTZ_PARA_JSON_STR);
-			System.out.println("deviceListId: "+deviceListId);
+			
+			String groupId = jMap.getString(Constants.QUARTZ_PARA_GROUP_ID);
+			System.out.println("groupId: "+groupId);
+			
+			String deviceId = jMap.getString(Constants.QUARTZ_PARA_DEVICE_ID);
+			System.out.println("deviceId: "+deviceId);
 			
 			String configType = jMap.getString(Constants.QUARTZ_PARA_CONFIG_TYPE);
 			System.out.println("configType: "+configType);
 			
 			ObjectMapper mapper = new ObjectMapper();
-			deviceListIds = mapper.readValue(deviceListId, new TypeReference<List<String>>(){});
+			groupIds = mapper.readValue(groupId, new TypeReference<List<String>>(){});
+			deviceIds = mapper.readValue(deviceId, new TypeReference<List<String>>(){});
+			
+			List<DeviceList> dList = null;
+			if ((groupIds != null && !groupIds.isEmpty()) || (deviceIds != null && !deviceIds.isEmpty())) {
+				deviceListDAO = (DeviceListDAO)ApplicationContextUtil.getBean("deviceListDAO");
+				dList = deviceListDAO.findDistinctDeviceListByGroupIdsOrDeviceIds(groupIds, deviceIds);
+				
+				if (dList != null && !dList.isEmpty()) {
+					for (DeviceList d : dList) {
+						deviceListIds.add(d.getDeviceListId());
+					}
+				}
+			}
 			
 			if (deviceListIds != null && !deviceListIds.isEmpty()) {
 				versionService = (VersionService)ApplicationContextUtil.getBean("versionService");

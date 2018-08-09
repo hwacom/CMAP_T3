@@ -2,17 +2,22 @@ package com.cmap.dao;
 
 import java.util.List;
 
+import com.cmap.dao.vo.SysConfigSettingDAOVO;
 import com.cmap.model.SysConfigSetting;
 
 public interface SysConfigSettingDAO {
 
+	public SysConfigSetting findSysConfigSettingById(String settingId);
+	
 	public List<SysConfigSetting> findSysConfigSettingByName(List<String> settingNames);
 	
-	public List<SysConfigSetting> findAllSysConfigSetting();
+	public List<SysConfigSetting> findAllSysConfigSetting(Integer startRow, Integer pageLength);
 	
-	public void addSysConfigSetting(List<SysConfigSetting> models);
+	public List<SysConfigSetting> findSysConfigSettingByVO(SysConfigSettingDAOVO daovo, Integer startRow, Integer pageLength);
 	
-	public int updateSysConfigSetting(List<SysConfigSetting> models);
+	public long countSysConfigSettingByVO(SysConfigSettingDAOVO daovo);
 	
-	public int deleteSysConfigSetting(List<SysConfigSetting> models);
+	public void saveSysConfigSetting(SysConfigSetting model);
+	
+	public Integer deleteSysConfigSetting(List<String> versionIDs, String actionBy);
 }

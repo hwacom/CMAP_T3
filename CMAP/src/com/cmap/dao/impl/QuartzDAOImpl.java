@@ -2,6 +2,7 @@ package com.cmap.dao.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.dao.support.DataAccessUtils;
@@ -44,8 +45,22 @@ public class QuartzDAOImpl extends BaseDaoHibernate implements QuartzDAO {
 		  .append(" and qt.jobName = qjd.jobName ")
 		  .append(" and qt.jobGroup = qjd.jobGroup ");
 		
+		if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyName())) {
+			sb.append(" and qt.jobName = :jobName ");
+		}
+		if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyGroup())) {
+			sb.append(" and qt.jobGroup = :jobGroup ");
+		}
+		
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createQuery(sb.toString());
+	    
+	    if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyName())) {
+			q.setParameter("jobName", daoVO.getJobKeyName());
+		}
+		if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyGroup())) {
+			q.setParameter("jobGroup", daoVO.getJobKeyGroup());
+		}
 	    
 		return (List<Object[]>)q.list();
 	}

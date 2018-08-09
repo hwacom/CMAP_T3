@@ -38,8 +38,9 @@
 			  	<div class="row">
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-form">
 				  		<form class="form-signin" name="f" method='POST'>
-						  <c:if test="${param.error != null}">
-						      <font color="red">
+				  			${SPRING_SECURITY_LAST_EXCEPTION.message}
+						  <c:if test="${SPRING_SECURITY_LAST_EXCEPTION.message != null}">
+						      <font color="yellow">
 						        	帳號或密碼錯誤!!
 						        <br/>
 						      </font>

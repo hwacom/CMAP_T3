@@ -155,7 +155,9 @@
 	    //備份按鈕點擊事件
 	    $('#btnBackup').click(function (e) {
 	    	if (chkChecked()) {
-	    		$("#backupDialogModal").modal();
+	    		$("#backupDialogModal").modal({
+					backdrop : 'static'
+				});
 	    		
 	    	} else {
 	    		alert('請勾選要備份的設備');
@@ -203,11 +205,8 @@
 					}, 500);
 				}
 			},
-
 			error : function(xhr, ajaxOptions, thrownError) {
-				alert('error');
-				alert(xhr.status + "\n" + thrownError);
-				$("#backupDialogModal").modal('hide');
+				ajaxErrorHandler();
 			}
 		});
 	}
@@ -275,6 +274,9 @@
 						}
 						
 						return d;
+					},
+					"error" : function(xhr, ajaxOptions, thrownError) {
+						ajaxErrorHandler();
 					}
 				},
 				/*"order": [[2 , 'asc' ]],*/

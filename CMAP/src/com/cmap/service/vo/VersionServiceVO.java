@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cmap.Constants;
 
-public class VersionServiceVO {
+public class VersionServiceVO extends CommonServiceVO {
 
 	private String queryGroup;
 	private String queryGroup1;
@@ -32,13 +32,6 @@ public class VersionServiceVO {
 	
 	private List<String> allGroupList;
 	private List<String> allDeviceList;
-	
-	private Integer startNum;
-	private Integer pageLength;
-	private String searchColumn;
-	private String searchValue;
-	private String orderColumn;
-	private String orderDirection;
 	
 	private String versionId;
 	private String groupId;
@@ -187,42 +180,6 @@ public class VersionServiceVO {
 	}
 	public void setAllDeviceList(List<String> allDeviceList) {
 		this.allDeviceList = allDeviceList;
-	}
-	public Integer getStartNum() {
-		return startNum;
-	}
-	public void setStartNum(Integer startNum) {
-		this.startNum = startNum;
-	}
-	public Integer getPageLength() {
-		return pageLength;
-	}
-	public void setPageLength(Integer pageLength) {
-		this.pageLength = pageLength;
-	}
-	public String getSearchColumn() {
-		return searchColumn;
-	}
-	public void setSearchColumn(String searchColumn) {
-		this.searchColumn = searchColumn;
-	}
-	public String getSearchValue() {
-		return searchValue;
-	}
-	public void setSearchValue(String searchValue) {
-		this.searchValue = searchValue;
-	}
-	public String getOrderColumn() {
-		return orderColumn;
-	}
-	public void setOrderColumn(String orderColumn) {
-		this.orderColumn = orderColumn;
-	}
-	public String getOrderDirection() {
-		return orderDirection;
-	}
-	public void setOrderDirection(String orderDirection) {
-		this.orderDirection = orderDirection;
 	}
 	public String getVersionId() {
 		return versionId;

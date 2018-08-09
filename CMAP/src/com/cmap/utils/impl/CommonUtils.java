@@ -80,4 +80,12 @@ public class CommonUtils {
 		);
 		return entity;
 	}
+	
+	public static String converMsg(String msg, Object... args) {
+		for (int i=0; i<args.length; i++) {
+			String symbol = "{".concat(String.valueOf(i)).concat("}");
+			msg = msg.replace(symbol, args[i].toString());
+		}
+		return msg;
+	}
 }

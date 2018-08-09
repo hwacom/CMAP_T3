@@ -106,10 +106,10 @@ public class BaseController {
 		}
 	}
 	
-	protected Map<String, String> getConfigTypeMenu() {
-		Map<String, String> configTypeMap = null;
+	protected Map<String, String> getMenuItem(String menuCode, boolean combineOrderDotLabel) {
+		Map<String, String> itemMap = null;
 		try {
-			configTypeMap = commonService.getConfigTypeMenu();
+			itemMap = commonService.getMenuItem(menuCode, combineOrderDotLabel);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -118,7 +118,7 @@ public class BaseController {
 			e.printStackTrace();
 		}
 		
-		return configTypeMap;
+		return itemMap;
 	}
 	
 	protected Map<String, String> getGroupList(HttpServletRequest request) {

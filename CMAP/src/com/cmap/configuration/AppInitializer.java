@@ -6,6 +6,7 @@ import javax.servlet.ServletRegistration;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -20,6 +21,7 @@ public class AppInitializer implements WebApplicationInitializer {
         ctx.register(HibernateConfiguration.class);
         ctx.register(WebSecurityConfig.class);
         container.addListener(new ContextLoaderListener(ctx));
+        container.addListener(new RequestContextListener());
         ctx.setServletContext(container);
         
         ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));

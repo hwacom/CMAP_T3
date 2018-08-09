@@ -16,4 +16,10 @@ public interface DeviceListDAO {
 	public List<Object[]> findDeviceListAndLastestVersionByDAOVO(DeviceListDAOVO dlDAOVO, Integer startRow, Integer pageLength);
 	
 	public void saveOrUpdateDeviceListByModel(List<DeviceList> entityList);
+	
+	public List<DeviceList> findDistinctDeviceListByGroupIdsOrDeviceIds(List<String> groupIds, List<String> deviceIds);
+	
+	public List<Object[]> getGroupIdAndNameByGroupIds(List<String> groupIds);
+	
+	public List<Object[]> getDeviceIdAndNameByDeviceIds(List<String> deviceIds);
 }

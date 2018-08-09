@@ -5,15 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.configuration.TrustAllSSLSocketFactory;
+import com.cmap.exception.AuthenticateException;
 import com.cmap.model.User;
 import com.cmap.prtg.PrtgDocument;
 import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2;
@@ -24,18 +29,24 @@ import com.cmap.utils.ApiUtils;
 
 public class PrtgApiUtils implements ApiUtils {
 	private static Log log = LogFactory.getLog(PrtgApiUtils.class);
-	private static final String PRTG_ROOT = "https://192.168.26.153/";
-	private String API_LOGIN = "api/getpasshash.htm?username={username}&password={password}";
-	private String API_SENSOR_TREE = "api/table.xml?content=sensortree&output=xml&username={username}&passhash={passhash}";
+	private String PRTG_ROOT = null;
+	private String API_LOGIN = null;
+	private String API_SENSOR_TREE = null;
 	
-	public Map[] getGroupAndDeviceMenu() throws Exception {
+	public PrtgApiUtils() {
+		PRTG_ROOT = Env.PRTG_SERVER_IP;
+		API_LOGIN = Env.PRTG_API_LOGIN;
+		API_SENSOR_TREE = Env.PRTG_API_SENSOR_TREE;
+	}
+	
+	public Map[] getGroupAndDeviceMenu(HttpServletRequest request) throws Exception {
 		Map[] retObj = null;
 		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<String, Map<String, Map<String, String>>>();
 		Map<String, Map<String, String>> deviceMap = null;
 		Map<String, String> deviceInfoMap = null;
 		Map<String, String> groupInfoMap = null;
 		try {
-			checkPasshash();
+			checkPasshash(request);
 			
 			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{username}", SecurityUtil.getSecurityUser().getUser().getUserName());
 			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{passhash}", SecurityUtil.getSecurityUser().getUser().getPasshash());
@@ -109,7 +120,7 @@ public class PrtgApiUtils implements ApiUtils {
 		return deviceInfoMap;
 	}
 	
-	private void login(String username, String password) throws Exception {
+	public boolean login(HttpServletRequest request, String username, String password) throws Exception {
 		try {
 			if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
 				throw new Exception("[Login failed] >> username or password is blank.");
@@ -123,22 +134,26 @@ public class PrtgApiUtils implements ApiUtils {
 				String retVal = callPrtg(apiUrl);
 				if (StringUtils.isNotBlank(retVal)) {
 					//PRTG驗證成功後將密碼hash_code存入Spring security USER物件內，供後續作業使用
-					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
+//					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
+					request.getSession().setAttribute(Constants.PASSHASH, retVal);
+					return true;
 				}
 			}
 			
 		} catch (Exception e) {
 			throw e;
 		}
+		
+		return false;
 	}
 	
-	private void checkPasshash() throws Exception {
+	private void checkPasshash(HttpServletRequest request) throws Exception {
 		User user = SecurityUtil.getSecurityUser().getUser();
 		String username = user.getUserName();
 		String password = user.getPassword();
 		
 		if (StringUtils.isBlank(user.getPasshash())) {
-			login(username, password);
+			login(request, username, password);
 		}
 	}
 	
@@ -191,6 +206,7 @@ public class PrtgApiUtils implements ApiUtils {
 		String resultStr = Integer.toString(statusCode);
 
 		try {
+			Protocol.registerProtocol("https", new Protocol("https", new TrustAllSSLSocketFactory(), 443));
             client = new HttpClient();
             client.getHttpConnectionManager().getParams().setConnectionTimeout(Env.HTTP_CONNECTION_TIME_OUT);
             
@@ -201,7 +217,7 @@ public class PrtgApiUtils implements ApiUtils {
 			statusCode = client.executeMethod(get);
 			if (statusCode != HttpStatus.SC_OK) {
 				if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-					throw new Exception("PRTG authentication failed !!");
+					throw new AuthenticateException("PRTG authentication failed !!");
 				}
 
 			} else {

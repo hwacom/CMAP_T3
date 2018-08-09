@@ -2,7 +2,9 @@ package com.cmap.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +50,9 @@ public class AdminJobController extends BaseController {
 			}
 			
 		} finally {
+			model.addAttribute("inputSchedType", getMenuItem(Env.MENU_CODE_OF_SCHED_TYPE, true));
+			model.addAttribute("inputConfigType", getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true));
+			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MIS_FIRE_POLICY, true));
 		}
 		
 		return "admin/admin_job";
@@ -63,8 +68,9 @@ public class AdminJobController extends BaseController {
 			@RequestParam(name="inputDescription", required=false, defaultValue="") String inputDescription,
 			@RequestParam(name="inputCronExpression", required=true) String inputCronExpression,
 			@RequestParam(name="inputPriority", required=false, defaultValue="") Integer inputPriority,
-			@RequestParam(name="inputClassName", required=true) String inputClassName,
-			@RequestParam(name="inputDeviceListIds", required=false) List<String> inputDeviceListIds,
+			@RequestParam(name="inputDeviceListIds[]", required=false) List<String> inputDeviceListIds,
+			@RequestParam(name="inputGroupIds[]", required=false) List<String> inputGroupIds,
+			@RequestParam(name="inputDeviceIds[]", required=false) List<String> inputDeviceIds,
 			@RequestParam(name="inputConfigType", required=false) String inputConfigType,
 			@RequestParam(name="inputDataKeepDays", required=false) String inputDataKeepDays,
 			@RequestParam(name="inputMisFirePolicy", required=false) Integer inputMisFirePolicy,
@@ -81,11 +87,14 @@ public class AdminJobController extends BaseController {
 			jsVO.setInputDescription(inputDescription);
 			jsVO.setInputCronExpression(inputCronExpression);
 			jsVO.setInputPriority(inputPriority);
-			jsVO.setInputClassName(inputClassName);
 			jsVO.setInputDeviceListIds(inputDeviceListIds);
+			jsVO.setInputGroupIds(inputGroupIds);
+			jsVO.setInputDeviceIds(inputDeviceIds);
 			jsVO.setInputConfigType(inputConfigType);
 			jsVO.setInputDataKeepDays(inputDataKeepDays);
 			jsVO.setInputMisFirePolicy(inputMisFirePolicy);
+			jsVO.setJobKeyName(jobKeyName);
+			jsVO.setJobKeyGroup(jobKeyGroup);
 			
 			if (StringUtils.isNotBlank(jobKeyName) && StringUtils.isNotBlank(jobKeyGroup)) {
 				jobService.modifyJob(jsVO);
@@ -122,14 +131,51 @@ public class AdminJobController extends BaseController {
 		return jsVOList;
 	}
 	
-	@RequestMapping(value="pause", method = RequestMethod.POST, produces="application/json;odata=verbose")
+	@RequestMapping(value="modify", method = RequestMethod.POST, produces="application/json")
+	public @ResponseBody AppResponse modifyJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonNode jsonData) {
+		
+		try {
+			Map<String, Object> retMap = new HashMap<String, Object>();
+			JobServiceVO retVO;
+			
+			List<JobServiceVO> inputVOs = retrieveKeyVal(jsonData);
+			if (inputVOs.size() != 1) {
+				return new AppResponse(HttpServletResponse.SC_FORBIDDEN, "修改僅允許勾選一項，請重新選擇");
+			}
+			
+			JobServiceVO jsVO = inputVOs.get(0);
+			retVO = jobService.findJobInfoByVO(jsVO).get(0);
+			
+			retMap.put("inputSchedType", retVO.getSchedType());
+			retMap.put("inputJobName", retVO.getJobName());
+			retMap.put("inputJobGroup", retVO.getJobGroup());
+			retMap.put("inputDescription", retVO.getDescription());
+			retMap.put("inputCronExpression", retVO.getCronExpression());
+			retMap.put("inputPriority", retVO.getPriority());
+			retMap.put("inputConfigType", retVO.getConfigType());
+			retMap.put("inputMisFirePolicy", retVO.getMisfireInstr());
+			retMap.put("inputGroupIds", retVO.getGroupIdsStr());
+			retMap.put("inputDeviceIds", retVO.getDeviceIdsStr());
+			
+			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
+			
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e.toString(), e);
+			}
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+		}
+    }
+	
+	@RequestMapping(value="pause", method = RequestMethod.POST, produces="application/json")
 	public @ResponseBody AppResponse pauseJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
 		
 		try {
-			jobService.pauseJob(retrieveKeyVal(jsonData));
+			String msg = jobService.pauseJob(retrieveKeyVal(jsonData));
 			
-			return new AppResponse(HttpServletResponse.SC_OK, "選定的排程已暫停");
+			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -144,9 +190,9 @@ public class AdminJobController extends BaseController {
 			@RequestBody JsonNode jsonData) {
 		
 		try {
-			jobService.resumeJob(retrieveKeyVal(jsonData));
+			String msg = jobService.resumeJob(retrieveKeyVal(jsonData));
 			
-			return new AppResponse(HttpServletResponse.SC_OK, "選定的排程已恢復運作");
+			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -161,9 +207,9 @@ public class AdminJobController extends BaseController {
 			@RequestBody JsonNode jsonData) {
 		
 		try {
-			jobService.deleteJob(retrieveKeyVal(jsonData));
+			String msg = jobService.deleteJob(retrieveKeyVal(jsonData));
 			
-			return new AppResponse(HttpServletResponse.SC_OK, "選定的排程已暫停");
+			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -179,8 +225,8 @@ public class AdminJobController extends BaseController {
 			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
 			@RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
 			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
-			@RequestParam(name="order[0][column]", required=false, defaultValue="6") Integer orderColIdx,
-			@RequestParam(name="order[0][dir]", required=false, defaultValue="desc") String orderDirection) {
+			@RequestParam(name="order[0][column]", required=false, defaultValue="") Integer orderColIdx,
+			@RequestParam(name="order[0][dir]", required=false, defaultValue="") String orderDirection) {
 		
 		long total = 0;
 		long filterdTotal = 0;
@@ -207,5 +253,34 @@ public class AdminJobController extends BaseController {
 		}
 		
 		return new DatatableResponse(total, dataList, filterdTotal);
+	}
+	
+	@RequestMapping(value = "getJobDetails.json", method = RequestMethod.POST)
+	public @ResponseBody AppResponse findJobDetails(
+			Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="jobKeyName", required=false, defaultValue="") String jobKeyName,
+			@RequestParam(name="jobKeyGroup", required=false, defaultValue="") String jobKeyGroup) {
+		
+		try {
+			JobServiceVO jsVO = new JobServiceVO();
+			jsVO.setJobKeyName(jobKeyName);
+			jsVO.setJobKeyGroup(jobKeyGroup);
+			
+			jsVO = jobService.findJobDetails(jsVO);
+			
+			Map<String, Object> retMap = new HashMap<String, Object>();
+			if (jsVO != null) {
+				retMap.put("configType", jsVO.getConfigType());
+				retMap.put("groupId", jsVO.getGroupIdsStr());
+				retMap.put("deviceId", jsVO.getDeviceIdsStr());
+			}
+			
+			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return null;
 	}
 }

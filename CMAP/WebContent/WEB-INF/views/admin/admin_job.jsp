@@ -27,6 +27,9 @@
 		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd">新增</button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify">修改</button>
+		  	    </div>
+		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
 		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnPause">暫停</button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
@@ -61,6 +64,7 @@
 		  </div>
 	  </div>
 	</div>
+	<!-- [END]查詢欄位 for 中小型解析度螢幕 -->
 	
 	<!-- 查詢結果TABLE區塊 -->
 	<div class="row">
@@ -70,16 +74,20 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
 		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">排程名稱</th>
+		      <!-- <th scope="col" nowrap="nowrap">排程名稱</th> -->
 		      <th scope="col" nowrap="nowrap">Job群組</th>
 		      <th scope="col" nowrap="nowrap">Job名稱</th>
-		      <th scope="col" nowrap="nowrap">Trigger群組</th>
-		      <th scope="col" nowrap="nowrap">Tirgger名稱</th>
+		      <!-- <th scope="col" nowrap="nowrap">Trigger群組</th>
+		      <th scope="col" nowrap="nowrap">Tirgger名稱</th> -->
 		      <th scope="col" nowrap="nowrap">優先度</th>
 		      <th scope="col" nowrap="nowrap">狀態</th>
 		      <th scope="col" nowrap="nowrap">前次觸發時間</th>
 		      <th scope="col" nowrap="nowrap">下次觸發時間</th>
-		      <th scope="col" nowrap="nowrap">Loss次數</th>
+		      <th scope="col" nowrap="nowrap">
+		      	<span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="<p style='text-align: left'>1: 錯過啟動時間，立即啟動<br/>2: 錯過啟動時間，不做處理<br/>-1: 忽略</p>">
+		      		Miss策略
+		      	</span>
+		      </th>
 		      <th scope="col" nowrap="nowrap">排程時間</th>
 		      <th scope="col" nowrap="nowrap">時區</th>
 		      <th scope="col" nowrap="nowrap">Job對象</th>
@@ -110,14 +118,78 @@
       </div>
       <div class="modal-body">
         <form role="form" id="formEdit" name="formEdit">
-            <div class="box-body">
-            	<div class="form-group">
-                  <label for="jobName" class="control-label">排程名稱<span class="pull-right" style="color: red;">＊ </span></label>
-                  <input type="text" class="form-control" id="jobName" name="jobName" placeholder="排程名稱">
+        	<div class="card card-body">
+        	  <div class="col-12">
+            	<div class="form-group row">
+                	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label">排程類別<span class="pull-right" style="color: red;">＊ </span></label>
+                  	<div class="col-md-10 col-sm-9">
+                  		<form:select path="inputSchedType" id="inputSchedType" class="form-control form-control-sm">
+		                  	<form:option value="" label="=== 請選擇  ===" />
+		                  	<form:options items="${inputSchedType}" />
+		                </form:select>
+                  	</div>
                 </div>                              
-            </div>
-            
-            <div class="modal-footer">
+	           	<div class="form-group row">
+	            	<label for="inputJobName" class="col-md-2 col-sm-3 col-form-label">排程名稱<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="inputJobName" name="inputJobName" placeholder="排程名稱">
+	            	</div>
+	            </div>                              
+	           	<div class="form-group row">
+	            	<label for="inputJobGroup" class="col-md-2 col-sm-3 col-form-label">群組名稱<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<input type="text" class="form-control form-control-sm" id="inputJobGroup" name="inputJobGroup" placeholder="群組名稱">
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	            	<label for="inputDescription" class="col-md-2 col-sm-3 col-form-label">備註說明</label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<input type="text" class="form-control form-control-sm" id="inputDescription" name="inputDescription" placeholder="備註說明">
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	            	<label for="inputCronExpression" class="col-md-2 col-sm-3 col-form-label">週期表示式<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<input type="text" class="form-control form-control-sm" id="inputCronExpression" name="inputCronExpression" placeholder="example: 0 0/30 * * * ?">
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	            	<label for="inputPriority" class="col-md-2 col-sm-3 col-form-label">優先度<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<input type="text" class="form-control form-control-sm" id="inputPriority" name="inputPriority" placeholder="優先度" value="5">
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	            	<label for="inputConfigType" class="col-md-2 col-sm-3 col-form-label">備份範圍<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<form:select path="inputConfigType" id="inputConfigType" class="form-control form-control-sm">
+		                  	<form:option value="" label="=== ALL ===" />
+		                  	<form:options items="${inputConfigType}" />
+		                </form:select>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" class="form-control form-control-sm">
+		                  	<form:option value="" label="=== 請選擇  ===" />
+		                  	<form:options items="${inputMisFirePolicy}" />
+		                </form:select>
+	                </div>
+	            </div>
+	            <div id="sec_backupConfig" class="form-group row" style="display: none">
+	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-4 col-sm-3">
+	            		<textarea rows="5" class="form-control form-control-sm" id="inputGroupIds" name="inputGroupIds" placeholder="(1行1筆資料)"></textarea>
+	                </div>
+	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-4 col-sm-3">
+	            		<textarea rows="5" class="form-control form-control-sm" id="inputDeviceIds" name="inputDeviceIds" placeholder="(1行1筆資料)"></textarea>
+	                </div>
+	            </div>
+              </div>
+			</div>
+			<div class="modal-footer">
         		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
         		<button type="button" class="btn btn-success" id="btnSave">保存</button>
 			</div>
@@ -128,36 +200,107 @@
 </div>
 <!-- Modal [Add/Modify] end -->
 
+<!-- Modal [JobDetails] start -->
+<div class="modal fade" id="jobDetailsModal" tabindex="-1" role="dialog" aria-labelledby="jobDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+      
+        <h5 class="modal-title" id="jobDetailsModalLabel"><span id="msgModal_title">查看Job參數明細</span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        
+      </div>
+      <div class="modal-body">
+        <form role="form" id="formEdit" name="formEdit">
+        	<div class="card card-body">
+        	  <div class="col-12">
+	           	<div class="form-group row">
+	            	<label for="inputJobName" class="col-md-2 col-sm-3 col-form-label">Config_Type</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailConfigType" readonly>
+	            	</div>
+	            </div>                              
+	            <div class="form-group row">
+	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailGroupIds" readonly></textarea>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailDeviceIds" readonly></textarea>
+	                </div>
+	            </div>
+              </div>
+			</div>
+			<div class="modal-footer">
+        		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+			</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal [JobDetails] end -->
+
 <script>
+	var isModify = false;
+	
 	$(document).ready(function() {
 		
 		$("#btnAdd").click(function() {
-			$("#addModifyModal").modal();
+			isModify = false;
+			uncheckAll();
+			initModal();
+			$("#addModifyModal").modal({
+				backdrop : 'static'
+			});
 		});
 		
 		$("#btnPause").click(function() {
-			jobAction('pause')
+			jobAction('pause');
 		});
 		
 		$("#btnResume").click(function() {
-			jobAction('resume')
+			jobAction('resume');
 		});
 
 		$("#btnDelete").click(function() {
-			jobAction('delete')
+			jobAction('delete');
 		});
 		
 		$("#btnModify").click(function() {
-			saveJob()
+			isModify = true;
+			jobAction('modify');
 		});
 		
 		$("#btnSave").click(function() {
-			saveJob()
+			saveJob(isModify);
+		});
+		
+		$("#inputSchedType").change(function() {
+			const schedType = $(this).val();
+			
+			if (schedType == '') {
+				$("div[id^=sec_]").hide();
+				
+			} else {
+				$("#sec_"+schedType).show();
+			}
 		});
 	});
 	
 	function jobAction(action) {
 		var checkedItem = $('input[name=chkbox]:checked');
+		
+		if (isModify && checkedItem.length != 1) {
+			alert('修改僅允許勾選一項，請重新選擇');
+			uncheckAll();
+			return;
+		}
 
 		var checkedObjArray = new Array();
 		var obj = new Object();
@@ -171,50 +314,89 @@
 		$.ajax({
 			url : '${pageContext.request.contextPath}/admin/job/'+action,
 			data : JSON.stringify(checkedObjArray),
+			headers: {
+			    'Accept': 'application/json',
+			    'Content-Type': 'application/json'
+			},
 			type : "POST",
 			dataType : 'json',
 			async: false,
 			success : function(resp) {
 				if (resp.code == '200') {
-					alert(resp.message);
-					findData('WEB');
+					if (action == 'modify') {
+						$("#inputJobName").val(resp.data.inputJobName);
+						$("#inputJobGroup").val(resp.data.inputJobGroup);
+						$("#inputCronExpression").val(resp.data.inputCronExpression);
+						$("#inputGroupIds").val(resp.data.inputGroupIds);
+						$("#inputDeviceIds").val(resp.data.inputDeviceIds);
+						$("#inputPriority").val(resp.data.inputPriority);
+						$("#inputDescription").val(resp.data.inputDescription);
+						
+						$("#inputMisFirePolicy option").filter(function() {
+						    return $(this).val() == resp.data.inputMisFirePolicy; 
+						}).prop('selected', true);
+						
+						$("#inputSchedType option").filter(function() {
+						    return $(this).val() == resp.data.inputSchedType; 
+						}).prop('selected', true);
+						
+						$("#inputConfigType option").filter(function() {
+						    return $(this).val() == resp.data.inputConfigType; 
+						}).prop('selected', true);
+						
+						$("#inputSchedType").attr('disabled', 'disabled');
+						$("#inputJobName").attr('disabled', 'disabled');
+						$("#inputJobGroup").attr('disabled', 'disabled');
+						
+						$("#sec_"+resp.data.inputSchedType).show();
+						
+						$("#addModifyModal").modal({
+							backdrop : 'static'
+						});
+						
+					} else {
+						alert(resp.message);
+						findData('WEB');
+					}
 					
 				} else {
 					alert(resp.message);
 				}
+				
+				if (resp.code == '403') {
+					uncheckAll();
+				}
 			},
-
 			error : function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status+" :: "+thrownError);
+				ajaxErrorHandler();
 			}
 		});
 	}
 	
-	function saveJob() {
-		var deviceListIdArray = new Array();
-		deviceListIdArray.push("40283a8164f431e90164f432bb8d0003");
-		deviceListIdArray.push("40283a8164f431e90164f432bb8f0005");
-		deviceListIdArray.push("40283a8164f431e90164f432bb8f0004");
-		
+	function saveJob(isModify) {
 		$.ajax({
 			url : '${pageContext.request.contextPath}/admin/job/save',
 			//data : $('#formEdit').serialize(),
-			data : function(d) {
-				d.inputSchedType = 'backupConfig',
-				d.inputJobName = 'backupJob_1',
-				d.inputJobGroup = 'backupGroup',
-				d.inputCronExpression = '0 0/30 * * * ?',
-				d.inputClassName = 'JobBackupConfig',
-				d.inputDeviceListIds = deviceListIdArray,
-				d.inputConfigType = ''
-				return d;
+			data : {
+				jobKeyName : isModify ? $("#inputJobName").val() : null,
+				jobKeyGroup : isModify ? $("#inputJobGroup").val() : null,
+				inputSchedType : $("#inputSchedType").val(),
+				inputJobName : $("#inputJobName").val(),
+				inputJobGroup : $("#inputJobGroup").val(),
+				inputCronExpression : $("#inputCronExpression").val(),
+				inputGroupIds : $("#inputGroupIds").val().split('\n'),
+				inputDeviceIds : $("#inputDeviceIds").val().split('\n'),
+				inputConfigType : $("#inputConfigType").val(),
+				inputMisFirePolicy : $("#inputMisFirePolicy").val(),
+				inputPriority : $("#inputPriority").val(),
+				inputDescription : $("#inputDescription").val(),
 			},
 			type : 'POST',
 			dataType : 'json',
 			async: false,
 			success : function(resp) {
 				if (resp.code == '200') {
-					alert('排程新增成功');
+					alert(resp.message);
 					findData('WEB');
 					
 					setTimeout(function(){
@@ -226,9 +408,38 @@
 					alert(resp.message);
 				}
 			},
-
 			error : function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status+" :: "+thrownError);
+				ajaxErrorHandler();
+			}
+		});
+	}
+	
+	function viewDetail(key) {
+		$.ajax({
+			url : '${pageContext.request.contextPath}/admin/job/getJobDetails.json',
+			data : {
+				jobKeyName : key.split("@~")[0],
+				jobKeyGroup : key.split("@~")[1],
+			},
+			type : "POST",
+			dataType : 'json',
+			async: false,
+			success : function(resp) {
+				if (resp.code == '200') {
+					$("#jobDetailsModal").modal({
+						backdrop : 'static'
+					});
+					
+					$("#viewDetailConfigType").val(resp.data.configType);
+					$("#viewDetailGroupIds").val(resp.data.groupId);
+					$("#viewDetailDeviceIds").val(resp.data.deviceId);
+					
+				} else {
+					alert(resp.message);
+				}
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				ajaxErrorHandler();
 			}
 		});
 	}
@@ -269,7 +480,10 @@
 				"ajax" : {
 					"url" : "${pageContext.request.contextPath}/admin/job/getJobInfo.json",
 					"type" : "POST",
-					"data" : function ( d ) {}
+					"data" : function ( d ) {},
+					"error" : function(xhr, ajaxOptions, thrownError) {
+						ajaxErrorHandler();
+					}
 				},
 				"order": [[3 , "asc" ]],
 				/*
@@ -290,16 +504,13 @@
 				},
 				"columns" : [
 					{},{},
-					{ "data" : "schedName" },
 					{ "data" : "jobGroup" },
 					{ "data" : "jobName" },
-					{ "data" : "triggerGroup" },
-					{ "data" : "triggerName" },
 					{ "data" : "priority" },
 					{ "data" : "triggerState" },
 					{ "data" : "_preFireTime" },
 					{ "data" : "_nextFireTime" },
-					{ "data" : "misFireInstr" },
+					{ "data" : "misfireInstr" },
 					{ "data" : "cronExpression" },
 					{ "data" : "timeZoneId" },
 					{ "data" : "jobClassName" },
@@ -327,12 +538,12 @@
 							   	}
 					},
 					{
-						"targets" : [15],
+						"targets" : [12],
 						"className" : "left",
 						"searchable": true,
 						"orderable": true,
 						"render" : function(data, type, row) {
-									 var html = '<a href="#" onclick="viewDetail()">查看明細</a>';
+									 var html = '<a href="#" onclick="viewDetail(\''+row.jobName+'@~'+row.jobGroup+'\')">查看明細</a>';
 									 return html;
 								 }
 					}

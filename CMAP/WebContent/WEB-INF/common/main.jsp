@@ -106,29 +106,31 @@
                   	<span>供裝紀錄</span>
                 </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
-                  <span data-feather="settings"></span>
-                  	<span>後臺管理&nbsp;<span id="toggleMenu_admin_icon" data-feather="chevron-down"></span></span>
-                </a>
-                <ul aria-expanded="false" id="toggleMenu_admin_items" class="collapse">
-                    <li class="nav-item subMenu-item">
-                    	<a href="${pageContext.request.contextPath}/admin/env/main">
-                    		<span data-feather="command"></span> 系統參數維護
-                    	</a>
-                    </li>
-                    <li class="nav-item subMenu-item">
-                    	<a href="${pageContext.request.contextPath}/admin/script/main">
-                    		<span data-feather="hash"></span> 預設腳本維護
-                    	</a>
-                    </li>
-                    <li class="nav-item subMenu-item">
-                    	<a href="${pageContext.request.contextPath}/admin/job/main">
-                    		<span data-feather="check-square"></span> 排程設定維護
-                    	</a>
-                    </li>
-                </ul>
-              </li>
+              <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+              	  <li class="nav-item">
+	                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
+	                  <span data-feather="settings"></span>
+	                  	<span>後臺管理&nbsp;<span id="toggleMenu_admin_icon" data-feather="chevron-down"></span></span>
+	                </a>
+	                <ul aria-expanded="false" id="toggleMenu_admin_items" class="collapse">
+	                    <li class="nav-item subMenu-item">
+	                    	<a href="${pageContext.request.contextPath}/admin/env/main">
+	                    		<span data-feather="command"></span> 系統參數維護
+	                    	</a>
+	                    </li>
+	                    <li class="nav-item subMenu-item">
+	                    	<a href="${pageContext.request.contextPath}/admin/script/main">
+	                    		<span data-feather="hash"></span> 預設腳本維護
+	                    	</a>
+	                    </li>
+	                    <li class="nav-item subMenu-item">
+	                    	<a href="${pageContext.request.contextPath}/admin/job/main">
+	                    		<span data-feather="check-square"></span> 排程設定維護
+	                    	</a>
+	                    </li>
+	                </ul>
+	              </li>
+              </sec:authorize>
             </ul>
           </div>
         </nav>
@@ -267,6 +269,10 @@
     				if (typeof $("#checkAll") !== "undefined") {
     					$('input[name=checkAll]').prop('checked', false);
     				}
+    				
+    				if (typeof initActionBar === 'function') {
+    					initActionBar();
+    				}
     	    	}
     	    }, 1000));
     		
@@ -298,7 +304,27 @@
             		$('#viewModal_content').scrollTop(0);
             	}, 30);
             });
+    	    
+            $('[data-toggle="tooltip"]').tooltip({
+            	'placement': 'top',
+            	'html': true
+            });
 		});
+    	
+    	function uncheckAll() {
+    		$('input[name=checkAll]').prop('checked', false);
+    		$('input[name=chkbox]').prop('checked', false);
+			$('tbody > tr').removeClass('mySelected');
+			
+    	}
+    	
+    	function initModal() {
+    		$("input[name^=input]").val('');
+    		$("textarea[name^=input]").val('');
+    		$("select").prop("selectedIndex", 0);
+    		$(".modal").find(':disabled').attr('disabled', false);
+    		$("div[id^=sec_]").hide();
+    	}
     	
     	//隱藏 or 顯示功能選單
     	function toggleMenu() {
@@ -334,24 +360,6 @@
     			tr.classList.remove('mySelected');
     		}
     	}
-    	
-    	/*
-    	$( "#resutTable" ).selectable(
-		  {
-		     distance: 10,
-		     stop: function()
-		     {
-		       $( this ).find( "tr" ).each(
-		         function () {
-		        	 console.log('hasClass: '+$( this ).hasClass( 'mySelected' ) );
-		           if ( !$( this ).hasClass( 'mySelected' ) )
-		             $( this ).addClass( 'mySelected' );
-		           else
-		             $( this ).removeClass( 'mySelected' );
-		         });
-		     }
-		  });
-    	*/
     	
     	//計算DataTable可呈顯的區塊高度
     	function calHeight() {
@@ -397,11 +405,8 @@
     					});
     				}
     			},
-
     			error : function(xhr, ajaxOptions, thrownError) {
-    				alert("error");
-    				alert(xhr.status);
-    				alert(thrownError);
+    				ajaxErrorHandler();
     			}
     		});
     	}
@@ -434,12 +439,15 @@
     					alert(resp.message);
     				}
     			},
-
     			error : function(xhr, ajaxOptions, thrownError) {
-    				alert('error');
-    				alert(xhr.status + "\n" + thrownError);
+    				ajaxErrorHandler();
     			}
     		});
+    	}
+    	
+    	function ajaxErrorHandler() {
+    		alert('發生非預期錯誤，頁面將重新導向');
+    		location.reload();
     	}
 
     </script>

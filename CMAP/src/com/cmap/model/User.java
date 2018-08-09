@@ -8,18 +8,18 @@ public class User {
 	
 	private String passhash;
 	
-	private String role;
+	private String[] roles;
 
 	public User() {
 		super();
 	}
 
-	public User(String userName, String password, String passhash, String role) {
+	public User(String userName, String password, String passhash, String[] roles) {
 		super();
 		this.userName = userName;
 		this.password = password;
 		this.passhash = passhash;
-		this.role = role;
+		this.roles = roles;
 	}
 
 	public String getUserName() {
@@ -46,11 +46,11 @@ public class User {
 		this.passhash = passhash;
 	}
 
-	public String getRole() {
-		return role;
+	public String[] getRoles() {
+		return roles;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setRoles(String[] roles) {
+		this.roles = roles;
 	}
 }

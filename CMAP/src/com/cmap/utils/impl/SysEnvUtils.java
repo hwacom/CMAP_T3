@@ -1,6 +1,7 @@
 package com.cmap.utils.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,21 +31,34 @@ public class SysEnvUtils implements EnvUtils {
 	@Autowired
 	private SysConfigSettingDAO sysConfigSettingDAO;
 	
-	private Map<String, String> valueMap = null;
+	private Map<String, List<String>> valueMap = null;
 	
 	@PostConstruct
 	public void initEnv() throws Exception {
 		List<SysConfigSetting> modelList; 
 		try {
-			modelList = sysConfigSettingDAO.findAllSysConfigSetting();
+			modelList = sysConfigSettingDAO.findAllSysConfigSetting(null, null);
 			
 			valueMap = null;
-			valueMap = new HashMap<String, String>();
+			valueMap = new HashMap<String, List<String>>();
+			
+			List<String> tmpList = null;
 			for (SysConfigSetting scs : modelList) {
-				valueMap.put(scs.getSettingName(), scs.getSettingValue());
+				if (valueMap.containsKey(scs.getSettingName())) {
+					tmpList = valueMap.get(scs.getSettingName());
+					
+					if (tmpList == null) {
+						tmpList = new ArrayList<String>();
+					}
+				} else {
+					tmpList = new ArrayList<String>();
+				}
+				
+				tmpList.add(scs.getSettingValue());
+				valueMap.put(scs.getSettingName(), tmpList);
 			}
 			
-			mapping2Env();
+			mapping2Env(valueMap, true);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -55,27 +68,24 @@ public class SysEnvUtils implements EnvUtils {
 		}
 	}
 	
-	private Integer toInt(Integer intVar, String value) {
-		return value != null ? new Integer(value) : intVar;
-	}
-	
-	private void mapping2Env() {
+	private void mapping2Env(Map<String, List<String>> sourceMap, boolean initInstance) {
+		Map<String, Boolean> settingInitMap = new HashMap<String, Boolean>();
 		
 		Env env = new Env();
-		for (Entry<String, String> entry : valueMap.entrySet()) {
+		for (Entry<String, List<String>> entry : sourceMap.entrySet()) {
 			try {
-				Class type = Env.class.getDeclaredField(entry.getKey()).getType();
+				Class<?> dynamicClass = Env.class.getDeclaredField(entry.getKey()).getType();
 
-				if (type.isAssignableFrom(String.class)) {
-					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue());
+				if (dynamicClass.isAssignableFrom(String.class)) {
+					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0));
 					
-				} else if (type.isAssignableFrom(Integer.class)) {
-					Env.class.getDeclaredField(entry.getKey()).setInt(env, Integer.valueOf(entry.getValue()));
+				} else if (dynamicClass.isAssignableFrom(Integer.class)) {
+					Env.class.getDeclaredField(entry.getKey()).set(env, Integer.valueOf(entry.getValue().get(0)));
 					
-				} else if (type.isAssignableFrom(ConnectionMode.class)) {
+				} else if (dynamicClass.isAssignableFrom(ConnectionMode.class)) {
 					ConnectionMode cMode = null;
 					
-					switch (entry.getValue()) {
+					switch (entry.getValue().get(0)) {
 						case Constants.FTP:
 							cMode = ConnectionMode.FTP;
 							break;
@@ -86,30 +96,58 @@ public class SysEnvUtils implements EnvUtils {
 					}
 					
 					Env.class.getDeclaredField(entry.getKey()).set(env, cMode);
+					
+				} else if (dynamicClass.isAssignableFrom(ArrayList.class)) {
+					List list = (List)Env.class.getDeclaredField(entry.getKey()).get(null);
+					
+					if (initInstance) {
+						if (!settingInitMap.containsKey(entry.getKey())) {
+							list.removeAll(list);
+							settingInitMap.put(entry.getKey(), true);
+						}
+					}
+					
+					for (String value : entry.getValue()) {
+						list.add(value);
+					}
 				}
 				
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 				//Mapping不到的不處理
+				e.printStackTrace();
 			}
 		}
 		
 		//針對Base64編碼欄位進行解碼
-		if (StringUtils.isNotBlank(Env.DECODE_FIELDS)) {
-			String[] fields = Env.DECODE_FIELDS.split(Env.COMM_SEPARATE_SYMBOL);
+		if (Env.DECODE_FIELDS != null && !Env.DECODE_FIELDS.isEmpty()) {
+			final List<String> fields = Env.DECODE_FIELDS;
 			
-			final Base64.Decoder decoder = Base64.getDecoder();
+			List<String> refreshNames = new ArrayList<String>();
+			refreshNames.addAll(sourceMap.keySet());
 			
-			for (String fName : fields) {
-				try {
-					String fValue = Objects.toString(Env.class.getDeclaredField(fName).get(env));
-					
-					if (StringUtils.isNotBlank(fValue)) {
-						Env.class.getDeclaredField(fName).set(env, new String(decoder.decode(fValue), Constants.CHARSET_UTF8));
+			boolean needRefreshDecodeFields = false;
+			for (String rName : refreshNames) {
+				if (fields.contains(rName)) {
+					needRefreshDecodeFields = true;
+					break;
+				}
+			}
+			
+			if (needRefreshDecodeFields) {
+				final Base64.Decoder decoder = Base64.getDecoder();
+				
+				for (String fName : fields) {
+					try {
+						String fValue = Objects.toString(Env.class.getDeclaredField(fName).get(env));
+						
+						if (StringUtils.isNotBlank(fValue)) {
+							Env.class.getDeclaredField(fName).set(env, new String(decoder.decode(fValue), Constants.CHARSET_UTF8));
+						}
+									
+					} catch (UnsupportedEncodingException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-								
-				} catch (UnsupportedEncodingException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 		}
@@ -142,15 +180,28 @@ public class SysEnvUtils implements EnvUtils {
 				initEnv();
 				
 			} else {
+				Map<String, List<String>> tmpRefreshMap = new HashMap<String, List<String>>();
+				
 				modelList = sysConfigSettingDAO.findSysConfigSettingByName(settingNames);
 				
+				List<String> tmpList = null;
 				for (SysConfigSetting scs : modelList) {
-					if (valueMap.containsKey(scs.getSettingName())) {
-						valueMap.put(scs.getSettingName(), scs.getSettingValue());
+					if (tmpRefreshMap.containsKey(scs.getSettingName())) {
+						tmpList = tmpRefreshMap.get(scs.getSettingName());
+						
+						if (tmpList == null) {
+							tmpList = new ArrayList<String>();
+						}
+						
+					} else {
+						tmpList = new ArrayList<String>();
 					}
+					
+					tmpList.add(scs.getSettingValue());
+					tmpRefreshMap.put(scs.getSettingName(), tmpList);
 				}
 				
-				mapping2Env();
+				mapping2Env(tmpRefreshMap, true);
 			}
 			
 		} catch (Exception e) {

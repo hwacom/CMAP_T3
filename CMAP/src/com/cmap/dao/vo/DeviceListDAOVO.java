@@ -2,17 +2,13 @@ package com.cmap.dao.vo;
 
 import java.util.List;
 
-public class DeviceListDAOVO {
+public class DeviceListDAOVO extends CommonDAOVO {
 
 	private String queryGroup;
 	private String queryDevice;
 	
 	private List<String> queryGroupList;
 	private List<String> queryDeviceList;
-	
-	private String searchValue;
-	private String orderColumn;
-	private String orderDirection;
 	
 	public String getQueryGroup() {
 		return queryGroup;
@@ -37,23 +33,5 @@ public class DeviceListDAOVO {
 	}
 	public void setQueryDeviceList(List<String> queryDeviceList) {
 		this.queryDeviceList = queryDeviceList;
-	}
-	public String getSearchValue() {
-		return searchValue;
-	}
-	public void setSearchValue(String searchValue) {
-		this.searchValue = searchValue;
-	}
-	public String getOrderColumn() {
-		return orderColumn;
-	}
-	public void setOrderColumn(String orderColumn) {
-		this.orderColumn = orderColumn;
-	}
-	public String getOrderDirection() {
-		return orderDirection;
-	}
-	public void setOrderDirection(String orderDirection) {
-		this.orderDirection = orderDirection;
 	}
 }

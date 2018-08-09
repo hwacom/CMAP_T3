@@ -10,8 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.cmap.security.AuthSuccessHandler;
+import com.cmap.security.AuthUnsuccessHandler;
 import com.cmap.security.UserDetailsServiceImpl;
 
 @Configuration
@@ -30,6 +34,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	};
 	
 	@Bean
+	public AuthUnsuccessHandler authUnsuccessHandler() {
+		return new AuthUnsuccessHandler();
+	};
+	
+	@Bean
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsServiceImpl();
 	};
@@ -45,15 +54,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 	
+	@Bean
+    public RequestBodyReaderAuthenticationFilter authenticationFilter() throws Exception {
+        RequestBodyReaderAuthenticationFilter authenticationFilter
+            = new RequestBodyReaderAuthenticationFilter();
+        authenticationFilter.setAuthenticationSuccessHandler(authSuccessHandler());
+        authenticationFilter.setAuthenticationFailureHandler(authUnsuccessHandler());
+//        authenticationFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
+        authenticationFilter.setAuthenticationManager(authenticationManagerBean());
+        return authenticationFilter;
+    }
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			.antMatchers("/resources/**").permitAll()
 			.anyRequest().hasAnyRole("ADMIN", "USER", "ROLE_USER")
 			.and()
+			.addFilterBefore(authenticationFilter(),
+	                UsernamePasswordAuthenticationFilter.class)
 		.formLogin().loginPage("/login")
 		.permitAll()
-			.successHandler(authSuccessHandler())
+//			.successHandler(authSuccessHandler())
+//			.failureHandler(authUnsuccessHandler())
 			.and()
 		.logout()
 	    .permitAll()

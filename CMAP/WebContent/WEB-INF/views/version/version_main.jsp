@@ -437,16 +437,16 @@
 							$('#compareModal_summary').html("無差異");
 						}
 						
-						$('#compareModal').modal('show');
+						$('#compareModal').modal({
+							backdrop : 'static'
+						});
 						
 					} else {
 						alert(resp.message);
 					}
 				},
-
 				error : function(xhr, ajaxOptions, thrownError) {
-					alert('error');
-					alert(xhr.status + "\n" + thrownError);
+					ajaxErrorHandler();
 				}
 			});
 		}
@@ -490,10 +490,8 @@
 						findData($('#queryFrom').val());
 					}
 				},
-
 				error : function(xhr, ajaxOptions, thrownError) {
-					alert('error');
-					alert(xhr.status + "\n" + thrownError);
+					ajaxErrorHandler();
 				}
 			});
 		}
@@ -562,6 +560,9 @@
 						}
 						
 						return d;
+					},
+					"error" : function(xhr, ajaxOptions, thrownError) {
+						ajaxErrorHandler();
 					}
 				},
 				/*"order": [[6 , 'desc' ]],*/

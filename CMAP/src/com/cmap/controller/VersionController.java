@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
+import com.cmap.Env;
 import com.cmap.service.VersionService;
 import com.cmap.service.vo.VersionServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +49,7 @@ public class VersionController extends BaseController {
 		Map<String, String> configTypeMap = null;
 		try {
 			groupListMap = getGroupList(request);
-			configTypeMap = getConfigTypeMenu();
+			configTypeMap = getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true);
 			
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -468,6 +469,6 @@ public class VersionController extends BaseController {
 			initMenu(model, request);
 		}
 		
-		return "version/version_recover";
+		return "version/version_restore";
 	}
 }
