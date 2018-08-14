@@ -22,12 +22,10 @@
     <!-- <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.min.css" rel="stylesheet"> -->
     <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.structure.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet">
-    <!-- materialize.css -->
-    <!-- <link href="${pageContext.request.contextPath}/resources/css/materialize.min.css" rel="stylesheet"> -->
+    <!-- dataTable -->
+	<link href="${pageContext.request.contextPath}/resources/DataTables/datatables.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/blog.css" rel="stylesheet">
-	<!-- dataTable -->
-	<link href="${pageContext.request.contextPath}/resources/DataTables/datatables.min.css" rel="stylesheet">
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
@@ -309,7 +307,20 @@
             	'placement': 'top',
             	'html': true
             });
+            
+            $(".dataTable thead td").click(function() {
+            	bindTrEvent();
+            });
 		});
+    	
+    	function bindTrEvent() {
+    		$('.dataTable tbody tr').click(function(event) {
+    			console.log('.dataTable tbody tr click');
+                if (event.target.tagName !== 'A' && event.target.type !== 'checkbox') {
+                  $(':checkbox', this).trigger('click');
+                }
+            });
+    	}
     	
     	function uncheckAll() {
     		$('input[name=checkAll]').prop('checked', false);
@@ -446,9 +457,26 @@
     	}
     	
     	function ajaxErrorHandler() {
-    		alert('發生非預期錯誤，頁面將重新導向');
+    		alert('連線逾時，頁面將重新導向');
     		location.reload();
     	}
+    	
+    	$.fn.serializeObject = function()
+    	{
+    	    var o = {};
+    	    var a = this.serializeArray();
+    	    $.each(a, function() {
+    	        if (o[this.name] !== undefined) {
+    	            if (!o[this.name].push) {
+    	                o[this.name] = [o[this.name]];
+    	            }
+    	            o[this.name].push(this.value || '');
+    	        } else {
+    	            o[this.name] = this.value || '';
+    	        }
+    	    });
+    	    return o;
+    	};
 
     </script>
 

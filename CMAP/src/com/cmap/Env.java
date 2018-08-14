@@ -17,6 +17,8 @@ public class Env {
 	public static String ADMIN_PASSWORD;
 	public static List<String> ADMIN_ROLE_USERNAME = new ArrayList<String>();
 	
+	public static String RETRY_TIMES;
+	
 	public static String PRTG_SERVER_IP;
 	public static String PRTG_API_LOGIN;
 	public static String PRTG_API_SENSOR_TREE;
@@ -72,39 +74,50 @@ public class Env {
 	
 	public static String MENU_ITEM_COMBINE_SYMBOL;
 	
+	public static Integer FILES_UPLOAD_PER_BATCH_COUNT;
+	public static String UPLOAD_NEWEST_BACKUP_FILE_ONLY;
+	
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
-			Step.LOAD_DEFAULT_SCRIPT, 
-			Step.FIND_DEVICE_CONNECT_INFO,
-			Step.FIND_DEVICE_LOGIN_INFO,
-			Step.CONNECT_DEVICE,
-			Step.LOGIN_DEVICE,
-			Step.SEND_COMMANDS,
-			Step.CLOSE_DEVICE_CONNECTION,
-			Step.DEFINE_OUTPUT_FILE_NAME,
-			Step.COMPOSE_OUTPUT_VO,
-			Step.CONNECT_FILE_SERVER,
-			Step.LOGIN_FILE_SERVER,
-			Step.UPLOAD_FTP,
-			Step.CLOSE_FILE_SERVER_CONNECTION,
-			Step.RECORD_DB
+		Step.LOAD_DEFAULT_SCRIPT, 
+		Step.FIND_DEVICE_CONNECT_INFO,
+		Step.FIND_DEVICE_LOGIN_INFO,
+		Step.CONNECT_DEVICE,
+		Step.LOGIN_DEVICE,
+		Step.SEND_COMMANDS,
+		Step.CLOSE_DEVICE_CONNECTION,
+		Step.DEFINE_OUTPUT_FILE_NAME,
+		Step.COMPOSE_OUTPUT_VO,
+		Step.CONNECT_FILE_SERVER_4_UPLOAD,
+		Step.LOGIN_FILE_SERVER_4_UPLOAD,
+		Step.UPLOAD_FILE_SERVER,
+		Step.CLOSE_FILE_SERVER_CONNECTION,
+		Step.RECORD_DB
 	};
 	public static final Step[] BACKUP_BY_TFTP = new Step[] {
-			Step.LOAD_DEFAULT_SCRIPT, 
-			Step.FIND_DEVICE_CONNECT_INFO,
-			Step.FIND_DEVICE_LOGIN_INFO,
-			Step.CONNECT_DEVICE,
-			Step.LOGIN_DEVICE,
-			Step.DEFINE_OUTPUT_FILE_NAME,
-			Step.SEND_COMMANDS,
-			Step.CLOSE_DEVICE_CONNECTION,
-			Step.COMPOSE_OUTPUT_VO,
-			Step.RECORD_DB
+		Step.LOAD_DEFAULT_SCRIPT, 
+		Step.FIND_DEVICE_CONNECT_INFO,
+		Step.FIND_DEVICE_LOGIN_INFO,
+		Step.CONNECT_DEVICE,
+		Step.LOGIN_DEVICE,
+		Step.DEFINE_OUTPUT_FILE_NAME,
+		Step.SEND_COMMANDS,
+		Step.CLOSE_DEVICE_CONNECTION,
+		Step.COMPOSE_OUTPUT_VO,
+		Step.RECORD_DB
+	};
+	public static final Step[] BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP = new Step[] {
+		Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+		Step.DOWNLOAD_FILE,
+		Step.CLOSE_FILE_SERVER_CONNECTION,
+		Step.CONNECT_FILE_SERVER_4_UPLOAD,
+		Step.LOGIN_FILE_SERVER_4_UPLOAD,
+		Step.UPLOAD_FILE_SERVER,
+		Step.CLOSE_FILE_SERVER_CONNECTION
 	};
 	
 	public static Map<String, String> SCHED_TYPE_CLASS_MAPPING = new HashMap<String, String>();
 	
 	static {
 		//系統預設值，當SYS_CONFIG_SETTING未設定時採用
-		SCHED_TYPE_CLASS_MAPPING.put("backupConfig", "com.cmap.service.impl.jobs.JobBackupConfig");
 	}
 }

@@ -8,8 +8,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmap.AppResponse;
+import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.service.EnvService;
 import com.cmap.service.vo.EnvServiceVO;
@@ -28,7 +30,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/admin/env")
 public class AdminEnvController extends BaseController {
-	private static Log log = LogFactory.getLog(AdminEnvController.class);
+	private static Logger log = LoggerFactory.getLogger(AdminEnvController.class);
 
 	private static final String[] UI_TABLE_COLUMNS = new String[] {"","","settingName","settingValue","settingRemark","createTime","createBy","updateTime","updateBy"};
 	
@@ -42,9 +44,7 @@ public class AdminEnvController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 		}
@@ -55,17 +55,22 @@ public class AdminEnvController extends BaseController {
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	public @ResponseBody AppResponse deleteEnv(
 			Model model, HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(name="settingIds[]", required=true) List<String> settingIds) {
+			@RequestBody JsonNode jsonData) {
 		
 		try {
+			Iterator<JsonNode> idIt = jsonData.findValues(Constants.JSON_FIELD_SETTING_IDS).get(0).iterator();
+			
+			List<String> settingIds = new ArrayList<String>();
+			while (idIt.hasNext()) {
+				settingIds.add(idIt.next().asText());
+			}
+			
 			String retMsg = envService.deleteEnvSettings(settingIds);
 			
 			return new AppResponse(HttpServletResponse.SC_OK, retMsg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -78,10 +83,10 @@ public class AdminEnvController extends BaseController {
 		try {
 			List<EnvServiceVO> esVOs = new ArrayList<EnvServiceVO>();
 			
-			Iterator<JsonNode> idIt = jsonData.findValues("settingIds").get(0).iterator();
-			Iterator<JsonNode> nameIt = jsonData.findValues("modifySettingName").get(0).iterator();
-			Iterator<JsonNode> valueIt = jsonData.findValues("modifySettingValue").get(0).iterator();
-			Iterator<JsonNode> remarkIt = jsonData.findValues("modifySettingRemark").get(0).iterator();
+			Iterator<JsonNode> idIt = jsonData.findValues(Constants.JSON_FIELD_SETTING_IDS).get(0).iterator();
+			Iterator<JsonNode> nameIt = jsonData.findValues(Constants.JSON_FIELD_MODIFY_SETTING_NAME).get(0).iterator();
+			Iterator<JsonNode> valueIt = jsonData.findValues(Constants.JSON_FIELD_MODIFY_SETTING_VALUE).get(0).iterator();
+			Iterator<JsonNode> remarkIt = jsonData.findValues(Constants.JSON_FIELD_MODIFY_SETTING_REMARK).get(0).iterator();
 			
 			EnvServiceVO esVO;
 			while (nameIt.hasNext()) {
@@ -98,9 +103,7 @@ public class AdminEnvController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, retMsg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -108,6 +111,11 @@ public class AdminEnvController extends BaseController {
 	@RequestMapping(value = "getEnvConfig.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse findDeviceListData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
+			@RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
+			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
+			@RequestParam(name="order[0][column]", required=false, defaultValue="") Integer orderColIdx,
+			@RequestParam(name="order[0][dir]", required=false, defaultValue="") String orderDirection,
 			@RequestParam(name="settingName", required=false, defaultValue="") String settingName,
 			@RequestParam(name="settingValue", required=false, defaultValue="") String settingValue,
 			@RequestParam(name="settingRemark", required=false, defaultValue="") String settingRemark) {
@@ -123,6 +131,14 @@ public class AdminEnvController extends BaseController {
 			esVO.setSettingValue(settingValue);
 			esVO.setSettingRemark(settingRemark);
 			
+			if (StringUtils.isNotBlank(searchValue)) {
+				esVO.setSearchValue(searchValue);
+			}
+			if (orderColIdx != null) {
+				esVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
+				esVO.setOrderDirection(orderDirection);
+			}
+			
 			filterdTotal = envService.countEnvSettingsByVO(esVO);
 			
 			if (filterdTotal > 0) {
@@ -136,9 +152,7 @@ public class AdminEnvController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 		
@@ -155,9 +169,7 @@ public class AdminEnvController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, retMsg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }

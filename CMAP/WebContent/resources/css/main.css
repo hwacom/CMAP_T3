@@ -36,6 +36,10 @@ nav > ul > li {
   margin-right: 0px !important;
 }
 
+.table-hover tbody tr:hover {
+  background-color: #f9f872 !important;
+}
+
 @font-face {
   font-family: MicrosoftJhengHei;
   src: 	local("微軟正黑體"),

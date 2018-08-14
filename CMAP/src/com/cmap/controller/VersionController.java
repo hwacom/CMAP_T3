@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/version")
 public class VersionController extends BaseController {
-	private static Log log = LogFactory.getLog(VersionController.class);
+	private static Logger log = LoggerFactory.getLogger(VersionController.class);
 	
 	private static final String[] UI_TABLE_COLUMNS = new String[] {"","","group_Name","device_Name","system_Version","config_Version","create_Time"};
 
@@ -52,9 +52,7 @@ public class VersionController extends BaseController {
 			configTypeMap = getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 		} finally {
@@ -88,9 +86,7 @@ public class VersionController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);
@@ -146,9 +142,7 @@ public class VersionController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);
@@ -208,9 +202,7 @@ public class VersionController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 			
 		} finally {
@@ -240,9 +232,7 @@ public class VersionController extends BaseController {
 			boolean delResult = versionService.deleteVersionInfo(versionIDs);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);
@@ -406,9 +396,7 @@ public class VersionController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);
@@ -434,9 +422,7 @@ public class VersionController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, retVO.getRetMsg());
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "備份失敗");
@@ -461,9 +447,7 @@ public class VersionController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);

@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.service.JobService;
 import com.cmap.service.vo.JobServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,9 +31,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/admin/job")
 public class AdminJobController extends BaseController {
-	private static Log log = LogFactory.getLog(AdminJobController.class);
+	private static @Log Logger log;
 	
-	private static final String[] UI_TABLE_COLUMNS = new String[] {"","","group_Name","device_Name","system_Version","config_Version","create_Time"};
+	private static final String[] UI_TABLE_COLUMNS = 
+			new String[] {"","","qt.jobGroup","qt.jobName","qt.priority","qt.triggerState","qt.prevFireTime","qt.nextFireTime","qt.misfireInstr","qct.cronExpression","qct.timeZoneId","qjd.jobClassName","qjd.description"};
 	
 	@Autowired
 	JobService jobService;
@@ -45,9 +46,7 @@ public class AdminJobController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			model.addAttribute("inputSchedType", getMenuItem(Env.MENU_CODE_OF_SCHED_TYPE, true));
@@ -55,9 +54,35 @@ public class AdminJobController extends BaseController {
 			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MIS_FIRE_POLICY, true));
 		}
 		
+		log.error("********** This is a testing log");
 		return "admin/admin_job";
 	}
 	
+	@RequestMapping(value="save", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public AppResponse saveJob(
+			Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonNode jsonData) {
+		
+		JobServiceVO jsVO = new JobServiceVO();
+		try {
+			convertJson2POJO(jsVO, jsonData);
+			
+			if (StringUtils.isNotBlank(jsVO.getJobKeyName()) && StringUtils.isNotBlank(jsVO.getJobKeyGroup())) {
+				jobService.modifyJob(jsVO);
+				return new AppResponse(HttpServletResponse.SC_OK, "修改成功");
+				
+			} else {
+				jobService.addJob(jsVO);
+				return new AppResponse(HttpServletResponse.SC_OK, "新增成功");
+			}
+			
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+		}
+    }
+	/*
 	@RequestMapping(value="save", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public AppResponse saveJob(
@@ -106,12 +131,11 @@ public class AdminJobController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
+    */
 	
 	/**
 	 * 解析JSON data取得使用者選擇的JOB項目的Name & Group，for後續操作使用
@@ -157,13 +181,31 @@ public class AdminJobController extends BaseController {
 			retMap.put("inputMisFirePolicy", retVO.getMisfireInstr());
 			retMap.put("inputGroupIds", retVO.getGroupIdsStr());
 			retMap.put("inputDeviceIds", retVO.getDeviceIdsStr());
+			retMap.put("inputFtpName", retVO.getFtpName());
+			retMap.put("inputFtpHost", retVO.getFtpHost());
+			retMap.put("inputFtpPort", retVO.getFtpPort());
+			retMap.put("inputFtpAccount", retVO.getFtpAccount());
+			retMap.put("inputFtpPassword", retVO.getFtpPassword());
 			
 			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+		}
+    }
+	
+	@RequestMapping(value="excute", method = RequestMethod.POST, produces="application/json")
+	public @ResponseBody AppResponse excuteJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+			@RequestBody JsonNode jsonData) {
+		
+		try {
+			String msg = jobService.fireJobImmediately(retrieveKeyVal(jsonData));
+			
+			return new AppResponse(HttpServletResponse.SC_OK, msg);
+			
+		} catch (Exception e) {
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -178,9 +220,7 @@ public class AdminJobController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -195,9 +235,7 @@ public class AdminJobController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -212,9 +250,7 @@ public class AdminJobController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
@@ -236,9 +272,14 @@ public class AdminJobController extends BaseController {
 			jsVO = new JobServiceVO();
 			jsVO.setStartNum(startNum);
 			jsVO.setPageLength(pageLength);
-			jsVO.setSearchValue(searchValue);
-			jsVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
-			jsVO.setOrderDirection(orderDirection);
+			
+			if (StringUtils.isNotBlank(searchValue)) {
+				jsVO.setSearchValue(searchValue);
+			}
+			if (orderColIdx != null) {
+				jsVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
+				jsVO.setOrderDirection(orderDirection);
+			}
 			
 			filterdTotal = jobService.countJobInfoByVO(jsVO);
 			
@@ -249,7 +290,8 @@ public class AdminJobController extends BaseController {
 			total = jobService.countJobInfoByVO(null);
 			
 		} catch (Exception e) {
-			
+			log.error(e.toString(), e);
+			e.printStackTrace();
 		}
 		
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -270,9 +312,17 @@ public class AdminJobController extends BaseController {
 			
 			Map<String, Object> retMap = new HashMap<String, Object>();
 			if (jsVO != null) {
+				retMap.put("schedType", jsVO.getSchedType());
+				retMap.put("schedTypeName", jsVO.getSchedTypeName());
 				retMap.put("configType", jsVO.getConfigType());
 				retMap.put("groupId", jsVO.getGroupIdsStr());
 				retMap.put("deviceId", jsVO.getDeviceIdsStr());
+				
+				retMap.put("ftpName", jsVO.getFtpName());
+				retMap.put("ftpHost", jsVO.getFtpHost());
+				retMap.put("ftpPort", jsVO.getFtpPort());
+				retMap.put("ftpAccount", jsVO.getFtpAccount());
+				retMap.put("ftpPassword", jsVO.getFtpPassword());
 			}
 			
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);

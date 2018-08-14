@@ -22,6 +22,7 @@ public class VersionServiceVO extends CommonServiceVO {
 	
 	private String queryConfigType;
 	private boolean queryNewChkbox = false;
+	private boolean jobTrigger = false;
 	
 	private List<String> queryGroupList;
 	private List<String> queryGroup1List;
@@ -372,5 +373,11 @@ public class VersionServiceVO extends CommonServiceVO {
 	}
 	public void setQueryConfigType(String queryConfigType) {
 		this.queryConfigType = queryConfigType;
+	}
+	public boolean isJobTrigger() {
+		return jobTrigger;
+	}
+	public void setJobTrigger(boolean jobTrigger) {
+		this.jobTrigger = jobTrigger;
 	}
 }

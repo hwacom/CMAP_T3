@@ -111,6 +111,10 @@
 			changeModifyView();
 		});
 		
+		$("#btnDelete").click(function() {
+			envAction('delete');
+		});
+		
 		$("#btnModifySubmit").click(function() {
 			envAction('save');
 		});
@@ -182,10 +186,13 @@
 	function envAction(action) {
 		var obj = new Object();
 		
+		var settingIds = $("input[name='chkbox']:checked").map(function() {
+         	return $(this).val();
+         }).get();
+		
+		obj.settingIds = settingIds;
+		
 		if (action == "save") {
-			var settingIds = $("input[name='chkbox']:checked").map(function() {
-					         	return $(this).val();
-					         }).get();
 			var modifySettingName = $("input[name='modifySettingName']").map(function() {
 							        	return $(this).val();
 							        }).get();
@@ -196,7 +203,6 @@
 							         	 return $(this).val();
 							          }).get();
 			
-			obj.settingIds = settingIds;
 			obj.modifySettingName = modifySettingName;
 			obj.modifySettingValue = modifySettingValue;
 			obj.modifySettingRemark = modifySettingRemark;
@@ -253,7 +259,7 @@
 				"bFilter" 		: true,
 				"ordering" 		: true,
 				"info" 			: true,
-				"serverSide" 	: false,
+				"serverSide" 	: true,
 				"bLengthChange" : true,
 				"pagingType" 	: "full",
 				"processing" 	: true,
@@ -287,6 +293,8 @@
 					$("div.dataTables_info").parent().addClass("col-sm-6");
 					$("div.dataTables_paginate").parent().removeClass("col-sm-12");
 					$("div.dataTables_paginate").parent().addClass("col-sm-6");
+					
+					bindTrEvent();
 				},
 				"columns" : [
 					{},{},

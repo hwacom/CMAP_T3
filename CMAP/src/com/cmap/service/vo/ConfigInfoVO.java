@@ -9,6 +9,7 @@ public class ConfigInfoVO implements Cloneable {
 	private String configFileDirPath;
 	private String configContent;
 	private String configFileName;
+	private String fileFullName;
 	private String systemVersion;
 	private String configType;
 	
@@ -18,6 +19,9 @@ public class ConfigInfoVO implements Cloneable {
 	private String enablePassword;
 	
 	private String tFtpIP;
+	private Integer tFtpPort;
+	private String tFtpAccount;
+	private String tFtpPassword;
 	private String tFtpFilePath;
 	
 	private String ftpIP;
@@ -180,5 +184,37 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setFtpPort(Integer ftpPort) {
 		this.ftpPort = ftpPort;
+	}
+
+	public Integer gettFtpPort() {
+		return tFtpPort;
+	}
+
+	public void settFtpPort(Integer tFtpPort) {
+		this.tFtpPort = tFtpPort;
+	}
+
+	public String gettFtpAccount() {
+		return tFtpAccount;
+	}
+
+	public void settFtpAccount(String tFtpAccount) {
+		this.tFtpAccount = tFtpAccount;
+	}
+
+	public String gettFtpPassword() {
+		return tFtpPassword;
+	}
+
+	public void settFtpPassword(String tFtpPassword) {
+		this.tFtpPassword = tFtpPassword;
+	}
+
+	public String getFileFullName() {
+		return fileFullName;
+	}
+
+	public void setFileFullName(String fileFullName) {
+		this.fileFullName = fileFullName;
 	}
 }

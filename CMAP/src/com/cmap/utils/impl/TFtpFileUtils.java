@@ -10,17 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.tftp.TFTP;
 import org.apache.commons.net.tftp.TFTPClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.cmap.service.vo.VersionServiceVO;
+import com.cmap.Env;
+import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
 
 public class TFtpFileUtils implements FileUtils {
-	private static Log log = LogFactory.getLog(TFtpFileUtils.class);
+	private static Logger log = LoggerFactory.getLogger(TFtpFileUtils.class);
 	
 	private String hostIp;
 	private Integer hostPort;
@@ -32,9 +33,7 @@ public class TFtpFileUtils implements FileUtils {
 			tftp = new TFTPClient();
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 			tftp = null;
@@ -69,8 +68,8 @@ public class TFtpFileUtils implements FileUtils {
 			if (tftp != null) {
 				tftp.open();
 				
-//				tftp.setDefaultTimeout(Env.TFTP_DEFAULT_TIME_OUT);
-//				tftp.setSoTimeout(Env.TFTP_SOCKET_TIME_OUT);
+				tftp.setDefaultTimeout(Env.TFTP_DEFAULT_TIME_OUT);
+				tftp.setSoTimeout(Env.TFTP_SOCKET_TIME_OUT);
 				
 				System.out.println("TFTP opened");
 			}
@@ -104,7 +103,7 @@ public class TFtpFileUtils implements FileUtils {
 	}
 
 	@Override
-	public List<String> downloadFiles(VersionServiceVO vsVO) throws Exception {
+	public List<String> downloadFiles(ConfigInfoVO ciVO) throws Exception {
 		List<String> fileContentList = null;
 		
 		BufferedReader bufReader = null;
@@ -116,7 +115,7 @@ public class TFtpFileUtils implements FileUtils {
 			checkTFtpStatus();
 			fileContentList = new ArrayList<String>();
 			
-			String targetFileName = vsVO.getConfigFileDirPath().concat(File.separator).concat(vsVO.getFileFullName());
+			String targetFileName = ciVO.getConfigFileDirPath().concat(File.separator).concat(ciVO.getFileFullName());
 			
 			tftp.receiveFile(targetFileName, TFTP.BINARY_MODE, oStream, hostIp, hostPort);
 			
@@ -147,13 +146,66 @@ public class TFtpFileUtils implements FileUtils {
 			if (bufReader != null) {
 				bufReader.close();
 			}
+			
+			disconnect();
+			connect(hostIp, hostPort);
 		}
 		
 		return fileContentList;
 	}
+	
+	@Override
+	public String downloadFilesString(ConfigInfoVO ciVO) throws Exception {
+		StringBuffer fileContent = new StringBuffer();
+		
+		BufferedReader bufReader = null;
+		InputStreamReader isReader = null;
+		
+		ByteArrayInputStream iStream = null;
+		ByteArrayOutputStream oStream = new ByteArrayOutputStream();
+		try {
+			checkTFtpStatus();
+			
+			String targetFileName = ciVO.getConfigFileDirPath().concat(File.separator).concat(ciVO.getFileFullName());
+			
+			tftp.receiveFile(targetFileName, TFTP.BINARY_MODE, oStream, hostIp, hostPort);
+			
+			iStream = new ByteArrayInputStream(oStream.toByteArray());
+			isReader = new InputStreamReader(iStream, StandardCharsets.UTF_8);
+			bufReader = new BufferedReader(isReader);
+			
+			String line;
+			while ((line = bufReader.readLine()) != null) {
+				fileContent.append(line);
+			}
+			
+		} catch (Exception e) {
+			throw new Exception("[FTP download file failed] >> " + e.toString());
+			
+		} finally {
+			if (oStream != null) {
+				oStream.close();
+			}
+			if (iStream != null) {
+				iStream.close();
+			}
+			if (isReader != null) {
+				isReader.close();
+			}
+			if (bufReader != null) {
+				bufReader.close();
+			}
+			
+			disconnect();
+			connect(hostIp, hostPort);
+		}
+		
+		return fileContent.toString();
+	}
 
 	@Override
 	public boolean disconnect() throws Exception {
+		tftp.close();
 		return true;
 	}
 }

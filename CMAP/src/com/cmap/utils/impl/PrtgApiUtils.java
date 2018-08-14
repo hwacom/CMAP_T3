@@ -7,18 +7,19 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.configuration.TrustAllSSLSocketFactory;
-import com.cmap.exception.AuthenticateException;
 import com.cmap.model.User;
 import com.cmap.prtg.PrtgDocument;
 import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2;
@@ -200,6 +201,44 @@ public class PrtgApiUtils implements ApiUtils {
 	}
 	
 	private String callPrtg(String apiUrl) throws Exception {
+		String resultStr = "";
+		
+		try {
+	        CloseableHttpClient httpclient = CloseableHttpClientUtils.prepare();
+			
+            HttpGet httpGet = new HttpGet(apiUrl);
+            
+            RequestConfig requestConfig = RequestConfig.custom()  
+									                   .setConnectTimeout(Env.HTTP_CONNECTION_TIME_OUT)				//設置連接逾時時間，單位毫秒。
+									                   .setConnectionRequestTimeout(Env.HTTP_CONNECTION_TIME_OUT)	//設置從connect Manager獲取Connection 超時時間，單位毫秒。這個屬性是新加的屬性，因為目前版本是可以共用連接池的。
+									                   .setSocketTimeout(Env.HTTP_SOCKET_TIME_OUT)					//請求獲取資料的超時時間，單位毫秒。 如果訪問一個介面，多少時間內無法返回資料，就直接放棄此次調用。
+									                   .build();  
+            httpGet.setConfig(requestConfig);  
+            
+            System.out.println("Executing request " + httpGet.getRequestLine());
+
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = response -> {
+            	int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode >= 200 && statusCode < 300) {
+                    HttpEntity entity = response.getEntity();
+                    return entity != null ? EntityUtils.toString(entity) : null;
+                } else {
+                    throw new ClientProtocolException("Unexpected response status: " + statusCode);
+                }
+            };
+            resultStr = httpclient.execute(httpGet, responseHandler);
+            
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return resultStr;
+	}
+	
+	/*
+	 * Under "commons-httpclient" version: 3.1
+	private String callPrtg(String apiUrl) throws Exception {
 		GetMethod get = null;
 		HttpClient client = null;
 		int statusCode = 0;
@@ -208,11 +247,14 @@ public class PrtgApiUtils implements ApiUtils {
 		try {
 			Protocol.registerProtocol("https", new Protocol("https", new TrustAllSSLSocketFactory(), 443));
             client = new HttpClient();
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(Env.HTTP_CONNECTION_TIME_OUT);
+//            client.getHttpConnectionManager().getParams().setConnectionTimeout(Env.HTTP_CONNECTION_TIME_OUT);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(1000);
             
+            System.out.println("apiUrl: "+apiUrl);
         	get = new GetMethod(apiUrl);
 			get.addRequestHeader("Content-Type", "text/html; charset=UTF-8");
-			get.getParams().setSoTimeout(Env.HTTP_SOCKET_TIME_OUT);
+//			get.getParams().setSoTimeout(Env.HTTP_SOCKET_TIME_OUT);
+			get.getParams().setSoTimeout(1000);
 			
 			statusCode = client.executeMethod(get);
 			if (statusCode != HttpStatus.SC_OK) {
@@ -237,4 +279,5 @@ public class PrtgApiUtils implements ApiUtils {
 		
 		return resultStr;
 	}
+	*/
 }

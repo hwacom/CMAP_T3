@@ -5,10 +5,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import com.cmap.model.SysConfigSetting;
 @Repository
 @Transactional
 public class SysConfigSettingDAOImpl extends BaseDaoHibernate implements SysConfigSettingDAO {
-	private static Log log = LogFactory.getLog(SysConfigSettingDAOImpl.class);
+	private static Logger log = LoggerFactory.getLogger(SysConfigSettingDAOImpl.class);
 	
 	@Override
 	public SysConfigSetting findSysConfigSettingById(String settingId) {
@@ -39,11 +39,26 @@ public class SysConfigSettingDAOImpl extends BaseDaoHibernate implements SysConf
 	}
 	
 	@Override
-	public List<SysConfigSetting> findSysConfigSettingByName(List<String> settingNames) {
+	public List<SysConfigSetting> findSysConfigSettingByIds(List<String> settingIds) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from SysConfigSetting scs ")
 		  .append(" where 1=1 ")
 		  .append(" and deleteFlag = '"+Constants.DATA_MARK_NOT_DELETE+"' ")
+		  .append(" and scs.settingId in (:settingIds) ");
+		
+	    Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    q.setParameter("settingIds", settingIds);
+	    
+	    return (List<SysConfigSetting>)q.list();
+	}
+	
+	@Override
+	public List<SysConfigSetting> findSysConfigSettingByName(List<String> settingNames) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from SysConfigSetting scs ")
+		  .append(" where 1=1 ")
+//		  .append(" and deleteFlag = '"+Constants.DATA_MARK_NOT_DELETE+"' ")
 		  .append(" and scs.settingName in (:settingNames) ");
 		
 	    Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
@@ -103,9 +118,7 @@ public class SysConfigSettingDAOImpl extends BaseDaoHibernate implements SysConf
 		    		successCount++;
 		    		
 	    		} catch (Exception e) {
-	    			if (log.isErrorEnabled()) {
-	    				log.error(e.toString(), e);
-	    			}
+	    			log.error(e.toString(), e);
 	    			e.printStackTrace();
 	    			
 	    			continue;

@@ -1,6 +1,6 @@
 package com.cmap.dao.vo;
 
-public class SysConfigSettingDAOVO extends CommonDAOVO{
+public class SysConfigSettingDAOVO extends CommonDAOVO {
 
 	private String settingName;
 	private String settingValue;

@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +19,7 @@ import com.cmap.service.DeliveryService;
 @Controller
 @RequestMapping("/delivery")
 public class DeliveryController extends BaseController {
-	private static Log log = LogFactory.getLog(DeliveryController.class);
+	private static Logger log = LoggerFactory.getLogger(DeliveryController.class);
 
 	@Autowired
 	private DeliveryService deliveryService;
@@ -31,9 +31,7 @@ public class DeliveryController extends BaseController {
 			groupListMap = getGroupList(request);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 		} finally {
@@ -52,9 +50,7 @@ public class DeliveryController extends BaseController {
 			
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			
 		} finally {
 			initMenu(model, request);

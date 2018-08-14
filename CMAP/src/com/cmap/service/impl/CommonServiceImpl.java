@@ -11,8 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +31,7 @@ import com.cmap.utils.impl.PrtgApiUtils;
 @Service("commonService")
 @Transactional
 public class CommonServiceImpl implements CommonService {
-	private static Log log = LogFactory.getLog(CommonServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(CommonServiceImpl.class);
 
 	@Autowired
 	DeviceListDAO deviceListDAO;
@@ -137,9 +137,7 @@ public class CommonServiceImpl implements CommonService {
 			System.out.println(ae.toString());
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 		return retMap;

@@ -19,6 +19,11 @@ public class JobServiceVO extends CommonServiceVO {
 	private Integer inputMisFirePolicy;
 	private List<String> inputGroupIds = new ArrayList<String>();
 	private List<String> inputDeviceIds = new ArrayList<String>();
+	private String inputFtpName;
+	private String inputFtpHost;
+	private String inputFtpPort;
+	private String inputFtpAccount;
+	private String inputFtpPassword;
 	
 	private List<JobServiceVO> jobKeySet = new ArrayList<JobServiceVO>();
 	private String jobKeyName;
@@ -28,9 +33,14 @@ public class JobServiceVO extends CommonServiceVO {
 	private String groupIdsStr;
 	private String deviceIdsStr;
 	private String configType;
+	private String ftpName;
+	private String ftpHost;
+	private String ftpPort;
+	private String ftpAccount;
+	private String ftpPassword;
 	
 	private String schedType;
-	private String schedName;
+	private String schedTypeName;
 	private String triggerName;
 	private String triggerGroup;
 	private String jobName;
@@ -187,11 +197,11 @@ public class JobServiceVO extends CommonServiceVO {
 	public void setSchedType(String schedType) {
 		this.schedType = schedType;
 	}
-	public String getSchedName() {
-		return schedName;
+	public String getSchedTypeName() {
+		return schedTypeName;
 	}
-	public void setSchedName(String schedName) {
-		this.schedName = schedName;
+	public void setSchedTypeName(String schedTypeName) {
+		this.schedTypeName = schedTypeName;
 	}
 	public String getTriggerName() {
 		return triggerName;
@@ -294,5 +304,65 @@ public class JobServiceVO extends CommonServiceVO {
 	}
 	public void setTimeZoneId(String timeZoneId) {
 		this.timeZoneId = timeZoneId;
+	}
+	public String getInputFtpName() {
+		return inputFtpName;
+	}
+	public void setInputFtpName(String inputFtpName) {
+		this.inputFtpName = inputFtpName;
+	}
+	public String getInputFtpHost() {
+		return inputFtpHost;
+	}
+	public void setInputFtpHost(String inputFtpHost) {
+		this.inputFtpHost = inputFtpHost;
+	}
+	public String getInputFtpPort() {
+		return inputFtpPort;
+	}
+	public void setInputFtpPort(String inputFtpPort) {
+		this.inputFtpPort = inputFtpPort;
+	}
+	public String getInputFtpAccount() {
+		return inputFtpAccount;
+	}
+	public void setInputFtpAccount(String inputFtpAccount) {
+		this.inputFtpAccount = inputFtpAccount;
+	}
+	public String getInputFtpPassword() {
+		return inputFtpPassword;
+	}
+	public void setInputFtpPassword(String inputFtpPassword) {
+		this.inputFtpPassword = inputFtpPassword;
+	}
+	public String getFtpName() {
+		return ftpName;
+	}
+	public void setFtpName(String ftpName) {
+		this.ftpName = ftpName;
+	}
+	public String getFtpHost() {
+		return ftpHost;
+	}
+	public void setFtpHost(String ftpHost) {
+		this.ftpHost = ftpHost;
+	}
+	public String getFtpPort() {
+		return ftpPort;
+	}
+	public void setFtpPort(String ftpPort) {
+		this.ftpPort = ftpPort;
+	}
+	public String getFtpAccount() {
+		return ftpAccount;
+	}
+	public void setFtpAccount(String ftpAccount) {
+		this.ftpAccount = ftpAccount;
+	}
+	public String getFtpPassword() {
+		return ftpPassword;
+	}
+	public void setFtpPassword(String ftpPassword) {
+		this.ftpPassword = ftpPassword;
 	}
 }

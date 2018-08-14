@@ -5,8 +5,8 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +18,7 @@ import com.cmap.i18n.DatabaseMessageSourceBase;
 @Controller
 @RequestMapping("/i18n")
 public class I18nController {
-	private static Log log = LogFactory.getLog(I18nController.class);
+	private static Logger log = LoggerFactory.getLogger(I18nController.class);
 	
 	@Autowired
 	private DatabaseMessageSourceBase databaseMessageSourceBase;
@@ -29,9 +29,7 @@ public class I18nController {
 			databaseMessageSourceBase.init();
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 		}
 		return null;
 	}

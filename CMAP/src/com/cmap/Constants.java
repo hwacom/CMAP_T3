@@ -30,6 +30,7 @@ public class Constants {
 	public static final String QUARTZ_JOB_BACKUP_CONFIG_FILES = "backupConfigFiles";
 	
 	public static final String QUARTZ_SCHED_TYPE_BACKUP_CONFIG = "backupConfig";
+	public static final String QUARTZ_SCHED_TYPE_UPLOAD_BACKUP_CONFIG_FILE_2_FTP = "uploadBackupConfigFile2FTP";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE = "cleanUpFtpFile";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA = "cleanUpDbData";
 	
@@ -39,6 +40,16 @@ public class Constants {
 	public static final String QUARTZ_PARA_GROUP_ID = "groupId";
 	public static final String QUARTZ_PARA_DEVICE_ID = "deviceId";
 	public static final String QUARTZ_PARA_SCHED_TYPE = "schedType";
+	public static final String QUARTZ_PARA_FTP_NAME = "ftpName";
+	public static final String QUARTZ_PARA_FTP_HOST = "ftpHost";
+	public static final String QUARTZ_PARA_FTP_PORT = "ftpPort";
+	public static final String QUARTZ_PARA_FTP_ACCOUNT = "ftpAccount";
+	public static final String QUARTZ_PARA_FTP_PASSWORD = "ftpPassword";
+	
+	public static final String JSON_FIELD_SETTING_IDS = "settingIds";
+	public static final String JSON_FIELD_MODIFY_SETTING_NAME = "modifySettingName";
+	public static final String JSON_FIELD_MODIFY_SETTING_VALUE = "modifySettingValue";
+	public static final String JSON_FIELD_MODIFY_SETTING_REMARK = "modifySettingRemark";
 	
 	public static final String DATA_MARK_DELETE = "Y";
 	
@@ -59,11 +70,11 @@ public class Constants {
 	public static final String FTP_FILE_SEPARATOR = "/";
 	
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {
-			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "create_time"
+			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "file_full_name", "create_time"
 	};
 	
 	public static final String[] HQL_FIELD_NAME_FOR_VERSION = new String[] {
-			"versionId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion", "configType", "configVersion", "createTime"
+			"versionId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion", "configType", "configVersion", "fileFullName", "createTime"
 	};
 	
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION_2 = new String[] {

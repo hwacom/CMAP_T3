@@ -51,6 +51,31 @@ public class QuartzDAOImpl extends BaseDaoHibernate implements QuartzDAO {
 		if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyGroup())) {
 			sb.append(" and qt.jobGroup = :jobGroup ");
 		}
+		if (daoVO != null && StringUtils.isNotBlank(daoVO.getSearchValue())) {
+			sb.append(" and ( ")
+			  .append("       qt.jobName like :searchValue ")
+			  .append("       or ")
+			  .append("       qt.jobGroup like :searchValue ")
+			  .append("       or ")
+			  .append("       qt.priority like :searchValue ")
+			  .append("       or ")
+			  .append("       qt.triggerState like :searchValue ")
+			  .append("       or ")
+			  .append("       qct.cronExpression like :searchValue ")
+			  .append("       or ")
+			  .append("       qct.timeZoneId like :searchValue ")
+			  .append("       or ")
+			  .append("       qjd.jobClassName like :searchValue ")
+			  .append("       or ")
+			  .append("       qjd.description like :searchValue ")
+			  .append("     ) ");
+		}
+		if (StringUtils.isNotBlank(daoVO.getOrderColumn())) {
+			sb.append(" order by ").append(daoVO.getOrderColumn()).append(" ").append(daoVO.getOrderDirection());
+			
+		} else {
+			sb.append(" order by qt.prevFireTime desc ");
+		}
 		
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createQuery(sb.toString());
@@ -60,6 +85,9 @@ public class QuartzDAOImpl extends BaseDaoHibernate implements QuartzDAO {
 		}
 		if (daoVO != null && StringUtils.isNotBlank(daoVO.getJobKeyGroup())) {
 			q.setParameter("jobGroup", daoVO.getJobKeyGroup());
+		}
+		if (daoVO != null && StringUtils.isNotBlank(daoVO.getSearchValue())) {
+			q.setParameter("searchValue", "%".concat(daoVO.getSearchValue()).concat("%"));
 		}
 	    
 		return (List<Object[]>)q.list();

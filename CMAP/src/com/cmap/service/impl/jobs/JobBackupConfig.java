@@ -3,12 +3,12 @@ package com.cmap.service.impl.jobs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.dao.DeviceListDAO;
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @DisallowConcurrentExecution
 public class JobBackupConfig implements BaseJobService {
-	private static Log log = LogFactory.getLog(JobBackupConfig.class);
+	private static Logger log = LoggerFactory.getLogger(JobBackupConfig.class);
 	
 	private VersionService versionService;
 	
@@ -36,13 +36,12 @@ public class JobBackupConfig implements BaseJobService {
 		try {
 			JobDataMap jMap = context.getJobDetail().getJobDataMap();
 			
-			String groupId = jMap.getString(Constants.QUARTZ_PARA_GROUP_ID);
+			final String groupId = jMap.getString(Constants.QUARTZ_PARA_GROUP_ID);
+			final String deviceId = jMap.getString(Constants.QUARTZ_PARA_DEVICE_ID);
+			final String configType = jMap.getString(Constants.QUARTZ_PARA_CONFIG_TYPE);
+			
 			System.out.println("groupId: "+groupId);
-			
-			String deviceId = jMap.getString(Constants.QUARTZ_PARA_DEVICE_ID);
 			System.out.println("deviceId: "+deviceId);
-			
-			String configType = jMap.getString(Constants.QUARTZ_PARA_CONFIG_TYPE);
 			System.out.println("configType: "+configType);
 			
 			ObjectMapper mapper = new ObjectMapper();
@@ -67,9 +66,7 @@ public class JobBackupConfig implements BaseJobService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 	}

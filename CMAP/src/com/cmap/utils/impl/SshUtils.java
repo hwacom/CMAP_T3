@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.exception.ConnectionException;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.ConnectUtils;
 
@@ -77,7 +78,7 @@ public class SshUtils implements ConnectUtils {
 			System.out.println("SSH connect success!!");
 			
 		} catch (Exception e) {
-			throw new Exception("[SSH connect failed] >> " + e.getMessage());
+			throw new ConnectionException("[SSH connect failed] " + ipAddress + ":" + port + " >> " + e.getMessage());
 		}
 		return true;
 	}

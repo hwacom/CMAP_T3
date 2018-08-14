@@ -286,16 +286,21 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 		  .append("   where 1=1 ")
 		  .append("   and cvi_1.delete_flag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ");
 		
-		if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1())) {
-			sb.append(" and cvi_1.group_Id = :groupId_1 ");
-		} else {
-			sb.append(" and cvi_1.group_Id in (:groupId_1) ");
-		}
-		
-		if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1())) {
-			sb.append(" and cvi_1.device_Id = :deviceId_1 ");
-		} else {
-			sb.append(" and cvi_1.device_Id in (:deviceId_1) ");
+		/*
+	     * 每日排程異地備份所有組態檔，不帶以下條件
+	     */
+		if (!cviDAOVO.isJobTrigger()) {
+			if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1())) {
+				sb.append(" and cvi_1.group_Id = :groupId_1 ");
+			} else {
+				sb.append(" and cvi_1.group_Id in (:groupId_1) ");
+			}
+			
+			if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1())) {
+				sb.append(" and cvi_1.device_Id = :deviceId_1 ");
+			} else {
+				sb.append(" and cvi_1.device_Id in (:deviceId_1) ");
+			}
 		}
 		
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
@@ -366,8 +371,13 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createNativeQuery(sb.toString());
 	    
-	    q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
-	    q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+	    /*
+	     * 每日排程異地備份所有組態檔，不帶以下條件
+	     */
+	    if (!cviDAOVO.isJobTrigger()) {
+	    	q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
+		    q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+	    }
 	    
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
 	    	q.setParameter("configType", cviDAOVO.getQueryConfigType());
@@ -429,17 +439,22 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 		  .append("               from Config_Version_Info cvi_12 ")
 		  .append("               where 1 = 1 ")
 		  .append("               and cvi_12.delete_flag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ");
-		  
-		if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1())) {
-			sb.append("           and cvi_12.group_Id = :groupId_1 ");
-		} else {
-			sb.append("           and cvi_12.group_Id in (:groupId_1) ");
-		}
 		
-		if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1())) {
-			sb.append("           and cvi_12.device_Id = :deviceId_1 ");
-		} else {
-			sb.append("           and cvi_12.device_Id in (:deviceId_1) ");
+		/*
+	     * 每日排程異地備份所有組態檔，不帶以下條件
+	     */
+		if (!cviDAOVO.isJobTrigger()) {
+			if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1())) {
+				sb.append("           and cvi_12.group_Id = :groupId_1 ");
+			} else {
+				sb.append("           and cvi_12.group_Id in (:groupId_1) ");
+			}
+			
+			if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1())) {
+				sb.append("           and cvi_12.device_Id = :deviceId_1 ");
+			} else {
+				sb.append("           and cvi_12.device_Id in (:deviceId_1) ");
+			}
 		}
 		
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
@@ -527,8 +542,13 @@ public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements Config
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createNativeQuery(sb.toString());
 	    
-	    q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
-	    q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+	    /*
+	     * 每日排程異地備份所有組態檔，不帶以下條件
+	     */
+		if (!cviDAOVO.isJobTrigger()) {
+			q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
+		    q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+		}
 	    
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
 	    	q.setParameter("configType", cviDAOVO.getQueryConfigType());

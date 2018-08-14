@@ -24,7 +24,6 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
-import com.cmap.Env;
 import com.cmap.dao.I18nDAO;
 import com.cmap.dao.impl.I18nDAOImpl;
 import com.cmap.i18n.DatabaseMessageSourceBase;
@@ -45,7 +44,6 @@ public class AppConfig implements WebMvcConfigurer {
         resolver.setOrder(0);
         return resolver;
     }
-
     
     @Bean
     public ViewResolver viewResolver() {

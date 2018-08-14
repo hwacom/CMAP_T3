@@ -13,8 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cmap.Constants;
@@ -26,7 +26,7 @@ import com.cmap.utils.EnvUtils;
 
 @Named("sysEnvUtils")
 public class SysEnvUtils implements EnvUtils {
-	private static Log log = LogFactory.getLog(SysEnvUtils.class);
+	private static Logger log = LoggerFactory.getLogger(SysEnvUtils.class);
 
 	@Autowired
 	private SysConfigSettingDAO sysConfigSettingDAO;
@@ -61,9 +61,7 @@ public class SysEnvUtils implements EnvUtils {
 			mapping2Env(valueMap, true);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 	}
@@ -80,7 +78,7 @@ public class SysEnvUtils implements EnvUtils {
 					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0));
 					
 				} else if (dynamicClass.isAssignableFrom(Integer.class)) {
-					Env.class.getDeclaredField(entry.getKey()).set(env, Integer.valueOf(entry.getValue().get(0)));
+					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0) == null ? null : Integer.valueOf(entry.getValue().get(0)));
 					
 				} else if (dynamicClass.isAssignableFrom(ConnectionMode.class)) {
 					ConnectionMode cMode = null;
@@ -97,7 +95,7 @@ public class SysEnvUtils implements EnvUtils {
 					
 					Env.class.getDeclaredField(entry.getKey()).set(env, cMode);
 					
-				} else if (dynamicClass.isAssignableFrom(ArrayList.class)) {
+				} else if (dynamicClass.isAssignableFrom(List.class)) {
 					List list = (List)Env.class.getDeclaredField(entry.getKey()).get(null);
 					
 					if (initInstance) {
@@ -109,6 +107,22 @@ public class SysEnvUtils implements EnvUtils {
 					
 					for (String value : entry.getValue()) {
 						list.add(value);
+					}
+					
+				} else if (dynamicClass.isAssignableFrom(Map.class)) {
+					Map map = (Map)Env.class.getDeclaredField(entry.getKey()).get(null);
+					
+					if (initInstance) {
+						if (!settingInitMap.containsKey(entry.getKey())) {
+							map.clear();
+							settingInitMap.put(entry.getKey(), true);
+						}
+					}
+					
+					for (String value : entry.getValue()) {
+						final String mapKey = value.split(Env.COMM_SEPARATE_SYMBOL)[0];
+						final String mapValue = value.split(Env.COMM_SEPARATE_SYMBOL)[1];
+						map.put(mapKey, mapValue);
 					}
 				}
 				
@@ -197,7 +211,9 @@ public class SysEnvUtils implements EnvUtils {
 						tmpList = new ArrayList<String>();
 					}
 					
-					tmpList.add(scs.getSettingValue());
+					//若是刪除設定(Delete_Flag = Y)，則將環境變數值刷新為「null」
+					final String refreshVal = scs.getDeleteFlag().equals(Constants.DATA_MARK_DELETE) ? null : scs.getSettingValue();
+					tmpList.add(refreshVal);
 					tmpRefreshMap.put(scs.getSettingName(), tmpList);
 				}
 				
@@ -205,9 +221,7 @@ public class SysEnvUtils implements EnvUtils {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 	}

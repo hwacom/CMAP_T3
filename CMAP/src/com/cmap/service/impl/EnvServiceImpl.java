@@ -1,13 +1,13 @@
 package com.cmap.service.impl;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
 @Service("envService")
 @Transactional
 public class EnvServiceImpl implements EnvService {
-	private static Log log = LogFactory.getLog(EnvServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(EnvServiceImpl.class);
 	
 	@Autowired
 	SysConfigSettingDAO sysConfigSettingDAO;
@@ -57,9 +57,7 @@ public class EnvServiceImpl implements EnvService {
 			retVal = sysConfigSettingDAO.countSysConfigSettingByVO(transServiceVO2DAOVO(esVO));
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -70,14 +68,14 @@ public class EnvServiceImpl implements EnvService {
 	public List<EnvServiceVO> findEnvSettingsByVO(EnvServiceVO esVO, Integer startRow, Integer pageLength) throws Exception {
 		List<EnvServiceVO> retList = new ArrayList<EnvServiceVO>();
 		
-		try {
-			//查找DB設定內容
-			List<SysConfigSetting> entityList = 
-					sysConfigSettingDAO.findSysConfigSettingByVO(transServiceVO2DAOVO(esVO), startRow, pageLength);
-			
-			int diffCount = 0;
-			EnvServiceVO retVO;
-			for (SysConfigSetting entity : entityList) {
+		//查找DB設定內容
+		List<SysConfigSetting> entityList = 
+				sysConfigSettingDAO.findSysConfigSettingByVO(transServiceVO2DAOVO(esVO), startRow, pageLength);
+		
+		int diffCount = 0;
+		EnvServiceVO retVO;
+		for (SysConfigSetting entity : entityList) {
+			try {
 				//轉換頁面呈顯用VO
 				retVO = new EnvServiceVO();
 				BeanUtils.copyProperties(entity, retVO);
@@ -96,26 +94,63 @@ public class EnvServiceImpl implements EnvService {
 				//判斷DB設定內容是否與當前系統環境變數(Env)所套用中的值相同
 				boolean isSame = false;
 				String envVal = "";
-				Class<?> type = Env.class.getDeclaredField(retVO.getSettingName()).getType();
-				if (type.isAssignableFrom(ArrayList.class)) {
-					List<?> envList = (List<?>)Env.class.getDeclaredField(retVO.getSettingName()).get(null);
-					
-					for (Object obj : envList) {
-						envVal = hasEncode ? Base64.encode(obj.toString().getBytes()) : obj.toString();
-						isSame = retVO.getSettingValue().equals(envVal) ? true : false;
+				
+				try {
+					Class<?> type = Env.class.getDeclaredField(retVO.getSettingName()).getType();
+					if (type.isAssignableFrom(List.class)) {
+						List<?> envList = 
+								Env.class.getDeclaredField(retVO.getSettingName()).get(null) != null
+									? (List<?>)Env.class.getDeclaredField(retVO.getSettingName()).get(null)
+									: null;
+						
+						if (envList != null) {
+							for (Object obj : envList) {
+								envVal = hasEncode ? Base64.encode(obj.toString().getBytes()) : obj.toString();
+								isSame = retVO.getSettingValue().equals(envVal) ? true : false;
+								
+								if (isSame) {
+									break;
+								}
+							}
+						}
+						
+					} else if (type.isAssignableFrom(HashMap.class)) {
+						HashMap<?,?> envMap = 
+								Env.class.getDeclaredField(retVO.getSettingName()).get(null) != null
+									? (HashMap<?,?>)Env.class.getDeclaredField(retVO.getSettingName()).get(null)
+									: null;
+						
+						final String dbMapKey = retVO.getSettingValue().split(Env.COMM_SEPARATE_SYMBOL)[0];
+						final String dbMapValue = retVO.getSettingValue().split(Env.COMM_SEPARATE_SYMBOL)[1];
+						
+						if (envMap != null && envMap.containsKey(dbMapKey)) {
+							envVal = hasEncode ? Base64.encode(((String)envMap.get(dbMapKey)).getBytes()) : (String)envMap.get(dbMapKey);
+							isSame = dbMapValue.equals(envVal) ? true : false;
+						}
 						
 						if (isSame) {
-							break;
+							envVal = dbMapKey.concat(Env.COMM_SEPARATE_SYMBOL)
+											 .concat(hasEncode ? Base64.encode(((String)envMap.get(dbMapKey)).getBytes()) 
+													 		   : (String)envMap.get(dbMapKey));
 						}
+					
+					} else {
+						String currentEnvVal = 
+								Env.class.getDeclaredField(retVO.getSettingName()).get(null) != null
+									? Env.class.getDeclaredField(retVO.getSettingName()).get(null).toString()
+									: "";
+						envVal = hasEncode ? Base64.encode(currentEnvVal.getBytes()) : currentEnvVal;
+						isSame = retVO.getSettingValue().equals(envVal) ? true : false;
 					}
-				} else {
-					String currentEnvVal = Env.class.getDeclaredField(retVO.getSettingName()).get(null).toString();
-					envVal = hasEncode ? Base64.encode(currentEnvVal.getBytes()) : currentEnvVal;
-					isSame = retVO.getSettingValue().equals(envVal) ? true : false;
-				}
-				
-				if (!isSame) {
-					envVal = "";
+					
+					if (!isSame) {
+						envVal = "";
+						diffCount++;
+					}
+					
+				} catch (NoSuchFieldException nsfe) {
+					//若DB的參數名稱不存在於Env宣告的變數名稱內
+					envVal = "***** 不存在 *****";
 					diffCount++;
 				}
 				
@@ -123,16 +158,15 @@ public class EnvServiceImpl implements EnvService {
 				retVO.setSame(isSame);
 				
 				retList.add(retVO);
-			}
-			
-			retList.get(0).setDifferCount(diffCount);
-			
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
+				
+			} catch (Exception e) {
 				log.error(e.toString(), e);
+				e.printStackTrace();
 			}
-			e.printStackTrace();
 		}
+		
+		retList.get(0).setDifferCount(diffCount);
+			
 		return retList;
 	}
 
@@ -142,12 +176,24 @@ public class EnvServiceImpl implements EnvService {
 		Integer successCount = 0;
 		
 		try {
+			//先查詢出setting_name for後續刷新環境變數(Env)使用
+			List<SysConfigSetting> settings = sysConfigSettingDAO.findSysConfigSettingByIds(settingIds);
+			
+			List<String> settingNames = new ArrayList<String>();
+			for (SysConfigSetting entity : settings) {
+				settingNames.add(entity.getSettingName());
+			}
+			
+			//刪除
 			successCount = sysConfigSettingDAO.deleteSysConfigSetting(settingIds, SecurityUtil.getSecurityUser().getUsername());
 			
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
+			//更新完DB資料後同步至系統環境變數(Env)<僅更新此次有異動參數>
+			if (!settingNames.isEmpty()) {
+				sysEnvUtils.refreshByNames(settingNames);
 			}
+			
+		} catch (Exception e) {
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 		}
@@ -199,9 +245,7 @@ public class EnvServiceImpl implements EnvService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 		} 
@@ -222,9 +266,7 @@ public class EnvServiceImpl implements EnvService {
 			sysEnvUtils.refreshAll();
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 			msg = "Refresh failed";

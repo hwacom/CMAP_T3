@@ -9,8 +9,8 @@ import java.util.TreeSet;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +25,7 @@ import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.DeviceListDAOVO;
 import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.exception.ConnectionException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 import com.cmap.security.SecurityUtil;
@@ -47,7 +48,7 @@ import difflib.Patch;
 @Service("versionService")
 @Transactional
 public class VersionServiceImpl implements VersionService {
-	private static Log log = LogFactory.getLog(VersionServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(VersionServiceImpl.class);
 
 	@Autowired
 	private StepService stepService;
@@ -78,9 +79,7 @@ public class VersionServiceImpl implements VersionService {
 			retCount = configVersionInfoDAO.countConfigVersionInfoByDAOVO(cviDAOVO);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -105,9 +104,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -125,9 +122,7 @@ public class VersionServiceImpl implements VersionService {
 			retCount = deviceListDAO.countDeviceListAndLastestVersionByDAOVO(dlDAOVO);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -157,9 +152,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 		
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -181,9 +174,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 		
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -200,9 +191,7 @@ public class VersionServiceImpl implements VersionService {
 			configVersionInfoDAO.deleteConfigVersionInfoByVersionIds(versionIDs, SecurityUtil.getSecurityUser().getUsername());
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 			return false;
@@ -257,6 +246,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 			
 			vsVO.setDeviceListId(dl.getDeviceListId());
+			vsVO.setConfigFileDirPath(dl.getConfigFileDirPath());
 			
 			retList.add(vsVO);
 		}
@@ -317,9 +307,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 		}
@@ -369,7 +357,9 @@ public class VersionServiceImpl implements VersionService {
 				fileUtils.changeDir(vsVO.getConfigFileDirPath(), false);
 				
 				// Step4. 下載指定的Config落地檔
-				contentList = fileUtils.downloadFiles(vsVO);
+				ConfigInfoVO ciVO = new ConfigInfoVO();
+				BeanUtils.copyProperties(vsVO, ciVO);
+				contentList = fileUtils.downloadFiles(ciVO);
 				
 				// Step5. 轉換為String for UI輸出
 				if (contentList != null && !contentList.isEmpty()) {
@@ -394,9 +384,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 			
@@ -523,7 +511,9 @@ public class VersionServiceImpl implements VersionService {
 					fileUtils.changeDir(vsVO.getConfigFileDirPath(), false);
 					
 					// Step4. 下載指定的Config落地檔
-					List<String> cList = fileUtils.downloadFiles(vsVO);
+					ConfigInfoVO ciVO = new ConfigInfoVO();
+					BeanUtils.copyProperties(vsVO, ciVO);
+					List<String> cList = fileUtils.downloadFiles(ciVO);
 					
 					if (cList != null && !cList.isEmpty()) {
 						if (contentOriList == null) {
@@ -599,9 +589,7 @@ public class VersionServiceImpl implements VersionService {
 			retVO.setConfigDiffRevContent(uiTextRev[0]);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			throw e;
 			
@@ -679,24 +667,14 @@ public class VersionServiceImpl implements VersionService {
 			
 		} catch (Exception e) {
 		
-		}  finally {
-			/*
-			String retMsg = "此次備份共 "
-							.concat(String.valueOf(totalCount))
-							.concat(" 筆設備，成功 ")
-							.concat(String.valueOf(totalCount-errorCount))
-							.concat(" 筆；失敗 ")
-							.concat(String.valueOf(errorCount))
-							.concat(" 筆");
-			*/
-			
-			String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
-			String[] args = new String[] {
-				String.valueOf(totalCount), String.valueOf(totalCount-errorCount), String.valueOf(errorCount)
-			};
-			
-			retVO.setRetMsg(CommonUtils.converMsg(msg, args));
 		}
+		
+		String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
+		String[] args = new String[] {
+			String.valueOf(totalCount), String.valueOf(totalCount-errorCount), String.valueOf(errorCount)
+		};
+		
+		retVO.setRetMsg(CommonUtils.converMsg(msg, args));
 		
 		return retVO;
 	}
@@ -784,6 +762,9 @@ public class VersionServiceImpl implements VersionService {
 						}
 					}
 					
+				} catch (ConnectionException ce) {
+					System.out.println(ce.toString());
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					
@@ -830,9 +811,7 @@ public class VersionServiceImpl implements VersionService {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 		} finally {
@@ -849,15 +828,6 @@ public class VersionServiceImpl implements VersionService {
 					e.printStackTrace();
 				}
 			}
-			/*
-			String retMsg = "此次備份共 "
-							.concat(String.valueOf(totalCount))
-							.concat(" 筆設備，成功 ")
-							.concat(String.valueOf(totalCount-errorCount))
-							.concat(" 筆；失敗 ")
-							.concat(String.valueOf(errorCount))
-							.concat(" 筆");
-			*/
 			
 			String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
 			String[] args = new String[] {

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,27 +18,30 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.comm.ConnectionMode;
-import com.cmap.comm.OutputMethod;
 import com.cmap.comm.Step;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.exception.ConnectionException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 import com.cmap.service.StepService;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.StepServiceVO;
+import com.cmap.service.vo.VersionServiceVO;
 import com.cmap.utils.ConnectUtils;
 import com.cmap.utils.FileUtils;
 import com.cmap.utils.impl.CommonUtils;
 import com.cmap.utils.impl.FtpFileUtils;
 import com.cmap.utils.impl.SshUtils;
+import com.cmap.utils.impl.TFtpFileUtils;
 
 @Service("stepService")
 @Transactional
 public class StepServiceImpl implements StepService {
-	private static Log log = LogFactory.getLog(StepServiceImpl.class);
+	private static Logger log = LoggerFactory.getLogger(StepServiceImpl.class);
 
 	@Autowired
 	private ConfigVersionInfoDAO configVersionInfoDAO;
@@ -52,104 +55,115 @@ public class StepServiceImpl implements StepService {
 	
 	@Override
 	public boolean doBackupStep(String deviceListId, boolean jobTrigger) {
-		try {
-			Step[] steps = null;
-			ConnectionMode deviceMode = null;
-			ConnectionMode fileServerMode = null;
-			
-			switch (Env.DEFAULT_BACKUP_SCRIPT_CODE) {
-				case "SYS_001":
-					steps = Env.BACKUP_BY_TELNET;
-					deviceMode = ConnectionMode.SSH;
-					fileServerMode = ConnectionMode.FTP;
-					break;
-					
-				case "SYS_002":
-					steps = Env.BACKUP_BY_TFTP;
-					deviceMode = ConnectionMode.SSH;
-					fileServerMode = ConnectionMode.TFTP;
-					break;
-			}
-			
-			List<ScriptListDAOVO> scripts = null;
-			
-			ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
-			ConnectUtils connectUtils = null;			// 連線裝置物件
-			List<String> outputList = null;				// 命令Output內容List
-			List<ConfigInfoVO> outputVOList = null;		// Output VO
-			FileUtils fileUtils = null;					// 連線FileServer吳建
-			
-			for (Step _step : steps) {
+		final int RETRY_TIMES = StringUtils.isNotBlank(Env.RETRY_TIMES) ? Integer.parseInt(Env.RETRY_TIMES) : 1;
+		int round = 1;
+		
+		boolean success = true;
+		while (round <= RETRY_TIMES) {
+			System.out.println("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
+			try {
+				Step[] steps = null;
+				ConnectionMode deviceMode = null;
+				ConnectionMode fileServerMode = null;
 				
-				switch (_step) {
-					case LOAD_DEFAULT_SCRIPT:
-						scripts = loadDefaultScript(scripts);
-						break;
-					
-					case FIND_DEVICE_CONNECT_INFO:
-						ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+				switch (Env.DEFAULT_BACKUP_SCRIPT_CODE) {
+					case "SYS_001":
+						steps = Env.BACKUP_BY_TELNET;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.FTP;
 						break;
 						
-					case FIND_DEVICE_LOGIN_INFO:
-						findDeviceLoginInfo();
-						break;
-						
-					case CONNECT_DEVICE:
-						connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
-						break;
-						
-					case LOGIN_DEVICE:
-						login2Device(connectUtils, ciVO);
-						break;
-						
-					case SEND_COMMANDS:
-						outputList = sendCmds(connectUtils, scripts, ciVO);
-						break;
-				
-					case DEFINE_OUTPUT_FILE_NAME:
-						defineFileName(ciVO);
-						break;
-						
-					case COMPOSE_OUTPUT_VO:
-						outputVOList = composeOutputVO(ciVO, outputList);
-						break;
-						
-					case CONNECT_FILE_SERVER:
-						fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
-						break;
-						
-					case LOGIN_FILE_SERVER:
-						login2FileServer(fileUtils, ciVO);
-						break;
-						
-					case UPLOAD_FTP:
-						upload2FTP(fileUtils, outputVOList);
-						break;
-						
-					case RECORD_DB:
-						record2DB(outputVOList, jobTrigger);
-						break;
-						
-					case CLOSE_DEVICE_CONNECTION:
-						closeDeviceConnection(connectUtils);
-						break;
-						
-					case CLOSE_FILE_SERVER_CONNECTION:
-						closeFileServerConnection(fileUtils);
+					case "SYS_002":
+						steps = Env.BACKUP_BY_TFTP;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.TFTP;
 						break;
 				}
-			}
-			
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
+				
+				List<ScriptListDAOVO> scripts = null;
+				
+				ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
+				ConnectUtils connectUtils = null;			// 連線裝置物件
+				List<String> outputList = null;				// 命令Output內容List
+				List<ConfigInfoVO> outputVOList = null;		// Output VO
+				FileUtils fileUtils = null;					// 連線FileServer吳建
+				
+				for (Step _step : steps) {
+					
+					switch (_step) {
+						case LOAD_DEFAULT_SCRIPT:
+							scripts = loadDefaultScript(scripts);
+							break;
+						
+						case FIND_DEVICE_CONNECT_INFO:
+							ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+							break;
+							
+						case FIND_DEVICE_LOGIN_INFO:
+							findDeviceLoginInfo();
+							break;
+							
+						case CONNECT_DEVICE:
+							connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+							break;
+							
+						case LOGIN_DEVICE:
+							login2Device(connectUtils, ciVO);
+							break;
+							
+						case SEND_COMMANDS:
+							outputList = sendCmds(connectUtils, scripts, ciVO);
+							break;
+					
+						case DEFINE_OUTPUT_FILE_NAME:
+							defineFileName(ciVO);
+							break;
+							
+						case COMPOSE_OUTPUT_VO:
+							outputVOList = composeOutputVO(ciVO, outputList);
+							break;
+							
+						case CONNECT_FILE_SERVER_4_UPLOAD:
+							fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
+							break;
+							
+						case LOGIN_FILE_SERVER_4_UPLOAD:
+							login2FileServer(fileUtils, ciVO);
+							break;
+							
+						case UPLOAD_FILE_SERVER:
+							upload2FTP(fileUtils, outputVOList);
+							break;
+							
+						case RECORD_DB:
+							record2DB(outputVOList, jobTrigger);
+							break;
+							
+						case CLOSE_DEVICE_CONNECTION:
+							closeDeviceConnection(connectUtils);
+							break;
+							
+						case CLOSE_FILE_SERVER_CONNECTION:
+							closeFileServerConnection(fileUtils);
+							break;
+					}
+				}
+				
+				success = true;
+				break;
+				
+			}	catch (Exception e) {
 				log.error(e.toString(), e);
+				e.printStackTrace();
+				
+				success = false;
+				
+			} finally {
+				round++;
 			}
-			e.printStackTrace();
-			
-			return false;
 		}
 		
-		return true;
+		return success;
 	}
 	
 	private void closeDeviceConnection(ConnectUtils connectUtils) {
@@ -327,10 +341,15 @@ public class StepServiceImpl implements StepService {
 	private FileUtils connect2FileServer(FileUtils fileUtils, ConnectionMode _mode, ConfigInfoVO ciVO) throws Exception {
 		switch (_mode) {
 			case FTP:
-				// 8-1. 建立FTP物件
+				// By FTP
 				fileUtils = new FtpFileUtils();
 				fileUtils.connect(ciVO.getFtpIP(), ciVO.getFtpPort());
 				break;
+				
+			case TFTP:
+				// By TFTP
+				fileUtils = new TFtpFileUtils();
+				fileUtils.connect(ciVO.gettFtpIP(), ciVO.gettFtpPort());
 		}
 		
 		return fileUtils;
@@ -368,6 +387,106 @@ public class StepServiceImpl implements StepService {
 	private void record2DB(List<ConfigInfoVO> ciVOList, boolean jobTrigger) {
 		for (ConfigInfoVO ciVO : ciVOList) {
 			configVersionInfoDAO.insertConfigVersionInfo(CommonUtils.composeModelEntityByConfigInfoVO(ciVO, jobTrigger));
+		}
+	}
+	
+	// Step.從TFTP下載資料
+	private List<ConfigInfoVO> downloadFile(FileUtils fileUtils, List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO) throws Exception {
+		List<ConfigInfoVO> ciVOList = new ArrayList<ConfigInfoVO>();
+		
+		ConfigInfoVO tmpVO = null;
+		int i = 1;
+		for (VersionServiceVO vsVO : vsVOs) {
+			tmpVO = (ConfigInfoVO)ciVO.clone();
+			tmpVO.setConfigFileDirPath(vsVO.getConfigFileDirPath());
+			tmpVO.setFileFullName(vsVO.getFileFullName());
+			
+			System.out.println("Downloading file name ("+i+"/"+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+File.separator+tmpVO.getFileFullName());
+			final String fileContent = fileUtils.downloadFilesString(tmpVO);
+			tmpVO.setConfigContent(fileContent);
+			tmpVO.setConfigFileName(vsVO.getFileFullName());
+			
+			ciVOList.add(tmpVO);
+			i++;
+		}
+		return ciVOList;
+	}
+
+	@Override
+	public void doBackupFileUpload2FTPStep(List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean jobTrigger) {
+		final int RETRY_TIMES = StringUtils.isNotBlank(Env.RETRY_TIMES) ? Integer.parseInt(Env.RETRY_TIMES) : 1;
+		int round = 1;
+		
+		boolean success = true;
+		while (round <= RETRY_TIMES) {
+			System.out.println("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
+			try {
+				Step[] steps = null;
+				ConnectionMode downloadMode = null;
+				ConnectionMode uploadMode = null;
+				
+				switch (Env.DEFAULT_BACKUP_SCRIPT_CODE) {
+					case "SYS_001":
+						steps = null;
+						downloadMode = ConnectionMode.FTP;
+						uploadMode = ConnectionMode.FTP;
+						break;
+						
+					case "SYS_002":
+						steps = Env.BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP;
+						downloadMode = ConnectionMode.TFTP;
+						uploadMode = ConnectionMode.FTP;
+						break;
+				}
+				
+				List<ConfigInfoVO> outputVOList = null;		// Output VO
+				FileUtils fileUtils = null;					// 連線FileServer吳建
+
+				for (Step _step : steps) {
+					System.out.println(_step);
+					
+					switch (_step) {
+						case CONNECT_FILE_SERVER_4_DOWNLOAD:
+							fileUtils = connect2FileServer(fileUtils, downloadMode, ciVO);
+							break;
+							
+						case DOWNLOAD_FILE:
+							outputVOList = downloadFile(fileUtils, vsVOs, ciVO);
+							break;
+						
+						case CONNECT_FILE_SERVER_4_UPLOAD:
+							fileUtils = connect2FileServer(fileUtils, uploadMode, ciVO);
+							break;
+							
+						case LOGIN_FILE_SERVER_4_UPLOAD:
+							login2FileServer(fileUtils, ciVO);
+							break;
+							
+						case UPLOAD_FILE_SERVER:
+							upload2FTP(fileUtils, outputVOList);
+							break;
+							
+						case CLOSE_FILE_SERVER_CONNECTION:
+							closeFileServerConnection(fileUtils);
+							break;
+					}
+				}
+				
+				success = true;
+				
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				e.printStackTrace();
+				
+				success = false;
+				
+			} finally {
+				if (success) {
+					break;
+				} else {
+					round++;
+				}
+			}
 		}
 	}
 }

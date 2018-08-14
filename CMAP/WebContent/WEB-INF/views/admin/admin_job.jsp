@@ -30,6 +30,9 @@
 		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify">修改</button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnExcute">立即執行</button>
+		  	    </div>
+		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
 		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnPause">暫停</button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
@@ -74,11 +77,9 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
 		      <th scope="col" nowrap="nowrap">序</th>
-		      <!-- <th scope="col" nowrap="nowrap">排程名稱</th> -->
+		      <th scope="col" nowrap="nowrap">排程類別</th>
 		      <th scope="col" nowrap="nowrap">Job群組</th>
 		      <th scope="col" nowrap="nowrap">Job名稱</th>
-		      <!-- <th scope="col" nowrap="nowrap">Trigger群組</th>
-		      <th scope="col" nowrap="nowrap">Tirgger名稱</th> -->
 		      <th scope="col" nowrap="nowrap">優先度</th>
 		      <th scope="col" nowrap="nowrap">狀態</th>
 		      <th scope="col" nowrap="nowrap">前次觸發時間</th>
@@ -123,7 +124,7 @@
             	<div class="form-group row">
                 	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label">排程類別<span class="pull-right" style="color: red;">＊ </span></label>
                   	<div class="col-md-10 col-sm-9">
-                  		<form:select path="inputSchedType" id="inputSchedType" class="form-control form-control-sm">
+                  		<form:select path="inputSchedType" id="inputSchedType" name="inputSchedType" class="form-control form-control-sm">
 		                  	<form:option value="" label="=== 請選擇  ===" />
 		                  	<form:options items="${inputSchedType}" />
 		                </form:select>
@@ -160,33 +161,82 @@
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	            	<label for="inputConfigType" class="col-md-2 col-sm-3 col-form-label">備份範圍<span class="pull-right" style="color: red;">＊ </span></label>
-	            	<div class="col-md-10 col-sm-9">
-	                	<form:select path="inputConfigType" id="inputConfigType" class="form-control form-control-sm">
-		                  	<form:option value="" label="=== ALL ===" />
-		                  	<form:options items="${inputConfigType}" />
-		                </form:select>
-	                </div>
-	            </div>
-	            <div class="form-group row">
 	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
 	            	<div class="col-md-10 col-sm-9">
-	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" class="form-control form-control-sm">
+	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" name="inputMisFirePolicy" class="form-control form-control-sm">
 		                  	<form:option value="" label="=== 請選擇  ===" />
 		                  	<form:options items="${inputMisFirePolicy}" />
 		                </form:select>
 	                </div>
 	            </div>
-	            <div id="sec_backupConfig" class="form-group row" style="display: none">
-	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID<span class="pull-right" style="color: red;">＊ </span></label>
-	            	<div class="col-md-4 col-sm-3">
-	            		<textarea rows="5" class="form-control form-control-sm" id="inputGroupIds" name="inputGroupIds" placeholder="(1行1筆資料)"></textarea>
-	                </div>
-	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID<span class="pull-right" style="color: red;">＊ </span></label>
-	            	<div class="col-md-4 col-sm-3">
-	            		<textarea rows="5" class="form-control form-control-sm" id="inputDeviceIds" name="inputDeviceIds" placeholder="(1行1筆資料)"></textarea>
-	                </div>
+	            
+	            <hr />
+	            
+	            <!-- 組態檔備份 -->
+	            <div id="sec_backupConfig" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputFtpNames" class="col-12 col-form-label"><span style="color:blue">*** 備份目標設備 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputConfigType" class="col-md-2 col-sm-3 col-form-label">備份範圍<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-10 col-sm-9">
+		                	<form:select path="inputConfigType" id="inputConfigType" name="inputConfigType" class="form-control form-control-sm">
+			                  	<form:option value="" label="=== ALL ===" />
+			                  	<form:options items="${inputConfigType}" />
+			                </form:select>
+		                </div>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-4 col-sm-3">
+		            		<textarea rows="5" class="form-control form-control-sm" id="inputGroupIds" name="inputGroupIds" placeholder="(1行1筆資料)"></textarea>
+		                </div>
+		                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-4 col-sm-3">
+		            		<textarea rows="5" class="form-control form-control-sm" id="	" name="inputDeviceIds" placeholder="(1行1筆資料)"></textarea>
+		                </div>
+		            </div>
 	            </div>
+	            <!-- [END]組態檔備份 -->
+	            
+	            <!-- 組態檔異地備援(FTP) -->
+	            <div id="sec_uploadBackupConfigFile2FTP" style="display: none">
+	              <div class="form-group row">
+	              	<label for="inputFtpNames" class="col-12 col-form-label"><span style="color:blue">*** FTP相關設定 ***</span></label>
+	              </div>
+	              <div class="form-group row">
+	              	<label for="inputFtpNames" class="col-md-2 col-sm-3 col-form-label">FTP Name:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="inputFtpName" name="inputFtpName" placeholder="(選填)"></input>
+	                </div>
+	              </div>
+	              <div class="form-group row">
+	                <label for="inputFtpHosts" class="col-md-2 col-sm-3 col-form-label">FTP Host:<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="inputFtpHost" name="inputFtpHost" placeholder="Host or IP"></input>
+	                </div>
+	              </div>
+	              <div class="form-group row">
+	                <label for="inputFtpPorts" class="col-md-2 col-sm-3 col-form-label">FTP Port:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="inputFtpPort" name="inputFtpPort" placeholder="(選填；預設值=21)"></input>
+	                </div>
+	              </div>
+	              <div class="form-group row">
+	                <label for="inputFtpAccounts" class="col-md-2 col-sm-3 col-form-label">Account:<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="inputFtpAccount" name="inputFtpAccount" placeholder="(FTP登入帳號)"></input>
+	                </div>
+	              </div>
+	              <div class="form-group row">
+	                <label for="inputFtpPasswords" class="col-md-2 col-sm-3 col-form-label">Password:<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="password" class="form-control form-control-sm" id="inputFtpPassword" name="inputFtpPassword" placeholder="(FTP登入密碼)"></input>
+	                </div>
+	              </div>
+	            </div>
+	            <!-- [END]組態檔異地備援(FTP) -->
+	            
               </div>
 			</div>
 			<div class="modal-footer">
@@ -213,33 +263,75 @@
         
       </div>
       <div class="modal-body">
-        <form role="form" id="formEdit" name="formEdit">
-        	<div class="card card-body">
-        	  <div class="col-12">
-	           	<div class="form-group row">
-	            	<label for="inputJobName" class="col-md-2 col-sm-3 col-form-label">Config_Type</label>
+       	<div class="card card-body">
+       	  <div class="col-12">
+       	  
+       	  	<div id="sec_detail_common" style="display: none">
+       	  		<div class="form-group row">
+	            	<label for="inputJobName" class="col-md-2 col-sm-3 col-form-label">Config_Type:</label>
 	            	<div class="col-md-10 col-sm-9">
 	            		<input type="text" class="form-control form-control-sm" id="viewDetailConfigType" readonly>
 	            	</div>
-	            </div>                              
+	            </div>           
+	        </div>
+	        
+       	  	<!-- 組態檔備份 -->
+       	  	<div id="sec_detail_backupConfig" style="display: none">
 	            <div class="form-group row">
-	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID</label>
+	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID:</label>
 	            	<div class="col-md-10 col-sm-9">
 	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailGroupIds" readonly></textarea>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID</label>
+	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID:</label>
 	            	<div class="col-md-10 col-sm-9">
 	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailDeviceIds" readonly></textarea>
 	                </div>
 	            </div>
-              </div>
-			</div>
-			<div class="modal-footer">
-        		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
-			</div>
-        </form>
+       	  	</div>
+       	  	<!-- [END]組態檔備份 -->
+	            
+            <!-- 組態檔異地備援(FTP) -->
+            <div id="sec_detail_uploadBackupConfigFile2FTP" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewDetailFtpName" class="col-md-2 col-sm-3 col-form-label">FTP_Name:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailFtpName" readonly>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	                <label for="viewDetailFtpHost" class="col-md-2 col-sm-3 col-form-label">FTP_Host:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailFtpHost" readonly>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	                <label for="viewDetailFtpPort" class="col-md-2 col-sm-3 col-form-label">FTP_Port:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailFtpPort" readonly>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	                <label for="viewDetailFtpAccount" class="col-md-2 col-sm-3 col-form-label">Account:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailFtpAccount" readonly>
+	                </div>
+	            </div>
+	            <div class="form-group row">
+	                <label for="viewDetailFtpPassword" class="col-md-2 col-sm-3 col-form-label">Password:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="password" class="form-control form-control-sm" id="viewDetailFtpPassword" readonly>
+	                </div>
+	            </div>
+            </div>
+            <!-- [END]組態檔異地備援(FTP) -->
+            
+          </div>
+		</div>
+		<div class="modal-footer">
+       		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+		</div>
       </div>
     </div>
   </div>
@@ -269,29 +361,39 @@
 		});
 
 		$("#btnDelete").click(function() {
-			jobAction('delete');
+			const confirmMsg = confirm("確認是否刪除?");
+			
+			if (confirmMsg) {
+				jobAction('delete');
+			}
 		});
 		
 		$("#btnModify").click(function() {
 			isModify = true;
 			jobAction('modify');
+			changeSchedView($("#inputSchedType").val());
 		});
 		
 		$("#btnSave").click(function() {
 			saveJob(isModify);
 		});
 		
+		$("#btnExcute").click(function() {
+			jobAction('excute');
+		});
+		
 		$("#inputSchedType").change(function() {
-			const schedType = $(this).val();
-			
-			if (schedType == '') {
-				$("div[id^=sec_]").hide();
-				
-			} else {
-				$("#sec_"+schedType).show();
-			}
+			changeSchedView($(this).val());
 		});
 	});
+	
+	function changeSchedView(schedType) {
+		$("div[id^=sec_]").hide();
+		
+		if (schedType !== '') {
+			$("#sec_"+schedType).show();
+		}
+	}
 	
 	function jobAction(action) {
 		var checkedItem = $('input[name=chkbox]:checked');
@@ -331,6 +433,12 @@
 						$("#inputDeviceIds").val(resp.data.inputDeviceIds);
 						$("#inputPriority").val(resp.data.inputPriority);
 						$("#inputDescription").val(resp.data.inputDescription);
+						
+						$("#inputFtpName").val(resp.data.inputFtpName);
+						$("#inputFtpHost").val(resp.data.inputFtpHost);
+						$("#inputFtpPort").val(resp.data.inputFtpPort);
+						$("#inputFtpAccount").val(resp.data.inputFtpAccount);
+						$("#inputFtpPassword").val(resp.data.inputFtpPassword);
 						
 						$("#inputMisFirePolicy option").filter(function() {
 						    return $(this).val() == resp.data.inputMisFirePolicy; 
@@ -376,21 +484,14 @@
 	function saveJob(isModify) {
 		$.ajax({
 			url : '${pageContext.request.contextPath}/admin/job/save',
-			//data : $('#formEdit').serialize(),
-			data : {
-				jobKeyName : isModify ? $("#inputJobName").val() : null,
-				jobKeyGroup : isModify ? $("#inputJobGroup").val() : null,
-				inputSchedType : $("#inputSchedType").val(),
-				inputJobName : $("#inputJobName").val(),
-				inputJobGroup : $("#inputJobGroup").val(),
-				inputCronExpression : $("#inputCronExpression").val(),
-				inputGroupIds : $("#inputGroupIds").val().split('\n'),
-				inputDeviceIds : $("#inputDeviceIds").val().split('\n'),
-				inputConfigType : $("#inputConfigType").val(),
-				inputMisFirePolicy : $("#inputMisFirePolicy").val(),
-				inputPriority : $("#inputPriority").val(),
-				inputDescription : $("#inputDescription").val(),
+			data : JSON.stringify($("#formEdit").serializeObject()),
+			contentType : 'application/json; charset=utf-8',
+			/*
+			headers: {
+			    'Accept': 'application/json',
+			    'Content-Type': 'application/json'
 			},
+			*/
 			type : 'POST',
 			dataType : 'json',
 			async: false,
@@ -426,13 +527,26 @@
 			async: false,
 			success : function(resp) {
 				if (resp.code == '200') {
-					$("#jobDetailsModal").modal({
-						backdrop : 'static'
-					});
+					$("#jobDetailsModal").modal();
 					
 					$("#viewDetailConfigType").val(resp.data.configType);
 					$("#viewDetailGroupIds").val(resp.data.groupId);
 					$("#viewDetailDeviceIds").val(resp.data.deviceId);
+					
+					$("#viewDetailFtpName").val(resp.data.ftpName);
+					$("#viewDetailFtpHost").val(resp.data.ftpHost);
+					$("#viewDetailFtpPort").val(resp.data.ftpPort);
+					$("#viewDetailFtpAccount").val(resp.data.ftpAccount);
+					$("#viewDetailFtpPassword").val(resp.data.ftpPassword);
+					
+					const schedType = resp.data.schedType;
+					
+					$("div[id^=sec_detail_]").hide();
+					
+					if (schedType !== '') {
+						$("#sec_detail_"+schedType).show();
+						$("#sec_detail_common").show();
+					}
 					
 				} else {
 					alert(resp.message);
@@ -485,7 +599,7 @@
 						ajaxErrorHandler();
 					}
 				},
-				"order": [[3 , "asc" ]],
+				"order": [[7 , "desc" ]],
 				/*
 				"initComplete": function(settings, json){
 	            },
@@ -501,9 +615,11 @@
 					$("div.dataTables_info").parent().addClass("col-sm-6");
 					$("div.dataTables_paginate").parent().removeClass("col-sm-12");
 					$("div.dataTables_paginate").parent().addClass("col-sm-6");
+					
+					bindTrEvent();
 				},
 				"columns" : [
-					{},{},
+					{},{},{},
 					{ "data" : "jobGroup" },
 					{ "data" : "jobName" },
 					{ "data" : "priority" },
@@ -538,10 +654,19 @@
 							   	}
 					},
 					{
-						"targets" : [12],
+						"targets" : [2],
+						"className" : "center",
+						"searchable": false,
+						"orderable": false,
+						"render": function (data, type, row, meta) {
+							       	return row.schedTypeName;
+							   	}
+					},
+					{
+						"targets" : [13],
 						"className" : "left",
-						"searchable": true,
-						"orderable": true,
+						"searchable": false,
+						"orderable": false,
 						"render" : function(data, type, row) {
 									 var html = '<a href="#" onclick="viewDetail(\''+row.jobName+'@~'+row.jobGroup+'\')">查看明細</a>';
 									 return html;

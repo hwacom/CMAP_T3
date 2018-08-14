@@ -15,12 +15,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.security.cert.X509Certificate;
-
+/*
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-
-public class TrustAllSSLSocketFactory implements ProtocolSocketFactory {
+*/
+//public class TrustAllSSLSocketFactory implements ProtocolSocketFactory {
+public class TrustAllSSLSocketFactory {
 
 	public static final TrustManager[] TRUST_ALL_CERTS = new TrustManager[]{
         new X509TrustManager() {
@@ -55,11 +55,13 @@ public class TrustAllSSLSocketFactory implements ProtocolSocketFactory {
         return getSocketFactory().createSocket(host, port, clientHost, clientPort);
     }
 
+    /*
     @Override
     public Socket createSocket(final String host, final int port, final InetAddress localAddress,
                                final int localPort, final HttpConnectionParams params) throws IOException {
         return createSocket(host, port);
     }
+    */
 
     public Socket createSocket(final String host, final int port) throws IOException {
         return getSocketFactory().createSocket(host, port);

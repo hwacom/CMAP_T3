@@ -8,20 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.service.vo.VersionServiceVO;
+import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
 
 public class FtpFileUtils implements FileUtils {
-	private static Log log = LogFactory.getLog(FtpFileUtils.class);
+	private static Logger log = LoggerFactory.getLogger(FtpFileUtils.class);
 	
 	FTPClient ftp = null;
 	
@@ -32,9 +32,7 @@ public class FtpFileUtils implements FileUtils {
 			ftp.setConnectTimeout(Env.FTP_CONNECT_TIME_OUT);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 			
 			ftp = null;
@@ -199,7 +197,7 @@ public class FtpFileUtils implements FileUtils {
 	}
 
 	@Override
-	public List<String> downloadFiles(VersionServiceVO vsVO) throws Exception {
+	public List<String> downloadFiles(ConfigInfoVO ciVO) throws Exception {
 		List<String> fileContentList = null;
 		
 		int returnCode = 0;
@@ -212,10 +210,10 @@ public class FtpFileUtils implements FileUtils {
 			ftp.enterLocalPassiveMode();
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 			
-			iStream = ftp.retrieveFileStream(vsVO.getFileFullName());
+			iStream = ftp.retrieveFileStream(ciVO.getFileFullName());
 
 			if (iStream == null || returnCode == FTPReply.FILE_UNAVAILABLE) {
-		        throw new Exception("[FTP]下載檔案異常 >> 「" + vsVO.getFileFullName() + "」檔案不存在");
+		        throw new Exception("[FTP]下載檔案異常 >> 「" + ciVO.getFileFullName() + "」檔案不存在");
 		        
 		    } else {
 				fileContentList = new ArrayList<String>();
@@ -278,5 +276,11 @@ public class FtpFileUtils implements FileUtils {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public String downloadFilesString(ConfigInfoVO ciVO) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

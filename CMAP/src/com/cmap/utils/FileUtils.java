@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-import com.cmap.service.vo.VersionServiceVO;
+import com.cmap.service.vo.ConfigInfoVO;
 
 public interface FileUtils {
 	
@@ -54,7 +54,9 @@ public interface FileUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> downloadFiles(VersionServiceVO vsVO) throws Exception;
+	public List<String> downloadFiles(ConfigInfoVO ciVO) throws Exception;
+	
+	public String downloadFilesString(ConfigInfoVO ciVO) throws Exception;
 	
 	/**
 	 * 中斷FTP連線

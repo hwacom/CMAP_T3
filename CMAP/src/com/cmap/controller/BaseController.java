@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.service.CommonService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 
 
@@ -112,9 +114,7 @@ public class BaseController {
 			itemMap = commonService.getMenuItem(menuCode, combineOrderDotLabel);
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 		
@@ -131,9 +131,7 @@ public class BaseController {
 			}
 			
 		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error(e.toString(), e);
-			}
+			log.error(e.toString(), e);
 			e.printStackTrace();
 		}
 		
@@ -255,6 +253,49 @@ public class BaseController {
 				(new CookieLocaleResolver()).setLocale(request, response, locale);
 			} else
 				(new CookieLocaleResolver()).setLocale(request, response, LocaleContextHolder.getLocale());
+		}
+	}
+	
+	protected void convertJson2POJO(Object pojo, final JsonNode jsonData) {
+		
+		Iterator<String> it = jsonData.fieldNames();
+		
+		while (it.hasNext()) {
+			try {
+				final String fieldName = it.next();
+				Class<?> fieldNameType = pojo.getClass().getDeclaredField(fieldName).getType();
+				
+				final JsonNode fieldNode = jsonData.findValue(fieldName);
+				
+				if (fieldNameType.isAssignableFrom(String.class)) {
+					PropertyUtils.setProperty(pojo, fieldName, fieldNode.asText());
+					
+				} else if (fieldNameType.isAssignableFrom(Integer.class)) {
+					PropertyUtils.setProperty(pojo, fieldName, Integer.parseInt(fieldNode.asText()));
+					
+				} else if (fieldNameType.isAssignableFrom(List.class)) {
+					String[] nodeValues = null;
+					if (fieldNode.asText().indexOf("\r\n") != -1) {
+						nodeValues = fieldNode.asText().split("\r\n");
+					} else {
+						nodeValues = new String[] {fieldNode.asText()};
+					}
+					
+					List<String> list = new ArrayList<String>();
+					
+					if (nodeValues != null) {
+						for (String value : nodeValues) {
+							list.add(value);
+						}
+					}
+					
+					PropertyUtils.setProperty(pojo, fieldName, list);
+				}
+				
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -1,6 +1,10 @@
 package com.cmap.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+
+	private static final long serialVersionUID = -5010954824778186468L;
 
 	private String userName;
 	

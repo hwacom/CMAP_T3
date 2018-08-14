@@ -14,6 +14,8 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	private String queryDateEnd2;
 	private String queryConfigType;
 	
+	private boolean jobTrigger = false;
+	
 	private List<String> queryGroup1List;
 	private List<String> queryGroup2List;
 	
@@ -97,5 +99,11 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	}
 	public void setQueryDevice2List(List<String> queryDevice2List) {
 		this.queryDevice2List = queryDevice2List;
+	}
+	public boolean isJobTrigger() {
+		return jobTrigger;
+	}
+	public void setJobTrigger(boolean jobTrigger) {
+		this.jobTrigger = jobTrigger;
 	}
 }

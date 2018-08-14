@@ -1,6 +1,6 @@
 package com.cmap.dao.vo;
 
-public class QuartzDAOVO {
+public class QuartzDAOVO extends CommonDAOVO {
 
 	private String jobKeyName;
 	private String jobKeyGroup;
