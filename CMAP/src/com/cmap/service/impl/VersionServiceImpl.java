@@ -10,7 +10,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
@@ -48,7 +48,8 @@ import difflib.Patch;
 @Service("versionService")
 @Transactional
 public class VersionServiceImpl implements VersionService {
-	private static Logger log = LoggerFactory.getLogger(VersionServiceImpl.class);
+	@Log
+	private static Logger log;
 
 	@Autowired
 	private StepService stepService;

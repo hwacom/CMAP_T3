@@ -23,7 +23,6 @@ import org.quartz.SchedulerException;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.QuartzDAO;
 import com.cmap.dao.vo.QuartzDAOVO;
@@ -50,7 +50,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service("jobService")
 @Transactional
 public class JobServiceImpl implements JobService {
-	private static Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
+	@Log
+	private static Logger log;
 	
 	@Autowired @Qualifier("Scheduler")
 	private Scheduler scheduler;

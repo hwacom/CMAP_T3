@@ -10,6 +10,8 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import com.cmap.configuration.hibernate.HibernateConfiguration;
+import com.cmap.configuration.security.WebSecurityConfig;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 
 public class AppInitializer implements WebApplicationInitializer {

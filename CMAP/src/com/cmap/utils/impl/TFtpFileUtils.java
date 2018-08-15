@@ -10,18 +10,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.tftp.TFTP;
 import org.apache.commons.net.tftp.TFTPClient;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
 
 public class TFtpFileUtils implements FileUtils {
-	private static Logger log = LoggerFactory.getLogger(TFtpFileUtils.class);
+	@Log
+	private static Logger log;
 	
 	private String hostIp;
 	private Integer hostPort;
@@ -55,7 +57,7 @@ public class TFtpFileUtils implements FileUtils {
 		
 		if (conError) {
 			disconnect();
-			throw new Exception("FTP connect interrupted!");
+			throw new Exception("[TFTP connect interrupted!]");
 		}
 	}
 
@@ -71,7 +73,7 @@ public class TFtpFileUtils implements FileUtils {
 				tftp.setDefaultTimeout(Env.TFTP_DEFAULT_TIME_OUT);
 				tftp.setSoTimeout(Env.TFTP_SOCKET_TIME_OUT);
 				
-				System.out.println("TFTP opened");
+				System.out.println("[TFTP opened] >> ip: "+hostIp+", port: "+hostPort);
 			}
 			
 		} catch (Exception e) {
@@ -99,6 +101,13 @@ public class TFtpFileUtils implements FileUtils {
 
 	@Override
 	public boolean uploadFiles(String fileName, InputStream inputStream) throws Exception {
+		try {
+			tftp.sendFile(fileName, TFTP.BINARY_MODE, inputStream, hostIp);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 
@@ -116,8 +125,13 @@ public class TFtpFileUtils implements FileUtils {
 			fileContentList = new ArrayList<String>();
 			
 			String targetFileName = ciVO.getConfigFileDirPath().concat(File.separator).concat(ciVO.getFileFullName());
+			System.out.println("[TFTP dowloadFiles] >> targetFileName: "+targetFileName);
 			
-			tftp.receiveFile(targetFileName, TFTP.BINARY_MODE, oStream, hostIp, hostPort);
+			if (hostPort != null) {
+				tftp.receiveFile(targetFileName, TFTP.BINARY_MODE, oStream, hostIp, hostPort);
+			} else {
+				tftp.receiveFile(targetFileName, TFTP.BINARY_MODE, oStream, hostIp);
+			}
 			
 			iStream = new ByteArrayInputStream(oStream.toByteArray());
 			isReader = new InputStreamReader(iStream, StandardCharsets.UTF_8);
@@ -128,10 +142,10 @@ public class TFtpFileUtils implements FileUtils {
 				fileContentList.add(line);
 			}
 			
-			System.out.println("fileContentList.size: "+fileContentList.size());
+			System.out.println("[TFTP dowloadFiles] >> fileContentList.size: "+fileContentList.size());
 			
 		} catch (Exception e) {
-			throw new Exception("[FTP download file failed] >> " + e.toString());
+			throw new Exception("[TFTP download file failed] >> ip: " + hostIp + ", port: " + hostPort + ", error: " + e.toString());
 			
 		} finally {
 			if (oStream != null) {
@@ -180,7 +194,7 @@ public class TFtpFileUtils implements FileUtils {
 			}
 			
 		} catch (Exception e) {
-			throw new Exception("[FTP download file failed] >> " + e.toString());
+			throw new Exception("[TFTP download file failed] >> " + e.toString());
 			
 		} finally {
 			if (oStream != null) {
@@ -206,6 +220,37 @@ public class TFtpFileUtils implements FileUtils {
 	@Override
 	public boolean disconnect() throws Exception {
 		tftp.close();
+		return true;
+	}
+
+	@Override
+	public boolean deleteFiles(String targetDirPath, String fileName) throws Exception {
+		try {
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+
+	@Override
+	public boolean moveFiles(ConfigInfoVO ciVO, String sourceDirPath, String targetDirPath) throws Exception {
+		try {
+			/*
+			 * 先從source目錄下載檔案，再上傳至target目錄
+			 */
+			ConfigInfoVO tmpVO = (ConfigInfoVO)ciVO.clone();
+			tmpVO.setConfigFileDirPath(sourceDirPath);
+			final String fileString = downloadFilesString(tmpVO);
+			uploadFiles(targetDirPath, IOUtils.toInputStream(fileString));
+			
+		} catch (Exception e) {
+			throw e;
+		}
+		
 		return true;
 	}
 }

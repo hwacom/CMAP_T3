@@ -1,4 +1,4 @@
-package com.cmap.controller;
+package com.cmap.controller.admin;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.DatatableResponse;
+import com.cmap.annotation.Log;
+import com.cmap.controller.BaseController;
 import com.cmap.service.EnvService;
 import com.cmap.service.vo.EnvServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,7 +31,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/admin/env")
 public class AdminEnvController extends BaseController {
-	private static Logger log = LoggerFactory.getLogger(AdminEnvController.class);
+	@Log
+	private static Logger log;
 
 	private static final String[] UI_TABLE_COLUMNS = new String[] {"","","settingName","settingValue","settingRemark","createTime","createBy","updateTime","updateBy"};
 	

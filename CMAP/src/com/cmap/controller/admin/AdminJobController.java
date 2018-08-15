@@ -1,4 +1,4 @@
-package com.cmap.controller;
+package com.cmap.controller.admin;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.controller.BaseController;
 import com.cmap.service.JobService;
 import com.cmap.service.vo.JobServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;

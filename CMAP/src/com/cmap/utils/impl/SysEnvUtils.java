@@ -14,25 +14,29 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.comm.ConnectionMode;
+import com.cmap.annotation.Log;
+import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.dao.SysConfigSettingDAO;
 import com.cmap.model.SysConfigSetting;
 import com.cmap.utils.EnvUtils;
 
 @Named("sysEnvUtils")
 public class SysEnvUtils implements EnvUtils {
-	private static Logger log = LoggerFactory.getLogger(SysEnvUtils.class);
+	@Log
+	private static Logger log;
 
 	@Autowired
 	private SysConfigSettingDAO sysConfigSettingDAO;
 	
 	private Map<String, List<String>> valueMap = null;
 	
+	/**
+	 * 初始化環境變數(Env)
+	 */
 	@PostConstruct
 	public void initEnv() throws Exception {
 		List<SysConfigSetting> modelList; 
@@ -66,6 +70,11 @@ public class SysEnvUtils implements EnvUtils {
 		}
 	}
 	
+	/**
+	 * 將DB內設定值，動態依照Env參數型態將值塞入
+	 * @param sourceMap
+	 * @param initInstance
+	 */
 	private void mapping2Env(Map<String, List<String>> sourceMap, boolean initInstance) {
 		Map<String, Boolean> settingInitMap = new HashMap<String, Boolean>();
 		
@@ -80,6 +89,10 @@ public class SysEnvUtils implements EnvUtils {
 				} else if (dynamicClass.isAssignableFrom(Integer.class)) {
 					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0) == null ? null : Integer.valueOf(entry.getValue().get(0)));
 					
+				} else if (dynamicClass.isAssignableFrom(Boolean.class)) {
+					Boolean trueOrFalse = StringUtils.equalsIgnoreCase(entry.getValue().get(0), "TRUE") ? Boolean.TRUE : Boolean.FALSE;
+					Env.class.getDeclaredField(entry.getKey()).set(env, trueOrFalse);
+				
 				} else if (dynamicClass.isAssignableFrom(ConnectionMode.class)) {
 					ConnectionMode cMode = null;
 					
@@ -159,33 +172,24 @@ public class SysEnvUtils implements EnvUtils {
 						}
 									
 					} catch (UnsupportedEncodingException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
 			}
 		}
-		
-		/*
-		Env.DEFAULT_FTP_DIR_GROUP_NAME = valueMap.get("DEFAULT_FTP_DIR_GROUP_NAME");
-		Env.DEFAULT_FTP_DIR_DEVICE_NAME = valueMap.get("DEFAULT_FTP_DIR_DEVICE_NAME");
-		
-		Env.FTP_HOST_IP = valueMap.get("FTP_HOST_IP");
-		Env.FTP_HOST_PORT = toInt(Env.FTP_HOST_PORT, valueMap.get("FTP_HOST_PORT"));
-		Env.FTP_LOGIN_ACCOUNT = valueMap.get("FTP_LOGIN_ACCOUNT");
-		Env.FTP_LOGIN_PASSWORD = valueMap.get("FTP_LOGIN_PASSWORD");
-		Env.FTP_BASE_DIR_PATH = valueMap.get("FTP_BASE_DIR_PATH");
-		Env.FTP_DEFAULT_TIME_OUT = toInt(Env.FTP_DEFAULT_TIME_OUT, valueMap.get("FTP_DEFAULT_TIME_OUT"));
-		Env.FTP_CONNECT_TIME_OUT = toInt(Env.FTP_CONNECT_TIME_OUT, valueMap.get("FTP_CONNECT_TIME_OUT"));
-		*/
-		
 	}
 
+	/**
+	 * 刷新Env所有參數值，與DB同步
+	 */
 	@Override
 	public void refreshAll() throws Exception {
 		initEnv();
 	}
 
+	/**
+	 * 刷新指定的Env參數值，與DB同步
+	 */
 	@Override
 	public void refreshByNames(List<String> settingNames) throws Exception {
 		List<SysConfigSetting> modelList; 
@@ -226,12 +230,18 @@ public class SysEnvUtils implements EnvUtils {
 		}
 	}
 
+	/**
+	 * 查找指定的Env參數值
+	 */
 	@Override
 	public List<Env> findEnvs(String settingName) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * 查找指定的Env參數值
+	 */
 	@Override
 	public Env findEnv(String settingName) throws Exception {
 		// TODO Auto-generated method stub

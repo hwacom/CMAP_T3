@@ -1,4 +1,4 @@
-package com.cmap.configuration;
+package com.cmap.configuration.scheduler;
 
 import java.io.IOException;
 import java.util.Properties;

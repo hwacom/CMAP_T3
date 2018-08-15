@@ -1,5 +1,8 @@
 package com.cmap.service.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConfigInfoVO implements Cloneable {
 
 	private String groupId;
@@ -8,6 +11,7 @@ public class ConfigInfoVO implements Cloneable {
 	private String deviceName;
 	private String configFileDirPath;
 	private String configContent;
+	private List<String> configContentList = new ArrayList<String>();
 	private String configFileName;
 	private String fileFullName;
 	private String systemVersion;
@@ -216,5 +220,13 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setFileFullName(String fileFullName) {
 		this.fileFullName = fileFullName;
+	}
+
+	public List<String> getConfigContentList() {
+		return configContentList;
+	}
+
+	public void setConfigContentList(List<String> configContentList) {
+		this.configContentList = configContentList;
 	}
 }

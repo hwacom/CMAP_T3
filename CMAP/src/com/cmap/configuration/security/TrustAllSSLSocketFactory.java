@@ -1,4 +1,4 @@
-package com.cmap.configuration;
+package com.cmap.configuration.security;
 
 import java.io.IOException;
 import java.net.InetAddress;

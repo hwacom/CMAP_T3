@@ -1,4 +1,4 @@
-package com.cmap.configuration;
+package com.cmap.configuration.hibernate;
 
 import java.io.Serializable;
 

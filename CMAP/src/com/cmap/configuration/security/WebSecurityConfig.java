@@ -1,4 +1,4 @@
-package com.cmap.configuration;
+package com.cmap.configuration.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.cmap.configuration.filter.RequestBodyReaderAuthenticationFilter;
 import com.cmap.security.AuthSuccessHandler;
 import com.cmap.security.AuthUnsuccessHandler;
 import com.cmap.security.UserDetailsServiceImpl;

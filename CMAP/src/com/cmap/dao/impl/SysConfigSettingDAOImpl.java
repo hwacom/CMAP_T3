@@ -8,12 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
+import com.cmap.annotation.Log;
 import com.cmap.dao.SysConfigSettingDAO;
 import com.cmap.dao.vo.SysConfigSettingDAOVO;
 import com.cmap.model.SysConfigSetting;
@@ -21,7 +21,8 @@ import com.cmap.model.SysConfigSetting;
 @Repository
 @Transactional
 public class SysConfigSettingDAOImpl extends BaseDaoHibernate implements SysConfigSettingDAO {
-	private static Logger log = LoggerFactory.getLogger(SysConfigSettingDAOImpl.class);
+	@Log
+	private static Logger log;
 	
 	@Override
 	public SysConfigSetting findSysConfigSettingById(String settingId) {

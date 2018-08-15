@@ -1,4 +1,4 @@
-package com.cmap.configuration;
+package com.cmap.configuration.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

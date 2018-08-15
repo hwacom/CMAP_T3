@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.exception.CommandExecuteException;
 import com.cmap.exception.ConnectionException;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.ConnectUtils;
@@ -27,7 +28,8 @@ import net.sf.expectit.Expect;
 import net.sf.expectit.ExpectBuilder;
 
 public class SshUtils implements ConnectUtils {
-	private static Log log = LogFactory.getLog(SshUtils.class);
+	@Log
+	private static Logger log;
 	
 	private SSHClient ssh = null;
 
@@ -155,18 +157,22 @@ public class SshUtils implements ConnectUtils {
 	        						   .expect(contains(vo.getExpectedTerminalSymbol()))
 	        						   .getBefore();
 	        			
-	        			cmdOutputs.add(
-	        					vo.getRemark()
-	        						.concat(Env.COMM_SEPARATE_SYMBOL)
-	        						.concat(
-			        					cutContent(
-			        							output, 
-			        							StringUtils.isNotBlank(vo.getHeadCuttingLines()) ? Integer.valueOf(vo.getHeadCuttingLines()) : 0, 
-			        							StringUtils.isNotBlank(vo.getTailCuttingLines()) ? Integer.valueOf(vo.getTailCuttingLines()) : 0, 
-			        							System.lineSeparator()
-			        					)
-	        						)
-	        			);
+	        			if (!output.contains("Error")) {
+	        				cmdOutputs.add(
+		        					vo.getRemark()
+		        						.concat(Env.COMM_SEPARATE_SYMBOL)
+		        						.concat(
+				        					cutContent(
+				        							output, 
+				        							StringUtils.isNotBlank(vo.getHeadCuttingLines()) ? Integer.valueOf(vo.getHeadCuttingLines()) : 0, 
+				        							StringUtils.isNotBlank(vo.getTailCuttingLines()) ? Integer.valueOf(vo.getTailCuttingLines()) : 0, 
+				        							System.lineSeparator()
+				        					)
+		        						)
+		        			);
+	        			} else {
+	        				throw new CommandExecuteException("[Command execute failed!] >> output: " + output);
+	        			}
 	        			
 	        		} else {
 	        			expect.sendLine(
@@ -189,6 +195,8 @@ public class SshUtils implements ConnectUtils {
 	            session.close();
 	        }
 			
+		} catch (CommandExecuteException cee) {
+			throw cee;
 		} catch (Exception e) {
 			throw new Exception("[SSH send command failed] >> " + e.getMessage());
 		}

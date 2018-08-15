@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cmap.comm.ConnectionMode;
-import com.cmap.comm.Step;
+import com.cmap.comm.enums.ConnectionMode;
+import com.cmap.comm.enums.Step;
 
 public class Env {
 	
@@ -77,6 +77,10 @@ public class Env {
 	public static Integer FILES_UPLOAD_PER_BATCH_COUNT;
 	public static String UPLOAD_NEWEST_BACKUP_FILE_ONLY;
 	
+	public static Boolean TFTP_SERVER_AT_LOCAL;
+	public static String TFTP_TEMP_DIR_PATH;
+	public static String TFTP_LOCAL_ROOT_DIR_PATH;
+	
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
 		Step.LOAD_DEFAULT_SCRIPT, 
 		Step.FIND_DEVICE_CONNECT_INFO,
@@ -102,8 +106,21 @@ public class Env {
 		Step.DEFINE_OUTPUT_FILE_NAME,
 		Step.SEND_COMMANDS,
 		Step.CLOSE_DEVICE_CONNECTION,
+		Step.CONNECT_FILE_SERVER_4_UPLOAD,
+		Step.COMPARE_CONTENTS,
 		Step.COMPOSE_OUTPUT_VO,
 		Step.RECORD_DB
+	};
+	public static final Step[] DOWNLOAD_FILE_FROM_TFTP = new Step[] {
+		Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+		Step.DOWNLOAD_FILE,
+		Step.CLOSE_FILE_SERVER_CONNECTION
+	};
+	public static final Step[] DOWNLOAD_FILE_FROM_FTP = new Step[] {
+		Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+		Step.LOGIN_FILE_SERVER_4_DOWNLOAD,
+		Step.DOWNLOAD_FILE,
+		Step.CLOSE_FILE_SERVER_CONNECTION
 	};
 	public static final Step[] BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP = new Step[] {
 		Step.CONNECT_FILE_SERVER_4_DOWNLOAD,

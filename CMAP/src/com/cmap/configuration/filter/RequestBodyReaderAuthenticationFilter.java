@@ -1,10 +1,9 @@
-package com.cmap.configuration;
+package com.cmap.configuration.filter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -12,13 +11,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.utils.impl.PrtgApiUtils;
 
 public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-	private static Logger log = LoggerFactory.getLogger(RequestBodyReaderAuthenticationFilter.class);
-    private static final String ERROR_MESSAGE = "Something went wrong while parsing /login request body";
+	@Log
+	private static Logger log;
  
     public RequestBodyReaderAuthenticationFilter() {
     }

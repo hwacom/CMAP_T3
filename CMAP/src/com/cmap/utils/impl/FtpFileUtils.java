@@ -13,15 +13,16 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
 
 public class FtpFileUtils implements FileUtils {
-	private static Logger log = LoggerFactory.getLogger(FtpFileUtils.class);
+	@Log
+	private static Logger log;
 	
 	FTPClient ftp = null;
 	
@@ -62,9 +63,16 @@ public class FtpFileUtils implements FileUtils {
 	public boolean connect(final String hostIp, final Integer hostPort) throws Exception {
 		try {
 			if (ftp != null) {
-				ftp.connect(
-						StringUtils.isBlank(hostIp) ? Env.FTP_HOST_IP : hostIp,
-						hostPort == null ? Env.FTP_HOST_PORT : hostPort);
+				
+				if (hostPort != null || (hostPort == null && Env.FTP_HOST_PORT != null)) {
+					ftp.connect(
+							StringUtils.isBlank(hostIp) ? Env.FTP_HOST_IP : hostIp,
+							hostPort == null ? Env.FTP_HOST_PORT : hostPort);
+					
+				} else {
+					ftp.connect(
+							StringUtils.isBlank(hostIp) ? Env.FTP_HOST_IP : hostIp);
+				}
 				
 				ftp.setSoTimeout(Env.FTP_CONNECT_TIME_OUT);
 				
@@ -282,5 +290,17 @@ public class FtpFileUtils implements FileUtils {
 	public String downloadFilesString(ConfigInfoVO ciVO) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean deleteFiles(String targetDirPath, String fileName) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean moveFiles(ConfigInfoVO ciVO, String sourceDirPath, String targetDirPath) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

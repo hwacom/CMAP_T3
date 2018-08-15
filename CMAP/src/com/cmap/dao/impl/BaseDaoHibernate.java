@@ -39,7 +39,7 @@ public class BaseDaoHibernate extends HibernateDaoSupport {
 		return sb.toString();
 	}
 	
-	/*
+	/**
 	 * 因部分查詢SQL語法HQL不支援，採用Native SQL寫法，查詢結果為Object陣列List
 	 * 透過此方法將List<Object[]>轉換為List<ConfigVersionInfo>
 	 */
@@ -84,7 +84,7 @@ public class BaseDaoHibernate extends HibernateDaoSupport {
 		return retList;
 	}
 	
-	/*
+	/**
 	 * 因部分查詢SQL語法HQL不支援，採用Native SQL寫法，查詢結果為Object陣列List
 	 * 透過此方法將List<Object[]>轉換為List<ConfigVersionInfo>
 	 */

@@ -8,9 +8,9 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
+import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.model.DeviceList;
 import com.cmap.service.BaseJobService;
@@ -21,7 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @DisallowConcurrentExecution
 public class JobBackupConfig implements BaseJobService {
-	private static Logger log = LoggerFactory.getLogger(JobBackupConfig.class);
+	@Log
+	private static Logger log;
 	
 	private VersionService versionService;
 	

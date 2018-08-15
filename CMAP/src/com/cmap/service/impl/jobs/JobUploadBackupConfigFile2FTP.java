@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.service.BaseJobService;
 import com.cmap.service.StepService;
 import com.cmap.service.VersionService;
@@ -19,8 +20,10 @@ import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.VersionServiceVO;
 import com.cmap.utils.impl.ApplicationContextUtil;
 
+@DisallowConcurrentExecution
 public class JobUploadBackupConfigFile2FTP implements BaseJobService {
-	private static Logger log = LoggerFactory.getLogger(JobBackupConfig.class);
+	@Log
+	private static Logger log;
 	
 	private VersionService versionService;
 	

@@ -1,4 +1,4 @@
-package com.cmap.comm;
+package com.cmap.comm.enums;
 
 public enum OutputMethod {
 

@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.MenuItemDAO;
 import com.cmap.exception.AuthenticateException;
@@ -31,7 +31,8 @@ import com.cmap.utils.impl.PrtgApiUtils;
 @Service("commonService")
 @Transactional
 public class CommonServiceImpl implements CommonService {
-	private static Logger log = LoggerFactory.getLogger(CommonServiceImpl.class);
+	@Log
+	private static Logger log;
 
 	@Autowired
 	DeviceListDAO deviceListDAO;

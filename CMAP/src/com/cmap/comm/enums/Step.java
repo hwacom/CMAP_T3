@@ -1,4 +1,4 @@
-package com.cmap.comm;
+package com.cmap.comm.enums;
 
 public enum Step {
 
@@ -8,6 +8,7 @@ public enum Step {
 	CONNECT_DEVICE,
 	LOGIN_DEVICE,
 	SEND_COMMANDS,
+	COMPARE_CONTENTS,
 	DEFINE_OUTPUT_FILE_NAME,
 	COMPOSE_OUTPUT_VO,
 	CONNECT_FILE_SERVER_4_DOWNLOAD,
