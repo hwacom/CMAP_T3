@@ -31,53 +31,53 @@ public class SysEnvUtils implements EnvUtils {
 
 	@Autowired
 	private SysConfigSettingDAO sysConfigSettingDAO;
-	
+
 	private Map<String, List<String>> valueMap = null;
-	
+
 	/**
 	 * 初始化環境變數(Env)
 	 */
+	@Override
 	@PostConstruct
 	public void initEnv() throws Exception {
-		List<SysConfigSetting> modelList; 
+		List<SysConfigSetting> modelList;
 		try {
 			modelList = sysConfigSettingDAO.findAllSysConfigSetting(null, null);
-			
+
 			valueMap = null;
-			valueMap = new HashMap<String, List<String>>();
-			
+			valueMap = new HashMap<>();
+
 			List<String> tmpList = null;
 			for (SysConfigSetting scs : modelList) {
 				if (valueMap.containsKey(scs.getSettingName())) {
 					tmpList = valueMap.get(scs.getSettingName());
-					
+
 					if (tmpList == null) {
-						tmpList = new ArrayList<String>();
+						tmpList = new ArrayList<>();
 					}
 				} else {
-					tmpList = new ArrayList<String>();
+					tmpList = new ArrayList<>();
 				}
-				
+
 				tmpList.add(scs.getSettingValue());
 				valueMap.put(scs.getSettingName(), tmpList);
 			}
-			
+
 			mapping2Env(valueMap, true);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 將DB內設定值，動態依照Env參數型態將值塞入
 	 * @param sourceMap
 	 * @param initInstance
 	 */
 	private void mapping2Env(Map<String, List<String>> sourceMap, boolean initInstance) {
-		Map<String, Boolean> settingInitMap = new HashMap<String, Boolean>();
-		
+		Map<String, Boolean> settingInitMap = new HashMap<>();
+
 		Env env = new Env();
 		for (Entry<String, List<String>> entry : sourceMap.entrySet()) {
 			try {
@@ -85,73 +85,73 @@ public class SysEnvUtils implements EnvUtils {
 
 				if (dynamicClass.isAssignableFrom(String.class)) {
 					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0));
-					
+
 				} else if (dynamicClass.isAssignableFrom(Integer.class)) {
 					Env.class.getDeclaredField(entry.getKey()).set(env, entry.getValue().get(0) == null ? null : Integer.valueOf(entry.getValue().get(0)));
-					
+
 				} else if (dynamicClass.isAssignableFrom(Boolean.class)) {
 					Boolean trueOrFalse = StringUtils.equalsIgnoreCase(entry.getValue().get(0), "TRUE") ? Boolean.TRUE : Boolean.FALSE;
 					Env.class.getDeclaredField(entry.getKey()).set(env, trueOrFalse);
-				
+
 				} else if (dynamicClass.isAssignableFrom(ConnectionMode.class)) {
 					ConnectionMode cMode = null;
-					
+
 					switch (entry.getValue().get(0)) {
-						case Constants.FTP:
-							cMode = ConnectionMode.FTP;
-							break;
-						
-						case Constants.TFTP:
-							cMode = ConnectionMode.TFTP;
-							break;
+					case Constants.FTP:
+						cMode = ConnectionMode.FTP;
+						break;
+
+					case Constants.TFTP:
+						cMode = ConnectionMode.TFTP;
+						break;
 					}
-					
+
 					Env.class.getDeclaredField(entry.getKey()).set(env, cMode);
-					
+
 				} else if (dynamicClass.isAssignableFrom(List.class)) {
 					List list = (List)Env.class.getDeclaredField(entry.getKey()).get(null);
-					
+
 					if (initInstance) {
 						if (!settingInitMap.containsKey(entry.getKey())) {
 							list.removeAll(list);
 							settingInitMap.put(entry.getKey(), true);
 						}
 					}
-					
+
 					for (String value : entry.getValue()) {
 						list.add(value);
 					}
-					
+
 				} else if (dynamicClass.isAssignableFrom(Map.class)) {
 					Map map = (Map)Env.class.getDeclaredField(entry.getKey()).get(null);
-					
+
 					if (initInstance) {
 						if (!settingInitMap.containsKey(entry.getKey())) {
 							map.clear();
 							settingInitMap.put(entry.getKey(), true);
 						}
 					}
-					
+
 					for (String value : entry.getValue()) {
 						final String mapKey = value.split(Env.COMM_SEPARATE_SYMBOL)[0];
 						final String mapValue = value.split(Env.COMM_SEPARATE_SYMBOL)[1];
 						map.put(mapKey, mapValue);
 					}
 				}
-				
+
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 				//Mapping不到的不處理
-				e.printStackTrace();
+				log.error(e.toString(), e);
 			}
 		}
-		
+
 		//針對Base64編碼欄位進行解碼
 		if (Env.DECODE_FIELDS != null && !Env.DECODE_FIELDS.isEmpty()) {
 			final List<String> fields = Env.DECODE_FIELDS;
-			
-			List<String> refreshNames = new ArrayList<String>();
+
+			List<String> refreshNames = new ArrayList<>();
 			refreshNames.addAll(sourceMap.keySet());
-			
+
 			boolean needRefreshDecodeFields = false;
 			for (String rName : refreshNames) {
 				if (fields.contains(rName)) {
@@ -159,20 +159,20 @@ public class SysEnvUtils implements EnvUtils {
 					break;
 				}
 			}
-			
+
 			if (needRefreshDecodeFields) {
 				final Base64.Decoder decoder = Base64.getDecoder();
-				
+
 				for (String fName : fields) {
 					try {
 						String fValue = Objects.toString(Env.class.getDeclaredField(fName).get(env));
-						
+
 						if (StringUtils.isNotBlank(fValue)) {
 							Env.class.getDeclaredField(fName).set(env, new String(decoder.decode(fValue), Constants.CHARSET_UTF8));
 						}
-									
+
 					} catch (UnsupportedEncodingException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-						e.printStackTrace();
+						log.error(e.toString(), e);
 					}
 				}
 			}
@@ -192,41 +192,40 @@ public class SysEnvUtils implements EnvUtils {
 	 */
 	@Override
 	public void refreshByNames(List<String> settingNames) throws Exception {
-		List<SysConfigSetting> modelList; 
+		List<SysConfigSetting> modelList;
 		try {
 			if (valueMap == null) {
 				initEnv();
-				
+
 			} else {
-				Map<String, List<String>> tmpRefreshMap = new HashMap<String, List<String>>();
-				
+				Map<String, List<String>> tmpRefreshMap = new HashMap<>();
+
 				modelList = sysConfigSettingDAO.findSysConfigSettingByName(settingNames);
-				
+
 				List<String> tmpList = null;
 				for (SysConfigSetting scs : modelList) {
 					if (tmpRefreshMap.containsKey(scs.getSettingName())) {
 						tmpList = tmpRefreshMap.get(scs.getSettingName());
-						
+
 						if (tmpList == null) {
-							tmpList = new ArrayList<String>();
+							tmpList = new ArrayList<>();
 						}
-						
+
 					} else {
-						tmpList = new ArrayList<String>();
+						tmpList = new ArrayList<>();
 					}
-					
+
 					//若是刪除設定(Delete_Flag = Y)，則將環境變數值刷新為「null」
 					final String refreshVal = scs.getDeleteFlag().equals(Constants.DATA_MARK_DELETE) ? null : scs.getSettingValue();
 					tmpList.add(refreshVal);
 					tmpRefreshMap.put(scs.getSettingName(), tmpList);
 				}
-				
+
 				mapping2Env(tmpRefreshMap, true);
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
 		}
 	}
 

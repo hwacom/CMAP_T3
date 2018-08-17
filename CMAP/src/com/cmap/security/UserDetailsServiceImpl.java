@@ -29,54 +29,56 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	LoginService loginService;
 	@Autowired
 	SysLogService sysLogService;
-	*/
-	
+	 */
+
 	@Autowired
 	private HttpServletRequest request;
-	
-	//登陸驗證時，通過username獲取使用者的所有權限資訊，  
-    //並返回User放到spring的全域緩存SecurityContextHolder中，以供授權器使用
+
+	//登陸驗證時，通過username獲取使用者的所有權限資訊，
+	//並返回User放到spring的全域緩存SecurityContextHolder中，以供授權器使用
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		boolean isAdmin = request.getSession().getAttribute(Constants.ISADMIN) != null 
-								? (boolean)request.getSession().getAttribute(Constants.ISADMIN) : false;
-		String password = (String)request.getSession().getAttribute(Constants.PASSWORD);
-		String passhash = (String)request.getSession().getAttribute(Constants.PASSHASH);
-		String role = (String)request.getSession().getAttribute(Constants.USERROLE);
-		String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
-		
+		final boolean isAdmin = request.getSession().getAttribute(Constants.ISADMIN) != null
+									? (boolean)request.getSession().getAttribute(Constants.ISADMIN) : false;
+		final String password = (String)request.getSession().getAttribute(Constants.PASSWORD);
+		final String passhash = (String)request.getSession().getAttribute(Constants.PASSHASH);
+		final String ipAddr = (String)request.getSession().getAttribute(Constants.IP_ADDR);
+		final String role = (String)request.getSession().getAttribute(Constants.USERROLE);
+		final String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
+
 		if (StringUtils.equals(Env.LOGIN_AUTH_MODE, Constants.LOGIN_AUTH_MODE_PRTG)) {
 			if (!isAdmin && StringUtils.isBlank(passhash)) {
 				throw new UsernameNotFoundException("帳號或密碼輸入錯誤");
 			}
 		}
-		
+
 		User user = new User();
 		user.setUserName(username);
 		user.setPassword(password);
 		user.setRoles(roles);
 		user.setPasshash(passhash);
-		
+		user.setIp(ipAddr);
+
 		boolean accountEnabled = true;
 		boolean accountNonExpired = true;
-	    boolean credentialsNonExpired = true;
-	    boolean accountNonLocked = true;
+		boolean credentialsNonExpired = true;
+		boolean accountNonLocked = true;
 
 		SecurityUser securityUser = new SecurityUser(
 				user,
 				user.getUserName(),
 				new BCryptPasswordEncoder().encode(user.getPassword()),
-//				user.getPassword(),
+				//				user.getPassword(),
 				accountEnabled,
 				accountNonExpired,
 				credentialsNonExpired,
 				accountNonLocked,
 				getAuthorities(user.getRoles())
-			);
-//		sysLogService.saveSysLog(new SysLog(user, SysLogService.LOGIN));
+				);
+		//		sysLogService.saveSysLog(new SysLog(user, SysLogService.LOGIN));
 		return securityUser;
 	}
-	
+
 	public ArrayList<GrantedAuthority> getAuthorities(String... roles) {
 		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(roles.length);
 		for (String role : roles) {

@@ -54,7 +54,6 @@ public class VersionController extends BaseController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
 
 		} finally {
 			model.addAttribute("queryGroup1", "");
@@ -116,7 +115,7 @@ public class VersionController extends BaseController {
 			}
 
 			String versionId = vIdList.get(0).asText();
-			System.out.println("view >> versionId: " + versionId);
+			log.info("view >> versionId: " + versionId);
 
 			List<String> versionIDs = new ArrayList<>();
 			versionIDs.add(versionId);
@@ -178,7 +177,7 @@ public class VersionController extends BaseController {
 
 			List<String> versionIDs = new ArrayList<>();
 			for (JsonNode node : vIdList) {
-				System.out.println("view >> versionId: " + node.asText());
+				log.info("view >> versionId: " + node.asText());
 				versionIDs.add(node.asText());
 			}
 
@@ -424,7 +423,6 @@ public class VersionController extends BaseController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
 
 			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "備份失敗");
 

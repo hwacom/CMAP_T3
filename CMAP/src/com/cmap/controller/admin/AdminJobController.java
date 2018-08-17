@@ -32,57 +32,57 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Controller
 @RequestMapping("/admin/job")
 public class AdminJobController extends BaseController {
-	private static @Log Logger log;
-	
-	private static final String[] UI_TABLE_COLUMNS = 
+	@Log
+	private static Logger log;
+
+	private static final String[] UI_TABLE_COLUMNS =
 			new String[] {"","","qt.jobGroup","qt.jobName","qt.priority","qt.triggerState","qt.prevFireTime","qt.nextFireTime","qt.misfireInstr","qct.cronExpression","qct.timeZoneId","qjd.jobClassName","qjd.description"};
-	
+
 	@Autowired
 	JobService jobService;
 
 	@RequestMapping(value = "main", method = RequestMethod.GET)
 	public String adminJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-		
+
 		try {
-			
-			
+
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			
+
 		} finally {
 			model.addAttribute("inputSchedType", getMenuItem(Env.MENU_CODE_OF_SCHED_TYPE, true));
 			model.addAttribute("inputConfigType", getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true));
 			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MIS_FIRE_POLICY, true));
 		}
-		
-		log.error("********** This is a testing log");
+
 		return "admin/admin_job";
 	}
-	
+
 	@RequestMapping(value="save", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public AppResponse saveJob(
 			Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		JobServiceVO jsVO = new JobServiceVO();
 		try {
 			convertJson2POJO(jsVO, jsonData);
-			
+
 			if (StringUtils.isNotBlank(jsVO.getJobKeyName()) && StringUtils.isNotBlank(jsVO.getJobKeyGroup())) {
 				jobService.modifyJob(jsVO);
 				return new AppResponse(HttpServletResponse.SC_OK, "修改成功");
-				
+
 			} else {
 				jobService.addJob(jsVO);
 				return new AppResponse(HttpServletResponse.SC_OK, "新增成功");
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
+	}
 	/*
 	@RequestMapping(value="save", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
@@ -102,7 +102,7 @@ public class AdminJobController extends BaseController {
 			@RequestParam(name="inputMisFirePolicy", required=false) Integer inputMisFirePolicy,
 			@RequestParam(name="jobKeyName", required=false, defaultValue="") String jobKeyName,
 			@RequestParam(name="jobKeyGroup", required=false, defaultValue="") String jobKeyGroup) {
-		
+
 		JobServiceVO jsVO = null;
 		try {
 			jsVO = new JobServiceVO();
@@ -121,23 +121,23 @@ public class AdminJobController extends BaseController {
 			jsVO.setInputMisFirePolicy(inputMisFirePolicy);
 			jsVO.setJobKeyName(jobKeyName);
 			jsVO.setJobKeyGroup(jobKeyGroup);
-			
+
 			if (StringUtils.isNotBlank(jobKeyName) && StringUtils.isNotBlank(jobKeyGroup)) {
 				jobService.modifyJob(jsVO);
 				return new AppResponse(HttpServletResponse.SC_OK, "修改成功");
-				
+
 			} else {
 				jobService.addJob(jsVO);
 				return new AppResponse(HttpServletResponse.SC_OK, "新增成功");
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
     }
-    */
-	
+	 */
+
 	/**
 	 * 解析JSON data取得使用者選擇的JOB項目的Name & Group，for後續操作使用
 	 * @param jsonData
@@ -152,26 +152,26 @@ public class AdminJobController extends BaseController {
 			jsVO.setJobKeyGroup(jn.asText().split(Env.COMM_SEPARATE_SYMBOL)[1]);
 			jsVOList.add(jsVO);
 		}
-		
+
 		return jsVOList;
 	}
-	
+
 	@RequestMapping(value="modify", method = RequestMethod.POST, produces="application/json")
 	public @ResponseBody AppResponse modifyJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		try {
 			Map<String, Object> retMap = new HashMap<String, Object>();
 			JobServiceVO retVO;
-			
+
 			List<JobServiceVO> inputVOs = retrieveKeyVal(jsonData);
 			if (inputVOs.size() != 1) {
 				return new AppResponse(HttpServletResponse.SC_FORBIDDEN, "修改僅允許勾選一項，請重新選擇");
 			}
-			
+
 			JobServiceVO jsVO = inputVOs.get(0);
 			retVO = jobService.findJobInfoByVO(jsVO).get(0);
-			
+
 			retMap.put("inputSchedType", retVO.getSchedType());
 			retMap.put("inputJobName", retVO.getJobName());
 			retMap.put("inputJobGroup", retVO.getJobGroup());
@@ -187,75 +187,75 @@ public class AdminJobController extends BaseController {
 			retMap.put("inputFtpPort", retVO.getFtpPort());
 			retMap.put("inputFtpAccount", retVO.getFtpAccount());
 			retMap.put("inputFtpPassword", retVO.getFtpPassword());
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
-	
+	}
+
 	@RequestMapping(value="excute", method = RequestMethod.POST, produces="application/json")
 	public @ResponseBody AppResponse excuteJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		try {
 			String msg = jobService.fireJobImmediately(retrieveKeyVal(jsonData));
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
-	
+	}
+
 	@RequestMapping(value="pause", method = RequestMethod.POST, produces="application/json")
 	public @ResponseBody AppResponse pauseJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		try {
 			String msg = jobService.pauseJob(retrieveKeyVal(jsonData));
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
-	
+	}
+
 	@RequestMapping(value="resume", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse resumeJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		try {
 			String msg = jobService.resumeJob(retrieveKeyVal(jsonData));
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
-	
+	}
+
 	@RequestMapping(value="delete", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse deleteJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
-		
+
 		try {
 			String msg = jobService.deleteJob(retrieveKeyVal(jsonData));
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, msg);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
 		}
-    }
-	
+	}
+
 	@RequestMapping(value = "getJobInfo.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse findDeviceListData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
@@ -264,7 +264,7 @@ public class AdminJobController extends BaseController {
 			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
 			@RequestParam(name="order[0][column]", required=false, defaultValue="") Integer orderColIdx,
 			@RequestParam(name="order[0][dir]", required=false, defaultValue="") String orderDirection) {
-		
+
 		long total = 0;
 		long filterdTotal = 0;
 		List<JobServiceVO> dataList = new ArrayList<JobServiceVO>();
@@ -273,7 +273,7 @@ public class AdminJobController extends BaseController {
 			jsVO = new JobServiceVO();
 			jsVO.setStartNum(startNum);
 			jsVO.setPageLength(pageLength);
-			
+
 			if (StringUtils.isNotBlank(searchValue)) {
 				jsVO.setSearchValue(searchValue);
 			}
@@ -281,36 +281,35 @@ public class AdminJobController extends BaseController {
 				jsVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
 				jsVO.setOrderDirection(orderDirection);
 			}
-			
+
 			filterdTotal = jobService.countJobInfoByVO(jsVO);
-			
+
 			if (filterdTotal > 0) {
 				dataList = jobService.findJobInfoByVO(jsVO);
 			}
-			
+
 			total = jobService.countJobInfoByVO(null);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
 		}
-		
+
 		return new DatatableResponse(total, dataList, filterdTotal);
 	}
-	
+
 	@RequestMapping(value = "getJobDetails.json", method = RequestMethod.POST)
 	public @ResponseBody AppResponse findJobDetails(
 			Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="jobKeyName", required=false, defaultValue="") String jobKeyName,
 			@RequestParam(name="jobKeyGroup", required=false, defaultValue="") String jobKeyGroup) {
-		
+
 		try {
 			JobServiceVO jsVO = new JobServiceVO();
 			jsVO.setJobKeyName(jobKeyName);
 			jsVO.setJobKeyGroup(jobKeyGroup);
-			
+
 			jsVO = jobService.findJobDetails(jsVO);
-			
+
 			Map<String, Object> retMap = new HashMap<String, Object>();
 			if (jsVO != null) {
 				retMap.put("schedType", jsVO.getSchedType());
@@ -318,20 +317,20 @@ public class AdminJobController extends BaseController {
 				retMap.put("configType", jsVO.getConfigType());
 				retMap.put("groupId", jsVO.getGroupIdsStr());
 				retMap.put("deviceId", jsVO.getDeviceIdsStr());
-				
+
 				retMap.put("ftpName", jsVO.getFtpName());
 				retMap.put("ftpHost", jsVO.getFtpHost());
 				retMap.put("ftpPort", jsVO.getFtpPort());
 				retMap.put("ftpAccount", jsVO.getFtpAccount());
 				retMap.put("ftpPassword", jsVO.getFtpPassword());
 			}
-			
+
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);
-			
+
 		} catch (Exception e) {
-			
+
 		}
-		
+
 		return null;
 	}
 }

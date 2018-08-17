@@ -13,30 +13,33 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CloseableHttpClientUtils {
+	private static Logger log = LoggerFactory.getLogger(CloseableHttpClientUtils.class);
 
 	public static org.apache.http.impl.client.CloseableHttpClient prepare() {
 		SSLContext sslContext;
 		try {
 			sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
-	        HttpClientBuilder builder = HttpClientBuilder.create();
-	        
-	        //不處理SSL驗證問題
-	        SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-	        builder.setSSLSocketFactory(sslConnectionFactory);
-	        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-	                .register("https", sslConnectionFactory)
-	                .register("http", new PlainConnectionSocketFactory())
-	                .build();
-	        HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
-	        builder.setConnectionManager(ccm);
-	        return builder.build();
-	        
+			HttpClientBuilder builder = HttpClientBuilder.create();
+
+			//不處理SSL驗證問題
+			SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+			builder.setSSLSocketFactory(sslConnectionFactory);
+			Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+					.register("https", sslConnectionFactory)
+					.register("http", new PlainConnectionSocketFactory())
+					.build();
+			HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+			builder.setConnectionManager(ccm);
+			return builder.build();
+
 		} catch (Exception e) {
-	    	e.printStackTrace();
-	    }
-		
+			log.error(e.toString(), e);
+		}
+
 		return null;
 	}
 }

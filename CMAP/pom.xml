@@ -63,24 +63,24 @@
 	<dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-core</artifactId>
-		<version>5.2.12.Final</version>
+		<version>5.3.5.Final</version>
 	</dependency>
 	<dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-validator</artifactId>
-		<version>6.0.7.Final</version>
+		<version>6.0.12.Final</version>
 	</dependency>
 	<!-- MySQL -->
 	<dependency>
 		<groupId>mysql</groupId>
 		<artifactId>mysql-connector-java</artifactId>
-		<version>6.0.6</version>
+		<version>8.0.12</version>
 	</dependency>
 	<!-- Servlet -->
 	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>javax.servlet-api</artifactId>
-		<version>4.0.0</version>
+		<version>4.0.1</version>
 		<scope>provided</scope>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
@@ -100,7 +100,7 @@
 	<dependency>
 		<groupId>org.hibernate</groupId>
 		<artifactId>hibernate-c3p0</artifactId>
-		<version>5.2.12.Final</version>
+		<version>5.3.5.Final</version>
 	</dependency>
 
 	<!-- c3p0 -->
@@ -137,23 +137,44 @@
 		<version>5.0.7.RELEASE</version>
 	</dependency>
 	<!-- Logging -->
+	<!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>jcl-over-slf4j</artifactId>
+	    <version>1.8.0-beta2</version>
+	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+	<!-- Top: 抽象層 -->
 	<dependency>
 	    <groupId>org.slf4j</groupId>
 	    <artifactId>slf4j-api</artifactId>
-	    <version>1.8.0-beta2</version>
+	    <version>1.7.25</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+	<!-- Middle: 中間層 -->
 	<dependency>
 	    <groupId>org.slf4j</groupId>
 	    <artifactId>slf4j-log4j12</artifactId>
-	    <version>1.8.0-beta2</version>
+	    <version>1.7.25</version>
 	    <scope>test</scope>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+	<!-- Bottom:實現層(core+api+web) --> 
 	<dependency>
 	    <groupId>org.apache.logging.log4j</groupId>
 	    <artifactId>log4j-core</artifactId>
+	    <version>2.11.1</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>2.11.1</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-web -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-web</artifactId>
 	    <version>2.11.1</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
@@ -301,6 +322,24 @@
 	    <groupId>net.sf.expectit</groupId>
 	    <artifactId>expectit-core</artifactId>
 	    <version>0.9.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/cglib/cglib -->
+	<dependency>
+	    <groupId>cglib</groupId>
+	    <artifactId>cglib</artifactId>
+	    <version>3.2.7</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+	<dependency>
+	    <groupId>org.aspectj</groupId>
+	    <artifactId>aspectjrt</artifactId>
+	    <version>1.9.1</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+	<dependency>
+	    <groupId>org.aspectj</groupId>
+	    <artifactId>aspectjweaver</artifactId>
+	    <version>1.9.1</version>
 	</dependency>
    </dependencies>
 </project>

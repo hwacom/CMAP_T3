@@ -16,26 +16,30 @@ public class ConfigInfoVO implements Cloneable {
 	private String fileFullName;
 	private String systemVersion;
 	private String configType;
-	
+
 	private String deviceIp;
 	private String account;
 	private String password;
 	private String enablePassword;
-	
+
 	private String tFtpIP;
 	private Integer tFtpPort;
 	private String tFtpAccount;
 	private String tFtpPassword;
 	private String tFtpFilePath;
-	
+
 	private String ftpIP;
 	private Integer ftpPort;
 	private String ftpAccount;
 	private String ftpPassword;
 
+	private String times;
+	private String tempFilePath;
+	private String tempFileRandomCode;
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-	    return super.clone();
+		return super.clone();
 	}
 
 	public String getGroupId() {
@@ -228,5 +232,29 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setConfigContentList(List<String> configContentList) {
 		this.configContentList = configContentList;
+	}
+
+	public String getTempFileRandomCode() {
+		return tempFileRandomCode;
+	}
+
+	public void setTempFileRandomCode(String tempFileRandomCode) {
+		this.tempFileRandomCode = tempFileRandomCode;
+	}
+
+	public String getTempFilePath() {
+		return tempFilePath;
+	}
+
+	public void setTempFilePath(String tempFilePath) {
+		this.tempFilePath = tempFilePath;
+	}
+
+	public String getTimes() {
+		return times;
+	}
+
+	public void setTimes(String times) {
+		this.times = times;
 	}
 }

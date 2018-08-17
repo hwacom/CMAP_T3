@@ -5,19 +5,23 @@ import java.io.PrintStream;
 import java.util.List;
 
 import org.apache.commons.net.telnet.TelnetClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmap.Env;
 import com.cmap.dao.vo.ScriptListDAOVO;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.StepServiceVO;
 import com.cmap.utils.ConnectUtils;
 
 public class TelnetUtils implements ConnectUtils {
-	
+	private static Logger log = LoggerFactory.getLogger(TelnetUtils.class);
+
 	private TelnetClient telnet = null;
 	private InputStream in;
 	private PrintStream out;
 	private final String prompt = "$";
-	
+
 	public TelnetUtils() throws Exception {
 		if (telnet == null) {
 			telnet = new TelnetClient();
@@ -25,19 +29,19 @@ public class TelnetUtils implements ConnectUtils {
 			telnet.setDefaultTimeout(Env.TELNET_DEFAULT_TIME_OUT);
 		}
 	}
-	
+
 	private void checkTelnetStatus() throws Exception {
 		boolean conError = false;
-		
+
 		if (telnet == null) {
 			conError = true;
-			
+
 		} else {
 			if (!telnet.isConnected() || !telnet.isAvailable()) {
 				conError = true;
 			}
 		}
-		
+
 		if (conError) {
 			throw new Exception("Telnet connect interrupted!");
 		}
@@ -49,49 +53,48 @@ public class TelnetUtils implements ConnectUtils {
 		try {
 			if (telnet != null) {
 				telnet.connect("192.168.26.254", 23);
-				System.out.println("Telnet connect success!");
-				
+				log.info("Telnet connect success!");
+
 				in = telnet.getInputStream();
 				out = new PrintStream(telnet.getOutputStream());
-				
+
 				readUntil("Username: ");
 				write("cisco");
-				
+
 				readUntil("Password: ");
 				write("cisco");
-				
+
 				readUntil(">");
 				write("enable");
-				
+
 				readUntil("Password: ");
 				write("cisco");
-				
+
 				readUntil("#");
 				write("terminal length 0");
-				
+
 				readUntil("#");
 				write("show running-config");
-				
+
 				readUntil("#");
-				
+
 				result = true;
 			}
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	public boolean login(final String account, final String password) throws Exception {
-		boolean result = false;
 		try {
-			
-			
+
+
 		} catch (Exception e) {
-			
+
 		}
 		return false;
 	}
@@ -100,60 +103,59 @@ public class TelnetUtils implements ConnectUtils {
 		try {
 			out.println(cmd);
 			out.flush();
-			System.out.println("cmd: "+cmd);
-			
+			log.info("cmd: "+cmd);
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.toString(), e);
 		}
 	}
-	
+
 	private String readUntil(String pattern) throws Exception {
 		StringBuffer sb = new StringBuffer();
 		try {
 			char lastChar = pattern.charAt(pattern.length()-1);
 			char ch = (char)in.read();
-			
+
 			int runTime = 0;
-			System.out.println("<readUntil>******************************************************************");
+			log.info("<readUntil>******************************************************************");
 			while (true) {
 				sb.append(ch);
-				System.out.print(ch);
-				
+				log.info(String.valueOf(ch));
+
 				if (ch == lastChar) {
 					if (sb.toString().endsWith(pattern)) {
-						System.out.println("");
-						System.out.println("</readUntil>******************************************************************");
+						log.info("");
+						log.info("</readUntil>******************************************************************");
 						return sb.toString();
 					}
 				}
-				
+
 				if (runTime > 10000) {
 					return sb.toString();
 				}
-				
+
 				ch = (char)in.read();
 				runTime++;
 			}
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.toString(), e);
 			throw e;
 		}
 	}
-	
+
 	@Override
-	public List<String> sendCommands(List<ScriptListDAOVO> scriptList, ConfigInfoVO configInfoVO) throws Exception {
+	public List<String> sendCommands(List<ScriptListDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		try {
 			checkTelnetStatus();
-			
+
 			String cmd = "show running-config";
 			write(cmd);
-//			return readUntil("end");
+			//			return readUntil("end");
 			return null;
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			
+			log.error(e.toString(), e);
 			throw e;
 		}
 	}
@@ -173,11 +175,11 @@ public class TelnetUtils implements ConnectUtils {
 				telnet.disconnect();
 				result = true;
 			}
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.toString(), e);
 		}
-		
+
 		return result;
 	}
 

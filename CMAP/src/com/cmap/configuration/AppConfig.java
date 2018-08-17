@@ -34,99 +34,99 @@ import com.cmap.utils.impl.SysEnvUtils;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.cmap")
 public class AppConfig implements WebMvcConfigurer {
-    
-    /*
-    * Register BeanNameViewResolver for pdf
-    * */
-    @Bean
-    public ViewResolver beanNameViewResolver() {
-        BeanNameViewResolver resolver = new BeanNameViewResolver();
-        resolver.setOrder(0);
-        return resolver;
-    }
-    
-    @Bean
-    public ViewResolver viewResolver() {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/WEB-INF/views/");
-        viewResolver.setSuffix(".jsp");
-        viewResolver.setOrder(1);
-        return viewResolver;
-    }
-    
-    /*
-     * Create SpringResourceTemplateResolver
-     * */
-    @Bean
-    public SpringResourceTemplateResolver templateResolver() {
-       SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-//       templateResolver.setApplicationContext(applicationContext);
-       templateResolver.setPrefix("/WEB-INF/views/");
-       templateResolver.setSuffix(".html");
-       templateResolver.setOrder(2);
-       return templateResolver;
-    }
-     
-    /*
-    * Create SpringTemplateEngine
-    * */
-    @Bean
-    public SpringTemplateEngine templateEngine() {
-    	SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-    	templateEngine.setTemplateResolver(templateResolver());
-    	templateEngine.setEnableSpringELCompiler(true);
-    	return templateEngine;
-    }
 
-    /*
-    * Register ThymeleafViewResolver
-    * */
-    @Override
-    public void configureViewResolvers(ViewResolverRegistry registry) {
-    	ThymeleafViewResolver resolver = new ThymeleafViewResolver();
-    	resolver.setTemplateEngine(templateEngine());
-    	registry.viewResolver(resolver);
-    }
+	/*
+	 * Register BeanNameViewResolver for pdf
+	 * */
+	@Bean
+	public ViewResolver beanNameViewResolver() {
+		BeanNameViewResolver resolver = new BeanNameViewResolver();
+		resolver.setOrder(0);
+		return resolver;
+	}
 
-    
-//    @Bean
-//    public MessageSource messageSource() {
-//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//        messageSource.setBasename("messages");
-//        return messageSource;
-//    }
+	@Bean
+	public ViewResolver viewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/WEB-INF/views/");
+		viewResolver.setSuffix(".jsp");
+		viewResolver.setOrder(1);
+		return viewResolver;
+	}
 
-    @Bean
-    public MessageSource propertiesMessageSource() {
-        ResourceBundleMessageSource propertiesMessageSource = new ResourceBundleMessageSource();
-        propertiesMessageSource.setBasenames("messages");
-        propertiesMessageSource.setDefaultEncoding("utf8");
-        return propertiesMessageSource;
-    }
+	/*
+	 * Create SpringResourceTemplateResolver
+	 * */
+	@Bean
+	public SpringResourceTemplateResolver templateResolver() {
+		SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+		//       templateResolver.setApplicationContext(applicationContext);
+		templateResolver.setPrefix("/WEB-INF/views/");
+		templateResolver.setSuffix(".html");
+		templateResolver.setOrder(2);
+		return templateResolver;
+	}
 
-    @Bean
-    public CookieLocaleResolver localeResolver() {
-        CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
-        cookieLocaleResolver.setDefaultLocale(new Locale("zh", "TW"));
-//        cookieLocaleResolver.setCookieName(Constants.CMP_LANGUAGE);
-        return cookieLocaleResolver;
-    }
+	/*
+	 * Create SpringTemplateEngine
+	 * */
+	@Bean
+	public SpringTemplateEngine templateEngine() {
+		SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+		templateEngine.setTemplateResolver(templateResolver());
+		templateEngine.setEnableSpringELCompiler(true);
+		return templateEngine;
+	}
 
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
-        localeChangeInterceptor.setParamName("locale");
-        return localeChangeInterceptor;
-    }
-    
-    public EnvUtils initEnv() {
-    	EnvUtils envUtils = new SysEnvUtils();
-    	return envUtils;
-    }
-    
-    
-    @Bean
+	/*
+	 * Register ThymeleafViewResolver
+	 * */
+	@Override
+	public void configureViewResolvers(ViewResolverRegistry registry) {
+		ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+		resolver.setTemplateEngine(templateEngine());
+		registry.viewResolver(resolver);
+	}
+
+
+	//    @Bean
+	//    public MessageSource messageSource() {
+	//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+	//        messageSource.setBasename("messages");
+	//        return messageSource;
+	//    }
+
+	@Bean
+	public MessageSource propertiesMessageSource() {
+		ResourceBundleMessageSource propertiesMessageSource = new ResourceBundleMessageSource();
+		propertiesMessageSource.setBasenames("messages");
+		propertiesMessageSource.setDefaultEncoding("utf8");
+		return propertiesMessageSource;
+	}
+
+	@Bean
+	public CookieLocaleResolver localeResolver() {
+		CookieLocaleResolver cookieLocaleResolver = new CookieLocaleResolver();
+		cookieLocaleResolver.setDefaultLocale(new Locale("zh", "TW"));
+		//        cookieLocaleResolver.setCookieName(Constants.CMP_LANGUAGE);
+		return cookieLocaleResolver;
+	}
+
+	@Bean
+	public LocaleChangeInterceptor localeChangeInterceptor() {
+		LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+		localeChangeInterceptor.setParamName("locale");
+		return localeChangeInterceptor;
+	}
+
+	public EnvUtils initEnv() {
+		EnvUtils envUtils = new SysEnvUtils();
+		return envUtils;
+	}
+
+
+	@Bean
 	public DatabaseMessageSourceBase messageSource() {
 		DatabaseMessageSourceBase messageSource = new DatabaseMessageSourceBase();
 		messageSource.setParentMessageSource(propertiesMessageSource());
@@ -138,7 +138,7 @@ public class AppConfig implements WebMvcConfigurer {
 		I18nDAO i18nDAO = new I18nDAOImpl();
 		return i18nDAO;
 	}
-    
+
 	/*
 	@Bean
 	public JavaMailSenderImpl javaMailSenderImpl(){
@@ -157,22 +157,22 @@ public class AppConfig implements WebMvcConfigurer {
 		prop.setProperty("mail.debug", "false");
 		return mailSender;
 	}
-	*/
-    
+	 */
+
 	@Bean
 	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        characterEncodingFilter.setForceEncoding(true);
-        return characterEncodingFilter;
+		characterEncodingFilter.setEncoding("UTF-8");
+		characterEncodingFilter.setForceEncoding(true);
+		return characterEncodingFilter;
 	}
-    
-    @Override
+
+	@Override
 	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-	    registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
-    
-    /*
+
+	/*
     @Bean
     public MultipartResolver multipartResolver() {
        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
@@ -180,5 +180,5 @@ public class AppConfig implements WebMvcConfigurer {
        multipartResolver.setMaxUploadSizePerFile(1048576000); // 100MB
        return multipartResolver;
     }
-    */
-}	
+	 */
+}

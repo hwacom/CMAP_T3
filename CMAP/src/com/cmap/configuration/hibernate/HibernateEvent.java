@@ -13,18 +13,19 @@ import org.springframework.context.annotation.Configuration;
 public class HibernateEvent {
 
 	@Autowired
-    private SessionFactory sessionFactory;  
-    @Autowired  
-    private HibernateEventListener hibernateEventListener;  
-      
-    @PostConstruct 
-    public void registerListeners() {  
-        EventListenerRegistry registry = (
-        			(SessionFactoryImpl) sessionFactory
-        		).getServiceRegistry().getService(EventListenerRegistry.class);  
-        
-        registry.getEventListenerGroup(EventType.POST_COMMIT_INSERT).appendListener(hibernateEventListener);//对实体保存的监听
-        registry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(hibernateEventListener);//对实体修改的监听
-        registry.getEventListenerGroup(EventType.POST_COMMIT_DELETE).appendListener(hibernateEventListener);//对实体删除的监听
-    }   
+	private SessionFactory sessionFactory;
+
+	@Autowired
+	private HibernateEventListener hibernateEventListener;
+
+	@PostConstruct
+	public void registerListeners() {
+		EventListenerRegistry registry = (
+				(SessionFactoryImpl) sessionFactory
+				).getServiceRegistry().getService(EventListenerRegistry.class);
+
+		registry.getEventListenerGroup(EventType.POST_COMMIT_INSERT).appendListener(hibernateEventListener);//对实体保存的监听
+		registry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(hibernateEventListener);//对实体修改的监听
+		registry.getEventListenerGroup(EventType.POST_COMMIT_DELETE).appendListener(hibernateEventListener);//对实体删除的监听
+	}
 }

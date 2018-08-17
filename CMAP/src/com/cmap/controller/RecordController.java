@@ -25,33 +25,32 @@ public class RecordController extends BaseController {
 		Map<String, String> deviceListMap = null;
 		try {
 			groupListMap = getGroupList(request);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			e.printStackTrace();
-			
+
 		} finally {
 			model.addAttribute("group", "");
 			model.addAttribute("groupList", groupListMap);
-			
+
 			model.addAttribute("device", "");
 			model.addAttribute("deviceList", deviceListMap);
 		}
 	}
-	
+
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String main(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-		
+
 		try {
-			
-			
+
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			
+
 		} finally {
 			initMenu(model, request);
 		}
-		
+
 		return "record/record_main";
 	}
 }

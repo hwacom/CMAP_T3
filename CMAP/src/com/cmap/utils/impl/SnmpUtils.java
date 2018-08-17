@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cmap.dao.vo.ScriptListDAOVO;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.StepServiceVO;
 import com.cmap.utils.ConnectUtils;
 
 public class SnmpUtils implements ConnectUtils {
@@ -21,7 +22,7 @@ public class SnmpUtils implements ConnectUtils {
 	}
 
 	@Override
-	public List<String> sendCommands(List<ScriptListDAOVO> scriptList, ConfigInfoVO configInfoVO) throws Exception {
+	public List<String> sendCommands(List<ScriptListDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

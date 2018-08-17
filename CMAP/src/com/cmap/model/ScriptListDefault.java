@@ -13,11 +13,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(
-	name = "script_list_default",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"script_list_id"})
-	}
-)
+		name = "script_list_default",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = {"script_list_id"})
+		}
+		)
 public class ScriptListDefault {
 
 	@Id
@@ -25,58 +25,61 @@ public class ScriptListDefault {
 	@GenericGenerator(name = "uuid", strategy = "uuid")
 	@Column(name = "script_list_id", unique = true)
 	private String scriptListId;
-	
+
 	@Column(name = "script_type_id", nullable = false)
 	private String scriptTypeId;
-	
+
 	@Column(name = "script_code", nullable = false)
 	private String scriptCode;
-	
+
 	@Column(name = "script_name", nullable = false)
 	private String scriptName;
-	
+
 	@Column(name = "script_step_order", nullable = false)
 	private String scriptStepOrder;
-	
+
 	@Column(name = "script_content", nullable = false)
 	private String scriptContent;
-	
+
 	@Column(name = "expected_terminal_symbol", nullable = true)
 	private String expectedTerminalSymbol;
-	
+
 	@Column(name = "output", nullable = true)
 	private String output;
-	
+
 	@Column(name = "head_cutting_lines", nullable = true)
 	private String headCuttingLines;
-	
+
 	@Column(name = "tail_cutting_lines", nullable = true)
 	private String tailCuttingLines;
-	
+
 	@Column(name = "remark", nullable = false)
 	private String remark;
-	
+
+	@Column(name = "error_symbol", nullable = false)
+	private String errorSymbol;
+
 	@Column(name = "script_description", nullable = false)
 	private String scriptDescription;
-	
+
 	@Column(name = "delete_flag", nullable = false)
 	private String deleteFlag;
-	
+
 	@Column(name = "delete_time", nullable = true)
 	private Timestamp deleteTime;
-	
+
 	@Column(name = "delete_by", nullable = true)
 	private String deleteBy;
-	
+
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
-	
+
 	@Column(name = "create_by", nullable = false)
 	private String createBy;
-	
+
 	@Column(name = "update_time", nullable = false)
 	private Timestamp updateTime;
-	
+
 	@Column(name = "update_by", nullable = false)
 	private String updateBy;
 
@@ -86,9 +89,9 @@ public class ScriptListDefault {
 
 	public ScriptListDefault(String scriptListId, String scriptTypeId, String scriptCode, String scriptName,
 			String scriptStepOrder, String scriptContent, String expectedTerminalSymbol, String output,
-			String headCuttingLines, String tailCuttingLines, String remark, String scriptDescription,
-			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy) {
+			String headCuttingLines, String tailCuttingLines, String remark, String errorSymbol,
+			String scriptDescription, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
+			String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.scriptListId = scriptListId;
 		this.scriptTypeId = scriptTypeId;
@@ -101,6 +104,7 @@ public class ScriptListDefault {
 		this.headCuttingLines = headCuttingLines;
 		this.tailCuttingLines = tailCuttingLines;
 		this.remark = remark;
+		this.errorSymbol = errorSymbol;
 		this.scriptDescription = scriptDescription;
 		this.deleteFlag = deleteFlag;
 		this.deleteTime = deleteTime;
@@ -197,6 +201,14 @@ public class ScriptListDefault {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getErrorSymbol() {
+		return errorSymbol;
+	}
+
+	public void setErrorSymbol(String errorSymbol) {
+		this.errorSymbol = errorSymbol;
 	}
 
 	public String getScriptDescription() {

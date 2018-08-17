@@ -2,8 +2,8 @@ package com.cmap.dao.vo;
 
 public class ScriptListDAOVO {
 
-private String scriptListId;
-	
+	private String scriptListId;
+
 	private String scriptTypeId;
 	private String scriptCode;
 	private String scriptName;
@@ -15,7 +15,8 @@ private String scriptListId;
 	private String tailCuttingLines;
 	private String scriptDescription;
 	private String remark;
-	
+	private String errorSymbol;
+
 	public String getScriptListId() {
 		return scriptListId;
 	}
@@ -87,5 +88,11 @@ private String scriptListId;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getErrorSymbol() {
+		return errorSymbol;
+	}
+	public void setErrorSymbol(String errorSymbol) {
+		this.errorSymbol = errorSymbol;
 	}
 }
