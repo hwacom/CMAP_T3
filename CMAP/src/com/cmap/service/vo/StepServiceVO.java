@@ -5,9 +5,9 @@ import java.util.Date;
 
 import com.cmap.service.StepService;
 
-public class StepServiceVO {
+public class StepServiceVO extends CommonServiceVO {
 
-	private StepService.Result resutl;
+	private StepService.Result result;
 	private boolean success;
 	private String message;
 	private String cmdProcessLog;
@@ -26,7 +26,7 @@ public class StepServiceVO {
 
 		String toString =
 				"Action by: [" + actionBy + "] from IP: [" + actionFromIp + "] , "
-						+ "excute script code: [" + scriptCode + "] and result was: [" + resutl + "] , "
+						+ "excute script code: [" + scriptCode + "] and result was: [" + result + "] , "
 						+ "message: [" + message + "] , retry times: [" + retryTimes + "] , "
 						+ "time from: [" + (beginTime != null ? sdf.format(beginTime) : "") + "] "
 						+ "to: [" + (endTime != null ? sdf.format(endTime) : "") + "] , "
@@ -47,12 +47,6 @@ public class StepServiceVO {
 	}
 	public void setMessage(String message) {
 		this.message = message;
-	}
-	public StepService.Result getResutl() {
-		return resutl;
-	}
-	public void setResutl(StepService.Result resutl) {
-		this.resutl = resutl;
 	}
 	public String getCmdProcessLog() {
 		return cmdProcessLog;
@@ -107,5 +101,13 @@ public class StepServiceVO {
 	}
 	public void setRetryTimes(Integer retryTimes) {
 		this.retryTimes = retryTimes;
+	}
+
+	public StepService.Result getResult() {
+		return result;
+	}
+
+	public void setResult(StepService.Result result) {
+		this.result = result;
 	}
 }

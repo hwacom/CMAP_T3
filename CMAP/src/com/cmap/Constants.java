@@ -23,8 +23,8 @@ public class Constants {
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
 
+	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MI = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-	public static final SimpleDateFormat FORMAT_CONFIG_FILE_NAME = new SimpleDateFormat("yyyyMMddHHmm");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static final String FTP = "FTP";
@@ -34,6 +34,8 @@ public class Constants {
 
 	public static final String QUARTZ_SCHED_TYPE_BACKUP_CONFIG = "backupConfig";
 	public static final String QUARTZ_SCHED_TYPE_UPLOAD_BACKUP_CONFIG_FILE_2_FTP = "uploadBackupConfigFile2FTP";
+	public static final String QUARTZ_SCHED_TYPE_SYS_CHECK_UPDATE = "sysCheck4Update";
+	public static final String QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY = "sysCheck4Query";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE = "cleanUpFtpFile";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA = "cleanUpDbData";
 
@@ -48,6 +50,7 @@ public class Constants {
 	public static final String QUARTZ_PARA_FTP_PORT = "ftpPort";
 	public static final String QUARTZ_PARA_FTP_ACCOUNT = "ftpAccount";
 	public static final String QUARTZ_PARA_FTP_PASSWORD = "ftpPassword";
+	public static final String QUARTZ_PARA_SYS_CHECK_SQLS = "sysCheckSqls";
 
 	public static final String JSON_FIELD_SETTING_IDS = "settingIds";
 	public static final String JSON_FIELD_MODIFY_SETTING_NAME = "modifySettingName";
@@ -55,20 +58,29 @@ public class Constants {
 	public static final String JSON_FIELD_MODIFY_SETTING_REMARK = "modifySettingRemark";
 
 	public static final String DATA_MARK_DELETE = "Y";
-
 	public static final String DATA_MARK_NOT_DELETE = "N";
-
 	public static final String DATA_Y = "Y";
-
 	public static final String DATA_N = "N";
 
+	public static final String GROUP_ID = "GROUP_ID";
+	public static final String GROUP_NAME = "GROUP_NAME";
+	public static final String GROUP_ENG_NAME = "GROUP_ENG_NAME";
 	public static final String DEVICE_ID = "DEVICE_ID";
-
 	public static final String DEVICE_NAME = "DEVICE_NAME";
-
+	public static final String DEVICE_ENG_NAME = "DEVICE_ENG_NAME";
 	public static final String DEVICE_IP = "DEVICE_IP";
-
 	public static final String DEVICE_SYSTEM = "DEVICE_SYSTEM";
+
+	public static final String DIR_PATH_GROUP_ID = "[gID]";
+	public static final String DIR_PATH_GROUP_NAME = "[gName]";
+	public static final String DIR_PATH_DEVICE_ID = "[dID]";
+	public static final String DIR_PATH_DEVICE_NAME = "[dName]";
+	public static final String DIR_PATH_DEVICE_IP = "[dIP]";
+	public static final String DIR_PATH_DEVICE_SYSTEM = "[dSystem]";
+	public static final String DIR_PATH_CONFIG_TYPE = "[configType]";
+	public static final String DIR_PATH_DATE = "[date]";
+	public static final String DIR_PATH_SEQ_NO = "[seqNo]";
+	public static final String DIR_PATH_EXT_NAME = "[extName]";
 
 	public static final String FTP_FILE_SEPARATOR = "/";
 
@@ -89,18 +101,18 @@ public class Constants {
 	};
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_DEVICE = new String[] {
-			"device_list_id", "device_ip", "config_file_dir_path"
+			"device_list_id", "device_ip", "config_file_dir_path", "remote_file_dir_path"
 	};
 
 	public static final String[] HQL_FIELD_NAME_FOR_DEVICE = new String[] {
-			"deviceListId", "deviceIp", "configFileDirPath"
+			"deviceListId", "deviceIp", "configFileDirPath", "remoteFileDirPath"
 	};
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_DEVICE_2 = new String[] {
-			"device_list_id", "group_id", "group_name", "device_id", "device_name", "system_version", "device_ip", "config_file_dir_path"
+			"device_list_id", "group_id", "group_name", "device_id", "device_name", "system_version", "device_ip", "config_file_dir_path", "remote_file_dir_path"
 	};
 
 	public static final String[] HQL_FIELD_NAME_FOR_DEVICE_2 = new String[] {
-			"deviceListId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion","deviceIp", "configFileDirPath"
+			"deviceListId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion","deviceIp", "configFileDirPath", "remoteFileDirPath"
 	};
 }

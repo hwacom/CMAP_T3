@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.User;
 import com.cmap.prtg.PrtgDocument;
 import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2;
@@ -43,6 +44,12 @@ public class PrtgApiUtils implements ApiUtils {
 	@Override
 	public Map[] getGroupAndDeviceMenu(HttpServletRequest request) throws Exception {
 		Map[] retObj = null;
+		/*
+		 * groupDeviceMap >> MAP<Group_ID, Map<Device_ID, Map<Device詳細內容key, 詳細內容value>>>
+		 * deviceMap >> Map<Device_ID, Map<Device詳細內容key, 詳細內容value>>
+		 * deviceInfoMap >> Map<Device詳細內容key, 詳細內容value>
+		 * groupInfoMap >> Map<Group_ID, Group_Name>
+		 */
 		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<>();
 		Map<String, Map<String, String>> deviceMap = null;
 		Map<String, String> deviceInfoMap = null;
@@ -59,13 +66,20 @@ public class PrtgApiUtils implements ApiUtils {
 			if (StringUtils.isNotBlank(retVal)) {
 
 				PrtgDocument prtgDoc = PrtgDocument.Factory.parse(retVal);
-				Group2[] groups = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenode().getGroupArray();
+				Group2[] groups = null;
+
+				try {
+					groups = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenode().getGroupArray();
+
+				} catch (Exception e) {
+					throw new ServiceLayerException("取得PRTG API >> groupArray異常 :: "+e.toString());
+				}
 
 				groupInfoMap = new HashMap<>();
 				List<String> groupLabelList = new ArrayList<>();
 				List<String> groupValueList = new ArrayList<>();
 				for (Group2 group : groups) {
-					if (!group.getName().equals("Network Discovery")) {
+					if (!Env.PRTG_EXCLUDE_GROUP_NAME.contains(group.getName())) {
 
 						String groupId = String.valueOf(group.getId());	//群組ID
 						String groupName = group.getName();	//群組名稱
@@ -78,7 +92,7 @@ public class PrtgApiUtils implements ApiUtils {
 						Device[] devices = group.getDeviceArray();
 
 						for (Device device : devices) {
-							deviceInfoMap = composeDeviceInfoMap(device);	//組成裝置資訊MAP
+							deviceInfoMap = composeDeviceInfoMap(group, device);	//組成裝置資訊MAP
 
 							if (groupDeviceMap.containsKey(groupId)) {
 								groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), deviceInfoMap);
@@ -106,14 +120,18 @@ public class PrtgApiUtils implements ApiUtils {
 		return retObj;
 	}
 
-	private Map<String, String> composeDeviceInfoMap(Device device) {
+	private Map<String, String> composeDeviceInfoMap(Group2 group, Device device) {
 		Map<String, String> deviceInfoMap = null;
 		try {
 			deviceInfoMap = new HashMap<>();
+			deviceInfoMap.put(Constants.GROUP_ID, String.valueOf(group.getId()));
+			deviceInfoMap.put(Constants.GROUP_NAME, getName(group.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_NAME));
+			deviceInfoMap.put(Constants.GROUP_ENG_NAME, getName(group.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME));
 			deviceInfoMap.put(Constants.DEVICE_ID, String.valueOf(device.getId()));
-			deviceInfoMap.put(Constants.DEVICE_NAME, getDeviceName(device.getName()));
+			deviceInfoMap.put(Constants.DEVICE_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME));
+			deviceInfoMap.put(Constants.DEVICE_ENG_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME));
 			deviceInfoMap.put(Constants.DEVICE_IP, device.getHost());
-			deviceInfoMap.put(Constants.DEVICE_SYSTEM, getDeviceSystem(device.getName()));
+			deviceInfoMap.put(Constants.DEVICE_SYSTEM, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION));
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -160,18 +178,66 @@ public class PrtgApiUtils implements ApiUtils {
 		}
 	}
 
-	private String getDeviceName(String oriDeviceName) throws Exception {
+	private String getName(String oriName, final String WRAPPED_SYMBOL) throws Exception {
 		String retVal = "";
 
 		try {
 			/*
-			 * 原格式: 192.168.1.3 (R3) [Cisco Device Cisco IOS]
-			 * >>>>> ip_address (裝置名稱) [裝置作業系統]
-			 * >>>>> 分析取得(裝置名稱)
+			 * 原格式: 192.168.1.3 (1樓大廳) {1F_Lobby} [Cisco Device Cisco IOS]
+			 * >>>>> ip_address (裝置中文名稱) {裝置英文名稱} [裝置作業系統]
+			 * >>>>> 分析取得(裝置中文名稱)
 			 */
-			if (StringUtils.isNotBlank(oriDeviceName)) {
-				retVal = oriDeviceName.substring(
-						oriDeviceName.indexOf("(")+1, oriDeviceName.indexOf(")"));
+			if (StringUtils.isNotBlank(oriName)) {
+				if (StringUtils.isNotBlank(WRAPPED_SYMBOL)) {
+					final String head = WRAPPED_SYMBOL.substring(0, 1);
+					final String tail = WRAPPED_SYMBOL.substring(1, 2);
+
+					if (oriName.indexOf(head) != -1) {
+						oriName = oriName.substring(oriName.indexOf(head)+1, oriName.length());
+					}
+					if (oriName.indexOf(tail) != -1) {
+						oriName = oriName.substring(0, oriName.indexOf(tail));
+					}
+				}
+			}
+
+			retVal = oriName;
+
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return retVal;
+	}
+
+	/*
+	private String getGroupEngName(String oriGroupName, boolean includeSymbol) throws Exception {
+		String retVal = "";
+
+		try {
+			/*
+	 * 原格式: 192.168.1.3 (1樓大廳) {1F_Lobby} [Cisco Device Cisco IOS]
+	 * >>>>> ip_address (裝置中文名稱) {裝置英文名稱} [裝置作業系統]
+	 * >>>>> 分析取得{裝置英文名稱}
+			if (StringUtils.isNotBlank(oriGroupName)) {
+				if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME)) {
+					final String head = Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME.substring(0, 1);
+					final String tail = Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME.substring(1, 2);
+
+					retVal = oriGroupName.substring(
+							oriGroupName.indexOf(head)+1, oriGroupName.indexOf(tail));
+
+					if (includeSymbol) {
+						retVal = head.concat(retVal).concat(tail);
+					}
+
+				} else {
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_NAME)) {
+						oriGroupName = StringUtils.replace(oriGroupName, getGroupName(oriGroupName, true), "");
+					}
+
+					retVal = oriGroupName;
+				}
 			}
 
 		} catch (Exception e) {
@@ -181,18 +247,36 @@ public class PrtgApiUtils implements ApiUtils {
 		return retVal;
 	}
 
-	private String getDeviceSystem(String oriDeviceName) throws Exception {
+	private String getDeviceName(String oriDeviceName, boolean includeSymbol) throws Exception {
 		String retVal = "";
 
 		try {
 			/*
-			 * 原格式: 192.168.1.3 (R3) [Cisco Device Cisco IOS]
-			 * >>>>> ip_address (裝置名稱) [裝置作業系統]
-			 * >>>>> 分析取得[裝置作業系統]
-			 */
+	 * 原格式: 192.168.1.3 (1樓大廳) {1F_Lobby} [Cisco Device Cisco IOS]
+	 * >>>>> ip_address (裝置中文名稱) {裝置英文名稱} [裝置作業系統]
+	 * >>>>> 分析取得(裝置中文名稱)
 			if (StringUtils.isNotBlank(oriDeviceName)) {
-				retVal = oriDeviceName.substring(
-						oriDeviceName.indexOf("[")+1, oriDeviceName.indexOf("]"));
+				if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME)) {
+					final String head = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME.substring(0, 1);
+					final String tail = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME.substring(1, 2);
+
+					retVal = oriDeviceName.substring(
+							oriDeviceName.indexOf(head)+1, oriDeviceName.indexOf(tail));
+
+					if (includeSymbol) {
+						retVal = head.concat(retVal).concat(tail);
+					}
+
+				} else {
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceEngName(oriDeviceName, true), "");
+					}
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceSystem(oriDeviceName, true), "");
+					}
+
+					retVal = oriDeviceName;
+				}
 			}
 
 		} catch (Exception e) {
@@ -201,6 +285,85 @@ public class PrtgApiUtils implements ApiUtils {
 
 		return retVal;
 	}
+
+	private String getDeviceEngName(String oriDeviceName, boolean includeSymbol) throws Exception {
+		String retVal = "";
+
+		try {
+			/*
+	 * 原格式: 192.168.1.3 (1樓大廳) {1F_Lobby} [Cisco Device Cisco IOS]
+	 * >>>>> ip_address (裝置中文名稱) {裝置英文名稱} [裝置作業系統]
+	 * >>>>> 分析取得{裝置英文名稱}
+			if (StringUtils.isNotBlank(oriDeviceName)) {
+				if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME)) {
+					final String head = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME.substring(0, 1);
+					final String tail = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME.substring(1, 2);
+
+					retVal = oriDeviceName.substring(
+							oriDeviceName.indexOf(head)+1, oriDeviceName.indexOf(tail));
+
+					if (includeSymbol) {
+						retVal = head.concat(retVal).concat(tail);
+					}
+
+				} else {
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceName(oriDeviceName, true), "");
+					}
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceSystem(oriDeviceName, true), "");
+					}
+
+					retVal = oriDeviceName;
+				}
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return retVal;
+	}
+
+	private String getDeviceSystem(String oriDeviceName, boolean includeSymbol) throws Exception {
+		String retVal = "";
+
+		try {
+			/*
+	 * 原格式: 192.168.1.3 (1樓大廳) {1F_Lobby} [Cisco Device Cisco IOS]
+	 * >>>>> ip_address (裝置中文名稱) {裝置英文名稱} [裝置作業系統]
+	 * >>>>> 分析取得[裝置作業系統]
+			if (StringUtils.isNotBlank(oriDeviceName)) {
+				if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION)) {
+					final String head = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION.substring(0, 1);
+					final String tail = Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION.substring(1, 2);
+
+					retVal = oriDeviceName.substring(
+							oriDeviceName.indexOf(head)+1, oriDeviceName.indexOf(tail));
+
+					if (includeSymbol) {
+						retVal = head.concat(retVal).concat(tail);
+					}
+
+				} else {
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceName(oriDeviceName, true), "");
+					}
+					if (StringUtils.isNotBlank(Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME)) {
+						oriDeviceName = StringUtils.replace(oriDeviceName, getDeviceEngName(oriDeviceName, true), "");
+					}
+
+					retVal = oriDeviceName;
+				}
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return retVal;
+	}
+	 */
 
 	private String callPrtg(String apiUrl) throws Exception {
 		String resultStr = "";

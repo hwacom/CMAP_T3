@@ -33,6 +33,7 @@ import com.cmap.security.SecurityUtil;
 import com.cmap.service.StepService;
 import com.cmap.service.StepService.Result;
 import com.cmap.service.VersionService;
+import com.cmap.service.impl.jobs.BaseJobImpl;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.service.vo.VersionServiceVO;
@@ -244,6 +245,7 @@ public class VersionServiceImpl implements VersionService {
 
 			vsVO.setDeviceListId(dl.getDeviceListId());
 			vsVO.setConfigFileDirPath(dl.getConfigFileDirPath());
+			vsVO.setRemoteFileDirPath(dl.getRemoteFileDirPath());
 
 			retList.add(vsVO);
 		}
@@ -648,6 +650,8 @@ public class VersionServiceImpl implements VersionService {
 	public VersionServiceVO backupConfig(String configType, List<String> deviceListIDs, boolean jobTrigger) {
 		VersionServiceVO retVO = new VersionServiceVO();
 		final int totalCount = deviceListIDs.size();
+		retVO.setJobExcuteResultRecords(Integer.toString(totalCount));
+
 		int successCount = 0;
 		int errorCount = 0;
 		int noDiffCount = 0;
@@ -657,11 +661,19 @@ public class VersionServiceImpl implements VersionService {
 			for (String deviceListId : deviceListIDs) {
 				ssVO = stepService.doBackupStep(deviceListId, jobTrigger);
 
-				successCount += ssVO.isSuccess() && (ssVO.getResutl() != Result.NO_DIFFERENT) ? 1 : 0;
+				successCount += ssVO.isSuccess() && (ssVO.getResult() != Result.NO_DIFFERENT) ? 1 : 0;
 				errorCount += !ssVO.isSuccess() ? 1 : 0;
-				noDiffCount += ssVO.getResutl() == Result.NO_DIFFERENT ? 1 : 0;
+				noDiffCount += ssVO.getResult() == Result.NO_DIFFERENT ? 1 : 0;
 
 				log.info(ssVO.toString());
+			}
+
+			if ((successCount == deviceListIDs.size() || noDiffCount == deviceListIDs.size()) && errorCount == 0) {
+				retVO.setJobExcuteResult(BaseJobImpl.Result.SUCCESS);
+			} else if (errorCount == deviceListIDs.size()) {
+				retVO.setJobExcuteResult(BaseJobImpl.Result.FAILED);
+			} else {
+				retVO.setJobExcuteResult(BaseJobImpl.Result.PARTIAL_SUCCESS);
 			}
 
 		} catch (Exception e) {
@@ -692,6 +704,7 @@ public class VersionServiceImpl implements VersionService {
 		}
 
 		retVO.setRetMsg(CommonUtils.converMsg(msg, args));
+		retVO.setJobExcuteRemark(retVO.getRetMsg());
 
 		return retVO;
 	}

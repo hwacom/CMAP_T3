@@ -193,7 +193,7 @@
 		                </div>
 		                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID<span class="pull-right" style="color: red;">＊ </span></label>
 		            	<div class="col-md-4 col-sm-3">
-		            		<textarea rows="5" class="form-control form-control-sm" id="	" name="inputDeviceIds" placeholder="(1行1筆資料)"></textarea>
+		            		<textarea rows="5" class="form-control form-control-sm" id="inputDeviceIds" name="inputDeviceIds" placeholder="(1行1筆資料)"></textarea>
 		                </div>
 		            </div>
 	            </div>
@@ -237,6 +237,23 @@
 	            </div>
 	            <!-- [END]組態檔異地備援(FTP) -->
 	            
+	            <!-- 系統檢核 -->
+	            <div id="sec_sysCheck" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputSysCheckNames" class="col-12 col-form-label"><span style="color:blue">*** 系統檢核設定 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputSysCheckSql" class="col-md-2 col-sm-3 col-form-label">SQLs<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-10 col-sm-9">
+		            		<textarea rows="5" class="form-control form-control-sm" id="inputSysCheckSql" name="inputSysCheckSql" placeholder="多道SQL以「;」分隔"></textarea>
+		                </div>
+		            </div>
+	            </div>
+	            <!-- [END]系統檢核 -->
+	            
+	            <input type="hidden" id="jobKeyName" name="jobKeyName">
+	            <input type="hidden" id="jobKeyGroup" name="jobKeyGroup">
+	            
               </div>
 			</div>
 			<div class="modal-footer">
@@ -268,23 +285,29 @@
        	  
        	  	<div id="sec_detail_common" style="display: none">
        	  		<div class="form-group row">
-	            	<label for="inputJobName" class="col-md-2 col-sm-3 col-form-label">Config_Type:</label>
+	            	<label for="viewDetailSchedTypeName" class="col-md-2 col-sm-3 col-form-label">Sched_Type:</label>
 	            	<div class="col-md-10 col-sm-9">
-	            		<input type="text" class="form-control form-control-sm" id="viewDetailConfigType" readonly>
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailSchedTypeName" readonly>
 	            	</div>
 	            </div>           
 	        </div>
 	        
        	  	<!-- 組態檔備份 -->
        	  	<div id="sec_detail_backupConfig" style="display: none">
+       	  		<div class="form-group row">
+	            	<label for="viewDetailConfigType" class="col-md-2 col-sm-3 col-form-label">Config_Type:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailConfigType" readonly>
+	            	</div>
+	            </div>     
 	            <div class="form-group row">
-	            	<label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Group_ID:</label>
+	            	<label for="viewDetailGroupIds" class="col-md-2 col-sm-3 col-form-label">Group_ID:</label>
 	            	<div class="col-md-10 col-sm-9">
 	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailGroupIds" readonly></textarea>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="inputDeviceListIds" class="col-md-2 col-sm-3 col-form-label">Device_ID:</label>
+	                <label for="viewDetailDeviceIds" class="col-md-2 col-sm-3 col-form-label">Device_ID:</label>
 	            	<div class="col-md-10 col-sm-9">
 	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailDeviceIds" readonly></textarea>
 	                </div>
@@ -294,6 +317,12 @@
 	            
             <!-- 組態檔異地備援(FTP) -->
             <div id="sec_detail_uploadBackupConfigFile2FTP" style="display: none">
+            	<div class="form-group row">
+	            	<label for="viewDetailConfigType" class="col-md-2 col-sm-3 col-form-label">Config_Type:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<input type="text" class="form-control form-control-sm" id="viewDetailConfigType" readonly>
+	            	</div>
+	            </div>     
 	            <div class="form-group row">
 	            	<label for="viewDetailFtpName" class="col-md-2 col-sm-3 col-form-label">FTP_Name:</label>
 	            	<div class="col-md-10 col-sm-9">
@@ -326,6 +355,17 @@
 	            </div>
             </div>
             <!-- [END]組態檔異地備援(FTP) -->
+            
+            <!-- 系統檢核 -->
+       	  	<div id="sec_detail_sysCheck" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewDetailSysCheckSql" class="col-md-2 col-sm-3 col-form-label">SQL:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<textarea rows="5" class="form-control form-control-sm" id="viewDetailSysCheckSql" readonly></textarea>
+	                </div>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]系統檢核 -->
             
           </div>
 		</div>
@@ -391,7 +431,11 @@
 		$("div[id^=sec_]").hide();
 		
 		if (schedType !== '') {
-			$("#sec_"+schedType).show();
+			if (schedType.indexOf('sysCheck') != -1) {
+				$("#sec_sysCheck").show();
+			} else {
+				$("#sec_"+schedType).show();
+			}
 		}
 	}
 	
@@ -428,6 +472,10 @@
 					if (action == 'modify') {
 						$("#inputJobName").val(resp.data.inputJobName);
 						$("#inputJobGroup").val(resp.data.inputJobGroup);
+						
+						$("#jobKeyName").val(resp.data.inputJobName);
+						$("#jobKeyGroup").val(resp.data.inputJobGroup);
+						
 						$("#inputCronExpression").val(resp.data.inputCronExpression);
 						$("#inputGroupIds").val(resp.data.inputGroupIds);
 						$("#inputDeviceIds").val(resp.data.inputDeviceIds);
@@ -439,6 +487,8 @@
 						$("#inputFtpPort").val(resp.data.inputFtpPort);
 						$("#inputFtpAccount").val(resp.data.inputFtpAccount);
 						$("#inputFtpPassword").val(resp.data.inputFtpPassword);
+						
+						$("#inputSysCheckSql").val(resp.data.inputSysCheckSql);
 						
 						$("#inputMisFirePolicy option").filter(function() {
 						    return $(this).val() == resp.data.inputMisFirePolicy; 
@@ -482,9 +532,13 @@
 	}
 	
 	function saveJob(isModify) {
+		var disabled = $("#formEdit").find(':input:disabled').removeAttr('disabled');
+		var serialized = JSON.stringify($("#formEdit").serializeObject());
+		disabled.attr('disabled','disabled');
+		
 		$.ajax({
 			url : '${pageContext.request.contextPath}/admin/job/save',
-			data : JSON.stringify($("#formEdit").serializeObject()),
+			data : serialized,
 			contentType : 'application/json; charset=utf-8',
 			/*
 			headers: {
@@ -529,6 +583,7 @@
 				if (resp.code == '200') {
 					$("#jobDetailsModal").modal();
 					
+					$("#viewDetailSchedTypeName").val(resp.data.schedTypeName);
 					$("#viewDetailConfigType").val(resp.data.configType);
 					$("#viewDetailGroupIds").val(resp.data.groupId);
 					$("#viewDetailDeviceIds").val(resp.data.deviceId);
@@ -539,12 +594,19 @@
 					$("#viewDetailFtpAccount").val(resp.data.ftpAccount);
 					$("#viewDetailFtpPassword").val(resp.data.ftpPassword);
 					
+					$("#viewDetailSysCheckSql").val(resp.data.sysCheckSqls);
+					
 					const schedType = resp.data.schedType;
 					
 					$("div[id^=sec_detail_]").hide();
 					
 					if (schedType !== '') {
-						$("#sec_detail_"+schedType).show();
+						if (schedType.indexOf('sysCheck') != -1) {
+							$("#sec_detail_sysCheck").show();
+						} else {
+							$("#sec_detail_"+schedType).show();
+						}
+						
 						$("#sec_detail_common").show();
 					}
 					
@@ -655,7 +717,7 @@
 					},
 					{
 						"targets" : [2],
-						"className" : "center",
+						"className" : "left",
 						"searchable": false,
 						"orderable": false,
 						"render": function (data, type, row, meta) {

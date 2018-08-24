@@ -2,6 +2,8 @@ package com.cmap.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.service.vo.EnvServiceVO;
 
@@ -11,6 +13,11 @@ import com.cmap.service.vo.EnvServiceVO;
  *
  */
 public interface EnvService {
+
+	public static final String[] NEED_REFRESH_DEVICE_LIST_VARIABLES = new String[] {
+			"DEFAULT_LOCAL_DIR_GROUP_NAME", "DEFAULT_LOCAL_DIR_DEVICE_NAME",
+			"DEFAULT_REMOTE_DIR_GROUP_NAME", "DEFAULT_REMOTE_DIR_DEVICE_NAME"
+	};
 
 	/**
 	 * 取得查詢條件下資料筆數
@@ -35,7 +42,7 @@ public interface EnvService {
 	 * @param esVOs
 	 * @throws ServiceLayerException
 	 */
-	public String addOrModifyEnvSettings(List<EnvServiceVO> esVOs) throws ServiceLayerException;
+	public String addOrModifyEnvSettings(List<EnvServiceVO> esVOs, HttpServletRequest request) throws ServiceLayerException;
 
 	/**
 	 * 刪除 Sys_Config_Setting 資料

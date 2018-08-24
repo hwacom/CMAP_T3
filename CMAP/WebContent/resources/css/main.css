@@ -56,13 +56,13 @@ nav > ul > li {
   font-weight: normal;
 }
 
-.conpare-line {
+.compare-line {
   height: 400px;
   overflow: auto;
   white-space: nowrap;
 }
 
-.conpare-content {
+.compare-content {
   height: 400px;
   overflow-x: auto;
   overflow-y: hidden;

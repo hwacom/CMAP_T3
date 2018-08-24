@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -235,7 +236,7 @@ public class StepServiceImpl implements StepService {
 				psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
 
 				retVO.setSuccess(false);
-				retVO.setResutl(Result.ERROR);
+				retVO.setResult(Result.ERROR);
 				retVO.setMessage(e.toString());
 
 				retryRound = true;
@@ -247,7 +248,7 @@ public class StepServiceImpl implements StepService {
 		 * Provision_Log_Step
 		 */
 		psStepVO.setEndTime(new Date());
-		psStepVO.setResult(retVO.getResutl().toString());
+		psStepVO.setResult(retVO.getResult().toString());
 		psStepVO.setMessage(retVO.getMessage());
 		psStepVO.setRetryTimes(round-1);
 		psStepVO.setProcessLog(retVO.getCmdProcessLog());
@@ -256,7 +257,7 @@ public class StepServiceImpl implements StepService {
 		 * Provision_Log_Master
 		 */
 		psMasterVO.setEndTime(new Date());
-		psMasterVO.setResult(retVO.getResutl().toString());
+		psMasterVO.setResult(retVO.getResult().toString());
 		psMasterVO.setMessage(retVO.getMessage());
 		psMasterVO.getStepVO().add(psStepVO); // add StepVO to MasterVO
 
@@ -273,7 +274,10 @@ public class StepServiceImpl implements StepService {
 	}
 
 	@Override
-	public void doBackupFileUpload2FTPStep(List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean jobTrigger) {
+	public StepServiceVO doBackupFileUpload2FTPStep(List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean jobTrigger) {
+		StepServiceVO retVO = new StepServiceVO();
+		retVO.setJobExcuteResultRecords(Integer.toString(vsVOs.size()));
+
 		final int RETRY_TIMES = StringUtils.isNotBlank(Env.RETRY_TIMES) ? Integer.parseInt(Env.RETRY_TIMES) : 1;
 		int round = 1;
 
@@ -347,6 +351,8 @@ public class StepServiceImpl implements StepService {
 				}
 			}
 		}
+
+		return retVO;
 	}
 
 	/**
@@ -618,10 +624,10 @@ public class StepServiceImpl implements StepService {
 		}
 
 		if (!haveDiffVersion) {
-			ssVO.setResutl(Result.NO_DIFFERENT);
+			ssVO.setResult(Result.NO_DIFFERENT);
 			ssVO.setMessage("版本無差異");
 		} else {
-			ssVO.setResutl(Result.SUCCESS);
+			ssVO.setResult(Result.SUCCESS);
 		}
 
 		return outputList;
@@ -659,14 +665,14 @@ public class StepServiceImpl implements StepService {
 		 * 因組態檔案名稱時間戳記僅有到「分」，若同一分鐘內備份多次，會因為檔名重複而命令執行失敗
 		 * 因此，若此條件下，將上傳到temp資料夾的檔案名稱加上時間細數碼
 		 */
-		long miles = System.currentTimeMillis();
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(miles) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(miles));
-		String tFtpTempFileRandomCode =
-				(!Env.TFTP_SERVER_AT_LOCAL
-						? String.valueOf(seconds).concat(".").concat(configInfoVO.getTimes())
-								: null);
-
-		String tempFilePath = tFtpTargetFilePath.concat(".").concat(tFtpTempFileRandomCode);
+		String tFtpTempFileRandomCode = "";
+		String tempFilePath = tFtpTargetFilePath;
+		if (Env.ENABLE_TEMP_FILE_RANDOM_CODE) {
+			long miles = System.currentTimeMillis();
+			long seconds = TimeUnit.MILLISECONDS.toSeconds(miles) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(miles));
+			tFtpTempFileRandomCode = String.valueOf(seconds).concat(".").concat(configInfoVO.getTimes());
+			tempFilePath = tempFilePath.concat(".").concat(tFtpTempFileRandomCode);
+		}
 
 		configInfoVO.setConfigFileName(fileName);
 		configInfoVO.settFtpFilePath(tFtpTargetFilePath);
@@ -809,15 +815,20 @@ public class StepServiceImpl implements StepService {
 	 */
 	private void upload2FTP(FileUtils ftpUtils, List<ConfigInfoVO> ciVOList) throws Exception {
 
-		String configFileDirPath = "";
+		String remoteFileDirPath = "";
 		if (ciVOList != null && !ciVOList.isEmpty()) {
-			configFileDirPath = ciVOList.get(0).getConfigFileDirPath();
-
-			// 8-3. 移動作業目錄至指定的裝置
-			ftpUtils.changeDir(configFileDirPath, true);
-
 			// 8-4. 上傳檔案
 			for (ConfigInfoVO ciVO : ciVOList) {
+				remoteFileDirPath = ciVO.getRemoteFileDirPath();
+
+				if (Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+					SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+					remoteFileDirPath = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+				}
+
+				// 8-3. 移動作業目錄至指定的裝置
+				ftpUtils.changeDir(remoteFileDirPath, true);
+
 				ftpUtils.uploadFiles(
 						ciVO.getConfigFileName(),
 						IOUtils.toInputStream(ciVO.getConfigContent(), Constants.CHARSET_UTF8)
@@ -854,9 +865,10 @@ public class StepServiceImpl implements StepService {
 		for (VersionServiceVO vsVO : vsVOs) {
 			tmpVO = (ConfigInfoVO)ciVO.clone();
 			tmpVO.setConfigFileDirPath(vsVO.getConfigFileDirPath());
+			tmpVO.setRemoteFileDirPath(vsVO.getRemoteFileDirPath());
 			tmpVO.setFileFullName(vsVO.getFileFullName());
 
-			log.info("Downloading file name ("+i+"/"+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+File.separator+tmpVO.getFileFullName());
+			log.info("Downloading file name ("+i+Env.FTP_DIR_SEPARATE_SYMBOL+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+File.separator+tmpVO.getFileFullName());
 
 			if (returnFileString) {
 				final String fileContent = fileUtils.downloadFilesString(tmpVO);

@@ -101,7 +101,7 @@ public class AdminEnvController extends BaseController {
 				esVOs.add(esVO);
 			}
 
-			String retMsg = envService.addOrModifyEnvSettings(esVOs);
+			String retMsg = envService.addOrModifyEnvSettings(esVOs, request);
 			return new AppResponse(HttpServletResponse.SC_OK, retMsg);
 
 		} catch (Exception e) {

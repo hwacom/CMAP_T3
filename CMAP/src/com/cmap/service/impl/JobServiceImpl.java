@@ -127,14 +127,18 @@ public class JobServiceImpl implements JobService {
 						final List<String> groupIds = (List<String>)jobDataMap.get(Constants.QUARTZ_PARA_GROUP_ID);
 						final List<String> deviceIds = (List<String>)jobDataMap.get(Constants.QUARTZ_PARA_DEVICE_ID);
 
-						final String groupIdsStr = String.join("\n", groupIds);
-						final String deviceIdsStr = String.join("\n", deviceIds);
+						final String groupIdsStr = groupIds != null ? String.join("\n", groupIds) : "";
+						final String deviceIdsStr = deviceIds != null ? String.join("\n", deviceIds) : "";
 
 						final String ftpName = (String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_NAME);
 						final String ftpHost = (String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_HOST);
 						final String ftpPort = (String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_PORT);
 						final String ftpAccount = (String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_ACCOUNT);
 						final String ftpPassword = (String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_PASSWORD);
+
+						final List<String> sqls = (List<String>)jobDataMap.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
+
+						final String sqlsStr = sqls != null ? String.join("\n", sqls) : "";
 
 						retVO.setSchedType(schedType);
 						retVO.setSchedTypeName(menuItemMap.get(schedType));
@@ -147,6 +151,8 @@ public class JobServiceImpl implements JobService {
 						retVO.setFtpPort(ftpPort);
 						retVO.setFtpAccount(ftpAccount);
 						retVO.setFtpPassword(ftpPassword);
+
+						retVO.setSysCheckSqlStr(sqlsStr);
 					}
 
 					retList.add(retVO);
@@ -177,6 +183,7 @@ public class JobServiceImpl implements JobService {
 			final String ftpPort = (String)jdm.get(Constants.QUARTZ_PARA_FTP_PORT);
 			final String ftpAccount = (String)jdm.get(Constants.QUARTZ_PARA_FTP_ACCOUNT);
 			final String ftpPassword = (String)jdm.get(Constants.QUARTZ_PARA_FTP_PASSWORD);
+			final List<String> sysChecksqls = (List<String>)jdm.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
 
 			ObjectMapper mapper = new ObjectMapper();
 			List<String> groupIds = groupId != null ? mapper.readValue(groupId, new TypeReference<List<String>>(){}) : null;
@@ -191,6 +198,7 @@ public class JobServiceImpl implements JobService {
 			retMap.put(Constants.QUARTZ_PARA_FTP_PORT, ftpPort);
 			retMap.put(Constants.QUARTZ_PARA_FTP_ACCOUNT, ftpAccount);
 			retMap.put(Constants.QUARTZ_PARA_FTP_PASSWORD, ftpPassword);
+			retMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, sysChecksqls);
 		}
 
 		return retMap;
@@ -275,6 +283,16 @@ public class JobServiceImpl implements JobService {
 						retVO.setFtpAccount((String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_ACCOUNT));
 						retVO.setFtpPassword((String)jobDataMap.get(Constants.QUARTZ_PARA_FTP_PASSWORD));
 
+					} else if (StringUtils.equals(schedType, Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_UPDATE)
+							|| StringUtils.equals(schedType, Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY)) {
+
+						List<String> sqls = (List<String>)jobDataMap.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
+
+						StringBuffer sqlStr = new StringBuffer();
+						for (String sql : sqls) {
+							sqlStr.append(sql).append("\n");
+						}
+						retVO.setSysCheckSqlStr(sqlStr.toString());
 					}
 
 					retVO.setSchedType(schedType);
@@ -314,6 +332,14 @@ public class JobServiceImpl implements JobService {
 			break;
 
 		case Constants.QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA:
+			break;
+
+		case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_UPDATE:
+			jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
+			break;
+
+		case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY:
+			jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
 			break;
 
 		case Constants.QUARTZ_SCHED_TYPE_UPLOAD_BACKUP_CONFIG_FILE_2_FTP:
@@ -401,6 +427,7 @@ public class JobServiceImpl implements JobService {
 		for (JobServiceVO jsVO : jsVOList) {
 			try {
 				scheduler.pauseJob(JobKey.jobKey(jsVO.getJobKeyName(), jsVO.getJobKeyGroup()));
+				scheduler.pauseTrigger(TriggerKey.triggerKey(jsVO.getJobKeyName(), jsVO.getJobKeyGroup()));
 
 			} catch (Exception e) {
 				log.error(e.toString(), e);
@@ -419,6 +446,7 @@ public class JobServiceImpl implements JobService {
 
 		for (JobServiceVO jsVO : jsVOList) {
 			try {
+				scheduler.resumeTrigger(TriggerKey.triggerKey(jsVO.getJobKeyName(), jsVO.getJobKeyGroup()));
 				scheduler.resumeJob(JobKey.jobKey(jsVO.getJobKeyName(), jsVO.getJobKeyGroup()));
 
 			} catch (Exception e) {

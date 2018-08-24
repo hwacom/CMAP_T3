@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JobServiceVO extends CommonServiceVO {
-	
+
 	private String inputSchedType;
 	private String inputSchedName;
 	private String inputJobName;
@@ -24,7 +24,8 @@ public class JobServiceVO extends CommonServiceVO {
 	private String inputFtpPort;
 	private String inputFtpAccount;
 	private String inputFtpPassword;
-	
+	private List<String> inputSysCheckSql = new ArrayList<String>();
+
 	private List<JobServiceVO> jobKeySet = new ArrayList<JobServiceVO>();
 	private String jobKeyName;
 	private String jobKeyGroup;
@@ -38,7 +39,9 @@ public class JobServiceVO extends CommonServiceVO {
 	private String ftpPort;
 	private String ftpAccount;
 	private String ftpPassword;
-	
+	private List<String> sysCheckSql = new ArrayList<String>();
+	private String sysCheckSqlStr;
+
 	private String schedType;
 	private String schedTypeName;
 	private String triggerName;
@@ -58,7 +61,10 @@ public class JobServiceVO extends CommonServiceVO {
 	private String jobClassName;
 	private String cronExpression;
 	private String timeZoneId;
-	
+
+	private String jobExcuteResultRecords;
+	private String jobExcuteRemark;
+
 	public String getInputSchedType() {
 		return inputSchedType;
 	}
@@ -143,6 +149,42 @@ public class JobServiceVO extends CommonServiceVO {
 	public void setInputDeviceIds(List<String> inputDeviceIds) {
 		this.inputDeviceIds = inputDeviceIds;
 	}
+	public String getInputFtpName() {
+		return inputFtpName;
+	}
+	public void setInputFtpName(String inputFtpName) {
+		this.inputFtpName = inputFtpName;
+	}
+	public String getInputFtpHost() {
+		return inputFtpHost;
+	}
+	public void setInputFtpHost(String inputFtpHost) {
+		this.inputFtpHost = inputFtpHost;
+	}
+	public String getInputFtpPort() {
+		return inputFtpPort;
+	}
+	public void setInputFtpPort(String inputFtpPort) {
+		this.inputFtpPort = inputFtpPort;
+	}
+	public String getInputFtpAccount() {
+		return inputFtpAccount;
+	}
+	public void setInputFtpAccount(String inputFtpAccount) {
+		this.inputFtpAccount = inputFtpAccount;
+	}
+	public String getInputFtpPassword() {
+		return inputFtpPassword;
+	}
+	public void setInputFtpPassword(String inputFtpPassword) {
+		this.inputFtpPassword = inputFtpPassword;
+	}
+	public List<String> getInputSysCheckSql() {
+		return inputSysCheckSql;
+	}
+	public void setInputSysCheckSql(List<String> inputSysCheckSql) {
+		this.inputSysCheckSql = inputSysCheckSql;
+	}
 	public List<JobServiceVO> getJobKeySet() {
 		return jobKeySet;
 	}
@@ -190,6 +232,42 @@ public class JobServiceVO extends CommonServiceVO {
 	}
 	public void setConfigType(String configType) {
 		this.configType = configType;
+	}
+	public String getFtpName() {
+		return ftpName;
+	}
+	public void setFtpName(String ftpName) {
+		this.ftpName = ftpName;
+	}
+	public String getFtpHost() {
+		return ftpHost;
+	}
+	public void setFtpHost(String ftpHost) {
+		this.ftpHost = ftpHost;
+	}
+	public String getFtpPort() {
+		return ftpPort;
+	}
+	public void setFtpPort(String ftpPort) {
+		this.ftpPort = ftpPort;
+	}
+	public String getFtpAccount() {
+		return ftpAccount;
+	}
+	public void setFtpAccount(String ftpAccount) {
+		this.ftpAccount = ftpAccount;
+	}
+	public String getFtpPassword() {
+		return ftpPassword;
+	}
+	public void setFtpPassword(String ftpPassword) {
+		this.ftpPassword = ftpPassword;
+	}
+	public List<String> getSysCheckSql() {
+		return sysCheckSql;
+	}
+	public void setSysCheckSql(List<String> sysCheckSql) {
+		this.sysCheckSql = sysCheckSql;
 	}
 	public String getSchedType() {
 		return schedType;
@@ -305,64 +383,22 @@ public class JobServiceVO extends CommonServiceVO {
 	public void setTimeZoneId(String timeZoneId) {
 		this.timeZoneId = timeZoneId;
 	}
-	public String getInputFtpName() {
-		return inputFtpName;
+	public String getSysCheckSqlStr() {
+		return sysCheckSqlStr;
 	}
-	public void setInputFtpName(String inputFtpName) {
-		this.inputFtpName = inputFtpName;
+	public void setSysCheckSqlStr(String sysCheckSqlStr) {
+		this.sysCheckSqlStr = sysCheckSqlStr;
 	}
-	public String getInputFtpHost() {
-		return inputFtpHost;
+	public String getJobExcuteResultRecords() {
+		return jobExcuteResultRecords;
 	}
-	public void setInputFtpHost(String inputFtpHost) {
-		this.inputFtpHost = inputFtpHost;
+	public void setJobExcuteResultRecords(String jobExcuteResultRecords) {
+		this.jobExcuteResultRecords = jobExcuteResultRecords;
 	}
-	public String getInputFtpPort() {
-		return inputFtpPort;
+	public String getJobExcuteRemark() {
+		return jobExcuteRemark;
 	}
-	public void setInputFtpPort(String inputFtpPort) {
-		this.inputFtpPort = inputFtpPort;
-	}
-	public String getInputFtpAccount() {
-		return inputFtpAccount;
-	}
-	public void setInputFtpAccount(String inputFtpAccount) {
-		this.inputFtpAccount = inputFtpAccount;
-	}
-	public String getInputFtpPassword() {
-		return inputFtpPassword;
-	}
-	public void setInputFtpPassword(String inputFtpPassword) {
-		this.inputFtpPassword = inputFtpPassword;
-	}
-	public String getFtpName() {
-		return ftpName;
-	}
-	public void setFtpName(String ftpName) {
-		this.ftpName = ftpName;
-	}
-	public String getFtpHost() {
-		return ftpHost;
-	}
-	public void setFtpHost(String ftpHost) {
-		this.ftpHost = ftpHost;
-	}
-	public String getFtpPort() {
-		return ftpPort;
-	}
-	public void setFtpPort(String ftpPort) {
-		this.ftpPort = ftpPort;
-	}
-	public String getFtpAccount() {
-		return ftpAccount;
-	}
-	public void setFtpAccount(String ftpAccount) {
-		this.ftpAccount = ftpAccount;
-	}
-	public String getFtpPassword() {
-		return ftpPassword;
-	}
-	public void setFtpPassword(String ftpPassword) {
-		this.ftpPassword = ftpPassword;
+	public void setJobExcuteRemark(String jobExcuteRemark) {
+		this.jobExcuteRemark = jobExcuteRemark;
 	}
 }

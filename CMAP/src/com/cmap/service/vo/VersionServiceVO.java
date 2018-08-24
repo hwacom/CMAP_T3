@@ -10,30 +10,30 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String queryGroup;
 	private String queryGroup1;
 	private String queryGroup2;
-	
+
 	private String queryDevice;
 	private String queryDevice1;
 	private String queryDevice2;
-	
+
 	private String queryDateBegin1;
 	private String queryDateEnd1;
 	private String queryDateBegin2;
 	private String queryDateEnd2;
-	
+
 	private String queryConfigType;
 	private boolean queryNewChkbox = false;
 	private boolean jobTrigger = false;
-	
+
 	private List<String> queryGroupList;
 	private List<String> queryGroup1List;
 	private List<String> queryGroup2List;
 	private List<String> queryDeviceList;
 	private List<String> queryDevice1List;
 	private List<String> queryDevice2List;
-	
+
 	private List<String> allGroupList;
 	private List<String> allDeviceList;
-	
+
 	private String versionId;
 	private String groupId;
 	private String groupName;
@@ -46,8 +46,9 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String backupTimeStr;
 	private String deviceIp;
 	private String configFileDirPath;
+	private String remoteFileDirPath;
 	private String deviceListId;
-	
+
 	private String configFileContent;
 	private int lineNumber;
 	private String line = Constants.ADD_LINE;
@@ -64,10 +65,10 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String versionOri;
 	private String versionRev;
 	private String versionLineNum;
-	
+
 	private String retMsg;
 	private String errMsg;
-	
+
 	public String getQueryGroup() {
 		return queryGroup;
 	}
@@ -379,5 +380,11 @@ public class VersionServiceVO extends CommonServiceVO {
 	}
 	public void setJobTrigger(boolean jobTrigger) {
 		this.jobTrigger = jobTrigger;
+	}
+	public String getRemoteFileDirPath() {
+		return remoteFileDirPath;
+	}
+	public void setRemoteFileDirPath(String remoteFileDirPath) {
+		this.remoteFileDirPath = remoteFileDirPath;
 	}
 }

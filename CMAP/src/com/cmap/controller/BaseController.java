@@ -274,10 +274,37 @@ public class BaseController {
 
 				} else if (fieldNameType.isAssignableFrom(List.class)) {
 					String[] nodeValues = null;
-					if (fieldNode.asText().indexOf("\r\n") != -1) {
-						nodeValues = fieldNode.asText().split("\r\n");
+
+					if (fieldName.equals("inputSysCheckSql")) {
+						if (fieldNode.asText().indexOf("\r\n") != -1) {
+							String[] tmp = fieldNode.asText().split("\r\n");
+
+							List<String> sqlList = new ArrayList<String>();
+							StringBuffer sb = new StringBuffer();
+							for (String str : tmp) {
+								sb.append(str).append("\r\n");
+
+								if (str.equals(";") || (!str.equals(";") && str.contains(";"))) {
+									sqlList.add(sb.toString());
+									sb.setLength(0);
+								}
+							}
+
+							nodeValues = new String[sqlList.size()];
+							for (int i=0; i<sqlList.size(); i++) {
+								nodeValues[i] = sqlList.get(i);
+							}
+
+						} else {
+							nodeValues = new String[] {fieldNode.asText()};
+						}
+
 					} else {
-						nodeValues = new String[] {fieldNode.asText()};
+						if (fieldNode.asText().indexOf("\r\n") != -1) {
+							nodeValues = fieldNode.asText().split("\r\n");
+						} else {
+							nodeValues = new String[] {fieldNode.asText()};
+						}
 					}
 
 					List<String> list = new ArrayList<>();

@@ -243,9 +243,9 @@
     		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionRight" readonly>
         </div>
         <div class="form-group row">
-        	<div class="form-control form-control-sm col-1 conpare-line" id="compareModal_contentLineNum"></div>
-        	<div class="form-control form-control-sm col-5 conpare-content nowrap" id="compareModal_contentLeft"></div>
-        	<div class="form-control form-control-sm col-5 conpare-content nowrap" id="compareModal_contentRight"></div>
+        	<div class="form-control form-control-sm col-1 compare-line" id="compareModal_contentLineNum"></div>
+        	<div class="form-control form-control-sm col-5 compare-content nowrap" id="compareModal_contentLeft"></div>
+        	<div class="form-control form-control-sm col-5 compare-content nowrap" id="compareModal_contentRight"></div>
         	<div class="col-1">
         		<span data-feather="chevrons-up" class="feather-compare" id="jumpToTop"></span>
         		<span data-feather="chevron-up" class="feather-compare" id="jumpToPre"></span>
@@ -437,9 +437,7 @@
 							$('#compareModal_summary').html("無差異");
 						}
 						
-						$('#compareModal').modal({
-							backdrop : 'static'
-						});
+						$('#compareModal').modal('show');
 						
 					} else {
 						alert(resp.message);

@@ -1,11 +1,15 @@
 package com.cmap.service.impl;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import com.cmap.dao.vo.SysConfigSettingDAOVO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.SysConfigSetting;
 import com.cmap.security.SecurityUtil;
+import com.cmap.service.CommonService;
 import com.cmap.service.EnvService;
 import com.cmap.service.vo.EnvServiceVO;
 import com.cmap.utils.impl.CommonUtils;
@@ -37,6 +42,9 @@ public class EnvServiceImpl implements EnvService {
 
 	@Autowired
 	SysEnvUtils sysEnvUtils;
+
+	@Autowired
+	CommonService commonService;
 
 	private SysConfigSettingDAOVO transServiceVO2DAOVO(EnvServiceVO esVO) {
 		SysConfigSettingDAOVO daovo = new SysConfigSettingDAOVO();
@@ -135,6 +143,15 @@ public class EnvServiceImpl implements EnvService {
 													: (String)envMap.get(dbMapKey));
 								}
 
+					} else if (type.isAssignableFrom(SimpleDateFormat.class)) {
+						SimpleDateFormat sdf =
+								Env.class.getDeclaredField(retVO.getSettingName()).get(null) != null
+								? (SimpleDateFormat)Env.class.getDeclaredField(retVO.getSettingName()).get(null)
+										: null;
+
+								envVal = hasEncode ? Base64.encode(sdf.toPattern().getBytes()) : sdf.toPattern();
+								isSame = retVO.getSettingValue().equals(envVal) ? true : false;
+
 					} else {
 						String currentEnvVal =
 								Env.class.getDeclaredField(retVO.getSettingName()).get(null) != null
@@ -207,11 +224,13 @@ public class EnvServiceImpl implements EnvService {
 	}
 
 	@Override
-	public String addOrModifyEnvSettings(List<EnvServiceVO> esVOs) throws ServiceLayerException {
+	public String addOrModifyEnvSettings(List<EnvServiceVO> esVOs, HttpServletRequest request) throws ServiceLayerException {
 		Integer totalCount = esVOs.size();
 		Integer successCount = 0;
 
 		try {
+			boolean refreshDeviceList = false;
+
 			List<String> settingNames = new ArrayList<>();
 			SysConfigSetting entity;
 			for (EnvServiceVO esVO : esVOs) {
@@ -236,11 +255,27 @@ public class EnvServiceImpl implements EnvService {
 				successCount++;
 
 				settingNames.add(esVO.getModifySettingName());
+
+				/*
+				 * 判斷此次異動的環境變數檔是否含有組態檔備份至TFTP的目錄參數 (NEED_REFRESH_DEVICE_LIST_VARIABLES)
+				 * 若有的話需一併refresh DEVICE_LIST內設定(Config_File_Dir_Path)
+				 */
+				if (NEED_REFRESH_DEVICE_LIST_VARIABLES != null && NEED_REFRESH_DEVICE_LIST_VARIABLES.length > 0) {
+					for (String var : NEED_REFRESH_DEVICE_LIST_VARIABLES) {
+						if (StringUtils.equals(esVO.getModifySettingName(), var)) {
+							refreshDeviceList = true;
+						}
+					}
+				}
 			}
 
 			//更新完DB資料後同步至系統環境變數(Env)<僅更新此次有異動參數>
 			if (!settingNames.isEmpty()) {
 				sysEnvUtils.refreshByNames(settingNames);
+			}
+
+			if (refreshDeviceList) {
+				commonService.getGroupAndDeviceMenu(request);
 			}
 
 		} catch (Exception e) {

@@ -110,11 +110,11 @@ public class FtpFileUtils implements FileUtils {
 		try {
 			checkFtpStatus();
 
-			ftp.changeWorkingDirectory("/"); //先切換至根目錄
+			ftp.changeWorkingDirectory(Env.FTP_DIR_SEPARATE_SYMBOL); //先切換至根目錄
 
 			returnCode = ftp.getReplyCode();
 			if (returnCode == FTPReply.FILE_UNAVAILABLE) {
-				throw new Exception("[FTP]切換目錄異常 >> 「/」目錄不存在");
+				throw new Exception("[FTP]切換目錄異常 >> 「"+Env.FTP_DIR_SEPARATE_SYMBOL+"」目錄不存在");
 			}
 
 			ftp.changeWorkingDirectory(targetDirPath);

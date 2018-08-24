@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +23,7 @@ import com.cmap.model.ProvisionLogRetry;
 import com.cmap.model.ProvisionLogStep;
 import com.cmap.service.ProvisionService;
 import com.cmap.service.vo.ProvisionServiceVO;
+import com.cmap.utils.impl.CommonUtils;
 
 @Service("provisionService")
 @Transactional
@@ -87,7 +87,7 @@ public class ProvisionServiceImpl implements ProvisionService {
 				BeanUtils.copyProperties(masterVO, masterEntity);
 				masterEntity.setLogMasterId(logMasterId);
 				masterEntity.setSpendTimeInSeconds(
-						calculateSpendTime(masterVO.getBeginTime(), masterVO.getEndTime()));
+						CommonUtils.calculateSpendTime(masterVO.getBeginTime(), masterVO.getEndTime()));
 				masterEntity.setBeginTime(new Timestamp(masterVO.getBeginTime().getTime()));
 				masterEntity.setEndTime(new Timestamp(masterVO.getEndTime().getTime()));
 				masterEntity.setCreateBy(userName);
@@ -107,7 +107,7 @@ public class ProvisionServiceImpl implements ProvisionService {
 						stepEntity.setLogStepId(logStepId);
 						stepEntity.setProvisionLogMaster(masterEntity);
 						stepEntity.setSpendTimeInSeconds(
-								calculateSpendTime(stepVO.getBeginTime(), stepVO.getEndTime()));
+							CommonUtils.calculateSpendTime(stepVO.getBeginTime(), stepVO.getEndTime()));
 						stepEntity.setBeginTime(new Timestamp(stepVO.getBeginTime().getTime()));
 						stepEntity.setEndTime(new Timestamp(stepVO.getEndTime().getTime()));
 						stepEntity.setCreateBy(userName);
@@ -170,23 +170,5 @@ public class ProvisionServiceImpl implements ProvisionService {
 		}
 
 		return true;
-	}
-
-	private int calculateSpendTime(Date beginDate, Date endDate) {
-		final long beginTime = beginDate.getTime();
-		final long endTime = endDate.getTime();
-		final long spendTimeInSeconds =
-				TimeUnit.MILLISECONDS.toSeconds(endTime-beginTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-beginTime));
-
-		int spendTime = 0;
-
-		try {
-			spendTime = ((Long)spendTimeInSeconds).intValue();
-
-		} catch (Exception e) {
-			log.error(e.toString(), e);
-		}
-
-		return spendTime;
 	}
 }

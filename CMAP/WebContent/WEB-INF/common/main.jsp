@@ -126,6 +126,11 @@
 	                    		<span data-feather="check-square"></span> 排程設定維護
 	                    	</a>
 	                    </li>
+	                    <li class="nav-item subMenu-item">
+	                    	<a href="${pageContext.request.contextPath}/admin/log/main">
+	                    		<span data-feather="alert-triangle"></span> 系統LOG查詢
+	                    	</a>
+	                    </li>
 	                </ul>
 	              </li>
               </sec:authorize>
@@ -263,6 +268,34 @@
     	    		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
     	    		resutTable.clear().draw();
     				resutTable.ajax.reload();
+    				
+    				if (typeof $("#checkAll") !== "undefined") {
+    					$('input[name=checkAll]').prop('checked', false);
+    				}
+    				
+    				if (typeof initActionBar === 'function') {
+    					initActionBar();
+    				}
+    	    	}
+    	    	if (typeof resutTable_errorLog !== "undefined") {
+    	    		calHeight();
+    	    		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
+    	    		resutTable_errorLog.clear().draw();
+    	    		resutTable_errorLog.ajax.reload();
+    				
+    				if (typeof $("#checkAll") !== "undefined") {
+    					$('input[name=checkAll]').prop('checked', false);
+    				}
+    				
+    				if (typeof initActionBar === 'function') {
+    					initActionBar();
+    				}
+    	    	}
+    	    	if (typeof resutTable_jobLog !== "undefined") {
+    	    		calHeight();
+    	    		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
+    	    		resutTable_jobLog.clear().draw();
+    	    		resutTable_jobLog.ajax.reload();
     				
     				if (typeof $("#checkAll") !== "undefined") {
     					$('input[name=checkAll]').prop('checked', false);
@@ -477,6 +510,32 @@
     	    });
     	    return o;
     	};
+    	
+    	//切換欄位顯示部分或全部內容
+    	function changeShowRemarks(obj){						//obj是td
+    	   var content = $(obj).attr("content");
+    	   if (content != null && content != '') {
+    	      if ($(obj).attr("isDetail") == 'true') {			//若當前是顯示全部，則切換成顯示部分
+    	         $(obj).attr('isDetail', false);
+    	         $(obj).html(getPartialRemarksHtml(content));
+    	      } else {											//若當前是顯示部分，則切換成顯示全部
+    	         $(obj).attr('isDetail', true);
+    	         $(obj).html(getTotalRemarksHtml(content));
+    	      }
+    	   }
+    	   
+    	   $.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust(); //調整dataTable欄位寬度
+    	}
+    	
+    	//只顯示部分內容
+    	function getPartialRemarksHtml(remarks) {
+    		return remarks.substr(0,remarkShowLength) + '&nbsp;&nbsp;<a href="javascript:void(0);" >...(顯示)</a>';
+    	}
+
+    	//顯示全部內容
+    	function getTotalRemarksHtml(remarks) {
+    		return remarks + '&nbsp;&nbsp;<a href="javascript:void(0);" >(隱藏)</a>';
+    	}
 
     </script>
 

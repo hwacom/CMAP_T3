@@ -16,5 +16,5 @@ public interface StepService {
 
 	public StepServiceVO doBackupStep(String deviceListId, boolean jobTrigger);
 
-	public void doBackupFileUpload2FTPStep(List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean jobTrigger);
+	public StepServiceVO doBackupFileUpload2FTPStep(List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean jobTrigger);
 }

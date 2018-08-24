@@ -1,5 +1,7 @@
 package com.cmap.service.vo;
 
+import com.cmap.service.impl.jobs.BaseJobImpl.Result;
+
 public class CommonServiceVO {
 
 	private Integer startNum;
@@ -8,7 +10,11 @@ public class CommonServiceVO {
 	private String searchValue;
 	private String orderColumn;
 	private String orderDirection;
-	
+
+	private Result jobExcuteResult;
+	private String jobExcuteResultRecords;
+	private String jobExcuteRemark;
+
 	public Integer getStartNum() {
 		return startNum;
 	}
@@ -44,5 +50,23 @@ public class CommonServiceVO {
 	}
 	public void setOrderDirection(String orderDirection) {
 		this.orderDirection = orderDirection;
+	}
+	public String getJobExcuteResultRecords() {
+		return jobExcuteResultRecords;
+	}
+	public void setJobExcuteResultRecords(String jobExcuteResultRecords) {
+		this.jobExcuteResultRecords = jobExcuteResultRecords;
+	}
+	public String getJobExcuteRemark() {
+		return jobExcuteRemark;
+	}
+	public void setJobExcuteRemark(String jobExcuteRemark) {
+		this.jobExcuteRemark = jobExcuteRemark;
+	}
+	public Result getJobExcuteResult() {
+		return jobExcuteResult;
+	}
+	public void setJobExcuteResult(Result jobExcuteResult) {
+		this.jobExcuteResult = jobExcuteResult;
 	}
 }

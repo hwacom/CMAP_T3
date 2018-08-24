@@ -40,6 +40,44 @@ public class CommonServiceImpl implements CommonService {
 	MenuItemDAO menuItemDAO;
 
 	/**
+	 * 組合 Local / Remote 落地檔路徑資料夾
+	 * @param deviceInfoMap
+	 * @param local (true=Local;false=Remote)
+	 * @return
+	 */
+	private String composeFilePath(Map<String, String> deviceInfoMap, boolean local) {
+		String dirPath = Env.FTP_DIR_SEPARATE_SYMBOL;
+
+		String groupDirName = local ? Env.DEFAULT_LOCAL_DIR_GROUP_NAME : Env.DEFAULT_REMOTE_DIR_GROUP_NAME;
+		if (groupDirName.indexOf(Constants.DIR_PATH_GROUP_ID) != -1) {
+			groupDirName = StringUtils.replace(groupDirName, Constants.DIR_PATH_GROUP_ID, deviceInfoMap.get(Constants.GROUP_ID));
+		}
+		if (groupDirName.indexOf(Constants.DIR_PATH_GROUP_NAME) != -1) {
+			groupDirName = StringUtils.replace(groupDirName, Constants.DIR_PATH_GROUP_NAME, deviceInfoMap.get(Constants.GROUP_ENG_NAME));
+		}
+
+		String deviceDirName = local ? Env.DEFAULT_LOCAL_DIR_DEVICE_NAME : Env.DEFAULT_REMOTE_DIR_DEVICE_NAME;
+		if (deviceDirName.indexOf(Constants.DIR_PATH_DEVICE_ID) != -1) {
+			deviceDirName = StringUtils.replace(deviceDirName, Constants.DIR_PATH_DEVICE_ID, deviceInfoMap.get(Constants.DEVICE_ID));
+		}
+		if (deviceDirName.indexOf(Constants.DIR_PATH_DEVICE_NAME) != -1) {
+			deviceDirName = StringUtils.replace(deviceDirName, Constants.DIR_PATH_DEVICE_NAME, deviceInfoMap.get(Constants.DEVICE_ENG_NAME));
+		}
+		if (deviceDirName.indexOf(Constants.DIR_PATH_DEVICE_IP) != -1) {
+			deviceDirName = StringUtils.replace(deviceDirName, Constants.DIR_PATH_DEVICE_IP, deviceInfoMap.get(Constants.DEVICE_IP));
+		}
+		if (deviceDirName.indexOf(Constants.DIR_PATH_DEVICE_SYSTEM) != -1) {
+			deviceDirName = StringUtils.replace(deviceDirName, Constants.DIR_PATH_DEVICE_SYSTEM, deviceInfoMap.get(Constants.DEVICE_SYSTEM));
+		}
+
+		dirPath = dirPath.concat(StringUtils.isNotBlank(groupDirName) ? groupDirName : "")
+				.concat(StringUtils.isNotBlank(groupDirName) ? Env.FTP_DIR_SEPARATE_SYMBOL : "")
+				.concat(StringUtils.isNotBlank(deviceDirName) ? deviceDirName : "");
+
+		return dirPath;
+	}
+
+	/**
 	 * 呼叫PRTG API取得當前使用者權限下所有群組&設備清單
 	 */
 	@Override
@@ -73,6 +111,8 @@ public class CommonServiceImpl implements CommonService {
 								// 先撈取查看此群組+設備ID資料是否已存在
 								dl = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
 
+								final String localFileDirPath = composeFilePath(deviceInfoMap, true);
+								final String remoteFileDirPath = composeFilePath(deviceInfoMap, false);
 								boolean noNeedToAddOrModify = true;
 								if (dl == null) {
 									// 不存在表示後面要新增
@@ -82,12 +122,9 @@ public class CommonServiceImpl implements CommonService {
 									dl.setGroupId(groupId);
 									dl.setDeviceId(deviceId);
 
-									String dirPath = "/"
-											.concat(StringUtils.replace(Env.DEFAULT_FTP_DIR_GROUP_NAME, "[gid]", groupId))
-											.concat("/")
-											.concat(StringUtils.replace(Env.DEFAULT_FTP_DIR_DEVICE_NAME, "[did]", deviceId));
+									dl.setConfigFileDirPath(localFileDirPath);
+									dl.setRemoteFileDirPath(remoteFileDirPath);
 
-									dl.setConfigFileDirPath(dirPath);
 									dl.setDeleteFlag(Constants.DATA_MARK_NOT_DELETE);
 									dl.setCreateBy(Constants.SYS);
 									dl.setCreateTime(new Timestamp((new Date()).getTime()));
@@ -96,11 +133,19 @@ public class CommonServiceImpl implements CommonService {
 									// 若已存在，確認以下欄位是否有異動，若其中一項有異動的話則後面要進行更新
 									if (noNeedToAddOrModify) {
 										noNeedToAddOrModify =
-												(StringUtils.isBlank(dl.getGroupName()) ? "" : dl.getGroupName()).equals(groupInfoMap.get(groupId));
+												(StringUtils.isBlank(dl.getGroupName()) ? "" : dl.getGroupName()).equals(deviceInfoMap.get(Constants.GROUP_NAME));
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify =
+												(StringUtils.isBlank(dl.getGroupEngName()) ? "" : dl.getGroupEngName()).equals(deviceInfoMap.get(Constants.GROUP_ENG_NAME));
 									}
 									if (noNeedToAddOrModify) {
 										noNeedToAddOrModify =
 												(StringUtils.isBlank(dl.getDeviceName()) ? "" : dl.getDeviceName()).equals(deviceInfoMap.get(Constants.DEVICE_NAME));
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify =
+												(StringUtils.isBlank(dl.getDeviceEngName()) ? "" : dl.getDeviceEngName()).equals(deviceInfoMap.get(Constants.DEVICE_ENG_NAME));
 									}
 									if (noNeedToAddOrModify) {
 										noNeedToAddOrModify =
@@ -110,13 +155,25 @@ public class CommonServiceImpl implements CommonService {
 										noNeedToAddOrModify =
 												(StringUtils.isBlank(dl.getSystemVersion()) ? "" : dl.getSystemVersion()).equals(deviceInfoMap.get(Constants.DEVICE_SYSTEM));
 									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify =
+												(StringUtils.isBlank(dl.getConfigFileDirPath()) ? "" : dl.getConfigFileDirPath()).equals(localFileDirPath);
+									}
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify =
+												(StringUtils.isBlank(dl.getRemoteFileDirPath()) ? "" : dl.getRemoteFileDirPath()).equals(remoteFileDirPath);
+									}
 								}
 
 								if (!noNeedToAddOrModify) {
-									dl.setGroupName(groupInfoMap.get(groupId));
+									dl.setGroupName(deviceInfoMap.get(Constants.GROUP_NAME));
+									dl.setGroupEngName(deviceInfoMap.get(Constants.GROUP_ENG_NAME));
 									dl.setDeviceName(deviceInfoMap.get(Constants.DEVICE_NAME));
+									dl.setDeviceEngName(deviceInfoMap.get(Constants.DEVICE_ENG_NAME));
 									dl.setDeviceIp(deviceInfoMap.get(Constants.DEVICE_IP));
 									dl.setSystemVersion(deviceInfoMap.get(Constants.DEVICE_SYSTEM));
+									dl.setConfigFileDirPath(localFileDirPath);
+									dl.setRemoteFileDirPath(remoteFileDirPath);
 									dl.setUpdateBy(Constants.SYS);
 									dl.setUpdateTime(new Timestamp((new Date()).getTime()));
 

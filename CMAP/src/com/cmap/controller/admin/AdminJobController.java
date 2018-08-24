@@ -187,6 +187,7 @@ public class AdminJobController extends BaseController {
 			retMap.put("inputFtpPort", retVO.getFtpPort());
 			retMap.put("inputFtpAccount", retVO.getFtpAccount());
 			retMap.put("inputFtpPassword", retVO.getFtpPassword());
+			retMap.put("inputSysCheckSql", retVO.getSysCheckSqlStr());
 
 			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
 
@@ -323,6 +324,8 @@ public class AdminJobController extends BaseController {
 				retMap.put("ftpPort", jsVO.getFtpPort());
 				retMap.put("ftpAccount", jsVO.getFtpAccount());
 				retMap.put("ftpPassword", jsVO.getFtpPassword());
+
+				retMap.put("sysCheckSqls", jsVO.getSysCheckSqlStr());
 			}
 
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);

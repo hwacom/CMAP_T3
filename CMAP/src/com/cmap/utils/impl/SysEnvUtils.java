@@ -1,6 +1,7 @@
 package com.cmap.utils.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -137,6 +138,12 @@ public class SysEnvUtils implements EnvUtils {
 						final String mapValue = value.split(Env.COMM_SEPARATE_SYMBOL)[1];
 						map.put(mapKey, mapValue);
 					}
+
+				} else if (dynamicClass.isAssignableFrom(SimpleDateFormat.class)) {
+					final String format = entry.getValue().get(0);
+
+					SimpleDateFormat sdf = (SimpleDateFormat)Env.class.getDeclaredField(entry.getKey()).get(null);
+					sdf.applyPattern(format);
 				}
 
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {

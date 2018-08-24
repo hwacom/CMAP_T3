@@ -7,9 +7,12 @@ public class ConfigInfoVO implements Cloneable {
 
 	private String groupId;
 	private String groupName;
+	private String groupEngName;
 	private String deviceId;
 	private String deviceName;
-	private String configFileDirPath;
+	private String deviceEngName;
+	private String configFileDirPath;	//設定本地備份落地檔路徑
+	private String remoteFileDirPath;	//設定異地備份路徑
 	private String configContent;
 	private List<String> configContentList = new ArrayList<String>();
 	private String configFileName;
@@ -256,5 +259,29 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setTimes(String times) {
 		this.times = times;
+	}
+
+	public String getGroupEngName() {
+		return groupEngName;
+	}
+
+	public void setGroupEngName(String groupEngName) {
+		this.groupEngName = groupEngName;
+	}
+
+	public String getDeviceEngName() {
+		return deviceEngName;
+	}
+
+	public void setDeviceEngName(String deviceEngName) {
+		this.deviceEngName = deviceEngName;
+	}
+
+	public String getRemoteFileDirPath() {
+		return remoteFileDirPath;
+	}
+
+	public void setRemoteFileDirPath(String remoteFileDirPath) {
+		this.remoteFileDirPath = remoteFileDirPath;
 	}
 }

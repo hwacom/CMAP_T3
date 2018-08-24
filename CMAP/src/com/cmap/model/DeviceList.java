@@ -13,11 +13,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(
-	name = "device_list",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"device_list_id"})
-	}
-)
+		name = "device_list",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = {"device_list_id"})
+		}
+		)
 public class DeviceList {
 
 	@Id
@@ -25,65 +25,78 @@ public class DeviceList {
 	@GenericGenerator(name = "uuid", strategy = "uuid")
 	@Column(name = "device_list_id", unique = true)
 	private String deviceListId;
-	
+
 	@Column(name = "group_id", nullable = false)
 	private String groupId;
-	
+
 	@Column(name = "group_name", nullable = true)
 	private String groupName;
-	
+
+	@Column(name = "group_eng_name", nullable = true)
+	private String groupEngName;
+
 	@Column(name = "device_id", nullable = false)
 	private String deviceId;
-	
+
 	@Column(name = "device_name", nullable = true)
 	private String deviceName;
-	
+
+	@Column(name = "device_eng_name", nullable = true)
+	private String deviceEngName;
+
 	@Column(name = "device_ip", nullable = true)
 	private String deviceIp;
-	
+
 	@Column(name = "system_version", nullable = true)
 	private String systemVersion;
-	
+
 	@Column(name = "config_file_dir_path", nullable = false)
 	private String configFileDirPath;
 
+	@Column(name = "remote_file_dir_path", nullable = false)
+	private String remoteFileDirPath;
+
 	@Column(name = "delete_flag", nullable = false)
 	private String deleteFlag;
-	
+
 	@Column(name = "delete_time", nullable = true)
 	private Timestamp deleteTime;
-	
+
 	@Column(name = "delete_by", nullable = true)
 	private String deleteBy;
-	
+
 	@Column(name = "create_time", nullable = true)
 	private Timestamp createTime;
-	
+
 	@Column(name = "create_by", nullable = true)
 	private String createBy;
-	
+
 	@Column(name = "update_time", nullable = true)
 	private Timestamp updateTime;
-	
+
 	@Column(name = "update_by", nullable = true)
 	private String updateBy;
-	
+
 	public DeviceList() {
 		super();
 	}
 
-	public DeviceList(String deviceListId, String groupId, String groupName, String deviceId, String deviceName,
-			String deviceIp, String systemVersion, String configFileDirPath, String deleteFlag, Timestamp deleteTime,
-			String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+	public DeviceList(String deviceListId, String groupId, String groupName, String groupEngName, String deviceId,
+			String deviceName, String deviceEngName, String deviceIp, String systemVersion, String configFileDirPath,
+			String remoteFileDirPath, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
+			String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.deviceListId = deviceListId;
 		this.groupId = groupId;
 		this.groupName = groupName;
+		this.groupEngName = groupEngName;
 		this.deviceId = deviceId;
 		this.deviceName = deviceName;
+		this.deviceEngName = deviceEngName;
 		this.deviceIp = deviceIp;
 		this.systemVersion = systemVersion;
 		this.configFileDirPath = configFileDirPath;
+		this.remoteFileDirPath = remoteFileDirPath;
 		this.deleteFlag = deleteFlag;
 		this.deleteTime = deleteTime;
 		this.deleteBy = deleteBy;
@@ -117,6 +130,14 @@ public class DeviceList {
 		this.groupName = groupName;
 	}
 
+	public String getGroupEngName() {
+		return groupEngName;
+	}
+
+	public void setGroupEngName(String groupEngName) {
+		this.groupEngName = groupEngName;
+	}
+
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -131,6 +152,14 @@ public class DeviceList {
 
 	public void setDeviceName(String deviceName) {
 		this.deviceName = deviceName;
+	}
+
+	public String getDeviceEngName() {
+		return deviceEngName;
+	}
+
+	public void setDeviceEngName(String deviceEngName) {
+		this.deviceEngName = deviceEngName;
 	}
 
 	public String getDeviceIp() {
@@ -155,6 +184,14 @@ public class DeviceList {
 
 	public void setConfigFileDirPath(String configFileDirPath) {
 		this.configFileDirPath = configFileDirPath;
+	}
+
+	public String getRemoteFileDirPath() {
+		return remoteFileDirPath;
+	}
+
+	public void setRemoteFileDirPath(String remoteFileDirPath) {
+		this.remoteFileDirPath = remoteFileDirPath;
 	}
 
 	public String getDeleteFlag() {

@@ -1,5 +1,6 @@
 package com.cmap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,17 +21,70 @@ public class Env {
 	public static String USER_IP_JOB;
 	public static String PROVISION_REASON_OF_JOB;
 
+	/**
+	 * 組態檔異地備份上傳至FTP時，BY日期創建資料夾的名稱格式
+	 */
+	public static String DIR_PATH_OF_CURRENT_DATE_FORMAT;
+
 	public static String RETRY_TIMES;
 
+	/**
+	 * 設定要排除掉的PRTG群組名稱(不呈顯於CMAP內)
+	 */
+	public static List<String> PRTG_EXCLUDE_GROUP_NAME = new ArrayList<String>();
+
+	/**
+	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著中文「群組名稱」的符號 >> For UI選單
+	 * Ex: 第一航廈 (T1)
+	 * >> 中文群組名稱:第一航廈，包覆符號為「」
+	 */
+	public static String PRTG_WRAPPED_SYMBOL_FOR_GROUP_NAME;
+
+
+	/**
+	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著英文「群組名稱」的符號 >> For 組態檔備份目錄名稱
+	 * Ex: 第一航廈 (T1)
+	 * >> 英文群組名稱:T1，包覆符號為「()」
+	 */
+	public static String PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME;
+
+	/**
+	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著中文「裝置名稱」的符號 >> For UI選單
+	 * Ex: 192.168.1.3 (1F大廳) <1F_Lobby) [Cisco Device Cisco IOS]
+	 * >> 中文裝置名稱:1F大廳，包覆符號為「()」
+	 */
+	public static String PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME;
+
+	/**
+	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著英文「裝置名稱」的符號 >> For 組態檔備份目錄名稱
+	 * Ex: 192.168.1.3 (1F大廳) <1F_Lobby) [Cisco Device Cisco IOS]
+	 * >> 英文裝置名稱:1F_Lobby，包覆符號為「<>」
+	 */
+	public static String PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME;
+
+	/**
+	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著「裝置作業系統」的符號
+	 * Ex: 192.168.1.3 (R3) [Cisco Device Cisco IOS]
+	 * >> 裝置作業系統:Cisco Device Cisco IOS，包覆符號為「[]」
+	 */
+	public static String PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION;
 	public static String PRTG_SERVER_IP;
 	public static String PRTG_API_LOGIN;
 	public static String PRTG_API_SENSOR_TREE;
 
+	public static String BACKUP_FILENAME_FORMAT;
+	public static String BACKUP_FILENAME_SEQ_NO_LENGTH;
+	public static SimpleDateFormat BACKUP_FILENAME_DATE_FORMAT = new SimpleDateFormat();
+	public static Boolean ENABLE_TEMP_FILE_RANDOM_CODE;
+	public static Boolean ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR;
+
 	public static Integer HTTP_CONNECTION_TIME_OUT;
 	public static Integer HTTP_SOCKET_TIME_OUT;
 
-	public static String DEFAULT_FTP_DIR_GROUP_NAME;
-	public static String DEFAULT_FTP_DIR_DEVICE_NAME;
+	public static String DEFAULT_LOCAL_DIR_GROUP_NAME;
+	public static String DEFAULT_LOCAL_DIR_DEVICE_NAME;
+	public static String DEFAULT_REMOTE_DIR_GROUP_NAME;
+	public static String DEFAULT_REMOTE_DIR_DEVICE_NAME;
 
 	public static String FTP_HOST_IP;
 	public static Integer FTP_HOST_PORT;
@@ -39,6 +93,7 @@ public class Env {
 	public static String FTP_BASE_DIR_PATH;
 	public static Integer FTP_DEFAULT_TIME_OUT;
 	public static Integer FTP_CONNECT_TIME_OUT;
+	public static String FTP_DIR_SEPARATE_SYMBOL;
 
 	public static String TFTP_HOST_IP;
 	public static Integer TFTP_HOST_PORT;
