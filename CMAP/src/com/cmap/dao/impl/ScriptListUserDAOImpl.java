@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ScriptListDAOVO;
 
@@ -14,6 +15,12 @@ public class ScriptListUserDAOImpl extends BaseDaoHibernate implements ScriptLis
 
 	@Override
 	public List<ScriptListDAOVO> findScriptListByScriptCode(String scriptCode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String findDefaultScriptCodeBySystemVersion(ScriptType scriptType, String systemVersion) {
 		// TODO Auto-generated method stub
 		return null;
 	}

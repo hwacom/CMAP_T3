@@ -215,8 +215,9 @@
 		    		"url" : "${pageContext.request.contextPath}/resources/js/dataTable/i18n/Chinese-traditional.json"
 		        },
 		        "createdRow": function( row, data, dataIndex ) {
-		        	   if(data.message.length > remarkShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
+		        	   if(data.message != null && data.message.length > remarkShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
 		        	      $(row).children('td').eq(4).attr('onclick','javascript:changeShowRemarks(this);');
+		        	      $(row).children('td').eq(4).addClass('cursor_zoom_in');
 		        	   }
 		        	   $(row).children('td').eq(4).attr('content', data.message);
 		        	},
@@ -250,9 +251,9 @@
 				},
 				"columns" : [
 					{},
-					{ "data" : "entryDateStr" },
+					{ "data" : "entryDateStr" , "class" : "center" },
 					{ "data" : "logger" },
-					{ "data" : "logLevel" },
+					{ "data" : "logLevel" , "class" : "center" },
 					{},
 					{}
 				],
@@ -272,7 +273,7 @@
 						"searchable": true,
 						"orderable": true,
 						"render": function (data, type, row, meta) {
-									if (row.message.length > remarkShowLength) {
+									if (row.message != null && row.message.length > remarkShowLength) {
 										 return getPartialRemarksHtml(row.message); //內容長度超出設定，僅顯示部分內容
 									} else {
 										return row.message; 						//未超出設定則全部顯示
@@ -281,7 +282,7 @@
 					},
 					{
 						"targets" : [5],
-						"className" : "left",
+						"className" : "center",
 						"searchable": false,
 						"orderable": false,
 						"render" : function(data, type, row) {

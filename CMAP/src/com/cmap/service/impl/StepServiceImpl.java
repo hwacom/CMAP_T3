@@ -25,6 +25,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ConnectionMode;
+import com.cmap.comm.enums.ScriptType;
 import com.cmap.comm.enums.Step;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
@@ -134,7 +135,7 @@ public class StepServiceImpl implements StepService {
 
 					switch (_step) {
 					case LOAD_DEFAULT_SCRIPT:
-						scripts = loadDefaultScript(scripts);
+						scripts = loadDefaultScript(deviceListId, scripts, ScriptType.BACKUP);
 
 						/*
 						 * Provision_Log_Step
@@ -395,12 +396,17 @@ public class StepServiceImpl implements StepService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	private List<ScriptListDAOVO> loadDefaultScript(List<ScriptListDAOVO> script) throws ServiceLayerException {
+	private List<ScriptListDAOVO> loadDefaultScript(String deviceListId, List<ScriptListDAOVO> script, ScriptType type) throws ServiceLayerException {
 		if (script != null && !script.isEmpty()) {
 			return script;
 		}
 
-		script = scriptListDefaultDAO.findScriptListByScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+		DeviceList device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+
+		String systemVersion = device != null ? device.getSystemVersion() : "";
+		final String scriptCode = scriptListDefaultDAO.findDefaultScriptCodeBySystemVersion(type, systemVersion);
+
+		script = scriptListDefaultDAO.findScriptListByScriptCode(scriptCode);
 
 		if (script == null || (script != null && script.isEmpty())) {
 			throw new ServiceLayerException("未設定[備份]預設腳本");

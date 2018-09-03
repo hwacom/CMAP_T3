@@ -21,6 +21,14 @@ img {
   vertical-align: middle;
 }
 
+.cursor_zoom_in {
+  cursor: zoom-in;
+}
+
+.cursor_zoom_out {
+  cursor: zoom-out;
+}
+
 span {
   vertical-align: middle;
   display: inline-block;

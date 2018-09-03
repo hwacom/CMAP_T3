@@ -131,7 +131,7 @@ public class PrtgApiUtils implements ApiUtils {
 			deviceInfoMap.put(Constants.DEVICE_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME));
 			deviceInfoMap.put(Constants.DEVICE_ENG_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME));
 			deviceInfoMap.put(Constants.DEVICE_IP, device.getHost());
-			deviceInfoMap.put(Constants.DEVICE_SYSTEM, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_SYSTEM_VERSION));
+			deviceInfoMap.put(Constants.DEVICE_SYSTEM, device.getTags());
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

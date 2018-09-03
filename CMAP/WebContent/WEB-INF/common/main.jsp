@@ -518,9 +518,11 @@
     	      if ($(obj).attr("isDetail") == 'true') {			//若當前是顯示全部，則切換成顯示部分
     	         $(obj).attr('isDetail', false);
     	         $(obj).html(getPartialRemarksHtml(content));
+    	         $(obj).switchClass("cursor_zoom_out", "cursor_zoom_in");
     	      } else {											//若當前是顯示部分，則切換成顯示全部
     	         $(obj).attr('isDetail', true);
     	         $(obj).html(getTotalRemarksHtml(content));
+    	         $(obj).switchClass("cursor_zoom_in", "cursor_zoom_out");
     	      }
     	   }
     	   
