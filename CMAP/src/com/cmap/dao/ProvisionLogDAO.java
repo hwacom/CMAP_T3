@@ -3,6 +3,7 @@ package com.cmap.dao;
 import java.util.List;
 
 import com.cmap.dao.vo.ProvisionLogDAOVO;
+import com.cmap.model.ProvisionLogDetail;
 import com.cmap.model.ProvisionLogDevice;
 import com.cmap.model.ProvisionLogMaster;
 import com.cmap.model.ProvisionLogRetry;
@@ -22,13 +23,15 @@ public interface ProvisionLogDAO {
 	 * @param daovo
 	 * @return
 	 */
-	public List<ProvisionLogMaster> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo);
+	public List<ProvisionLogDetail> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo);
+
 
 	/**
 	 * 新增供裝紀錄
 	 * @param master
+	 * @param details
 	 * @param steps
 	 * @param devices
 	 */
-	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogStep> steps, List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys);
+	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogDetail> details, List<ProvisionLogStep> steps, List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys);
 }

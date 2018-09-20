@@ -7,6 +7,7 @@ import java.util.List;
 public class ProvisionServiceVO extends CommonServiceVO {
 
 	private String logMasterId;
+	private String logDetailId;
 	private String logStepId;
 	private String logRetryId;
 	private String logDeviceId;
@@ -34,6 +35,7 @@ public class ProvisionServiceVO extends CommonServiceVO {
 
 	private Integer retryOrder;
 
+	private List<ProvisionServiceVO> detailVO = new ArrayList<ProvisionServiceVO>();
 	private List<ProvisionServiceVO> stepVO = new ArrayList<ProvisionServiceVO>();
 	private List<ProvisionServiceVO> retryVO = new ArrayList<ProvisionServiceVO>();
 	private List<ProvisionServiceVO> deviceVO = new ArrayList<ProvisionServiceVO>();
@@ -44,11 +46,23 @@ public class ProvisionServiceVO extends CommonServiceVO {
 	public void setLogMasterId(String logMasterId) {
 		this.logMasterId = logMasterId;
 	}
+	public String getLogDetailId() {
+		return logDetailId;
+	}
+	public void setLogDetailId(String logDetailId) {
+		this.logDetailId = logDetailId;
+	}
 	public String getLogStepId() {
 		return logStepId;
 	}
 	public void setLogStepId(String logStepId) {
 		this.logStepId = logStepId;
+	}
+	public String getLogRetryId() {
+		return logRetryId;
+	}
+	public void setLogRetryId(String logRetryId) {
+		this.logRetryId = logRetryId;
 	}
 	public String getLogDeviceId() {
 		return logDeviceId;
@@ -134,6 +148,18 @@ public class ProvisionServiceVO extends CommonServiceVO {
 	public void setDeviceListId(String deviceListId) {
 		this.deviceListId = deviceListId;
 	}
+	public Integer getRetryOrder() {
+		return retryOrder;
+	}
+	public void setRetryOrder(Integer retryOrder) {
+		this.retryOrder = retryOrder;
+	}
+	public List<ProvisionServiceVO> getDetailVO() {
+		return detailVO;
+	}
+	public void setDetailVO(List<ProvisionServiceVO> detailVO) {
+		this.detailVO = detailVO;
+	}
 	public List<ProvisionServiceVO> getStepVO() {
 		return stepVO;
 	}
@@ -151,17 +177,5 @@ public class ProvisionServiceVO extends CommonServiceVO {
 	}
 	public void setDeviceVO(List<ProvisionServiceVO> deviceVO) {
 		this.deviceVO = deviceVO;
-	}
-	public String getLogRetryId() {
-		return logRetryId;
-	}
-	public void setLogRetryId(String logRetryId) {
-		this.logRetryId = logRetryId;
-	}
-	public Integer getRetryOrder() {
-		return retryOrder;
-	}
-	public void setRetryOrder(Integer retryOrder) {
-		this.retryOrder = retryOrder;
 	}
 }

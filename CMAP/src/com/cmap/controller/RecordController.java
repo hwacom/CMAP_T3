@@ -30,10 +30,10 @@ public class RecordController extends BaseController {
 			log.error(e.toString(), e);
 
 		} finally {
-			model.addAttribute("group", "");
+			model.addAttribute("queryGroup", "");
 			model.addAttribute("groupList", groupListMap);
 
-			model.addAttribute("device", "");
+			model.addAttribute("queryDevice", "");
 			model.addAttribute("deviceList", deviceListMap);
 		}
 	}

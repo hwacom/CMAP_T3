@@ -7,8 +7,8 @@ body {
   padding-top: 49px;
   /*padding-bottom: 40px;*/
   background-color: #f5f5f5;
-  background-image: url("../images/tech_backgroud.jpg");
-  background-size: auto 100%;
+  background-image: url("../images/T3_back_1_3.jpg");
+  background-size: cover;
   font-family: MicrosoftJhengHei !important;
   /*overflow: auto;*/
 }
@@ -101,6 +101,13 @@ nav a:hover {
 .subMenu-item .feather {
   width: 20px;
   height: 20px;
+}
+
+/* DataTable 讀取資料時顯示文字 */
+.dataTables_processing {
+  color: blue;
+  left: 20% !important;
+  width: 80% !important;
 }
 
 nav img {
@@ -452,7 +459,7 @@ section {
 }
 
 .myTable thead {
-  background-color: #F0EAEA;
+  background-color: #EFD6AEE6;
 }
 
 .copyright > span {
@@ -478,6 +485,10 @@ section {
   
   .mobile-menu a {
   	color: white;
+  }
+  
+  .web-only {
+  	display: none;
   }
 }
 
@@ -514,12 +525,15 @@ section {
     display: inherit;
     margin-top: 0px;
   }
+  .web-only {
+  	display: inline;
+  }
 }
 
 @media (min-width: 1200px) {
   .title-font {
   	font-family: DFKai;
-  	font-size: 1.5rem
+  	font-size: 1.3rem
   }
   .copyright {
     color: #FFFFFF; 
@@ -536,6 +550,9 @@ section {
   }
   .search-bar-large {
     display: inherit;
+  }
+  .web-only {
+  	display: inline;
   }
 }
 /*

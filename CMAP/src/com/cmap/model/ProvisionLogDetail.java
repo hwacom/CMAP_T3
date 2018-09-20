@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -16,18 +18,24 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(
-		name = "provision_log_master",
+		name = "provision_log_detail",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = {"log_master_id"})
+				@UniqueConstraint(columnNames = {"log_detail_id"})
 		}
 		)
-public class ProvisionLogMaster {
+public class ProvisionLogDetail {
 
 	@Id
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid")
-	@Column(name = "log_master_id", unique = true)
-	private String logMasterId;
+	@Column(name = "log_detail_id", unique = true)
+	private String logDetailId;
+
+	@Column(name = "user_name", nullable = false)
+	private String userName;
+
+	@Column(name = "user_ip", nullable = false)
+	private String userIp;
 
 	@Column(name = "result", nullable = false)
 	private String result;
@@ -53,18 +61,24 @@ public class ProvisionLogMaster {
 	@Column(name = "create_by", nullable = false)
 	private String createBy;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "provisionLogMaster")
-	private List<ProvisionLogDetail> provisionLogDetail;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true)
+	@JoinColumn(name = "log_master_id", nullable = false)
+	private ProvisionLogMaster provisionLogMaster;
 
-	public ProvisionLogMaster() {
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "provisionLogDetail")
+	private List<ProvisionLogStep> provisionLogSteps;
+
+	public ProvisionLogDetail() {
 		super();
 	}
 
-	public ProvisionLogMaster(String logMasterId, String result, String message, Timestamp beginTime, Timestamp endTime,
-			Integer spendTimeInSeconds, String remark, Timestamp createTime, String createBy,
-			List<ProvisionLogDetail> provisionLogDetail) {
+	public ProvisionLogDetail(String logDetailId, String userName, String userIp, String result, String message,
+			Timestamp beginTime, Timestamp endTime, Integer spendTimeInSeconds, String remark, Timestamp createTime,
+			String createBy, ProvisionLogMaster provisionLogMaster, List<ProvisionLogStep> provisionLogSteps) {
 		super();
-		this.logMasterId = logMasterId;
+		this.logDetailId = logDetailId;
+		this.userName = userName;
+		this.userIp = userIp;
 		this.result = result;
 		this.message = message;
 		this.beginTime = beginTime;
@@ -73,15 +87,32 @@ public class ProvisionLogMaster {
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
-		this.provisionLogDetail = provisionLogDetail;
+		this.provisionLogMaster = provisionLogMaster;
+		this.provisionLogSteps = provisionLogSteps;
 	}
 
-	public String getLogMasterId() {
-		return logMasterId;
+	public String getLogDetailId() {
+		return logDetailId;
 	}
 
-	public void setLogMasterId(String logMasterId) {
-		this.logMasterId = logMasterId;
+	public void setLogDetailId(String logDetailId) {
+		this.logDetailId = logDetailId;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserIp() {
+		return userIp;
+	}
+
+	public void setUserIp(String userIp) {
+		this.userIp = userIp;
 	}
 
 	public String getResult() {
@@ -148,11 +179,19 @@ public class ProvisionLogMaster {
 		this.createBy = createBy;
 	}
 
-	public List<ProvisionLogDetail> getProvisionLogDetail() {
-		return provisionLogDetail;
+	public ProvisionLogMaster getProvisionLogMaster() {
+		return provisionLogMaster;
 	}
 
-	public void setProvisionLogDetail(List<ProvisionLogDetail> provisionLogDetail) {
-		this.provisionLogDetail = provisionLogDetail;
+	public void setProvisionLogMaster(ProvisionLogMaster provisionLogMaster) {
+		this.provisionLogMaster = provisionLogMaster;
+	}
+
+	public List<ProvisionLogStep> getProvisionLogSteps() {
+		return provisionLogSteps;
+	}
+
+	public void setProvisionLogSteps(List<ProvisionLogStep> provisionLogSteps) {
+		this.provisionLogSteps = provisionLogSteps;
 	}
 }

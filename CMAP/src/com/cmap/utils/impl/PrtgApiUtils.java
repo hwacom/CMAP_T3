@@ -189,14 +189,21 @@ public class PrtgApiUtils implements ApiUtils {
 			 */
 			if (StringUtils.isNotBlank(oriName)) {
 				if (StringUtils.isNotBlank(WRAPPED_SYMBOL)) {
-					final String head = WRAPPED_SYMBOL.substring(0, 1);
-					final String tail = WRAPPED_SYMBOL.substring(1, 2);
+					if (WRAPPED_SYMBOL.length() == 2) {
+						final String head = WRAPPED_SYMBOL.substring(0, 1);
+						final String tail = WRAPPED_SYMBOL.substring(1, 2);
 
-					if (oriName.indexOf(head) != -1) {
-						oriName = oriName.substring(oriName.indexOf(head)+1, oriName.length());
-					}
-					if (oriName.indexOf(tail) != -1) {
-						oriName = oriName.substring(0, oriName.indexOf(tail));
+						if (oriName.indexOf(head) != -1) {
+							oriName = oriName.substring(oriName.indexOf(head)+1, oriName.length());
+						}
+						if (oriName.indexOf(tail) != -1) {
+							oriName = oriName.substring(0, oriName.indexOf(tail));
+						}
+
+					} else if (WRAPPED_SYMBOL.length() == 1) {
+						if (oriName.indexOf(WRAPPED_SYMBOL) != -1) {
+							oriName = oriName.substring(0, oriName.indexOf(WRAPPED_SYMBOL)).trim();
+						}
 					}
 				}
 			}

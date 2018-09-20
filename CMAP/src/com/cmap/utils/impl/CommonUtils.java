@@ -156,4 +156,74 @@ public class CommonUtils {
 
 		return spendTime;
 	}
+
+	protected String replaceContentSign(String cmd, ConfigInfoVO configInfoVO, String remark) {
+		if (cmd.contains(Env.SIGN_ACT)) {
+			cmd = StringUtils.replace(cmd, Env.SIGN_ACT, configInfoVO.getAccount());
+		}
+		if (cmd.contains(Env.SIGN_PWD)) {
+			cmd = StringUtils.replace(cmd, Env.SIGN_PWD, configInfoVO.getPassword());
+		}
+		if (cmd.contains(Env.SIGN_ENABLE_PWD)) {
+			cmd = StringUtils.replace(cmd, Env.SIGN_ENABLE_PWD, configInfoVO.getEnablePassword());
+		}
+		if (cmd.contains(Env.SIGN_TFTP_IP)) {
+			cmd = StringUtils.replace(cmd, Env.SIGN_TFTP_IP, configInfoVO.gettFtpIP());
+		}
+		if (cmd.contains(Env.SIGN_TFTP_OUTPUT_FILE_PATH)) {
+			String tFtpFilePath = configInfoVO.gettFtpFilePath();
+
+			if (!Env.TFTP_SERVER_AT_LOCAL) {
+				/*
+				 * 若 TFTP Server 與 CMAP系統 不是架設在同一台主機上 (因TFTP Client端無法刪除 Server端檔案)
+				 * 此時Config file上傳時會先上傳到 TFTP 的 temp 資料夾，待版本內容比對後才決定是否要將 temp 檔案移動到正確的 device 目錄下
+				 * 因此，放置在 temp 資料夾內的檔案名稱須加上時間細數碼
+				 */
+				//				tFtpFilePath = tFtpFilePath.concat("-").concat(configInfoVO.getTempFileRandomCode());
+				tFtpFilePath = configInfoVO.getTempFilePath();
+			}
+
+			if (StringUtils.isNotBlank(remark)) {
+				tFtpFilePath = StringUtils.replace(tFtpFilePath, Env.COMM_SEPARATE_SYMBOL, remark);
+			}
+
+			cmd = StringUtils.replace(cmd, Env.SIGN_TFTP_OUTPUT_FILE_PATH, tFtpFilePath);
+		}
+
+		return cmd;
+	}
+
+	/**
+	 * 命令回傳結果內容處理
+	 * @param content 原始回傳內容
+	 * @param headCutCount 開頭往後要去除的行數
+	 * @param tailCutCount 結尾往前要去除的行數
+	 * @param splitBy 行段落用什麼符號分行
+	 * @return
+	 */
+	protected String cutContent(String content, int headCutCount, int tailCutCount, String splitBy) {
+		String retString = "";
+		StringBuffer sb = null;
+		try {
+			final String[] contentArray = content.split(splitBy);
+
+			if (contentArray != null && contentArray.length != 0) {
+				int startAt = (headCutCount > contentArray.length) ? contentArray.length-1 : headCutCount;
+				int endAt = ((contentArray.length-tailCutCount) < 0) ? contentArray.length-1 : (contentArray.length-tailCutCount);
+
+				sb = new StringBuffer();
+				for (int i=startAt; i<endAt; i++) {
+					sb.append(contentArray[i])
+					.append(System.lineSeparator());
+				}
+
+				retString = sb != null ? sb.toString() : retString;
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
+
+		return retString;
+	}
 }

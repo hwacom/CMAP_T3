@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -30,11 +31,13 @@ import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 import com.cmap.security.SecurityUtil;
+import com.cmap.service.ProvisionService;
 import com.cmap.service.StepService;
 import com.cmap.service.StepService.Result;
 import com.cmap.service.VersionService;
 import com.cmap.service.impl.jobs.BaseJobImpl;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ProvisionServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.service.vo.VersionServiceVO;
 import com.cmap.utils.ConnectUtils;
@@ -67,6 +70,9 @@ public class VersionServiceImpl implements VersionService {
 	@Autowired
 	@Qualifier("scriptListDefaultDAOImpl")
 	private ScriptListDAO scriptListDefaultDAO;
+
+	@Autowired
+	private ProvisionService provisionService;
 
 	/**
 	 * 查找使用者有權限之群組+設備的資料筆數 for UI分頁區塊中的total使用
@@ -648,6 +654,7 @@ public class VersionServiceImpl implements VersionService {
 
 	@Override
 	public VersionServiceVO backupConfig(String configType, List<String> deviceListIDs, boolean jobTrigger) {
+		ProvisionServiceVO masterVO = new ProvisionServiceVO();
 		VersionServiceVO retVO = new VersionServiceVO();
 		final int totalCount = deviceListIDs.size();
 		retVO.setJobExcuteResultRecords(Integer.toString(totalCount));
@@ -657,9 +664,15 @@ public class VersionServiceImpl implements VersionService {
 		int noDiffCount = 0;
 
 		try {
+			masterVO.setLogMasterId(UUID.randomUUID().toString());
+			masterVO.setBeginTime(new Date());
+			masterVO.setUserName(jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser().getUsername());
+
 			StepServiceVO ssVO;
 			for (String deviceListId : deviceListIDs) {
 				ssVO = stepService.doBackupStep(deviceListId, jobTrigger);
+
+				masterVO.getDetailVO().addAll(ssVO.getPsVO().getDetailVO());
 
 				successCount += ssVO.isSuccess() && (ssVO.getResult() != Result.NO_DIFFERENT) ? 1 : 0;
 				errorCount += !ssVO.isSuccess() ? 1 : 0;
@@ -678,6 +691,7 @@ public class VersionServiceImpl implements VersionService {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+			masterVO.setMessage(e.toString());
 		}
 
 		String msg = "";
@@ -701,6 +715,15 @@ public class VersionServiceImpl implements VersionService {
 					String.valueOf(errorCount),
 					String.valueOf(noDiffCount)
 			};
+		}
+
+		masterVO.setEndTime(new Date());
+		masterVO.setResult(CommonUtils.converMsg(msg, args));
+
+		try {
+			provisionService.insertProvisionLog(masterVO);
+		} catch (ServiceLayerException e) {
+			log.error(e.toString(), e);
 		}
 
 		retVO.setRetMsg(CommonUtils.converMsg(msg, args));

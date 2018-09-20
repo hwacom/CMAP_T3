@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.vo.ProvisionLogDAOVO;
+import com.cmap.model.ProvisionLogDetail;
 import com.cmap.model.ProvisionLogDevice;
 import com.cmap.model.ProvisionLogMaster;
 import com.cmap.model.ProvisionLogRetry;
@@ -33,7 +34,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 	}
 
 	@Override
-	public List<ProvisionLogMaster> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo) {
+	public List<ProvisionLogDetail> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select plm ")
 		.append(" from ProvisionLogMaster plm ")
@@ -43,15 +44,21 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
-		return (List<ProvisionLogMaster>)q.list();
+		return (List<ProvisionLogDetail>)q.list();
 	}
 
 	@Override
-	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogStep> steps,
+	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogDetail> details, List<ProvisionLogStep> steps,
 			List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys) {
 
 		if (master != null) {
 			getHibernateTemplate().save(master);
+		}
+
+		if (details != null) {
+			for (ProvisionLogDetail detail : details) {
+				getHibernateTemplate().save(detail);
+			}
 		}
 
 		if (steps != null) {

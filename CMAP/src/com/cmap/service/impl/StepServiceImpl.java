@@ -50,6 +50,7 @@ import com.cmap.utils.impl.CommonUtils;
 import com.cmap.utils.impl.FtpFileUtils;
 import com.cmap.utils.impl.SshUtils;
 import com.cmap.utils.impl.TFtpFileUtils;
+import com.cmap.utils.impl.TelnetUtils;
 
 @Service("stepService")
 @Transactional
@@ -78,6 +79,7 @@ public class StepServiceImpl implements StepService {
 		StepServiceVO retVO = new StepServiceVO();
 
 		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
+		ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
 		ProvisionServiceVO psStepVO = new ProvisionServiceVO();
 		ProvisionServiceVO psRetryVO;
 		ProvisionServiceVO psDeviceVO;
@@ -91,15 +93,17 @@ public class StepServiceImpl implements StepService {
 		final String userName = jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUsername() : Constants.SYS;
 		final String userIp = jobTrigger ? Env.USER_IP_JOB : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUser().getIp() : Constants.UNKNOWN;
 
-		psMasterVO.setUserName(userName);
-		psMasterVO.setUserIp(userIp);
-		psMasterVO.setBeginTime(new Date());
-		psMasterVO.setRemark(jobTrigger ? Env.PROVISION_REASON_OF_JOB : null);
+		psDetailVO.setUserName(userName);
+		psDetailVO.setUserIp(userIp);
+		psDetailVO.setBeginTime(new Date());
+		psDetailVO.setRemark(jobTrigger ? Env.PROVISION_REASON_OF_JOB : null);
 		psStepVO.setBeginTime(new Date());
 
 		retVO.setActionBy(userName);
 		retVO.setActionFromIp(userIp);
 		retVO.setBeginTime(new Date());
+
+		ConnectUtils connectUtils = null;			// 連線裝置物件
 
 		boolean retryRound = false;
 		while (round <= RETRY_TIMES) {
@@ -121,12 +125,17 @@ public class StepServiceImpl implements StepService {
 					deviceMode = ConnectionMode.SSH;
 					fileServerMode = ConnectionMode.TFTP;
 					break;
+
+				case "SYS_004":
+					steps = Env.BACKUP_BY_TFTP;
+					deviceMode = ConnectionMode.TELNET;
+					fileServerMode = ConnectionMode.TFTP;
+					break;
 				}
 
 				List<ScriptListDAOVO> scripts = null;
 
 				ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
-				ConnectUtils connectUtils = null;			// 連線裝置物件
 				List<String> outputList = null;				// 命令Output內容List
 				List<ConfigInfoVO> outputVOList = null;		// Output VO
 				FileUtils fileUtils = null;					// 連線FileServer吳建
@@ -242,6 +251,14 @@ public class StepServiceImpl implements StepService {
 
 				retryRound = true;
 				round++;
+
+				if (connectUtils != null) {
+					try {
+						connectUtils.disconnect();
+					} catch (Exception e1) {
+						log.error(e.toString(), e);
+					}
+				}
 			}
 		}
 
@@ -255,18 +272,15 @@ public class StepServiceImpl implements StepService {
 		psStepVO.setProcessLog(retVO.getCmdProcessLog());
 
 		/*
-		 * Provision_Log_Master
+		 * Provision_Log_Detail
 		 */
-		psMasterVO.setEndTime(new Date());
-		psMasterVO.setResult(retVO.getResult().toString());
-		psMasterVO.setMessage(retVO.getMessage());
-		psMasterVO.getStepVO().add(psStepVO); // add StepVO to MasterVO
+		psDetailVO.setEndTime(new Date());
+		psDetailVO.setResult(retVO.getResult().toString());
+		psDetailVO.setMessage(retVO.getMessage());
+		psDetailVO.getStepVO().add(psStepVO); // add StepVO to DetailVO
 
-		try {
-			provisionService.insertProvisionLog(psMasterVO); // Insert provision log
-		} catch (ServiceLayerException e) {
-			log.error(e.toString(), e);
-		}
+		psMasterVO.getDetailVO().add(psDetailVO); // add DetailVO to MasterVO
+		retVO.setPsVO(psMasterVO);
 
 		retVO.setEndTime(new Date());
 		retVO.setRetryTimes(round);
@@ -298,6 +312,7 @@ public class StepServiceImpl implements StepService {
 					break;
 
 				case "SYS_002":
+				case "SYS_004":
 					steps = Env.BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP;
 					downloadMode = ConnectionMode.TFTP;
 					uploadMode = ConnectionMode.FTP;
@@ -401,15 +416,23 @@ public class StepServiceImpl implements StepService {
 			return script;
 		}
 
-		DeviceList device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+		DeviceList device = null;
+		if (!StringUtils.equals(deviceListId, "*")) {
+			device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+		}
 
-		String systemVersion = device != null ? device.getSystemVersion() : "";
+		String systemVersion = device != null ? device.getSystemVersion() : Env.MEANS_ALL_SYMBOL;
 		final String scriptCode = scriptListDefaultDAO.findDefaultScriptCodeBySystemVersion(type, systemVersion);
 
 		script = scriptListDefaultDAO.findScriptListByScriptCode(scriptCode);
 
 		if (script == null || (script != null && script.isEmpty())) {
-			throw new ServiceLayerException("未設定[備份]預設腳本");
+			if (!StringUtils.equals(systemVersion, Env.MEANS_ALL_SYMBOL)) {
+				script = loadDefaultScript("*", script, type);	//帶入機器系統版本號查不到腳本時，將版本調整為*號後再查找一次預設腳本
+
+			} else {
+				throw new ServiceLayerException("未設定[備份]預設腳本");
+			}
 		}
 
 		return script;
@@ -472,6 +495,8 @@ public class StepServiceImpl implements StepService {
 	private ConnectUtils connect2Device(ConnectUtils connectUtils, ConnectionMode _mode, ConfigInfoVO ciVO) throws Exception {
 		switch (_mode) {
 		case TELNET:
+			connectUtils = new TelnetUtils();
+			connectUtils.connect(ciVO.getDeviceIp(), null);
 			break;
 
 		case SSH:
@@ -604,7 +629,7 @@ public class StepServiceImpl implements StepService {
 					 */
 					if (Env.TFTP_SERVER_AT_LOCAL == null || (Env.TFTP_SERVER_AT_LOCAL != null && !Env.TFTP_SERVER_AT_LOCAL)) {
 						final String sourceDirPath = Env.TFTP_TEMP_DIR_PATH;
-						final String targetDirPath = ciVO.getConfigFileDirPath().concat(File.separator).concat(nowVersionFileName);
+						final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
 						ciVO.setFileFullName(nowVersionTempFileName);
 
 						log.info("[compareContents] >> fileUtils.moveFiles");
@@ -620,7 +645,7 @@ public class StepServiceImpl implements StepService {
 				 */
 				if (Env.TFTP_SERVER_AT_LOCAL == null || (Env.TFTP_SERVER_AT_LOCAL != null && !Env.TFTP_SERVER_AT_LOCAL)) {
 					final String sourceDirPath = Env.TFTP_TEMP_DIR_PATH;
-					final String targetDirPath = ciVO.getConfigFileDirPath().concat(File.separator).concat(nowVersionFileName);
+					final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
 					ciVO.setFileFullName(nowVersionTempFileName);
 
 					log.info("[compareContents] >> fileUtils.moveFiles");
@@ -664,7 +689,7 @@ public class StepServiceImpl implements StepService {
 
 		String fileName = CommonUtils.composeConfigFileName(configInfoVO, seqNo);
 		String tFtpTargetFilePath =
-				(Env.TFTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH).concat(File.separator).concat(fileName);
+				(Env.TFTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH).concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(fileName);
 
 		/*
 		 * 若 TFTP Server 與 CMAP系統 不是架設在同一台主機上
@@ -874,7 +899,7 @@ public class StepServiceImpl implements StepService {
 			tmpVO.setRemoteFileDirPath(vsVO.getRemoteFileDirPath());
 			tmpVO.setFileFullName(vsVO.getFileFullName());
 
-			log.info("Downloading file name ("+i+Env.FTP_DIR_SEPARATE_SYMBOL+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+File.separator+tmpVO.getFileFullName());
+			log.info("Downloading file name ("+i+Env.FTP_DIR_SEPARATE_SYMBOL+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+(StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)+tmpVO.getFileFullName());
 
 			if (returnFileString) {
 				final String fileContent = fileUtils.downloadFilesString(tmpVO);

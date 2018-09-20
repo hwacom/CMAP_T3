@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="${pageContext.request.contextPath}/resources/images/hwacom.ico">
+    <link rel="icon" href="${pageContext.request.contextPath}/resources/images/icon.ico">
 
     <title>組態設定管理系統</title>
 
@@ -31,7 +31,8 @@
             <div class="col-12">
 	  			<div class="row">
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-title">
-			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/hwacom.png" width="100" height="40" style="padding-top: 3px" />
+			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="40" style="padding-top: 3px" />
+      					<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short.png" width="auto" height="40" style="padding-top: 3px" />
 			  			<span class="h3 font-weight-bold" style="color:#1C2269">組態設定管理系統</span>	
 			  		</div>
 			  	</div>
@@ -52,7 +53,7 @@
 				  		  </div>
 				  		  <div class="form-group row" style="vertical-align: middle;">
 				  		  	<div class="col-3">
-				  		  		<span class="h5 font-weight-bold" style="color: #FFFFFF">帳號:</span>
+				  		  		<span class="h5 font-weight-bold" style="color: black">帳號:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
 				  		  		<label for="inputAccount" class="sr-only">帳號</label>
@@ -61,7 +62,7 @@
 				  		  </div>
 					      <div class="form-group row">
 					      	<div class="col-3">
-					      		<span class="h5 font-weight-bold" style="color: #FFFFFF">密碼:</span>
+					      		<span class="h5 font-weight-bold" style="color: black">密碼:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
 				  		  		<label for="inputPassword" class="sr-only">密碼</label>
@@ -91,7 +92,7 @@
 		</div>
 		<div class="row">
             <div class="col-12">
-            	<span class="font-weight-bold copyright">Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	
+            	<span class="font-weight-bold copyright" style="color: gray">Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	
             </div>
         </div>
 	</div>

@@ -24,5 +24,5 @@ public interface ProvisionService {
 	 * @param psVO ({@link com.cmap.service.vo.ProvisionServiceVO}
 	 * @return
 	 */
-	public boolean insertProvisionLog(ProvisionServiceVO psVO) throws ServiceLayerException;
+	public boolean insertProvisionLog(ProvisionServiceVO masterVO) throws ServiceLayerException;
 }

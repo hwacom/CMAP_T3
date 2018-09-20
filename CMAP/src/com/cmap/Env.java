@@ -102,6 +102,7 @@ public class Env {
 
 	public static Integer TELNET_DEFAULT_TIME_OUT;
 	public static Integer TELNET_CONNECT_TIME_OUT;
+	public static Integer TELNET_DEFAULT_PORT;
 
 	public static Integer SSH_CONNECT_TIME_OUT;
 	public static Integer SSH_SOCKET_TIME_OUT;
@@ -138,6 +139,9 @@ public class Env {
 	public static Boolean TFTP_SERVER_AT_LOCAL;
 	public static String TFTP_TEMP_DIR_PATH;
 	public static String TFTP_LOCAL_ROOT_DIR_PATH;
+	public static String TFTP_DIR_PATH_SEPARATE_SYMBOL;
+
+	public static String MEANS_ALL_SYMBOL;
 
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT,

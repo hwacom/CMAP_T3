@@ -24,6 +24,7 @@ import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.VersionService;
 import com.cmap.service.vo.VersionServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -68,6 +69,8 @@ public class VersionController extends BaseController {
 
 			model.addAttribute("queryConfigType", "");
 			model.addAttribute("configTypeList", configTypeMap);
+
+			model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
 		}
 	}
 

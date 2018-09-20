@@ -65,8 +65,8 @@ public class ProvisionLogStep {
 	private String createBy;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "log_master_id", nullable = false)
-	private ProvisionLogMaster provisionLogMaster;
+	@JoinColumn(name = "log_detail_id", nullable = false)
+	private ProvisionLogDetail provisionLogDetail;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "provisionLogStep")
 	private List<ProvisionLogDevice> provisionLogDevices;
@@ -80,7 +80,7 @@ public class ProvisionLogStep {
 
 	public ProvisionLogStep(String logStepId, String result, String message, String scriptCode, Timestamp beginTime,
 			Timestamp endTime, Integer spendTimeInSeconds, Integer retryTimes, String processLog, String remark,
-			Timestamp createTime, String createBy, ProvisionLogMaster provisionLogMaster,
+			Timestamp createTime, String createBy, ProvisionLogDetail provisionLogDetail,
 			List<ProvisionLogDevice> provisionLogDevices) {
 		super();
 		this.logStepId = logStepId;
@@ -95,7 +95,7 @@ public class ProvisionLogStep {
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
-		this.provisionLogMaster = provisionLogMaster;
+		this.provisionLogDetail = provisionLogDetail;
 		this.provisionLogDevices = provisionLogDevices;
 	}
 
@@ -195,12 +195,12 @@ public class ProvisionLogStep {
 		this.createBy = createBy;
 	}
 
-	public ProvisionLogMaster getProvisionLogMaster() {
-		return provisionLogMaster;
+	public ProvisionLogDetail getProvisionLogDetail() {
+		return provisionLogDetail;
 	}
 
-	public void setProvisionLogMaster(ProvisionLogMaster provisionLogMaster) {
-		this.provisionLogMaster = provisionLogMaster;
+	public void setProvisionLogDetail(ProvisionLogDetail provisionLogDetail) {
+		this.provisionLogDetail = provisionLogDetail;
 	}
 
 	public List<ProvisionLogDevice> getProvisionLogDevices() {

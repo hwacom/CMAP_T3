@@ -1,6 +1,9 @@
 package com.cmap.configuration.hibernate;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitDeleteEventListener;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.cmap.Constants;
 import com.cmap.annotation.Log;
 import com.cmap.dao.impl.BaseDaoHibernate;
+import com.cmap.model.UserOperationLog;
 
 @Component
 //@Transactional
@@ -44,7 +48,9 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		log.info(des.toString());
 		log.info("******************************************************************************");
 
-		saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		}
 	}
 
 	@Override
@@ -63,7 +69,9 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		log.info(des.toString());
 		log.info("******************************************************************************");
 
-		saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		}
 	}
 
 	@Override
@@ -80,7 +88,9 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		log.info(des.toString());
 		log.info("******************************************************************************");
 
-		saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
+		}
 	}
 
 	@Override
@@ -102,24 +112,19 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 	}
 
 	public void saveLog(Session session, String tableName, Serializable targetId, StringBuffer des, String updateBy){
-		/*
-		StringBuffer sql = new StringBuffer();
-		sql.append(" INSERT user_operation_log ")
-		.append(" 	( log_id, user_name, table_name, target_id, description, operate_time ) ")
-		.append("	VALUES ")
-		.append("	( ")
-		.append(" UUID(), ")
-		.append(" '").append(updateBy).append("', ")
-		.append(" '").append(tableName).append("', ")
-		.append(" '").append(targetId).append("', ")
-		.append(" '").append(des.toString()).append("', ")
-		.append(" CURRENT_TIMESTAMP")
-		.append("    ) ");
+		UserOperationLog entity = new UserOperationLog();
+		entity.setLogId(UUID.randomUUID().toString());
+		entity.setUserName(updateBy);
+		entity.setTableName(tableName);
+		entity.setTargetId(targetId.toString());
+		entity.setDescription(des.toString());
+		entity.setOperateTime(new Timestamp((new Date()).getTime()));
 
-		Session logSession = session.getSessionFactory().openSession();//重新打开一个新的Hibernate session，并在使用完进行关闭，不可使用原session。
-		logSession.createNativeQuery(sql.toString()).executeUpdate();
+		Session logSession = session.getSessionFactory().openSession(); //重新打开一个新的Hibernate session，并在使用完进行关闭，不可使用原session。
+		logSession.beginTransaction();
+		logSession.save(entity);
+		logSession.getTransaction().commit();
 		logSession.close();
-		 */
 	}
 
 	/**

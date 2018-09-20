@@ -20,6 +20,8 @@ public class StepServiceVO extends CommonServiceVO {
 	private String actionFromIp;
 	private Integer retryTimes;
 
+	private ProvisionServiceVO psVO;
+
 	@Override
 	public String toString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -109,5 +111,13 @@ public class StepServiceVO extends CommonServiceVO {
 
 	public void setResult(StepService.Result result) {
 		this.result = result;
+	}
+
+	public ProvisionServiceVO getPsVO() {
+		return psVO;
+	}
+
+	public void setPsVO(ProvisionServiceVO psVO) {
+		this.psVO = psVO;
 	}
 }
