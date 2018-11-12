@@ -20,9 +20,11 @@ import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.MenuItemDAO;
+import com.cmap.dao.ScriptTypeDAO;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.MenuItem;
+import com.cmap.model.ScriptType;
 import com.cmap.service.CommonService;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
@@ -38,6 +40,9 @@ public class CommonServiceImpl implements CommonService {
 
 	@Autowired
 	MenuItemDAO menuItemDAO;
+
+	@Autowired
+	ScriptTypeDAO scriptTypeDAO;
 
 	/**
 	 * 組合 Local / Remote 落地檔路徑資料夾
@@ -223,6 +228,23 @@ public class CommonServiceImpl implements CommonService {
 
 		}
 
+		return retMap;
+	}
+
+	@Override
+	public Map<String, String> getScriptTypeMenu(String defaultFlag) {
+		Map<String, String> retMap = new LinkedHashMap<>();
+
+		try {
+			List<ScriptType> scriptTypeList = scriptTypeDAO.findScriptTypeByDefaultFlag(defaultFlag);
+
+			for (ScriptType type : scriptTypeList) {
+				retMap.put(type.getScriptTypeCode(), type.getScriptTypeName());
+			}
+
+		} catch (Exception e) {
+
+		}
 		return retMap;
 	}
 }

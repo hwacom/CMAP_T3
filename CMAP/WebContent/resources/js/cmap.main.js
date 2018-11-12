@@ -14,6 +14,8 @@ var isWEB = true;
  *** 頁面loading完成後各種init項目
  **********************************************************************************************************/
 $(document).ready(function() {
+	window.sessionStorage.clear();
+			
 	// get current URL path and assign 'active' class
 	var pathname = window.location.pathname;
 	
@@ -44,13 +46,12 @@ $(document).ready(function() {
 	
 	//計算DataTable區塊高度
 	calHeight();
-	
+
 	//縮放視窗大小時，延遲1秒後重算DataTable區塊高度 & 重繪DataTable
     $(window).resize(_.debounce(function() {
     	if (typeof resutTable !== "undefined") {
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-    		resutTable.clear().draw();
 			resutTable.ajax.reload();
 			
 			if (typeof $("#checkAll") !== "undefined") {
@@ -64,7 +65,6 @@ $(document).ready(function() {
     	if (typeof resutTable_errorLog !== "undefined") {
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-    		resutTable_errorLog.clear().draw();
     		resutTable_errorLog.ajax.reload();
 			
 			if (typeof $("#checkAll") !== "undefined") {
@@ -78,7 +78,6 @@ $(document).ready(function() {
     	if (typeof resutTable_jobLog !== "undefined") {
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-    		resutTable_jobLog.clear().draw();
     		resutTable_jobLog.ajax.reload();
 			
 			if (typeof $("#checkAll") !== "undefined") {
@@ -89,6 +88,23 @@ $(document).ready(function() {
 				initActionBar();
 			}
     	}
+    	
+    	if ($('#chkbox').length > 0) {
+    		var chooseIdx = [];
+    		$.each($('input[name=chkbox]:checked'), function(key, input) {
+				chooseIdx.push(input.value);
+			});
+    		
+    		//將使用者已勾選的項目記錄下來
+    		window.sessionStorage.setItem(_DATATABLE_CHECKED_ITEM_, JSON.stringify(chooseIdx));
+    	}
+    	
+    	/*
+    	$.each( $('.modal:visible'), function( key, value ) {
+    		$("#" + value.id).modal('hide');
+    	});
+    	*/
+    	
     }, 1000));
 	
   	//全選 or 取消全選
@@ -130,13 +146,31 @@ $(document).ready(function() {
     });
 });
 
+function initCheckedItems() {
+	var checkedItem = JSON.parse(window.sessionStorage.getItem(_DATATABLE_CHECKED_ITEM_));
+	if (checkedItem == null) {
+		return;
+	}
+	
+	if (checkedItem.length > 0) {
+		$.each(checkedItem, function(key, value) {
+			$('input[name=chkbox][value='+value+']').trigger('click');
+		});
+	}
+}
+
 /**********************************************************************************************************
  *** 將TABLE查詢結果，各資料內容TR加上click事件 (點擊該列資料任一位置時將該筆資料checkbox勾選)
  **********************************************************************************************************/
 function bindTrEvent() {
 	$('.dataTable tbody tr').click(function(event) {
-        if (event.target.tagName !== 'A' && event.target.type !== 'checkbox') {
+        if (event.target.tagName !== 'A' && event.target.type !== 'checkbox' && event.target.type !== 'radio') {
           $(':checkbox', this).trigger('click');
+          $(':radio', this).prop('checked', ($(':radio', this).is(':checked') ? false : true));
+          
+          if ($('#chkbox',this).attr('type') === 'radio') {
+        	  changeTrBgColor($('#chkbox',this).get(0));
+          }
         }
     });
 }
@@ -194,13 +228,16 @@ function changeMenuIconColor() {
  *** 勾選項目時調整該列資料<TR>底色
  **********************************************************************************************************/
 function changeTrBgColor(obj) {
-	var tr = obj.parentNode.parentNode;
-	
-	if (obj.checked) {
-		tr.classList.add('mySelected');
-	} else {
-		tr.classList.remove('mySelected');
-	}
+	setTimeout(function() {
+		var tr = obj.parentNode.parentNode;
+		var jObj = $(obj);
+		
+		if (obj.checked) {
+			tr.classList.add('mySelected');
+		} else {
+			tr.classList.remove('mySelected');
+		}
+	}, 100);
 }
 
 /**********************************************************************************************************
@@ -321,16 +358,16 @@ $.fn.serializeObject = function()
 /**********************************************************************************************************
  *** 查詢結果TABLE資料內容處理: 切換欄位顯示部分或全部內容 & 改變滑鼠hover時的鼠標樣式
  **********************************************************************************************************/
-function changeShowRemarks(obj){						//obj是td
+function changeShowContent(obj, maxLength){						//obj是td
    var content = $(obj).attr("content");
    if (content != null && content != '') {
       if ($(obj).attr("isDetail") == 'true') {			//若當前是顯示全部，則切換成顯示部分
          $(obj).attr('isDetail', false);
-         $(obj).html(getPartialRemarksHtml(content));
+         $(obj).html(getPartialContentHtml(content, maxLength));
          $(obj).switchClass("cursor_zoom_out", "cursor_zoom_in");
       } else {											//若當前是顯示部分，則切換成顯示全部
          $(obj).attr('isDetail', true);
-         $(obj).html(getTotalRemarksHtml(content));
+         $(obj).html(getTotalContentHtml(content));
          $(obj).switchClass("cursor_zoom_in", "cursor_zoom_out");
       }
    }
@@ -341,13 +378,13 @@ function changeShowRemarks(obj){						//obj是td
 /**********************************************************************************************************
  *** 查詢結果TABLE資料內容處理: 依照各頁面設定的呈顯內容字數長度，超過的部分則遮蔽顯示「...(顯示)」
  **********************************************************************************************************/
-function getPartialRemarksHtml(remarks) {
-	return remarks.substr(0, remarkShowLength) + '&nbsp;&nbsp;<a href="javascript:void(0);" >...(顯示)</a>';
+function getPartialContentHtml(content, maxLength) {
+	return content.substr(0, maxLength) + '&nbsp;&nbsp;<a href="javascript:void(0);" >...(顯示)</a>';
 }
 
 /**********************************************************************************************************
  *** 查詢結果TABLE資料內容處理: 遮蔽的內容，點擊「...(顯示)」後呈顯全部內容
  **********************************************************************************************************/
-function getTotalRemarksHtml(remarks) {
-	return remarks + '&nbsp;&nbsp;<a href="javascript:void(0);" >(隱藏)</a>';
+function getTotalContentHtml(content) {
+	return content + '&nbsp;&nbsp;<a href="javascript:void(0);" >(隱藏)</a>';
 }

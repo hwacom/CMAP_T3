@@ -89,13 +89,14 @@ public class AppConfig implements WebMvcConfigurer {
 		registry.viewResolver(resolver);
 	}
 
-
-	//    @Bean
-	//    public MessageSource messageSource() {
-	//        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-	//        messageSource.setBasename("messages");
-	//        return messageSource;
-	//    }
+	/*
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        return messageSource;
+    }
+	 */
 
 	@Bean
 	public MessageSource propertiesMessageSource() {

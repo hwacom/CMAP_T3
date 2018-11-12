@@ -1,6 +1,6 @@
 package com.cmap.dao.vo;
 
-public class ScriptListDAOVO {
+public class ScriptListDAOVO extends CommonDAOVO {
 
 	private String scriptListId;
 
@@ -13,9 +13,17 @@ public class ScriptListDAOVO {
 	private String output;
 	private String headCuttingLines;
 	private String tailCuttingLines;
-	private String scriptDescription;
 	private String remark;
 	private String errorSymbol;
+	private String scriptDescription;
+	private String scriptTypeName;
+	private String systemVersion;
+	private String scriptMode;
+
+	private String createTimeStr;
+	private String createBy;
+	private String updateTimeStr;
+	private String updateBy;
 
 	public String getScriptListId() {
 		return scriptListId;
@@ -94,5 +102,47 @@ public class ScriptListDAOVO {
 	}
 	public void setErrorSymbol(String errorSymbol) {
 		this.errorSymbol = errorSymbol;
+	}
+	public String getCreateTimeStr() {
+		return createTimeStr;
+	}
+	public void setCreateTimeStr(String createTimeStr) {
+		this.createTimeStr = createTimeStr;
+	}
+	public String getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(String createBy) {
+		this.createBy = createBy;
+	}
+	public String getUpdateTimeStr() {
+		return updateTimeStr;
+	}
+	public void setUpdateTimeStr(String updateTimeStr) {
+		this.updateTimeStr = updateTimeStr;
+	}
+	public String getUpdateBy() {
+		return updateBy;
+	}
+	public void setUpdateBy(String updateBy) {
+		this.updateBy = updateBy;
+	}
+	public String getScriptTypeName() {
+		return scriptTypeName;
+	}
+	public void setScriptTypeName(String scriptTypeName) {
+		this.scriptTypeName = scriptTypeName;
+	}
+	public String getSystemVersion() {
+		return systemVersion;
+	}
+	public void setSystemVersion(String systemVersion) {
+		this.systemVersion = systemVersion;
+	}
+	public String getScriptMode() {
+		return scriptMode;
+	}
+	public void setScriptMode(String scriptMode) {
+		this.scriptMode = scriptMode;
 	}
 }

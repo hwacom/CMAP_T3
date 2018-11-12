@@ -741,6 +741,9 @@ public class VersionServiceImpl implements VersionService {
 		int errorCount = 0;
 		try {
 			// Step1.取得預設腳本內容
+			ScriptListDAOVO slDAOVO = new ScriptListDAOVO();
+			slDAOVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+
 			List<ScriptListDAOVO> scriptList =
 					scriptListDefaultDAO.findScriptListByScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
 

@@ -7,6 +7,8 @@ import com.cmap.dao.vo.ScriptListDAOVO;
 
 public interface ScriptListDAO {
 
+	public long countScriptList(ScriptListDAOVO slDAOVO);
+
 	public List<ScriptListDAOVO> findScriptListByScriptCode(String scriptCode);
 
 	public String findDefaultScriptCodeBySystemVersion(ScriptType scriptType, String systemVersion);

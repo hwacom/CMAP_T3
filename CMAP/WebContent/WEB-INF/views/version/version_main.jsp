@@ -48,7 +48,7 @@
 	    	    </div>
 	      	  </div>
 	      	  
-	      	  <div class="row">
+	      	  <div class="form-group row">
 	      	  	<div class="col-lg-1 group-field-other center">
 	      	  		<span class="font-weight-bold group-title">第2組</span>
 	      	  	</div>
@@ -224,7 +224,7 @@
 
 <!-- Modal [Compare] start -->
 <div class="modal fade" id="compareModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xxg" role="document">
     <div class="modal-content">
       <div class="modal-header">
       
@@ -257,11 +257,9 @@
         	</div>
         </div>
       </div>
-      <!-- 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button> -->
       </div>
-       -->
     </div>
   </div>
 </div>

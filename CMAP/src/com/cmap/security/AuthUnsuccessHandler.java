@@ -15,11 +15,10 @@ public class AuthUnsuccessHandler implements AuthenticationFailureHandler {
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
-		
+
 		request.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, exception);
 		request.setAttribute("msg", "....");
-		response.sendRedirect("login");
-		
+		request.getRequestDispatcher("login").forward(request,response);
 	}
 
 }

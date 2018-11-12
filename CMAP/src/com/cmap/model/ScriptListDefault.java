@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -26,8 +28,9 @@ public class ScriptListDefault {
 	@Column(name = "script_list_id", unique = true)
 	private String scriptListId;
 
-	@Column(name = "script_type_id", nullable = false)
-	private String scriptTypeId;
+	@OneToOne
+	@JoinColumn(name = "script_type_id")
+	private ScriptType scriptType;
 
 	@Column(name = "script_code", nullable = false)
 	private String scriptCode;
@@ -36,7 +39,7 @@ public class ScriptListDefault {
 	private String scriptName;
 
 	@Column(name = "script_step_order", nullable = false)
-	private String scriptStepOrder;
+	private Integer scriptStepOrder;
 
 	@Column(name = "script_content", nullable = false)
 	private String scriptContent;
@@ -48,18 +51,18 @@ public class ScriptListDefault {
 	private String output;
 
 	@Column(name = "head_cutting_lines", nullable = true)
-	private String headCuttingLines;
+	private Integer headCuttingLines;
 
 	@Column(name = "tail_cutting_lines", nullable = true)
-	private String tailCuttingLines;
+	private Integer tailCuttingLines;
 
-	@Column(name = "remark", nullable = false)
+	@Column(name = "remark", nullable = true)
 	private String remark;
 
-	@Column(name = "error_symbol", nullable = false)
+	@Column(name = "error_symbol", nullable = true)
 	private String errorSymbol;
 
-	@Column(name = "script_description", nullable = false)
+	@Column(name = "script_description", nullable = true)
 	private String scriptDescription;
 
 	@Column(name = "delete_flag", nullable = false)
@@ -87,14 +90,14 @@ public class ScriptListDefault {
 		super();
 	}
 
-	public ScriptListDefault(String scriptListId, String scriptTypeId, String scriptCode, String scriptName,
-			String scriptStepOrder, String scriptContent, String expectedTerminalSymbol, String output,
-			String headCuttingLines, String tailCuttingLines, String remark, String errorSymbol,
+	public ScriptListDefault(String scriptListId, ScriptType scriptType, String scriptCode, String scriptName,
+			Integer scriptStepOrder, String scriptContent, String expectedTerminalSymbol, String output,
+			Integer headCuttingLines, Integer tailCuttingLines, String remark, String errorSymbol,
 			String scriptDescription, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
 			String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.scriptListId = scriptListId;
-		this.scriptTypeId = scriptTypeId;
+		this.scriptType = scriptType;
 		this.scriptCode = scriptCode;
 		this.scriptName = scriptName;
 		this.scriptStepOrder = scriptStepOrder;
@@ -123,12 +126,12 @@ public class ScriptListDefault {
 		this.scriptListId = scriptListId;
 	}
 
-	public String getScriptTypeId() {
-		return scriptTypeId;
+	public ScriptType getScriptType() {
+		return scriptType;
 	}
 
-	public void setScriptTypeId(String scriptTypeId) {
-		this.scriptTypeId = scriptTypeId;
+	public void setScriptType(ScriptType scriptType) {
+		this.scriptType = scriptType;
 	}
 
 	public String getScriptCode() {
@@ -147,11 +150,11 @@ public class ScriptListDefault {
 		this.scriptName = scriptName;
 	}
 
-	public String getScriptStepOrder() {
+	public Integer getScriptStepOrder() {
 		return scriptStepOrder;
 	}
 
-	public void setScriptStepOrder(String scriptStepOrder) {
+	public void setScriptStepOrder(Integer scriptStepOrder) {
 		this.scriptStepOrder = scriptStepOrder;
 	}
 
@@ -179,19 +182,19 @@ public class ScriptListDefault {
 		this.output = output;
 	}
 
-	public String getHeadCuttingLines() {
+	public Integer getHeadCuttingLines() {
 		return headCuttingLines;
 	}
 
-	public void setHeadCuttingLines(String headCuttingLines) {
+	public void setHeadCuttingLines(Integer headCuttingLines) {
 		this.headCuttingLines = headCuttingLines;
 	}
 
-	public String getTailCuttingLines() {
+	public Integer getTailCuttingLines() {
 		return tailCuttingLines;
 	}
 
-	public void setTailCuttingLines(String tailCuttingLines) {
+	public void setTailCuttingLines(Integer tailCuttingLines) {
 		this.tailCuttingLines = tailCuttingLines;
 	}
 

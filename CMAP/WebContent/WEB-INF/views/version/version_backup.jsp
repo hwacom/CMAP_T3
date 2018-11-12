@@ -135,13 +135,12 @@
                   </form:select>
                 </div>                              
             </div>
-            
-            <div class="modal-footer">
-        		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
-        		<button type="button" class="btn btn-success" id="btnConfirm">確認</button>
-			</div>
         </form>
       </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+      	<button type="button" class="btn btn-success" id="btnConfirm">確認</button>
+	  </div>
     </div>
   </div>
 </div>

@@ -11,9 +11,14 @@ body {
   padding-top: 40px;
   padding-bottom: 0px;
   background-color: #f5f5f5;
-  background-image: url("../images/T3_back_1_3.jpg");
+  background-image: url("../images/bg_2.jpg");
   background-size: cover;
   font-family: MicrosoftJhengHei;
+}
+
+.font {
+	font-family: '微軟正黑體', Arial !important;
+	font-size: 16px !important;
 }
 
 img {
@@ -43,6 +48,10 @@ span {
 p {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
+}
+
+.red {
+  color: red;
 }
 
 .iconImg {
@@ -111,3 +120,21 @@ p {
   border-top-right-radius: 0;
 }
 */
+
+@media (min-width: 320px) {
+  .web-only {
+  	display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .web-only {
+  	display: inline;
+  }
+}
+
+@media (min-width: 1200px) {
+  .web-only {
+  	display: inline;
+  }
+}

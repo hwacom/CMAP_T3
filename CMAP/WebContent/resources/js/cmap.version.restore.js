@@ -91,6 +91,9 @@ function findData(from) {
 				$("div.dataTables_info").parent().addClass('col-sm-6');
 				$("div.dataTables_paginate").parent().removeClass('col-sm-12');
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
+				
+				bindTrEvent();
+				initCheckedItems();
 			},
 			"columns" : [
 				{},{},

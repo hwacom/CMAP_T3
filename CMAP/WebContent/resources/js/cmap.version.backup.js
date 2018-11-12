@@ -48,6 +48,12 @@ function doBackup() {
 		type : "POST",
 		dataType : 'json',
 		async: false,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
 		success : function(resp) {
 			if (resp.code == '200') {
 				alert(resp.message);
@@ -116,7 +122,7 @@ function findData(from) {
 	        },
 	        "createdRow": function( row, data, dataIndex ) {
 	        	   if(data.deviceName != null && data.deviceName.length > remarkShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(3).attr('onclick','javascript:changeShowRemarks(this);');
+	        	      $(row).children('td').eq(3).attr('onclick','javascript:changeShowContent(this, '+remarkShowLength+');');
 	        	      $(row).children('td').eq(3).addClass('cursor_zoom_in');
 	        	   }
 	        	   $(row).children('td').eq(3).attr('content', data.deviceName);
@@ -158,6 +164,7 @@ function findData(from) {
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
 				
 				bindTrEvent();
+				initCheckedItems();
 			},
 			"columns" : [
 				{},{},
@@ -195,7 +202,7 @@ function findData(from) {
 					"orderable": true,
 					"render": function (data, type, row, meta) {
 								if (row.deviceName != null && row.deviceName.length > remarkShowLength) {
-									 return getPartialRemarksHtml(row.deviceName); //內容長度超出設定，僅顯示部分內容
+									 return getPartialContentHtml(row.deviceName, remarkShowLength); //內容長度超出設定，僅顯示部分內容
 								} else {
 									return row.deviceName; 						//未超出設定則全部顯示
 								}

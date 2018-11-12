@@ -1,11 +1,14 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -13,11 +16,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(
-	name = "script_type",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = {"script_type_id"})
-	}
-)
+		name = "script_type",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = {"script_type_id"})
+		}
+		)
 public class ScriptType {
 
 	@Id
@@ -25,36 +28,42 @@ public class ScriptType {
 	@GenericGenerator(name = "uuid", strategy = "uuid")
 	@Column(name = "script_type_id", unique = true)
 	private String scriptTypeId;
-	
+
 	@Column(name = "script_type_code", nullable = false)
 	private String scriptTypeCode;
-	
+
 	@Column(name = "script_type_name", nullable = false)
 	private String scriptTypeName;
-	
+
 	@Column(name = "default_flag", nullable = true)
 	private String defaultFlag;
-	
+
 	@Column(name = "delete_flag", nullable = false)
 	private String deleteFlag;
-	
+
 	@Column(name = "delete_time", nullable = true)
 	private Timestamp deleteTime;
-	
+
 	@Column(name = "delete_by", nullable = true)
 	private String deleteBy;
-	
+
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
-	
+
 	@Column(name = "create_by", nullable = false)
 	private String createBy;
-	
+
 	@Column(name = "update_time", nullable = false)
 	private Timestamp updateTime;
-	
+
 	@Column(name = "update_by", nullable = false)
 	private String updateBy;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "scriptType")
+	private List<ScriptListDefault> scriptListDefaults;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "scriptType")
+	private List<ScriptInfo> scriptInfos;
 
 	public ScriptType() {
 		super();
@@ -62,7 +71,8 @@ public class ScriptType {
 
 	public ScriptType(String scriptTypeId, String scriptTypeCode, String scriptTypeName, String defaultFlag,
 			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy) {
+			Timestamp updateTime, String updateBy, List<ScriptListDefault> scriptListDefaults,
+			List<ScriptInfo> scriptInfos) {
 		super();
 		this.scriptTypeId = scriptTypeId;
 		this.scriptTypeCode = scriptTypeCode;
@@ -75,6 +85,8 @@ public class ScriptType {
 		this.createBy = createBy;
 		this.updateTime = updateTime;
 		this.updateBy = updateBy;
+		this.scriptListDefaults = scriptListDefaults;
+		this.scriptInfos = scriptInfos;
 	}
 
 	public String getScriptTypeId() {
@@ -163,5 +175,21 @@ public class ScriptType {
 
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
+	}
+
+	public List<ScriptListDefault> getScriptListDefaults() {
+		return scriptListDefaults;
+	}
+
+	public void setScriptListDefaults(List<ScriptListDefault> scriptListDefaults) {
+		this.scriptListDefaults = scriptListDefaults;
+	}
+
+	public List<ScriptInfo> getScriptInfos() {
+		return scriptInfos;
+	}
+
+	public void setScriptInfos(List<ScriptInfo> scriptInfos) {
+		this.scriptInfos = scriptInfos;
 	}
 }

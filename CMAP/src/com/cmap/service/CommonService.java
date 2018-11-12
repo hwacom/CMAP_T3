@@ -10,8 +10,10 @@ import com.cmap.model.DeviceList;
 public interface CommonService {
 
 	public Map<String, String> getGroupAndDeviceMenu(HttpServletRequest request);
-	
+
 	public void updateDeviceList(List<DeviceList> deviceList);
-	
+
 	public Map<String, String> getMenuItem(String menuCode, boolean combineOrderDotLabel);
+
+	public Map<String, String> getScriptTypeMenu(String defaultFlag);
 }

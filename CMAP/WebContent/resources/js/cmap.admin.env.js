@@ -180,7 +180,7 @@ function findData(from) {
 	        },
 	        "createdRow": function( row, data, dataIndex ) {
 	        	   if(data.settingRemark != null && data.settingRemark.length > remarkShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(2).attr('onclick','javascript:changeShowRemarks(this);');
+	        	      $(row).children('td').eq(2).attr('onclick','javascript:changeShowContent(this, '+remarkShowLength+');');
 	        	      $(row).children('td').eq(2).addClass('cursor_zoom_in');
 	        	   }
 	        	   $(row).children('td').eq(2).attr('content', data.settingRemark);
@@ -250,7 +250,7 @@ function findData(from) {
 					"orderable": true,
 					"render": function (data, type, row, meta) {
 						if (row.settingRemark != null && row.settingRemark.length > remarkShowLength) {
-							 return getPartialRemarksHtml(row.settingRemark); 	//內容長度超出設定，僅顯示部分內容
+							 return getPartialContentHtml(row.settingRemark, remarkShowLength); 	//內容長度超出設定，僅顯示部分內容
 						} else {
 							return row.settingRemark; 							//未超出設定則全部顯示
 						}

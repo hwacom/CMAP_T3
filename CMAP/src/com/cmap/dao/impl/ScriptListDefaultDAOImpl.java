@@ -14,18 +14,23 @@ import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ScriptListDAOVO;
 import com.cmap.model.ScriptDefaultMapping;
+import com.cmap.model.ScriptListDefault;
 
 @Repository("scriptListDefaultDAOImpl")
 @Transactional
 public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements ScriptListDAO {
 
-	private <T> List<ScriptListDAOVO> transModel2DAOVO(List<T> modelList) {
+	private List<ScriptListDAOVO> transModel2DAOVO(List<ScriptListDefault> modelList) {
 		List<ScriptListDAOVO> voList = new ArrayList<ScriptListDAOVO>();
 
 		ScriptListDAOVO daovo;
-		for (T model : modelList) {
+		for (ScriptListDefault model : modelList) {
 			daovo = new ScriptListDAOVO();
 			BeanUtils.copyProperties(model, daovo);
+			daovo.setScriptTypeId(model.getScriptType().getScriptTypeId());
+			daovo.setScriptStepOrder(String.valueOf(model.getScriptStepOrder()));
+			daovo.setHeadCuttingLines(model.getHeadCuttingLines() != null ? String.valueOf(model.getHeadCuttingLines()) : null);
+			daovo.setTailCuttingLines(model.getTailCuttingLines() != null ? String.valueOf(model.getTailCuttingLines()) : null);
 			voList.add(daovo);
 		}
 
@@ -45,7 +50,7 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 		Query<?> q = session.createQuery(sb.toString());
 		q.setParameter("scriptCode", scriptCode);
 
-		return transModel2DAOVO(q.list());
+		return transModel2DAOVO((List<ScriptListDefault>)q.list());
 	}
 
 	@Override
@@ -77,6 +82,12 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 		String scriptCode = entity != null && !entity.isEmpty() ? entity.get(0).getDefaultScriptCode() : null;
 
 		return scriptCode;
+	}
+
+	@Override
+	public long countScriptList(ScriptListDAOVO slDAOVO) {
+		// TODO 自動產生的方法 Stub
+		return 0;
 	}
 
 }

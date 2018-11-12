@@ -27,12 +27,13 @@
 	<link href="${pageContext.request.contextPath}/resources/DataTables/datatables.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/blog.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/fontawesome/all.css" rel="stylesheet">
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
-	<script src="${pageContext.request.contextPath}/resources/js/jquery-ui/jquery-ui.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/popper/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/jquery-ui/jquery-ui.min.js"></script>
     <!-- Icons -->
     <script src="${pageContext.request.contextPath}/resources/js/feather-icons/feather.min.js"></script>
 	<!-- dataTable -->
@@ -42,6 +43,7 @@
 	<script src="${pageContext.request.contextPath}/resources/js/underscore/underscore-min.js"></script>
 	<!-- blockUI -->
 	<script src="${pageContext.request.contextPath}/resources/js/blockUI/jquery.blockUI.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/common.js"></script>
 	
 	<script>
 		$(function () {
@@ -51,10 +53,14 @@
 </head>
 
 <body>
+	<div class="loader"></div>
+	<div class="mask" style="display: none;"></div>
+	<div class="processing" style="display: none;"></div>
+	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
-      	<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="40" />
-      	<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short.png" width="auto" height="40" />
+      	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" />
+      	<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" />
       	<span class="font-weight-bold title-font" style="color:#000079">組態設定管理系統</span>	
       </a>
       <ul class="navbar-nav">
@@ -87,7 +93,6 @@
                   	<span>版本備份</span>
                 </a>
               </li>
-              <!-- 未完成版本先mark
               <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/version/restore">
                   <span data-feather="upload"></span>
@@ -102,7 +107,7 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="${pageContext.request.contextPath}/delivery">
-                  <span data-feather="cast"></span>
+                  <span data-feather="send"></span>
                   	<span>供裝派送</span>
                 </a>
               </li>
@@ -112,7 +117,7 @@
                   	<span>供裝紀錄</span>
                 </a>
               </li>
-               -->
+              
               <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
               	  <li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
@@ -182,7 +187,7 @@
         
         <!-- Modal [View] start -->
 		<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		  <div class="modal-dialog modal-lg" role="document">
+		  <div class="modal-dialog modal-mid" role="document">
 		    <div class="modal-content">
 		      <div class="modal-header">
 		        <h5 class="modal-title" id="exampleModalLabel"><span id="msgModal_title">版本內容預覽</span></h5>
@@ -193,28 +198,25 @@
 		      <div class="modal-body">
 		     	<div class="form-group row">
 		        	<label for="viewModal_group" class="col-md-2 col-sm-12 col-form-label">群組</label>
-		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_group" readonly>
+		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_group" readonly>
 		        </div>
 		        <div class="form-group row">
 		        	<label for="viewModal_device" class="col-md-2 col-sm-12 col-form-label">設備</label>
-		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_device" readonly>
+		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_device" readonly>
 		        </div>
 		        <div class="form-group row">
 		        	<label for="viewModal_version" class="col-md-2 col-sm-12 col-form-label">版本號碼</label>
-		    		<input type="text" class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_version" readonly>
+		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_version" readonly>
 		        </div>
 		        <div class="form-group row">
 		        	<label for="viewModal_content" class="col-md-2 col-sm-12 col-form-label">版本內容</label>
 		        	<!-- <textarea class="form-control col-md-9 col-sm-12" id="viewModal_content" rows="10" readonly></textarea> -->
-		        	<div class="form-control form-control-sm col-md-9 col-sm-12" id="viewModal_content" style="height: 300px;overflow: auto;"></div>
+		        	<div class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_content" style="height: 300px;overflow: auto;"></div>
 		        </div>
 		        
 		      </div>
-		      <!-- 
 		      <div class="modal-footer">
-		        <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
 		      </div>
-		       -->
 		    </div>
 		  </div>
 		</div>

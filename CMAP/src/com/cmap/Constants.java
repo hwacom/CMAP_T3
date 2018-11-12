@@ -82,6 +82,11 @@ public class Constants {
 	public static final String DIR_PATH_SEQ_NO = "[seqNo]";
 	public static final String DIR_PATH_EXT_NAME = "[extName]";
 
+	public static final String SCRIPT_MODE_ACTION = "A";
+	public static final String SCRIPT_MODE_CHECK = "C";
+	public static final String DEFAULT_FLAG_Y = "Y";
+	public static final String DEFAULT_FLAG_N = "N";
+
 	public static final String FTP_FILE_SEPARATOR = "/";
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {

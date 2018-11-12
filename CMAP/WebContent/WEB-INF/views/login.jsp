@@ -31,20 +31,18 @@
             <div class="col-12">
 	  			<div class="row">
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-title">
-			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="40" style="padding-top: 3px" />
-      					<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short.png" width="auto" height="40" style="padding-top: 3px" />
-			  			<span class="h3 font-weight-bold" style="color:#1C2269">組態設定管理系統</span>	
+			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" style="padding-top: 3px" />
+      					<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" style="padding-top: 3px" />
+			  			<span class="h3 font-weight-bold" style="color:#1C2269"><spring:message code="login.cmap.title" /></span>	
 			  		</div>
 			  	</div>
 			  	<div class="row">
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-form">
 				  		<form class="form-signin" name="f" method='POST'>
-				  			${SPRING_SECURITY_LAST_EXCEPTION.message}
-						  <c:if test="${SPRING_SECURITY_LAST_EXCEPTION.message != null}">
-						      <font color="yellow">
-						        	帳號或密碼錯誤!!
-						        <br/>
-						      </font>
+						  <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
+						      <span class="red">
+						        	${SPRING_SECURITY_LAST_EXCEPTION.message}
+						      </span>
 						  </c:if>
 				  		  <div class="form-group row">
 				  		  	<div class="col-md-12 col-sm-12">
