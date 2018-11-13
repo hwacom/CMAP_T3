@@ -1,7 +1,9 @@
 package com.cmap.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -10,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.annotation.Log;
+import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.vo.ScriptInfoDAOVO;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.ProvisionAccessLog;
 import com.cmap.model.ScriptInfo;
 import com.cmap.service.DeliveryService;
 import com.cmap.service.vo.DeliveryServiceVO;
@@ -25,6 +29,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 	@Autowired
 	private ScriptInfoDAO scriptInfoDAO;
+
+	@Autowired
+	private ProvisionLogDAO provisionLogDAO;
 
 	@Override
 	public long countDeviceList(DeliveryServiceVO dsVO) throws ServiceLayerException {
@@ -108,5 +115,40 @@ public class DeliveryServiceImpl implements DeliveryService {
 			throw new ServiceLayerException("查詢發生異常，請嘗試重新操作");
 		}
 		return retVO;
+	}
+
+	@Override
+	public String doDelivery(DeliveryServiceVO dsVO) throws ServiceLayerException {
+		// TODO 自動產生的方法 Stub
+		return null;
+	}
+
+	@Override
+	public String logAccessRecord(DeliveryServiceVO dsVO) throws ServiceLayerException {
+		String uuid = null;
+		try {
+			Integer step = dsVO.getDeliveryStep();
+
+			if (step == 0) {
+				uuid = UUID.randomUUID().toString();
+				ProvisionAccessLog access = new ProvisionAccessLog();
+				access.setLogId(uuid);
+				access.setIpAddress(dsVO.getIpAddr());
+				access.setMacAddress(dsVO.getMacAddr());
+				access.setCreateTime(new Timestamp(dsVO.getActionTime().getTime()));
+				access.setCreateBy(dsVO.getActionBy());
+				access.setUpdateTime(access.getCreateTime());
+				access.setUpdateBy(dsVO.getCreateBy());
+				provisionLogDAO.insertEntity(access);
+
+			} else {
+
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+
+		return uuid;
 	}
 }

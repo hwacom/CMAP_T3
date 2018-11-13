@@ -12,10 +12,11 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 import com.cmap.Constants;
 import com.cmap.annotation.Log;
+import com.cmap.dao.BaseDAO;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 
-public class BaseDaoHibernate extends HibernateDaoSupport {
+public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 	@Log
 	private static Logger log;
 
@@ -131,5 +132,31 @@ public class BaseDaoHibernate extends HibernateDaoSupport {
 		}
 
 		return retList;
+	}
+
+	@Override
+	public boolean insertEntity(Object entity) {
+		boolean success = true;
+		getHibernateTemplate().save(entity);
+		return success;
+	}
+
+	@Override
+	public boolean updateEntity(Object entity) {
+		boolean success = true;
+		getHibernateTemplate().update(entity);
+		return success;
+	}
+
+	@Override
+	public boolean insertEntities(List<? extends Object> entities) {
+		// TODO 自動產生的方法 Stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteEntity(Object entity) {
+		// TODO 自動產生的方法 Stub
+		return false;
 	}
 }

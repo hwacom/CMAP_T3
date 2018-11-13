@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.vo.ProvisionLogDAOVO;
+import com.cmap.model.ProvisionAccessLog;
 import com.cmap.model.ProvisionLogDetail;
 import com.cmap.model.ProvisionLogDevice;
 import com.cmap.model.ProvisionLogMaster;
@@ -78,5 +79,19 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 				getHibernateTemplate().save(retry);
 			}
 		}
+	}
+
+	@Override
+	public List<ProvisionAccessLog> findProvisionAccessLogById(String logId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from ProvisionAccessLog ")
+		  .append(" where 1=1 ")
+		  .append(" and logId = :logId ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+		Query<?> q = session.createQuery(sb.toString());
+		q.setParameter("logId", logId);
+
+		return (List<ProvisionAccessLog>)q.list();
 	}
 }

@@ -213,9 +213,9 @@
 		    		</select>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="stepModal_remark" class="col-md-12 col-sm-12 col-form-label bold">
-		        		<span class="red bold">※ 此腳本需輸入變數值 : </span>
-		        		<span id="stepModal_variable_show">vlan_id,vlan_name,interface_id</span>
+		        	<label for="stepModal_remark" class="col-md-12 col-sm-12 col-form-label">
+		        		<span id="stepModal_variable_description"></span>
+		        		<span id="stepModal_variable_show"></span>
 		        	</label>
 		        </div>
 		        <div class="form-group row">
@@ -248,30 +248,7 @@
 	      	<div id="step3_section" style="display: none;">
 	      		<div class="form-group row">
 		      		<div class="col-md-12 col-sm-12 font" id="stepModal_preview">
-							<span class="preview-topic">腳本名稱 :</span> 客製2-開VLAN<br>
-							<hr class="bg_yellow">
-							<span class="preview-topic">派送對象 :</span><br>
-							  <ul class="preview-ul">
-							    <li><span class="preview-li">第一組</span>
-								    <ul>
-								      <li>群組1: T1</li>
-								      <li>設備1: A-1F-N1D-BR1</li>
-								    </ul>
-							    </li>
-							    <li><span class="preview-li">第二組</span>
-								    <ul>
-								      <li>群組2: T1</li>
-								      <li>設備2: A-1F-N1D-BR2</li>
-								    </ul>
-							    </li>
-							  </ul>
-							<hr class="bg_yellow">
-							<span class="preview-topic">變數內容 :</span><br>
-							<ul class="preview-ul">
-							  <li>vlan_id: (預設系統流水)</li>
-							  <li>vlan_name: public_vlan</li>
-							  <li>interface_id: (預設系統流水)</li>
-							</ul>
+		      		  <!-- 派送前預覽區 -->
 		      		</div>
 		     	</div>
 	      	</div>

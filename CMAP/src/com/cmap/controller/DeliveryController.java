@@ -2,6 +2,7 @@ package com.cmap.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.annotation.Log;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.DeliveryService;
 import com.cmap.service.vo.DeliveryServiceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -143,6 +145,23 @@ public class DeliveryController extends BaseController {
 		return new DatatableResponse(total, dataList, filterdTotal);
 	}
 
+	private boolean logAccessRecord(HttpServletRequest request, DeliveryServiceVO logVO) {
+		try {
+			String ipAddr = getIp(request);
+			String macAddr = getMac(ipAddr);
+			logVO.setIpAddr(ipAddr);
+			logVO.setMacAddr(macAddr);
+			logVO.setActionBy(SecurityUtil.getSecurityUser().getUsername());
+			logVO.setActionTime(new Date());
+			deliveryService.logAccessRecord(logVO);
+			return true;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return false;
+		}
+	}
+
 	@RequestMapping(value = "getScriptInfo.json", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse getScriptInfo(Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="scriptInfoId", required=true) String scriptInfoId) {
@@ -159,6 +178,27 @@ public class DeliveryController extends BaseController {
 			Map<String, Object> retMap = oMapper.convertValue(dsVO, Map.class);
 
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);
+
+		} catch (ServiceLayerException sle) {
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+		}
+	}
+
+	@RequestMapping(value = "doDelivery.json", method = RequestMethod.POST, produces="application/json;odata=verbose")
+	public @ResponseBody AppResponse doDelivery(Model model, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="ps", required=true) String ps) {
+
+		DeliveryServiceVO dsVO;
+		try {
+			dsVO = new DeliveryServiceVO();
+			dsVO.setDeliveryParameters(ps);
+			String retVal = deliveryService.doDelivery(dsVO);
+
+			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常");
 
 		} catch (ServiceLayerException sle) {
 			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");

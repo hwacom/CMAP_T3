@@ -3,13 +3,14 @@ package com.cmap.dao;
 import java.util.List;
 
 import com.cmap.dao.vo.ProvisionLogDAOVO;
+import com.cmap.model.ProvisionAccessLog;
 import com.cmap.model.ProvisionLogDetail;
 import com.cmap.model.ProvisionLogDevice;
 import com.cmap.model.ProvisionLogMaster;
 import com.cmap.model.ProvisionLogRetry;
 import com.cmap.model.ProvisionLogStep;
 
-public interface ProvisionLogDAO {
+public interface ProvisionLogDAO extends BaseDAO {
 
 	/**
 	 * 依查詢條件查找符合的資料筆數
@@ -34,4 +35,6 @@ public interface ProvisionLogDAO {
 	 * @param devices
 	 */
 	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogDetail> details, List<ProvisionLogStep> steps, List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys);
+
+	public List<ProvisionAccessLog> findProvisionAccessLogById(String logId);
 }

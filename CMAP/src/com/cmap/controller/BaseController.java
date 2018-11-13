@@ -1,6 +1,9 @@
 package com.cmap.controller;
 
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -405,4 +408,71 @@ public class BaseController {
 			}
 		}
 	}
+
+	protected String getIp(HttpServletRequest request) throws Exception {
+		String ip = request.getHeader("X-Forwarded-For");
+		if (ip != null) {
+			if (!ip.isEmpty() && !"unKnown".equalsIgnoreCase(ip)) {
+				int index = ip.indexOf(",");
+				if (index != -1) {
+					return ip.substring(0, index);
+				} else {
+					return ip;
+				}
+			}
+		}
+
+		ip = request.getHeader("X-Real-IP");
+		if (ip != null) {
+			if (!ip.isEmpty() && !"unKnown".equalsIgnoreCase(ip)) {
+				return ip;
+			}
+		}
+
+		ip = request.getHeader("Proxy-Client-IP");
+		if (ip != null) {
+			if (!ip.isEmpty() && !"unKnown".equalsIgnoreCase(ip)) {
+				return ip;
+			}
+		}
+
+		ip = request.getHeader("WL-Proxy-Client-IP");
+		if (ip != null) {
+			if (!ip.isEmpty() && !"unKnown".equalsIgnoreCase(ip)) {
+				return ip;
+			}
+		}
+
+		ip = request.getRemoteAddr();
+		return ip.equals("0:0:0:0:0:0:0:1") ? "127.0.0.1" : ip;
+	}
+
+	protected String getMac(String ipAddr) {
+		String mac = "";
+        try {
+        	Process p = Runtime.getRuntime().exec("arp -n");
+            InputStreamReader ir = new InputStreamReader(p.getInputStream());
+            LineNumberReader input = new LineNumberReader(ir);
+			p.waitFor();
+
+            boolean flag = true;
+			String ipStr = "(" + ipAddr + ")";
+            while(flag) {
+                String str = input.readLine();
+                if (str != null) {
+					if (str.indexOf(ipStr) > 1) {
+                        int temp = str.indexOf("at");
+                        mac = str.substring(
+                        temp + 3, temp + 20);
+                        break;
+                    }
+                } else {
+					flag = false;
+				}
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace(System.out);
+        }
+        return mac;
+    }
 }

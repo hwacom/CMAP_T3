@@ -42,6 +42,13 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String updateTimeStr;
 	private String updateBy;
 
+	private String accessLogId;
+	private String deliveryParameters;
+	private Integer deliveryStep;
+	private Integer deliveryDeviceCount;
+	private String deliveryVarKey;
+	private String deliveryVarValue;
+
 	public String getQueryGroup() {
 		return queryGroup;
 	}
@@ -239,5 +246,41 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	}
 	public void setActionScriptVariable(String actionScriptVariable) {
 		this.actionScriptVariable = actionScriptVariable;
+	}
+	public String getDeliveryParameters() {
+		return deliveryParameters;
+	}
+	public void setDeliveryParameters(String deliveryParameters) {
+		this.deliveryParameters = deliveryParameters;
+	}
+	public String getAccessLogId() {
+		return accessLogId;
+	}
+	public void setAccessLogId(String accessLogId) {
+		this.accessLogId = accessLogId;
+	}
+	public Integer getDeliveryDeviceCount() {
+		return deliveryDeviceCount;
+	}
+	public void setDeliveryDeviceCount(Integer deliveryDeviceCount) {
+		this.deliveryDeviceCount = deliveryDeviceCount;
+	}
+	public String getDeliveryVarKey() {
+		return deliveryVarKey;
+	}
+	public void setDeliveryVarKey(String deliveryVarKey) {
+		this.deliveryVarKey = deliveryVarKey;
+	}
+	public String getDeliveryVarValue() {
+		return deliveryVarValue;
+	}
+	public void setDeliveryVarValue(String deliveryVarValue) {
+		this.deliveryVarValue = deliveryVarValue;
+	}
+	public Integer getDeliveryStep() {
+		return deliveryStep;
+	}
+	public void setDeliveryStep(Integer deliveryStep) {
+		this.deliveryStep = deliveryStep;
 	}
 }

@@ -59,8 +59,8 @@
 	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
-      	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" />
-      	<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" />
+      	<img class="img" src="${pageContext.request.contextPath}/resources/images/aptg_logo_1.png" width="auto" height="40" />
+      	<!-- <img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" /> -->
       	<span class="font-weight-bold title-font" style="color:#000079">組態設定管理系統</span>	
       </a>
       <ul class="navbar-nav">

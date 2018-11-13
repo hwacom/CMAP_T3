@@ -16,4 +16,8 @@ public interface DeliveryService {
 	public List<DeliveryServiceVO> findScriptList(DeliveryServiceVO dsVO, Integer startRow, Integer pageLength) throws ServiceLayerException;
 
 	public DeliveryServiceVO getScriptInfoById(String scriptInfoId) throws ServiceLayerException;
+
+	public String logAccessRecord(DeliveryServiceVO dsVO) throws ServiceLayerException;
+
+	public String doDelivery(DeliveryServiceVO dsVO) throws ServiceLayerException;
 }

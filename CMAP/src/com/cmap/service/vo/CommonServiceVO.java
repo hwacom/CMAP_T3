@@ -1,5 +1,7 @@
 package com.cmap.service.vo;
 
+import java.util.Date;
+
 import com.cmap.service.impl.jobs.BaseJobImpl.Result;
 
 public class CommonServiceVO {
@@ -14,6 +16,11 @@ public class CommonServiceVO {
 	private Result jobExcuteResult;
 	private String jobExcuteResultRecords;
 	private String jobExcuteRemark;
+
+	private String ipAddr;
+	private String macAddr;
+	private String actionBy;
+	private Date actionTime;
 
 	public Integer getStartNum() {
 		return startNum;
@@ -68,5 +75,29 @@ public class CommonServiceVO {
 	}
 	public void setJobExcuteResult(Result jobExcuteResult) {
 		this.jobExcuteResult = jobExcuteResult;
+	}
+	public String getIpAddr() {
+		return ipAddr;
+	}
+	public void setIpAddr(String ipAddr) {
+		this.ipAddr = ipAddr;
+	}
+	public String getMacAddr() {
+		return macAddr;
+	}
+	public void setMacAddr(String macAddr) {
+		this.macAddr = macAddr;
+	}
+	public String getActionBy() {
+		return actionBy;
+	}
+	public void setActionBy(String actionBy) {
+		this.actionBy = actionBy;
+	}
+	public Date getActionTime() {
+		return actionTime;
+	}
+	public void setActionTime(Date actionTime) {
+		this.actionTime = actionTime;
 	}
 }
