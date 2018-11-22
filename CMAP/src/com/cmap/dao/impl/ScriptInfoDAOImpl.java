@@ -29,12 +29,18 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
+			sb.append(" and si.scriptInfoId = :scriptInfoId ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
+			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
 		}
 
 		return DataAccessUtils.longResult(q.list());
@@ -50,6 +56,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
+			sb.append(" and si.scriptInfoId = :scriptInfoId ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
@@ -57,8 +66,26 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
+			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
+		}
 
 		return (List<ScriptInfo>)q.list();
 	}
 
+	@Override
+	public ScriptInfo findScriptInfoById(String scriptInfoId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from ScriptInfo si ")
+		  .append(" where 1=1 ")
+		  .append(" and si.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+		  .append(" and si.scriptInfoId = :scriptInfoId ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+		Query<?> q = session.createQuery(sb.toString());
+		q.setParameter("scriptInfoId", scriptInfoId);
+
+		List<ScriptInfo> retList = (List<ScriptInfo>)q.list();
+		return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;
+	}
 }

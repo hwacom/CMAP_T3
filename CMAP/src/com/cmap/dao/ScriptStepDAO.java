@@ -2,9 +2,10 @@ package com.cmap.dao;
 
 import java.util.List;
 
-import com.cmap.dao.vo.ScriptStepDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 
 public interface ScriptStepDAO {
 
-	public List<ScriptStepDAOVO> findScriptStepByScriptCode(String scriptCode);
+	public List<ScriptDAOVO> findScriptStepByScriptInfoIdOrScriptCode(String scriptInfoId, String scriptCode);
+
 }

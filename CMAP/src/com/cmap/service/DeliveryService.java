@@ -19,5 +19,5 @@ public interface DeliveryService {
 
 	public String logAccessRecord(DeliveryServiceVO dsVO) throws ServiceLayerException;
 
-	public String doDelivery(DeliveryServiceVO dsVO) throws ServiceLayerException;
+	public String doDelivery(DeliveryServiceVO dsVO, boolean jobTrigger) throws ServiceLayerException;
 }

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.CommandExecuteException;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.StepServiceVO;
@@ -112,18 +112,19 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 			char ch = (char)in.read();
 
 			int runTime = 0;
-			log.info("<readUntil>******************************************************************");
 			while (true) {
 				sb.append(ch);
-				log.info(String.valueOf(ch));
 
 				if (ch == lastChar) {
 					if (Strings.toUpperCase(sb.toString()).endsWith(Strings.toUpperCase(pattern))) {
-						log.info("");
-						log.info("</readUntil>******************************************************************");
 						return sb.toString();
 					}
 				}
+				/*
+				if (ch >= Character.MAX_LOW_SURROGATE || ch <= Character.MIN_LOW_SURROGATE) {
+					return sb.toString();
+				}
+				*/
 
 				if (runTime > 10000) {
 					return sb.toString();
@@ -140,7 +141,7 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 	}
 
 	@Override
-	public List<String> sendCommands(List<ScriptListDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
+	public List<String> sendCommands(List<ScriptDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		List<String> cmdOutputs = new ArrayList<String>();
 		try {
 			checkTelnetStatus();
@@ -148,7 +149,7 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 			try {
 				String cmd;
 				String output;
-				for (ScriptListDAOVO vo : scriptList) {
+				for (ScriptDAOVO vo : scriptList) {
 					output = "";
 
 					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;

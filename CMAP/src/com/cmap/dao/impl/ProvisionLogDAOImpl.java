@@ -82,7 +82,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 	}
 
 	@Override
-	public List<ProvisionAccessLog> findProvisionAccessLogById(String logId) {
+	public ProvisionAccessLog findProvisionAccessLogById(String logId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from ProvisionAccessLog ")
 		  .append(" where 1=1 ")
@@ -92,6 +92,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 		Query<?> q = session.createQuery(sb.toString());
 		q.setParameter("logId", logId);
 
-		return (List<ProvisionAccessLog>)q.list();
+		List<ProvisionAccessLog> entities = (List<ProvisionAccessLog>)q.list();
+		return (entities != null && !entities.isEmpty()) ? entities.get(0) : null;
 	}
 }

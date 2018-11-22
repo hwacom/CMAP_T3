@@ -36,5 +36,5 @@ public interface ProvisionLogDAO extends BaseDAO {
 	 */
 	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogDetail> details, List<ProvisionLogStep> steps, List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys);
 
-	public List<ProvisionAccessLog> findProvisionAccessLogById(String logId);
+	public ProvisionAccessLog findProvisionAccessLogById(String logId);
 }

@@ -2,6 +2,8 @@ package com.cmap;
 
 import java.text.SimpleDateFormat;
 
+import com.cmap.comm.enums.ConnectionMode;
+
 public class Constants {
 
 	public static final String ADD_LINE = "[ADD]";
@@ -13,6 +15,7 @@ public class Constants {
 	public static final String PASSHASH = "passhash";
 	public static final String IP_ADDR = "ipAddr";
 	public static final String ISADMIN = "isAdmin";
+	public static final String ERROR = "error";
 	public static final String USERROLE = "userrole";
 	public static final String USERROLE_ADMIN = "ADMIN";
 	public static final String USERROLE_USER = "USER";
@@ -88,6 +91,10 @@ public class Constants {
 	public static final String DEFAULT_FLAG_N = "N";
 
 	public static final String FTP_FILE_SEPARATOR = "/";
+	public static final String HTML_BREAK_LINE_SYMBOL = "<br>";
+	public static final String HTML_SEPARATION_LINE_SYMBOL = "<br>";
+
+	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {
 			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "file_full_name", "create_time"

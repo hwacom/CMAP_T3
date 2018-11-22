@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="${pageContext.request.contextPath}/resources/images/icon.ico">
 
-    <title>組態設定管理系統</title>
+    <title><spring:message code="login.cmap.title" /></title>
 
     <!-- Bootstrap core CSS -->
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -41,7 +41,7 @@
 				  		<form class="form-signin" name="f" method='POST'>
 						  <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION}">
 						      <span class="red">
-						        	${SPRING_SECURITY_LAST_EXCEPTION.message}
+						        	<spring:message code="${SPRING_SECURITY_LAST_EXCEPTION.message}" />
 						      </span>
 						  </c:if>
 				  		  <div class="form-group row">

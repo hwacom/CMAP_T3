@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,10 +45,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		final String passhash = (String)request.getSession().getAttribute(Constants.PASSHASH);
 		final String ipAddr = (String)request.getSession().getAttribute(Constants.IP_ADDR);
 		final String role = (String)request.getSession().getAttribute(Constants.USERROLE);
+		final Object error = request.getSession().getAttribute(Constants.ERROR);
 		final String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 		if (StringUtils.equals(Env.LOGIN_AUTH_MODE, Constants.LOGIN_AUTH_MODE_PRTG)) {
-			if (!isAdmin && StringUtils.isBlank(passhash)) {
+			if (error != null && error instanceof ConnectTimeoutException) {
+				throw new UsernameNotFoundException("與PRTG連線異常");
+
+			} else if (!isAdmin && StringUtils.isBlank(passhash)) {
 				throw new UsernameNotFoundException("帳號或密碼輸入錯誤");
 			}
 		}

@@ -17,18 +17,22 @@ import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DeviceList;
+import com.cmap.model.ProvisionAccessLog;
 import com.cmap.model.ProvisionLogDetail;
 import com.cmap.model.ProvisionLogDevice;
 import com.cmap.model.ProvisionLogMaster;
 import com.cmap.model.ProvisionLogRetry;
 import com.cmap.model.ProvisionLogStep;
 import com.cmap.service.ProvisionService;
+import com.cmap.service.vo.DeliveryParameterVO;
+import com.cmap.service.vo.ProvisionAccessLogVO;
 import com.cmap.service.vo.ProvisionServiceVO;
 import com.cmap.utils.impl.CommonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("provisionService")
 @Transactional
-public class ProvisionServiceImpl implements ProvisionService {
+public class ProvisionServiceImpl extends CommonServiceImpl implements ProvisionService {
 	@Log
 	private static Logger log;
 
@@ -127,6 +131,8 @@ public class ProvisionServiceImpl implements ProvisionService {
 
 						ProvisionLogStep stepEntity = null;
 						for (ProvisionServiceVO stepVO : stepVOList) {
+							log.info(stepVO.getProcessLog());
+
 							stepEntity = new ProvisionLogStep();
 							BeanUtils.copyProperties(stepVO, stepEntity);
 							stepEntity.setLogStepId(logStepId);
@@ -192,5 +198,83 @@ public class ProvisionServiceImpl implements ProvisionService {
 		}
 
 		return true;
+	}
+
+	@Override
+	public ProvisionAccessLogVO checkOrInsertProvisionAccessLog(ProvisionAccessLogVO palVO, boolean isNew, boolean doChk) throws ServiceLayerException {
+		ProvisionAccessLogVO retVO = new ProvisionAccessLogVO();
+		try {
+			String logId = null;
+
+			if (isNew) {
+				logId = UUID.randomUUID().toString();
+			} else {
+				logId = palVO.getLogId();
+			}
+
+			ProvisionAccessLog entity = provisionLogDAO.findProvisionAccessLogById(logId);
+
+			if (isNew && (entity != null)) {
+				throw new ServiceLayerException("[ProvisionServiceImpl] isNew == true，但 tokenId 已存在");
+			}
+
+			if (isNew) {
+				entity = new ProvisionAccessLog();
+				BeanUtils.copyProperties(palVO, entity);
+				entity.setLogId(logId);
+				entity.setCreateBy(currentUserName());
+				entity.setCreateTime(currentTimestamp());
+				entity.setUpdateBy(currentUserName());
+				entity.setUpdateTime(currentTimestamp());
+
+			} else {
+				BeanUtils.copyProperties(palVO, entity, new String[] {"logId", "createBy", "createTime"});
+				entity.setUpdateBy(currentUserName());
+				entity.setUpdateTime(currentTimestamp());
+			}
+
+			if (!doChk) {
+				provisionLogDAO.insertEntity(entity);
+
+			} else {
+				final String psJSON = palVO.getParameterJson();
+
+				ObjectMapper oMapper = new ObjectMapper();
+				DeliveryParameterVO psVO = oMapper.readValue(psJSON, DeliveryParameterVO.class);
+
+
+				boolean success = true;
+				String chkResultMsg = "OK";
+				String commonErrorMsg = "供裝前系統檢核異常";
+
+				if (!entity.getScriptInfoId().equals(psVO.getScriptInfoId())
+						|| !entity.getScriptCode().equals(psVO.getScriptCode())) {
+					chkResultMsg = "供裝前參數檢核異常 >> Entity.ScriptInfoId : " + entity.getScriptInfoId()
+													+ " <> VO.ScriptInfoId : " + psVO.getScriptInfoId()
+													+ " ; Entity.ScriptCode : " + entity.getScriptCode()
+													+ " <> VO.ScriptCode : " + psVO.getScriptCode();
+
+					entity.setChkResult(chkResultMsg);
+
+					retVO.setAccessLogChkResult(false);
+					retVO.setAccessLogChkMsg(commonErrorMsg);
+
+					success = false;
+				}
+
+				provisionLogDAO.insertEntity(entity);
+
+				if (success) {
+					retVO.setAccessLogChkResult(true);
+					retVO.setAccessLogChkMsg(chkResultMsg);
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			retVO.setAccessLogChkResult(false);
+		}
+
+		return retVO;
 	}
 }

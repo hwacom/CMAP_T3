@@ -3,6 +3,7 @@ package com.cmap.service;
 import java.util.List;
 
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.service.vo.ProvisionAccessLogVO;
 import com.cmap.service.vo.ProvisionServiceVO;
 
 /**
@@ -25,4 +26,6 @@ public interface ProvisionService {
 	 * @return
 	 */
 	public boolean insertProvisionLog(ProvisionServiceVO masterVO) throws ServiceLayerException;
+
+	public ProvisionAccessLogVO checkOrInsertProvisionAccessLog(ProvisionAccessLogVO palVO, boolean isNew, boolean doChk) throws ServiceLayerException;
 }

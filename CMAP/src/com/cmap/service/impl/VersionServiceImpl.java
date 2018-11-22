@@ -25,7 +25,7 @@ import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.DeviceListDAOVO;
-import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.ConnectionException;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
@@ -741,10 +741,10 @@ public class VersionServiceImpl implements VersionService {
 		int errorCount = 0;
 		try {
 			// Step1.取得預設腳本內容
-			ScriptListDAOVO slDAOVO = new ScriptListDAOVO();
+			ScriptDAOVO slDAOVO = new ScriptDAOVO();
 			slDAOVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
 
-			List<ScriptListDAOVO> scriptList =
+			List<ScriptDAOVO> scriptList =
 					scriptListDefaultDAO.findScriptListByScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
 
 			if (scriptList == null || (scriptList != null && scriptList.isEmpty())) {

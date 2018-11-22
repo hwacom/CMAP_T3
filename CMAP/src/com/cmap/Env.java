@@ -142,7 +142,18 @@ public class Env {
 	public static String TFTP_DIR_PATH_SEPARATE_SYMBOL;
 
 	public static String MEANS_ALL_SYMBOL;
+	public static String SCRIPT_VAR_KEY_SYMBOL;
 
+	public static final Step[] SEND_SCRIPT = new Step[] {
+			Step.LOAD_SPECIFIED_SCRIPT,
+			Step.FIND_DEVICE_CONNECT_INFO,
+			Step.FIND_DEVICE_LOGIN_INFO,
+			Step.CONNECT_DEVICE,
+			Step.LOGIN_DEVICE,
+			Step.SEND_COMMANDS,
+			Step.CHECK_PROVISION_RESULT,
+			Step.CLOSE_DEVICE_CONNECTION
+	};
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT,
 			Step.FIND_DEVICE_CONNECT_INFO,
@@ -157,7 +168,7 @@ public class Env {
 			Step.LOGIN_FILE_SERVER_4_UPLOAD,
 			Step.UPLOAD_FILE_SERVER,
 			Step.CLOSE_FILE_SERVER_CONNECTION,
-			Step.RECORD_DB
+			Step.RECORD_DB_OF_CONFIG_VERSION_INFO
 	};
 	public static final Step[] BACKUP_BY_TFTP = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT,
@@ -171,7 +182,7 @@ public class Env {
 			Step.CONNECT_FILE_SERVER_4_UPLOAD,
 			Step.COMPARE_CONTENTS,
 			Step.COMPOSE_OUTPUT_VO,
-			Step.RECORD_DB
+			Step.RECORD_DB_OF_CONFIG_VERSION_INFO
 	};
 	public static final Step[] DOWNLOAD_FILE_FROM_TFTP = new Step[] {
 			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,

@@ -24,7 +24,7 @@ import com.cmap.model.I18n;
 @Named("databaseMessageSourceBase")
 public class DatabaseMessageSourceBase extends AbstractMessageSource implements ResourceLoaderAware {
 	private static Log log = LogFactory.getLog(DatabaseMessageSourceBase.class);
-	
+
 	@Autowired
 	private I18nDAO i18nDAO;
 
@@ -76,11 +76,11 @@ public class DatabaseMessageSourceBase extends AbstractMessageSource implements 
 	 * @param locale 本地化语言
 	 * @return
 	 */
-	public String getText(String code, Locale locale) {
+	public String getMessage(String code, Locale locale, String exception) {
 		String localeCode = locale.getLanguage() + DB_SPLIT_CODE + locale.getCountry();
 		String key = code + MAP_SPLIT_CODE + localeCode;
 		String localeText = properties.get(key);
-		String resourceText = code;
+		String resourceText = exception;
 
 		if(localeText != null) {
 			resourceText = localeText;
@@ -112,13 +112,13 @@ public class DatabaseMessageSourceBase extends AbstractMessageSource implements 
 
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
-		String msg = getText(code, locale);
+		String msg = getMessage(code, locale, code);
 		return createMessageFormat(msg, locale);
 	}
 
 	@Override
 	protected String resolveCodeWithoutArguments(String code, Locale locale) {
-		String result = getText(code, locale);
+		String result = getMessage(code, locale, code);
 		return result;
 	}
 }

@@ -13,6 +13,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -143,6 +144,8 @@ public class PrtgApiUtils implements ApiUtils {
 	@Override
 	public boolean login(HttpServletRequest request, String username, String password) throws Exception {
 		try {
+			request.getSession().setAttribute(Constants.ERROR, null);
+
 			if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
 				throw new Exception("[Login failed] >> username or password is blank.");
 
@@ -152,7 +155,14 @@ public class PrtgApiUtils implements ApiUtils {
 
 				String apiUrl = PRTG_ROOT.concat(API_LOGIN);
 
-				String retVal = callPrtg(apiUrl);
+				String retVal = null;
+				try {
+					retVal = callPrtg(apiUrl);
+
+				} catch (ConnectTimeoutException cte) {
+					request.getSession().setAttribute(Constants.ERROR, new ConnectTimeoutException("ERROR.connectionTimeOut"));
+				}
+
 				if (StringUtils.isNotBlank(retVal)) {
 					//PRTG驗證成功後將密碼hash_code存入Spring security USER物件內，供後續作業使用
 					//					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
@@ -400,6 +410,10 @@ public class PrtgApiUtils implements ApiUtils {
 				}
 			};
 			resultStr = httpclient.execute(httpGet, responseHandler);
+
+		} catch (ConnectTimeoutException cte) {
+			log.error(cte.toString(), cte);
+			throw cte;
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

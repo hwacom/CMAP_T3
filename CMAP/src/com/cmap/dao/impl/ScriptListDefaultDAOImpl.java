@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ScriptListDAO;
-import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.model.ScriptDefaultMapping;
 import com.cmap.model.ScriptListDefault;
 
@@ -20,12 +20,12 @@ import com.cmap.model.ScriptListDefault;
 @Transactional
 public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements ScriptListDAO {
 
-	private List<ScriptListDAOVO> transModel2DAOVO(List<ScriptListDefault> modelList) {
-		List<ScriptListDAOVO> voList = new ArrayList<ScriptListDAOVO>();
+	private List<ScriptDAOVO> transModel2DAOVO(List<ScriptListDefault> modelList) {
+		List<ScriptDAOVO> voList = new ArrayList<ScriptDAOVO>();
 
-		ScriptListDAOVO daovo;
+		ScriptDAOVO daovo;
 		for (ScriptListDefault model : modelList) {
-			daovo = new ScriptListDAOVO();
+			daovo = new ScriptDAOVO();
 			BeanUtils.copyProperties(model, daovo);
 			daovo.setScriptTypeId(model.getScriptType().getScriptTypeId());
 			daovo.setScriptStepOrder(String.valueOf(model.getScriptStepOrder()));
@@ -38,7 +38,7 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 	}
 
 	@Override
-	public List<ScriptListDAOVO> findScriptListByScriptCode(String scriptCode) {
+	public List<ScriptDAOVO> findScriptListByScriptCode(String scriptCode) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select sld ")
 		.append(" from ScriptListDefault sld ")
@@ -85,7 +85,7 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 	}
 
 	@Override
-	public long countScriptList(ScriptListDAOVO slDAOVO) {
+	public long countScriptList(ScriptDAOVO slDAOVO) {
 		// TODO 自動產生的方法 Stub
 		return 0;
 	}

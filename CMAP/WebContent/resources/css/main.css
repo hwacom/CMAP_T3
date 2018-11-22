@@ -488,7 +488,11 @@ select:focus, input:focus {
 }
 
 .myTable thead {
-  background-color: #EFD6AEE6;
+  /*background-color: #EFD6AEE6;*/
+  background: -webkit-linear-gradient(180deg, #F6C87F, #EADFCDE6);
+  background: -o-linear-gradient(180deg, #F6C87F, #EADFCDE6);
+  background: -moz-linear-gradient(180deg, #F6C87F, #EADFCDE6);
+  background: linear-gradient(180deg, #F6C87F, #EADFCDE6);
 }
 
 .copyright > span {
@@ -715,6 +719,9 @@ button {
 
 /*##########################################################################################################################################*/
 .step-current {
+  background-image: -webkit-linear-gradient(#FFFFFF, #0595FF) !important;
+  background-image: -o-linear-gradient(#FFFFFF, #0595FF) !important;
+  background-image: -moz-linear-gradient(#FFFFFF, #0595FF) !important;
   background-image: linear-gradient(#FFFFFF, #0595FF) !important;
   font-weight: bold !important;
   padding-bottom: 5px;
@@ -732,6 +739,9 @@ button {
 .step {
   border-style: double;
   border-radius: 5px 25px 5px 25px;
+  background-image: -webkit-linear-gradient(#FFFFFF, #ddd);
+  background-image: -o-linear-gradient(#FFFFFF, #ddd);
+  background-image: -moz-linear-gradient(#FFFFFF, #ddd);
   background-image: linear-gradient(#FFFFFF, #ddd);
   padding-bottom: 5px;
   padding-top: 5px;
@@ -739,10 +749,127 @@ button {
 }
 
 #stepModal_scroll {
-  max-height: 400px;
-  overflow-y: auto;
+  max-height: 450px;
+  overflow-y: hidden;
   overflow-x: hidden;
   padding-right: 1rem;
+}
+
+/*
+#step2_variable_section {
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+*/
+
+.fill-all-inpt {
+  background-color: #000;
+  color: #ffff00;
+}
+
+.fill-all-inpt::placeholder {
+  color: #fff;
+  opacity: .6;
+}
+
+.required {
+  border: 3px solid #ff0000;
+}
+
+#step2_target_section {
+  margin-top: -0.5rem;
+  max-height: 450px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+#step2_target_section table {
+  display: table;
+  white-space: nowrap;
+}
+
+#step2_target_section thead {
+  /*display: block;
+  width: calc( 100% - 1.2em );*/
+}
+
+#step2_target_section thead tr {
+  display: table-row;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#step2_target_section thead th {
+  display: table-cell;
+}
+
+#step2_target_section tbody {
+  /*display: block;*/
+  max-height: 170px;
+  overflow-y: auto;
+}
+
+#step2_target_section tbody tr {
+  display: table-row;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#step2_target_section tbody td {
+  display: table-cell;
+}
+
+#step2_target_section thead,tbody tr {
+  line-height: 1.5rem;
+}
+
+#step2_target_section tbody tr:nth-of-type(2n+1) {
+  background-color: rgba(0,0,0,.05);
+}
+
+.var-td {
+  min-width: 100px;
+  background: -webkit-linear-gradient(#ddd, #fff);
+  background: -o-linear-gradient(#ddd, #fff);
+  background: -moz-linear-gradient(#ddd, #fff);
+  background: linear-gradient(#ddd, #fff);
+}
+
+#step3_target_table {
+  background-color: #000;
+}
+
+#step3_target_table thead {
+  /*display: block;
+  width: calc( 100% - 1.2em );*/
+}
+
+#step3_target_table thead tr {
+  display: table-row;;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#step3_target_table tbody {
+  background-color: #fff;
+  /*display: block;*/
+  max-height: 170px;
+  overflow-y: auto;
+}
+
+#step3_target_table tbody tr {
+  display: table-row;
+  width: 100%;
+  table-layout: fixed;
+}
+
+#step3_target_table thead,tbody tr {
+  line-height: 1.5rem;
+}
+
+#step3_target_table tbody tr:nth-of-type(2n+1) {
+  background-color: rgba(0,0,0,.05);
 }
 
 #stepModal_preview {
@@ -750,6 +877,8 @@ button {
   color: #fff;
   padding-top: .5rem;
   padding-bottom: .5rem;
+  max-height: 440px;
+  overflow-y: auto;
 }
 
 #stepModal_searchWaiting {

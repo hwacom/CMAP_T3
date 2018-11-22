@@ -22,6 +22,12 @@ public class StepServiceVO extends CommonServiceVO {
 
 	private ProvisionServiceVO psVO;
 
+	ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
+	ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
+	ProvisionServiceVO psStepVO = new ProvisionServiceVO();
+	ProvisionServiceVO psRetryVO;
+	ProvisionServiceVO psDeviceVO;
+
 	@Override
 	public String toString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -62,9 +68,11 @@ public class StepServiceVO extends CommonServiceVO {
 	public void setScriptCode(String scriptCode) {
 		this.scriptCode = scriptCode;
 	}
+	@Override
 	public String getActionBy() {
 		return actionBy;
 	}
+	@Override
 	public void setActionBy(String actionBy) {
 		this.actionBy = actionBy;
 	}
@@ -119,5 +127,45 @@ public class StepServiceVO extends CommonServiceVO {
 
 	public void setPsVO(ProvisionServiceVO psVO) {
 		this.psVO = psVO;
+	}
+
+	public ProvisionServiceVO getPsMasterVO() {
+		return psMasterVO;
+	}
+
+	public void setPsMasterVO(ProvisionServiceVO psMasterVO) {
+		this.psMasterVO = psMasterVO;
+	}
+
+	public ProvisionServiceVO getPsDetailVO() {
+		return psDetailVO;
+	}
+
+	public void setPsDetailVO(ProvisionServiceVO psDetailVO) {
+		this.psDetailVO = psDetailVO;
+	}
+
+	public ProvisionServiceVO getPsStepVO() {
+		return psStepVO;
+	}
+
+	public void setPsStepVO(ProvisionServiceVO psStepVO) {
+		this.psStepVO = psStepVO;
+	}
+
+	public ProvisionServiceVO getPsRetryVO() {
+		return psRetryVO;
+	}
+
+	public void setPsRetryVO(ProvisionServiceVO psRetryVO) {
+		this.psRetryVO = psRetryVO;
+	}
+
+	public ProvisionServiceVO getPsDeviceVO() {
+		return psDeviceVO;
+	}
+
+	public void setPsDeviceVO(ProvisionServiceVO psDeviceVO) {
+		this.psDeviceVO = psDeviceVO;
 	}
 }

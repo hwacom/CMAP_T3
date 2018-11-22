@@ -15,6 +15,7 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.security.SecurityUtil;
+import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
 
 public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -52,7 +53,7 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 			final String ipAddr = SecurityUtil.getIpAddr(request);
 			request.getSession().setAttribute(Constants.IP_ADDR, ipAddr);
 
-			PrtgApiUtils prtgApiUtils = new PrtgApiUtils();
+			ApiUtils prtgApiUtils = new PrtgApiUtils();
 			boolean loginSuccess = prtgApiUtils.login(request, username, password);
 
 			if (loginSuccess) {
@@ -77,6 +78,9 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		//        String requestBody;
 		//            requestBody = IOUtils.toString(request.getReader());
+
+		//每次登入動作首先清空Session所有值
+		request.getSession().invalidate();
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);

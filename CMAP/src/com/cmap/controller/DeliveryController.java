@@ -196,16 +196,16 @@ public class DeliveryController extends BaseController {
 		try {
 			dsVO = new DeliveryServiceVO();
 			dsVO.setDeliveryParameters(ps);
-			String retVal = deliveryService.doDelivery(dsVO);
+			String retVal = deliveryService.doDelivery(dsVO, false);
 
-			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常");
+			return new AppResponse(HttpServletResponse.SC_OK, retVal);
 
 		} catch (ServiceLayerException sle) {
-			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, sle.getMessage());
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 		}
 	}
 }

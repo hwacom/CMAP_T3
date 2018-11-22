@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -30,14 +31,15 @@ import com.cmap.comm.enums.Step;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
+import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
-import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.FileOperationException;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
+import com.cmap.model.ScriptInfo;
 import com.cmap.security.SecurityUtil;
-import com.cmap.service.ProvisionService;
 import com.cmap.service.StepService;
 import com.cmap.service.VersionService;
 import com.cmap.service.vo.ConfigInfoVO;
@@ -69,10 +71,15 @@ public class StepServiceImpl implements StepService {
 	private ScriptListDAO scriptListDefaultDAO;
 
 	@Autowired
-	private VersionService versionService;
+	@Qualifier("scriptStepActionDAOImpl")
+	private ScriptStepDAO scriptStepActionDAO;
 
 	@Autowired
-	private ProvisionService provisionService;
+	@Qualifier("scriptStepCheckDAOImpl")
+	private ScriptStepDAO scriptStepCheckDAO;
+
+	@Autowired
+	private VersionService versionService;
 
 	@Override
 	public StepServiceVO doBackupStep(String deviceListId, boolean jobTrigger) {
@@ -133,7 +140,7 @@ public class StepServiceImpl implements StepService {
 					break;
 				}
 
-				List<ScriptListDAOVO> scripts = null;
+				List<ScriptDAOVO> scripts = null;
 
 				ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
 				List<String> outputList = null;				// 命令Output內容List
@@ -143,90 +150,93 @@ public class StepServiceImpl implements StepService {
 				for (Step _step : steps) {
 
 					switch (_step) {
-					case LOAD_DEFAULT_SCRIPT:
-						scripts = loadDefaultScript(deviceListId, scripts, ScriptType.BACKUP);
+						case LOAD_DEFAULT_SCRIPT:
+							scripts = loadDefaultScript(deviceListId, scripts, ScriptType.BACKUP);
 
-						/*
-						 * Provision_Log_Step
-						 */
-						final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
-						psStepVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
-						psStepVO.setRemark(scriptName);
+							/*
+							 * Provision_Log_Step
+							 */
+							final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
+							psStepVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+							psStepVO.setRemark(scriptName);
 
-						retVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+							retVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
 
-						break;
+							break;
 
-					case FIND_DEVICE_CONNECT_INFO:
-						ciVO = findDeviceConfigInfo(ciVO, deviceListId);
-						ciVO.setTimes(String.valueOf(round));
+						case FIND_DEVICE_CONNECT_INFO:
+							ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+							ciVO.setTimes(String.valueOf(round));
 
-						/*
-						 * Provision_Log_Device
-						 */
-						if (!retryRound) {
-							psDeviceVO = new ProvisionServiceVO();
-							psDeviceVO.setDeviceListId(deviceListId);
-							psDeviceVO.setOrderNum(1);
-							psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
+							/*
+							 * Provision_Log_Device
+							 */
+							if (!retryRound) {
+								psDeviceVO = new ProvisionServiceVO();
+								psDeviceVO.setDeviceListId(deviceListId);
+								psDeviceVO.setOrderNum(1);
+								psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
 
-							retVO.setDeviceName(ciVO.getDeviceName());
-							retVO.setDeviceIp(ciVO.getDeviceIp());
-						}
+								retVO.setDeviceName(ciVO.getDeviceName());
+								retVO.setDeviceIp(ciVO.getDeviceIp());
+							}
 
-						break;
+							break;
 
-					case FIND_DEVICE_LOGIN_INFO:
-						findDeviceLoginInfo();
-						break;
+						case FIND_DEVICE_LOGIN_INFO:
+							findDeviceLoginInfo(deviceListId);
+							break;
 
-					case CONNECT_DEVICE:
-						connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
-						break;
+						case CONNECT_DEVICE:
+							connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+							break;
 
-					case LOGIN_DEVICE:
-						login2Device(connectUtils, ciVO);
-						break;
+						case LOGIN_DEVICE:
+							login2Device(connectUtils, ciVO);
+							break;
 
-					case SEND_COMMANDS:
-						outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
-						break;
+						case SEND_COMMANDS:
+							outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
+							break;
 
-					case COMPARE_CONTENTS:
-						outputList = compareContents(ciVO, outputList, fileUtils, fileServerMode, retVO);
-						break;
+						case COMPARE_CONTENTS:
+							outputList = compareContents(ciVO, outputList, fileUtils, fileServerMode, retVO);
+							break;
 
-					case DEFINE_OUTPUT_FILE_NAME:
-						defineFileName(ciVO);
-						break;
+						case DEFINE_OUTPUT_FILE_NAME:
+							defineFileName(ciVO);
+							break;
 
-					case COMPOSE_OUTPUT_VO:
-						outputVOList = composeOutputVO(ciVO, outputList);
-						break;
+						case COMPOSE_OUTPUT_VO:
+							outputVOList = composeOutputVO(ciVO, outputList);
+							break;
 
-					case CONNECT_FILE_SERVER_4_UPLOAD:
-						fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
-						break;
+						case CONNECT_FILE_SERVER_4_UPLOAD:
+							fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
+							break;
 
-					case LOGIN_FILE_SERVER_4_UPLOAD:
-						login2FileServer(fileUtils, ciVO);
-						break;
+						case LOGIN_FILE_SERVER_4_UPLOAD:
+							login2FileServer(fileUtils, ciVO);
+							break;
 
-					case UPLOAD_FILE_SERVER:
-						upload2FTP(fileUtils, outputVOList);
-						break;
+						case UPLOAD_FILE_SERVER:
+							upload2FTP(fileUtils, outputVOList);
+							break;
 
-					case RECORD_DB:
-						record2DB(outputVOList, jobTrigger);
-						break;
+						case RECORD_DB_OF_CONFIG_VERSION_INFO:
+							record2DB4ConfigVersionInfo(outputVOList, jobTrigger);
+							break;
 
-					case CLOSE_DEVICE_CONNECTION:
-						closeDeviceConnection(connectUtils);
-						break;
+						case CLOSE_DEVICE_CONNECTION:
+							closeDeviceConnection(connectUtils);
+							break;
 
-					case CLOSE_FILE_SERVER_CONNECTION:
-						closeFileServerConnection(fileUtils);
-						break;
+						case CLOSE_FILE_SERVER_CONNECTION:
+							closeFileServerConnection(fileUtils);
+							break;
+
+						default:
+							break;
 					}
 				}
 
@@ -326,29 +336,32 @@ public class StepServiceImpl implements StepService {
 					log.info(_step.toString());
 
 					switch (_step) {
-					case CONNECT_FILE_SERVER_4_DOWNLOAD:
-						fileUtils = connect2FileServer(fileUtils, downloadMode, ciVO);
-						break;
+						case CONNECT_FILE_SERVER_4_DOWNLOAD:
+							fileUtils = connect2FileServer(fileUtils, downloadMode, ciVO);
+							break;
 
-					case DOWNLOAD_FILE:
-						outputVOList = downloadFile(fileUtils, vsVOs, ciVO, true);
-						break;
+						case DOWNLOAD_FILE:
+							outputVOList = downloadFile(fileUtils, vsVOs, ciVO, true);
+							break;
 
-					case CONNECT_FILE_SERVER_4_UPLOAD:
-						fileUtils = connect2FileServer(fileUtils, uploadMode, ciVO);
-						break;
+						case CONNECT_FILE_SERVER_4_UPLOAD:
+							fileUtils = connect2FileServer(fileUtils, uploadMode, ciVO);
+							break;
 
-					case LOGIN_FILE_SERVER_4_UPLOAD:
-						login2FileServer(fileUtils, ciVO);
-						break;
+						case LOGIN_FILE_SERVER_4_UPLOAD:
+							login2FileServer(fileUtils, ciVO);
+							break;
 
-					case UPLOAD_FILE_SERVER:
-						upload2FTP(fileUtils, outputVOList);
-						break;
+						case UPLOAD_FILE_SERVER:
+							upload2FTP(fileUtils, outputVOList);
+							break;
 
-					case CLOSE_FILE_SERVER_CONNECTION:
-						closeFileServerConnection(fileUtils);
-						break;
+						case CLOSE_FILE_SERVER_CONNECTION:
+							closeFileServerConnection(fileUtils);
+							break;
+
+						default:
+							break;
 					}
 				}
 
@@ -411,7 +424,7 @@ public class StepServiceImpl implements StepService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	private List<ScriptListDAOVO> loadDefaultScript(String deviceListId, List<ScriptListDAOVO> script, ScriptType type) throws ServiceLayerException {
+	private List<ScriptDAOVO> loadDefaultScript(String deviceListId, List<ScriptDAOVO> script, ScriptType type) throws ServiceLayerException {
 		if (script != null && !script.isEmpty()) {
 			return script;
 		}
@@ -436,6 +449,52 @@ public class StepServiceImpl implements StepService {
 		}
 
 		return script;
+	}
+
+	/**
+	 * [Step] 取得預設腳本內容
+	 * @param script
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	private List<ScriptDAOVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, Map<String, String> varMap, List<ScriptDAOVO> scripts) throws ServiceLayerException {
+		if (scripts != null && !scripts.isEmpty()) {
+			return scripts;
+		}
+
+		scripts = scriptStepActionDAO.findScriptStepByScriptInfoIdOrScriptCode(scriptInfoId, scriptCode);
+
+		if (scripts == null || (scripts != null && scripts.isEmpty())) {
+			log.error("查無腳本資料 >> scriptInfoId: " + scriptInfoId + " , scriptCode: " + scriptCode);
+			throw new ServiceLayerException("查無腳本資料，請重新操作");
+		}
+
+		for (ScriptDAOVO script : scripts) {
+			String cmd = script.getScriptContent();
+
+			if (cmd.indexOf("%") != -1) {
+				String[] strSlice = cmd.split("%");
+
+				for (int i=0; i<strSlice.length; i++) {
+					if (i % 2 == 0) {
+						continue;
+
+					} else {
+						String varKey = Env.SCRIPT_VAR_KEY_SYMBOL + strSlice[i] + Env.SCRIPT_VAR_KEY_SYMBOL;
+
+						if (!varMap.containsKey(varKey)) {
+							throw new ServiceLayerException("錯誤的腳本變數");
+
+						} else {
+							cmd = cmd.replace(varKey, varMap.get(varKey));
+							script.setScriptContent(cmd);
+						}
+					}
+				}
+			}
+		}
+
+		return scripts;
 	}
 
 	/**
@@ -477,10 +536,10 @@ public class StepServiceImpl implements StepService {
 	}
 
 	/**
-	 * [Step] 查找設備連線帳密
+	 * [Step] 查找設備連線帳密 & 連線方式(TELNET / SSH)
 	 * @throws ServiceLayerException
 	 */
-	private void findDeviceLoginInfo() throws ServiceLayerException {
+	private void findDeviceLoginInfo(String deviceListId) throws ServiceLayerException {
 
 	}
 
@@ -494,15 +553,18 @@ public class StepServiceImpl implements StepService {
 	 */
 	private ConnectUtils connect2Device(ConnectUtils connectUtils, ConnectionMode _mode, ConfigInfoVO ciVO) throws Exception {
 		switch (_mode) {
-		case TELNET:
-			connectUtils = new TelnetUtils();
-			connectUtils.connect(ciVO.getDeviceIp(), null);
-			break;
+			case TELNET:
+				connectUtils = new TelnetUtils();
+				connectUtils.connect(ciVO.getDeviceIp(), null);
+				break;
 
-		case SSH:
-			connectUtils = new SshUtils();
-			connectUtils.connect(ciVO.getDeviceIp(), null);
-			break;
+			case SSH:
+				connectUtils = new SshUtils();
+				connectUtils.connect(ciVO.getDeviceIp(), null);
+				break;
+
+			default:
+				break;
 		}
 
 		return connectUtils;
@@ -539,7 +601,7 @@ public class StepServiceImpl implements StepService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> sendCmds(ConnectUtils connectUtils, List<ScriptListDAOVO> scriptList,  ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
+	private List<String> sendCmds(ConnectUtils connectUtils, List<ScriptDAOVO> scriptList,  ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		return connectUtils.sendCommands(scriptList, configInfoVO, ssVO);
 	}
 
@@ -759,16 +821,19 @@ public class StepServiceImpl implements StepService {
 	 */
 	private FileUtils connect2FileServer(FileUtils fileUtils, ConnectionMode _mode, ConfigInfoVO ciVO) throws Exception {
 		switch (_mode) {
-		case FTP:
-			// By FTP
-			fileUtils = new FtpFileUtils();
-			fileUtils.connect(ciVO.getFtpIP(), ciVO.getFtpPort());
-			break;
+			case FTP:
+				// By FTP
+				fileUtils = new FtpFileUtils();
+				fileUtils.connect(ciVO.getFtpIP(), ciVO.getFtpPort());
+				break;
 
-		case TFTP:
-			// By TFTP
-			fileUtils = new TFtpFileUtils();
-			fileUtils.connect(ciVO.gettFtpIP(), ciVO.gettFtpPort());
+			case TFTP:
+				// By TFTP
+				fileUtils = new TFtpFileUtils();
+				fileUtils.connect(ciVO.gettFtpIP(), ciVO.gettFtpPort());
+
+			default:
+				break;
 		}
 
 		return fileUtils;
@@ -873,7 +938,7 @@ public class StepServiceImpl implements StepService {
 	 * @param ciVOList
 	 * @param jobTrigger
 	 */
-	private void record2DB(List<ConfigInfoVO> ciVOList, boolean jobTrigger) {
+	private void record2DB4ConfigVersionInfo(List<ConfigInfoVO> ciVOList, boolean jobTrigger) {
 		for (ConfigInfoVO ciVO : ciVOList) {
 			configVersionInfoDAO.insertConfigVersionInfo(CommonUtils.composeModelEntityByConfigInfoVO(ciVO, jobTrigger));
 		}
@@ -916,5 +981,183 @@ public class StepServiceImpl implements StepService {
 			i++;
 		}
 		return ciVOList;
+	}
+
+	@Override
+	public StepServiceVO doScript(String deviceListId, ScriptInfo scriptInfo, Map<String, String> varMap, boolean jobTrigger) {
+		StepServiceVO processVO = new StepServiceVO();
+
+		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
+		ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
+		ProvisionServiceVO psStepVO = new ProvisionServiceVO();
+		ProvisionServiceVO psRetryVO;
+		ProvisionServiceVO psDeviceVO;
+
+		final int RETRY_TIMES = StringUtils.isNotBlank(Env.RETRY_TIMES) ? Integer.parseInt(Env.RETRY_TIMES) : 1;
+		int round = 1;
+
+		/*
+		 * Provision_Log_Master & Step
+		 */
+		final String userName = jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUsername() : Constants.SYS;
+		final String userIp = jobTrigger ? Env.USER_IP_JOB : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUser().getIp() : Constants.UNKNOWN;
+
+		psDetailVO.setUserName(userName);
+		psDetailVO.setUserIp(userIp);
+		psDetailVO.setBeginTime(new Date());
+		psDetailVO.setRemark(jobTrigger ? Env.PROVISION_REASON_OF_JOB : null);
+		psStepVO.setBeginTime(new Date());
+
+		processVO.setActionBy(userName);
+		processVO.setActionFromIp(userIp);
+		processVO.setBeginTime(new Date());
+
+		ConnectUtils connectUtils = null;			// 連線裝置物件
+
+		boolean retryRound = false;
+		while (round <= RETRY_TIMES) {
+			log.info("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
+			try {
+				Step[] steps = null;
+				ConnectionMode deviceMode = Constants.DEFAULT_DEVICE_CONNECTION_MODE;
+
+				steps = Env.SEND_SCRIPT;
+
+				List<ScriptDAOVO> scripts = null;
+				ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
+
+				for (Step _step : steps) {
+					/*
+					 * public static final Step[] SEND_SCRIPT_BY_TELNET = new Step[] {
+								Step.FIND_DEVICE_CONNECT_INFO,
+								Step.FIND_DEVICE_LOGIN_INFO,
+								Step.CONNECT_DEVICE,
+								Step.LOGIN_DEVICE,
+								Step.SEND_COMMANDS,
+								Step.CHECK_PROVISION_RESULT,
+								Step.CLOSE_DEVICE_CONNECTION,
+								Step.RECORD_DB
+						};
+					 */
+					switch (_step) {
+						case LOAD_SPECIFIED_SCRIPT:
+							scripts = loadSpecifiedScript(scriptInfo.getScriptInfoId(), scriptInfo.getScriptCode(), varMap, scripts);
+
+							/*
+							 * Provision_Log_Step
+							 */
+							final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
+							psStepVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+							psStepVO.setRemark(scriptName);
+
+							processVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+
+							break;
+
+						case FIND_DEVICE_CONNECT_INFO:
+							ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+							ciVO.setTimes(String.valueOf(round));
+
+							/*
+							 * Provision_Log_Device
+							 */
+							if (!retryRound) {
+								psDeviceVO = new ProvisionServiceVO();
+								psDeviceVO.setDeviceListId(deviceListId);
+								psDeviceVO.setOrderNum(1);
+								psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
+
+								processVO.setDeviceName(ciVO.getDeviceName());
+								processVO.setDeviceIp(ciVO.getDeviceIp());
+							}
+
+							break;
+
+						case FIND_DEVICE_LOGIN_INFO:
+							findDeviceLoginInfo(deviceListId);
+							break;
+
+						case CONNECT_DEVICE:
+							connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+							break;
+
+						case LOGIN_DEVICE:
+							login2Device(connectUtils, ciVO);
+							break;
+
+						case SEND_COMMANDS:
+							sendCmds(connectUtils, scripts, ciVO, processVO);
+							break;
+
+						case CHECK_PROVISION_RESULT:
+
+							break;
+
+						case CLOSE_DEVICE_CONNECTION:
+							closeDeviceConnection(connectUtils);
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				processVO.setSuccess(true);
+				processVO.setResult(Result.SUCCESS);
+				break;
+
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+
+				/*
+				 * Provision_Log_Retry
+				 */
+				psRetryVO = new ProvisionServiceVO();
+				psRetryVO.setResult(Result.ERROR.toString());
+				psRetryVO.setMessage(e.toString());
+				psRetryVO.setRetryOrder(round);
+				psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
+
+				processVO.setSuccess(false);
+				processVO.setResult(Result.ERROR);
+				processVO.setMessage(e.toString());
+
+				retryRound = true;
+				round++;
+
+				if (connectUtils != null) {
+					try {
+						connectUtils.disconnect();
+					} catch (Exception e1) {
+						log.error(e.toString(), e);
+					}
+				}
+			}
+		}
+
+		/*
+		 * Provision_Log_Step
+		 */
+		psStepVO.setEndTime(new Date());
+		psStepVO.setResult(processVO.getResult().toString());
+		psStepVO.setMessage(processVO.getMessage());
+		psStepVO.setRetryTimes(round-1);
+		psStepVO.setProcessLog(processVO.getCmdProcessLog());
+
+		/*
+		 * Provision_Log_Detail
+		 */
+		psDetailVO.setEndTime(new Date());
+		psDetailVO.setResult(processVO.getResult().toString());
+		psDetailVO.setMessage(processVO.getMessage());
+		psDetailVO.getStepVO().add(psStepVO); // add StepVO to DetailVO
+
+		psMasterVO.getDetailVO().add(psDetailVO); // add DetailVO to MasterVO
+		processVO.setPsVO(psMasterVO);
+
+		processVO.setEndTime(new Date());
+		processVO.setRetryTimes(round);
+
+		return processVO;
 	}
 }

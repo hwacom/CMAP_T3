@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ScriptListDAO;
-import com.cmap.dao.vo.ScriptListDAOVO;
+import com.cmap.dao.vo.ScriptDAOVO;
 
 @Repository
 @Transactional
 public class ScriptListUserDAOImpl extends BaseDaoHibernate implements ScriptListDAO {
 
-	private List<ScriptListDAOVO> transScriptListUser2DAOVO(List<Object[]> modelList) {
-		List<ScriptListDAOVO> retList = new ArrayList<ScriptListDAOVO>();
+	private List<ScriptDAOVO> transScriptListUser2DAOVO(List<Object[]> modelList) {
+		List<ScriptDAOVO> retList = new ArrayList<ScriptDAOVO>();
 
 		/*
 		ScriptListDAOVO daoVO;
@@ -48,7 +48,7 @@ public class ScriptListUserDAOImpl extends BaseDaoHibernate implements ScriptLis
 	}
 
 	@Override
-	public List<ScriptListDAOVO> findScriptListByScriptCode(String scriptCode) {
+	public List<ScriptDAOVO> findScriptListByScriptCode(String scriptCode) {
 		/*
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select slu, sum ")
@@ -101,7 +101,7 @@ public class ScriptListUserDAOImpl extends BaseDaoHibernate implements ScriptLis
 	}
 
 	@Override
-	public long countScriptList(ScriptListDAOVO slDAOVO) {
+	public long countScriptList(ScriptDAOVO slDAOVO) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select count(distinct slu.scriptCode) ")
 		.append(" from ScriptListUser slu ")

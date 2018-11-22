@@ -220,7 +220,7 @@
 		        </div>
 		        <div class="form-group row">
 		        	<label for="stepModal_reason" class="col-md-2 col-sm-12 col-form-label bold">供裝原因 :</label>
-		        	<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="stepModal_reason">
+		        	<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="stepModal_reason" name="stepModal_reason">
 		        </div>
 	      	</div>
 	      	<!-- [END] Step.1 -->
@@ -228,26 +228,38 @@
 	      	<!-- [START] Step.2 -->
 	      	<div id="step2_section" style="display: none;">
 	      	  <div class="form-group row">
-		      	<label for="stepModal_enterVarRemark" class="col-md-12 col-sm-2 col-form-label bold">派送對象 :</label>
+		      	<label for="stepModal_enterVarRemark" class="col-md-12 col-sm-2 col-form-label bold">請確認派送對象並輸入變數值 :</label>
 		      </div>
 		      <div id="step2_target_section">
-		      	<!-- 依據前一步驟勾選的設備動態增長 -->
+		      	<table id="step2_target_table" class="myTable">
+		      	  <thead class="center bold">
+		      	  	<tr>
+			      	  	<th rowspan="3" width="5%">序</th>
+			      	  	<th rowspan="3" width="15%">群組名稱</th>
+			      	  	<th rowspan="3" width="20%">設備名稱</th>
+			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>
+		      	  	</tr>
+		      	  	<tr>
+		      	  		<td>interface_id</td>
+		      	  	</tr>
+		      	  </thead>
+		      	  <tbody>
+		      	  	<!-- 依據前一步驟勾選的設備動態增長 -->
+		      	  </tbody>
+		      	</table>
 		      </div>
 		      
 		      <div class="row">
 		      	<hr class="col-12">
 		      </div>
-		      
-		      <div id="step2_variable_section">
-		      	<!-- 依據腳本設定的變數內容動態增長 -->
-		      </div>
+
 	      	</div>
 	      	<!-- [END] Step.2 -->
 	      	
 	      	<!-- [START] Step.3 -->
 	      	<div id="step3_section" style="display: none;">
 	      		<div class="form-group row">
-		      		<div class="col-md-12 col-sm-12 font" id="stepModal_preview">
+		      		<div class="col-md-12 col-sm-12" id="stepModal_preview">
 		      		  <!-- 派送前預覽區 -->
 		      		</div>
 		     	</div>
@@ -263,10 +275,7 @@
 	      	</div>
 	      	<div class="col-1"></div>
 	      	<div class="col-2">
-	      		<button type="button" class="btn btn-success" id="btnStepGoNext" style="width: 100%;">下一步</button>
-	      	</div>
-	      	<div class="col-1"></div>
-	      	<div class="col-2">
+	      		<button type="submit" class="btn btn-success" id="btnStepGoNext" style="width: 100%;">下一步</button>
 	      		<button type="button" class="btn btn-success" id="btnStepGoFire" style="width: 100%;">確認派送</button>
 	      	</div>
       	</div>

@@ -25,9 +25,11 @@ import com.cmap.exception.AuthenticateException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.MenuItem;
 import com.cmap.model.ScriptType;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.CommonService;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service("commonService")
 @Transactional
@@ -88,9 +90,8 @@ public class CommonServiceImpl implements CommonService {
 	@Override
 	public Map<String, String> getGroupAndDeviceMenu(HttpServletRequest request) {
 		Map<String, String> retMap = null;
-		ApiUtils prtgApi = null;
 		try {
-			prtgApi = new PrtgApiUtils();
+			ApiUtils prtgApi = new PrtgApiUtils();
 			Map[] prtgMap = prtgApi.getGroupAndDeviceMenu(request);
 
 			if (prtgMap != null) {
@@ -246,5 +247,23 @@ public class CommonServiceImpl implements CommonService {
 
 		}
 		return retMap;
+	}
+
+	protected String currentUserName() {
+		return SecurityUtil.getSecurityUser().getUsername();
+	}
+
+	protected Timestamp currentTimestamp() {
+		return new Timestamp((new Date()).getTime());
+	}
+
+	protected Object transJSON2Object(String jsonStr, Class<?> mClass) {
+		ObjectMapper oMapper = new ObjectMapper();
+		try {
+			return oMapper.readValue(jsonStr, mClass);
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

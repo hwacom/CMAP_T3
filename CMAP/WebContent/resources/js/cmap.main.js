@@ -228,9 +228,13 @@ function changeMenuIconColor() {
  *** 勾選項目時調整該列資料<TR>底色
  **********************************************************************************************************/
 function changeTrBgColor(obj) {
+
+	if ($(obj).attr("type") == "radio") {
+		$('tbody > tr').removeClass('mySelected');
+	}
+	
 	setTimeout(function() {
 		var tr = obj.parentNode.parentNode;
-		var jObj = $(obj);
 		
 		if (obj.checked) {
 			tr.classList.add('mySelected');

@@ -31,6 +31,9 @@
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/dist/jquery.validate.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/dist/additional-methods.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/dist/localization/messages_zh_TW.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/popper/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/jquery-ui/jquery-ui.min.js"></script>

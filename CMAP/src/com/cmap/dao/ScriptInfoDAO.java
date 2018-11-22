@@ -10,4 +10,6 @@ public interface ScriptInfoDAO {
 	public long countScriptInfo(ScriptInfoDAOVO daovo);
 
 	public List<ScriptInfo> findScriptInfo(ScriptInfoDAOVO daovo, Integer startRow, Integer pageLength);
+
+	public ScriptInfo findScriptInfoById(String scriptInfoId);
 }

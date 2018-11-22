@@ -170,7 +170,7 @@ public class BaseController {
 					groupName = deviceMap.get(Constants.GROUP_NAME);
 
 					final String deviceId = deviceMap.get(Constants.DEVICE_ID);
-					final String deviceName = deviceMap.get(Constants.DEVICE_NAME);
+					final String deviceName = deviceMap.get(Constants.DEVICE_ENG_NAME);
 
 					if (StringUtils.isBlank(searchTxt)) {
 						if (idx == 0) {

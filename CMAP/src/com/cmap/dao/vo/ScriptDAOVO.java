@@ -1,6 +1,6 @@
 package com.cmap.dao.vo;
 
-public class ScriptListDAOVO extends CommonDAOVO {
+public class ScriptDAOVO extends CommonDAOVO {
 
 	private String scriptListId;
 

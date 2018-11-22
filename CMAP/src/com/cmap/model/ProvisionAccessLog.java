@@ -33,7 +33,10 @@ public class ProvisionAccessLog {
 	private String scriptCode;
 
 	@Column(name = "device_count", nullable = true)
-	private String deviceCount;
+	private Integer deviceCount;
+
+	@Column(name = "device_ids", nullable = true)
+	private String deviceIds;
 
 	@Column(name = "var_key", nullable = true)
 	private String varKey;
@@ -46,6 +49,12 @@ public class ProvisionAccessLog {
 
 	@Column(name = "mac_address", nullable = true)
 	private String macAddress;
+
+	@Column(name = "parameter_json", nullable = true)
+	private String parameterJSON;
+
+	@Column(name = "chk_result", nullable = true)
+	private String chkResult;
 
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
@@ -63,18 +72,21 @@ public class ProvisionAccessLog {
 		super();
 	}
 
-	public ProvisionAccessLog(String logId, String scriptInfoId, String scriptCode, String deviceCount, String varKey,
-			String varValue, String ipAddress, String macAddress, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy) {
+	public ProvisionAccessLog(String logId, String scriptInfoId, String scriptCode, Integer deviceCount,
+			String deviceIds, String varKey, String varValue, String ipAddress, String macAddress, String parameterJSON,
+			String chkResult, Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.logId = logId;
 		this.scriptInfoId = scriptInfoId;
 		this.scriptCode = scriptCode;
 		this.deviceCount = deviceCount;
+		this.deviceIds = deviceIds;
 		this.varKey = varKey;
 		this.varValue = varValue;
 		this.ipAddress = ipAddress;
 		this.macAddress = macAddress;
+		this.parameterJSON = parameterJSON;
+		this.chkResult = chkResult;
 		this.createTime = createTime;
 		this.createBy = createBy;
 		this.updateTime = updateTime;
@@ -105,12 +117,20 @@ public class ProvisionAccessLog {
 		this.scriptCode = scriptCode;
 	}
 
-	public String getDeviceCount() {
+	public Integer getDeviceCount() {
 		return deviceCount;
 	}
 
-	public void setDeviceCount(String deviceCount) {
+	public void setDeviceCount(Integer deviceCount) {
 		this.deviceCount = deviceCount;
+	}
+
+	public String getDeviceIds() {
+		return deviceIds;
+	}
+
+	public void setDeviceIds(String deviceIds) {
+		this.deviceIds = deviceIds;
 	}
 
 	public String getVarKey() {
@@ -143,6 +163,22 @@ public class ProvisionAccessLog {
 
 	public void setMacAddress(String macAddress) {
 		this.macAddress = macAddress;
+	}
+
+	public String getParameterJSON() {
+		return parameterJSON;
+	}
+
+	public void setParameterJSON(String parameterJSON) {
+		this.parameterJSON = parameterJSON;
+	}
+
+	public String getChkResult() {
+		return chkResult;
+	}
+
+	public void setChkResult(String chkResult) {
+		this.chkResult = chkResult;
 	}
 
 	public Timestamp getCreateTime() {
