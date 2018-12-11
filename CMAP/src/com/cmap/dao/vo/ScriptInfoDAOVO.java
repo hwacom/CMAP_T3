@@ -4,6 +4,7 @@ public class ScriptInfoDAOVO extends CommonDAOVO {
 
 	private String queryScriptTypeId;
 	private String queryScriptInfoId;
+	private String querySystemDefault;
 
 	public String getQueryScriptTypeId() {
 		return queryScriptTypeId;
@@ -19,5 +20,13 @@ public class ScriptInfoDAOVO extends CommonDAOVO {
 
 	public void setQueryScriptInfoId(String queryScriptInfoId) {
 		this.queryScriptInfoId = queryScriptInfoId;
+	}
+
+	public String getQuerySystemDefault() {
+		return querySystemDefault;
+	}
+
+	public void setQuerySystemDefault(String querySystemDefault) {
+		this.querySystemDefault = querySystemDefault;
 	}
 }

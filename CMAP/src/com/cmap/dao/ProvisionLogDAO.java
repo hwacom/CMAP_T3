@@ -24,7 +24,7 @@ public interface ProvisionLogDAO extends BaseDAO {
 	 * @param daovo
 	 * @return
 	 */
-	public List<ProvisionLogDetail> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo);
+	public List<Object[]> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo);
 
 
 	/**
@@ -37,4 +37,11 @@ public interface ProvisionLogDAO extends BaseDAO {
 	public void insertProvisionLog(ProvisionLogMaster master, List<ProvisionLogDetail> details, List<ProvisionLogStep> steps, List<ProvisionLogDevice> devices, List<ProvisionLogRetry> retrys);
 
 	public ProvisionAccessLog findProvisionAccessLogById(String logId);
+
+	/**
+	 * 以 PK 欄位查找供裝步驟檔 >> Provision_Log_Step
+	 * @param logStepId
+	 * @return
+	 */
+	public ProvisionLogStep findProvisionLogStepById(String logStepId);
 }

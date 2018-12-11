@@ -24,6 +24,7 @@ import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.annotation.Log;
 import com.cmap.controller.BaseController;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.EnvService;
 import com.cmap.service.vo.EnvServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,6 +40,10 @@ public class AdminEnvController extends BaseController {
 	@Autowired
 	EnvService envService;
 
+	private void init(Model model, HttpServletRequest request) {
+		model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
+	}
+
 	@RequestMapping(value = "main", method = RequestMethod.GET)
 	public String adminEnv(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
@@ -49,6 +54,7 @@ public class AdminEnvController extends BaseController {
 			log.error(e.toString(), e);
 
 		} finally {
+			init(model, request);
 		}
 
 		return "admin/admin_env";
@@ -74,6 +80,9 @@ public class AdminEnvController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -107,6 +116,9 @@ public class AdminEnvController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -155,6 +167,9 @@ public class AdminEnvController extends BaseController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+
+		} finally {
+			init(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal, msg);
@@ -172,6 +187,9 @@ public class AdminEnvController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 }

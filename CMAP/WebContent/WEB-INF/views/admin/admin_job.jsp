@@ -251,13 +251,27 @@
 	            </div>
 	            <!-- [END]系統檢核 -->
 	            
+	            <!-- Data Poller -->
+	            <div id="sec_dataPoller" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputDataPollerNames" class="col-12 col-form-label"><span style="color:blue">*** Data Poller 參數設定 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputDataPollerSettingId" class="col-md-2 col-sm-3 col-form-label">Setting IDs<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-10 col-sm-9">
+		            		<input type="text" class="form-control form-control-sm" id="inputDataPollerSettingId" name="inputDataPollerSettingId" placeholder="多組ID以「,」區隔；區間以「ID1~ID2」表示"></input>
+		                </div>
+		            </div>
+	            </div>
+	            <!-- [END]Data Poller -->
+	            
 	            <input type="hidden" id="jobKeyName" name="jobKeyName">
 	            <input type="hidden" id="jobKeyGroup" name="jobKeyGroup">
 	            
               </div>
 			</div>
 			<div class="modal-footer">
-        		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+        		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
         		<button type="button" class="btn btn-success" id="btnSave">保存</button>
 			</div>
         </form>
@@ -370,7 +384,7 @@
           </div>
 		</div>
 		<div class="modal-footer">
-       		<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+       		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
 		</div>
       </div>
     </div>

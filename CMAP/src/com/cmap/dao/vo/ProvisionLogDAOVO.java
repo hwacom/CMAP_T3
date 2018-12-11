@@ -27,6 +27,12 @@ public class ProvisionLogDAOVO extends CommonDAOVO {
 	private Integer orderNum;
 	private String deviceListId;
 	private String deviceRemark;
+
+	private String queryGroupId;
+	private String queryDeviceId;
+	private String queryBeginTimeStart;
+	private String queryBeginTimeEnd;
+
 	public String getLogMasterId() {
 		return logMasterId;
 	}
@@ -164,5 +170,29 @@ public class ProvisionLogDAOVO extends CommonDAOVO {
 	}
 	public void setDeviceRemark(String deviceRemark) {
 		this.deviceRemark = deviceRemark;
+	}
+	public String getQueryGroupId() {
+		return queryGroupId;
+	}
+	public void setQueryGroupId(String queryGroupId) {
+		this.queryGroupId = queryGroupId;
+	}
+	public String getQueryDeviceId() {
+		return queryDeviceId;
+	}
+	public void setQueryDeviceId(String queryDeviceId) {
+		this.queryDeviceId = queryDeviceId;
+	}
+	public String getQueryBeginTimeStart() {
+		return queryBeginTimeStart;
+	}
+	public void setQueryBeginTimeStart(String queryBeginTimeStart) {
+		this.queryBeginTimeStart = queryBeginTimeStart;
+	}
+	public String getQueryBeginTimeEnd() {
+		return queryBeginTimeEnd;
+	}
+	public void setQueryBeginTimeEnd(String queryBeginTimeEnd) {
+		this.queryBeginTimeEnd = queryBeginTimeEnd;
 	}
 }

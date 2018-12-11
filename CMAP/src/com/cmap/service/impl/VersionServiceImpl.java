@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -25,8 +24,6 @@ import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.DeviceListDAOVO;
-import com.cmap.dao.vo.ScriptDAOVO;
-import com.cmap.exception.ConnectionException;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
@@ -40,11 +37,9 @@ import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.ProvisionServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.service.vo.VersionServiceVO;
-import com.cmap.utils.ConnectUtils;
 import com.cmap.utils.FileUtils;
 import com.cmap.utils.impl.CommonUtils;
 import com.cmap.utils.impl.FtpFileUtils;
-import com.cmap.utils.impl.SshUtils;
 import com.cmap.utils.impl.TFtpFileUtils;
 
 import difflib.Chunk;
@@ -617,7 +612,7 @@ public class VersionServiceImpl implements VersionService {
 			diff = vo.isLineDiff();
 
 			if (vo.getLine().equals(Constants.ADD_LINE)) {
-				sb.append("<div class=\"progress\" style=\"margin-top: 5px\">")
+				sb.append("<div class=\"progress\" style=\"margin-top: 5px; background-color: #637381;\">")
 				.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
 				.append("</div>")
 				.append("</span>");
@@ -728,174 +723,6 @@ public class VersionServiceImpl implements VersionService {
 
 		retVO.setRetMsg(CommonUtils.converMsg(msg, args));
 		retVO.setJobExcuteRemark(retVO.getRetMsg());
-
-		return retVO;
-	}
-
-	@Override
-	public VersionServiceVO _backupConfig(String configType, List<String> deviceListIDs, boolean jobTrigger) throws ServiceLayerException {
-		VersionServiceVO retVO = new VersionServiceVO();
-		ConnectUtils sshUtils = null;
-		FileUtils ftpUtils = null;
-		final int totalCount = deviceListIDs.size();
-		int errorCount = 0;
-		try {
-			// Step1.取得預設腳本內容
-			ScriptDAOVO slDAOVO = new ScriptDAOVO();
-			slDAOVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
-
-			List<ScriptDAOVO> scriptList =
-					scriptListDefaultDAO.findScriptListByScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
-
-			if (scriptList == null || (scriptList != null && scriptList.isEmpty())) {
-				throw new Exception("未設定[備份]預設腳本");
-			}
-
-			List<ConfigInfoVO> voList = new ArrayList<>();
-			ConfigInfoVO configInfoVO = null;
-			for (String deviceListId : deviceListIDs) {
-				try {
-					// Step2.查找設備連線資訊
-					DeviceList device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
-
-					if (device == null) {
-						throw new Exception("[device_id: " + deviceListId + "] >> 查無設備資料");
-					}
-
-					configInfoVO = new ConfigInfoVO();
-					BeanUtils.copyProperties(device, configInfoVO);
-					configInfoVO.setAccount(Env.DEFAULT_DEVICE_LOGIN_ACCOUNT);
-					configInfoVO.setPassword(Env.DEFAULT_DEVICE_LOGIN_PASSWORD);
-
-					// Step3.查找設備連線帳密
-
-					// Step4.連線設備
-					sshUtils = new SshUtils();
-					sshUtils.connect(device.getDeviceIp(), null);
-
-					// Step5.登入
-					sshUtils.login(configInfoVO.getAccount(), configInfoVO.getPassword());
-
-					// Step6.送出腳本指令取回Config內容
-					StepServiceVO ssVO = new StepServiceVO();
-					List<String> cmdOutput = sshUtils.sendCommands(scriptList, configInfoVO, ssVO);
-					if (cmdOutput != null && !cmdOutput.isEmpty()) {
-
-						// Step7.查找此群組+設備今日是否已有備份紀錄，決定此次備份檔流水
-						ConfigVersionInfoDAOVO cviDAOVO = new ConfigVersionInfoDAOVO();
-						cviDAOVO.setQueryGroup1(configInfoVO.getGroupId());
-						cviDAOVO.setQueryDevice1(configInfoVO.getDeviceId());
-						cviDAOVO.setQueryDateBegin1(Constants.FORMAT_YYYY_MM_DD.format(new Date()));
-						cviDAOVO.setQueryDateEnd1(Constants.FORMAT_YYYY_MM_DD.format(new Date()));
-						List<Object[]> modelList = configVersionInfoDAO.findConfigVersionInfoByDAOVO4New(cviDAOVO, null, null);
-
-						int seqNo = 1;
-						if (modelList != null && !modelList.isEmpty()) {
-							ConfigVersionInfo cvi = (ConfigVersionInfo)modelList.get(0)[0];
-							String currentSeq = StringUtils.isNotBlank(cvi.getConfigVersion())
-									? cvi.getConfigVersion().substring(cvi.getConfigVersion().length()-3, cvi.getConfigVersion().length())
-											: "0";
-
-									seqNo += Integer.valueOf(currentSeq);
-						}
-
-						String type = "";
-						String content = "";
-						for (String output : cmdOutput) {
-							if (output.indexOf(Env.COMM_SEPARATE_SYMBOL) != -1) {
-								type = output.split(Env.COMM_SEPARATE_SYMBOL)[0];
-								content = output.split(Env.COMM_SEPARATE_SYMBOL)[1];
-							} else {
-								content = output;
-							}
-
-							ConfigInfoVO vo = (ConfigInfoVO)configInfoVO.clone();
-							vo.setConfigType(type);
-							vo.setConfigContent(content);
-							CommonUtils.composeConfigFileName(vo, seqNo);
-
-							voList.add(vo);
-							seqNo++;
-						}
-					}
-
-				} catch (ConnectionException ce) {
-					log.error(ce.toString());
-
-				} catch (Exception e) {
-					log.error(e.toString(), e);
-
-					errorCount++;
-					continue;
-				}
-			}
-
-			log.info("voList.size: "+voList.size());
-
-			if (voList != null && !voList.isEmpty()) {
-				// Step8.輸出檔案透過FTP落地保存
-				// 8-1. 建立FTP物件
-				ftpUtils = new FtpFileUtils();
-
-				// 8-2. FTP連線
-				ftpUtils.connect(Env.FTP_HOST_IP, Env.FTP_HOST_PORT);
-
-				// 8-3. FTP登入
-				ftpUtils.login(Env.FTP_LOGIN_ACCOUNT, Env.FTP_LOGIN_PASSWORD);
-
-
-				for (ConfigInfoVO ciVO : voList) {
-					try {
-						// 8-3. 移動作業目錄至指定的裝置
-						ftpUtils.changeDir(ciVO.getConfigFileDirPath(), true);
-
-						// 8-4. 上傳檔案
-						ftpUtils.uploadFiles(
-								ciVO.getConfigFileName(),
-								IOUtils.toInputStream(ciVO.getConfigContent(), Constants.CHARSET_UTF8)
-								);
-
-						// Step9.寫入DB資料
-						configVersionInfoDAO.insertConfigVersionInfo(CommonUtils.composeModelEntityByConfigInfoVO(ciVO, jobTrigger));
-
-					} catch (Exception e) {
-						log.error(e.toString(), e);
-
-						errorCount++;
-						continue;
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			log.error(e.toString(), e);
-
-		} finally {
-			// 關閉SSH連線
-			if (sshUtils != null) {
-				try {
-					sshUtils.disconnect();
-				} catch (Exception e) {
-					log.error(e.toString(), e);
-				}
-			}
-			// 關閉FTP連線
-			if (ftpUtils != null) {
-				try {
-					ftpUtils.disconnect();
-
-				} catch (Exception e) {
-					log.error(e.toString(), e);
-				}
-			}
-
-			String msg = "此次備份共 {0} 筆設備，成功 {1} 筆；失敗 {2} 筆";
-			String[] args = new String[] {
-					String.valueOf(totalCount), String.valueOf(totalCount-errorCount), String.valueOf(errorCount)
-			};
-
-			retVO.setRetMsg(CommonUtils.converMsg(msg, args));
-		}
 
 		return retVO;
 	}

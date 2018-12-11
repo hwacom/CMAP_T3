@@ -146,6 +146,14 @@ $(document).ready(function() {
     });
 });
 
+function initMenuStatus(mainItemId, toggleMenuId, funcId) {
+	var iconId = '#' + mainItemId + ' > span > svg.feather-chevron-down';
+	$(iconId).replaceWith(feather.icons['chevron-up'].toSvg());
+	
+	$("#" + toggleMenuId).removeClass("collapse");
+	$("#" + funcId).addClass("yellow");
+}
+
 function initCheckedItems() {
 	var checkedItem = JSON.parse(window.sessionStorage.getItem(_DATATABLE_CHECKED_ITEM_));
 	if (checkedItem == null) {
@@ -182,6 +190,13 @@ function uncheckAll() {
 	$('input[name=checkAll]').prop('checked', false);
 	$('input[name=chkbox]').prop('checked', false);
 	$('tbody > tr').removeClass('mySelected');
+	
+}
+
+/**********************************************************************************************************
+ *** 用來將TABLE內容，所有項目checkbox(含checkAll本身)取消勾選
+ **********************************************************************************************************/
+function unfoldMobileMenu() {
 	
 }
 
@@ -315,6 +330,12 @@ function viewConfig(viewConfig) {
 		},
 		type : "POST",
 		async: false,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
 		success : function(resp) {
 			if (resp.code == '200') {
 				$('#viewModal_group').val(resp.data.group);

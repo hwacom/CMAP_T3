@@ -13,14 +13,14 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row">
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<span class="font-weight-bold" style="width: 20%">群組</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="group.name" /></span>
 	    	    	<form:select path="queryGroup1" id="queryGroup1" style="width: 75%" onchange="changeDeviceMenu('queryDevice1', this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${group1List}" />
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-3 group-field-other">
-					<span class="font-weight-bold" style="width: 20%">設備</span>
+					<span class="font-weight-bold" style="width: 20%"><spring:message code="device.name" /></span>
 	    	    	<form:select path="queryDevice1" id="queryDevice1" style="width: 75%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${device1List}" />
@@ -60,7 +60,7 @@
 		  	<div class="col-12">
 		  		<form>
 		      	  <div class="form-group row">
-		      	  	<label for="group_1" class="col-sm-2 col-form-label">群組</label>
+		      	  	<label for="group_1" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="queryGroup1" id="queryGroup1_mobile" class="form-control form-control-sm" onchange="changeDeviceMenu('queryDevice1_mobile', this.value)">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -69,7 +69,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	  	<label for="device_1" class="col-sm-2 col-form-label">設備</label>
+		    	  	<label for="device_1" class="col-sm-2 col-form-label"><spring:message code="device.name" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryDevice1" id="queryDevice1_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />
@@ -96,8 +96,8 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap">操作</th>
 		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">群組名稱</th>
-		      <th scope="col" nowrap="nowrap">設備名稱</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap">系統版本</th>
 		    </tr>
 		  </thead>

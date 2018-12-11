@@ -4,6 +4,7 @@
 var isModify = false;
 	
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_admin", "toggleMenu_admin_items", "bk_job");
 	
 	$("#btnAdd").click(function() {
 		isModify = false;
@@ -111,6 +112,8 @@ function jobAction(action) {
 					$("#inputFtpPassword").val(resp.data.inputFtpPassword);
 					
 					$("#inputSysCheckSql").val(resp.data.inputSysCheckSql);
+					
+					$("#inputDataPollerSettingId").val(resp.data.inputDataPollerSettingId);
 					
 					$("#inputMisFirePolicy option").filter(function() {
 					    return $(this).val() == resp.data.inputMisFirePolicy; 

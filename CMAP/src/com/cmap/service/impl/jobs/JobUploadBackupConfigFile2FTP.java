@@ -49,12 +49,6 @@ public class JobUploadBackupConfigFile2FTP extends BaseJobImpl implements BaseJo
 			final String ftpAccount = jMap.getString(Constants.QUARTZ_PARA_FTP_ACCOUNT);
 			final String ftpPassword = jMap.getString(Constants.QUARTZ_PARA_FTP_PASSWORD);
 
-			log.info("ftpName: "+ftpName);
-			log.info("ftpHost: "+ftpHost);
-			log.info("ftpPort: "+ftpPort);
-			log.info("ftpAccount: "+ftpAccount);
-			log.info("ftpPassword: "+ftpPassword);
-
 			if (versionService == null) {
 				versionService = (VersionService)ApplicationContextUtil.getBean("versionService");
 			}

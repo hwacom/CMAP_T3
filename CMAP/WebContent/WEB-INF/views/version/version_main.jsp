@@ -17,14 +17,14 @@
 	      	  		<span class="font-weight-bold group-title">第1組</span>
 	      	  	</div>
 	    	    <div class="col-lg-2 group-field-left">
-	    	    	<span class="font-weight-bold" style="width: 25%">群組</span>
+	    	    	<span class="font-weight-bold" style="width: 25%"><spring:message code="group.name" /></span>
 	    	    	<form:select path="queryGroup1" id="queryGroup1" style="width: 70%" onchange="changeDeviceMenu('queryDevice1', this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${group1List}" />
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-2 group-field-middle">
-					<span class="font-weight-bold" style="width: 25%">設備</span>
+					<span class="font-weight-bold" style="width: 25%"><spring:message code="device.name" /></span>
 					<form:select path="queryDevice1" id="queryDevice1" style="width: 70%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${device1List}" />
@@ -44,7 +44,8 @@
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-1" style="padding-top: 5px;">
-	    	    	<input type="checkbox" id="queryNewChkbox" value="" style="vertical-align:middle;" checked="checked">&nbsp;<span class="font-weight-bold">最新版</span>
+	    	    	<input type="checkbox" id="queryNewChkbox" value="" style="vertical-align:middle;" checked="checked">&nbsp;
+	    	    	<label for="queryNewChkbox" class="font-weight-bold">最新版</label>
 	    	    </div>
 	      	  </div>
 	      	  
@@ -53,14 +54,14 @@
 	      	  		<span class="font-weight-bold group-title">第2組</span>
 	      	  	</div>
 	    	    <div class="col-lg-2 group-field-left">
-	    	    	<span class="font-weight-bold" style="width: 25%">群組</span>
+	    	    	<span class="font-weight-bold" style="width: 25%"><spring:message code="group.name" /></span>
 	    	    	<form:select path="queryGroup2" id="queryGroup2" style="width: 70%" onchange="changeDeviceMenu('queryDevice2', this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${group2List}" />
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-2 group-field-middle">
-					<span class="font-weight-bold" style="width: 25%">設備</span>
+					<span class="font-weight-bold" style="width: 25%"><spring:message code="device.name" /></span>
 					<form:select path="queryDevice2" id="queryDevice2" style="width: 70%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${device2List}" />
@@ -114,7 +115,7 @@
 		      	  	</div>
 		      	  </div>
 		      	  <div class="form-group row">
-		      	  	<label for="group_1" class="col-sm-2 col-form-label">群組</label>
+		      	  	<label for="group_1" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="queryGroup1" id="queryGroup1_mobile" class="form-control form-control-sm" onchange="changeDeviceMenu('queryDevice1_mobile', this.value)">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -123,7 +124,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	  	<label for="device_1" class="col-sm-2 col-form-label">設備</label>
+		    	  	<label for="device_1" class="col-sm-2 col-form-label"><spring:message code="device.name" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryDevice1" id="queryDevice1_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />
@@ -147,7 +148,7 @@
 		      	  	</div>
 		      	  </div>
 		      	  <div class="form-group row">
-		      	  	<label for="group_2" class="col-sm-2 col-form-label">群組</label>
+		      	  	<label for="group_2" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="queryGroup2" id="queryGroup2_mobile" class="form-control form-control-sm" onchange="changeDeviceMenu('queryDevice2_mobile', this.value)">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -156,7 +157,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	  	<label for="device_2" class="col-sm-2 col-form-label">設備</label>
+		    	  	<label for="device_2" class="col-sm-2 col-form-label"><spring:message code="device.name" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryDevice2" id="queryDevice2_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />
@@ -207,8 +208,8 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
 		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">群組名稱</th>
-		      <th scope="col" nowrap="nowrap">設備名稱</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap">系統版本</th>
 		      <th scope="col" nowrap="nowrap">組態類型</th>
 		      <th scope="col" nowrap="nowrap">版本號</th>
@@ -237,15 +238,15 @@
       <div class="modal-body">
         <div class="form-group row">
         	<div class="col-1"></div>
-        	<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號:</label>
+        	<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號 :</label>
     		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionLeft" readonly>
-    		<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號:</label>
+    		<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號 :</label>
     		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionRight" readonly>
         </div>
         <div class="form-group row">
-        	<div class="form-control form-control-sm col-1 compare-line" id="compareModal_contentLineNum"></div>
-        	<div class="form-control form-control-sm col-5 compare-content nowrap" id="compareModal_contentLeft"></div>
-        	<div class="form-control form-control-sm col-5 compare-content nowrap" id="compareModal_contentRight"></div>
+        	<div class="form-control form-control-sm col-1 compare-line script" id="compareModal_contentLineNum"></div>
+        	<div class="form-control form-control-sm col-5 compare-content nowrap script" id="compareModal_contentLeft"></div>
+        	<div class="form-control form-control-sm col-5 compare-content nowrap script" id="compareModal_contentRight"></div>
         	<div class="col-1">
         		<span data-feather="chevrons-up" class="feather-compare" id="jumpToTop"></span>
         		<span data-feather="chevron-up" class="feather-compare" id="jumpToPre"></span>

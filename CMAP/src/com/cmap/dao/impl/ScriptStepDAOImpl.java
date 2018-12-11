@@ -2,6 +2,7 @@ package com.cmap.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +27,7 @@ public class ScriptStepDAOImpl extends BaseDaoHibernate {
 			Object outputFlag = null;
 			Object scriptContent = null;
 			Object commandRemark = null;
+			Object commandDescription = null;
 
 			try {
 				scriptInfo = (ScriptInfo)PropertyUtils.getProperty(modelObj, "scriptInfo");
@@ -35,20 +37,22 @@ public class ScriptStepDAOImpl extends BaseDaoHibernate {
 				outputFlag = PropertyUtils.getProperty(modelObj, "outputFlag");
 				scriptContent = PropertyUtils.getProperty(modelObj, "command");
 				commandRemark = PropertyUtils.getProperty(modelObj, "commandRemark");
+				commandDescription = PropertyUtils.getProperty(modelObj, "commandDescription");
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 			daovo.setScriptTypeId(scriptInfo != null ? scriptInfo.getScriptType().getScriptTypeId() : null);
-			daovo.setScriptStepOrder(scriptStepOrder != null ? String.valueOf(scriptStepOrder) : null);
-			daovo.setHeadCuttingLines(headCuttingLines != null ? String.valueOf(headCuttingLines) : null);
-			daovo.setTailCuttingLines(tailCuttingLines != null ? String.valueOf(tailCuttingLines) : null);
-			daovo.setOutput(outputFlag != null ? String.valueOf(outputFlag) : null);
-			daovo.setScriptContent(scriptContent != null ? String.valueOf(scriptContent) : null);
+			daovo.setScriptStepOrder(Objects.toString(scriptStepOrder, null));
+			daovo.setHeadCuttingLines(Objects.toString(headCuttingLines, null));
+			daovo.setTailCuttingLines(Objects.toString(tailCuttingLines, null));
+			daovo.setOutput(Objects.toString(outputFlag, null));
+			daovo.setScriptContent(Objects.toString(scriptContent, null));
 			daovo.setScriptName(scriptInfo != null ? scriptInfo.getScriptName() : null);
-			daovo.setRemark(commandRemark != null ? String.valueOf(commandRemark) : null);
-			daovo.setScriptDescription(scriptInfo != null ? scriptInfo.getScriptDescription() : null);
+			daovo.setRemark(Objects.toString(commandRemark, null));
+			daovo.setScriptDescription(Objects.toString(commandDescription, null));
+			daovo.setScriptCode(scriptInfo != null ? scriptInfo.getScriptCode() : null);
 
 			voList.add(daovo);
 		}

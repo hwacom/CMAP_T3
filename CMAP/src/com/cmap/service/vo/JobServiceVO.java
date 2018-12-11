@@ -25,6 +25,7 @@ public class JobServiceVO extends CommonServiceVO {
 	private String inputFtpAccount;
 	private String inputFtpPassword;
 	private List<String> inputSysCheckSql = new ArrayList<String>();
+	private String inputDataPollerSettingId;
 
 	private List<JobServiceVO> jobKeySet = new ArrayList<JobServiceVO>();
 	private String jobKeyName;
@@ -389,16 +390,26 @@ public class JobServiceVO extends CommonServiceVO {
 	public void setSysCheckSqlStr(String sysCheckSqlStr) {
 		this.sysCheckSqlStr = sysCheckSqlStr;
 	}
+	@Override
 	public String getJobExcuteResultRecords() {
 		return jobExcuteResultRecords;
 	}
+	@Override
 	public void setJobExcuteResultRecords(String jobExcuteResultRecords) {
 		this.jobExcuteResultRecords = jobExcuteResultRecords;
 	}
+	@Override
 	public String getJobExcuteRemark() {
 		return jobExcuteRemark;
 	}
+	@Override
 	public void setJobExcuteRemark(String jobExcuteRemark) {
 		this.jobExcuteRemark = jobExcuteRemark;
+	}
+	public String getInputDataPollerSettingId() {
+		return inputDataPollerSettingId;
+	}
+	public void setInputDataPollerSettingId(String inputDataPollerSettingId) {
+		this.inputDataPollerSettingId = inputDataPollerSettingId;
 	}
 }

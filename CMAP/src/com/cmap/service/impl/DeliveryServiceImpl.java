@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +22,14 @@ import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.ScriptInfoDAO;
+import com.cmap.dao.vo.ProvisionLogDAOVO;
 import com.cmap.dao.vo.ScriptInfoDAOVO;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.DeviceDetailInfo;
+import com.cmap.model.DeviceDetailMapping;
 import com.cmap.model.DeviceList;
 import com.cmap.model.ProvisionAccessLog;
+import com.cmap.model.ProvisionLogStep;
 import com.cmap.model.ScriptInfo;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.DeliveryService;
@@ -75,6 +80,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		try {
 			ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
 			BeanUtils.copyProperties(dsVO, siDAOVO);
+			siDAOVO.setQuerySystemDefault(Constants.DATA_N);
 
 			retVal = scriptInfoDAO.countScriptInfo(siDAOVO);
 
@@ -91,6 +97,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		try {
 			ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
 			BeanUtils.copyProperties(dsVO, siDAOVO);
+			siDAOVO.setQuerySystemDefault(Constants.DATA_N);
 
 			List<ScriptInfo> entities = scriptInfoDAO.findScriptInfo(siDAOVO, startRow, pageLength);
 
@@ -140,6 +147,73 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		}
 		return retVO;
 	}
+
+	@Override
+	public DeliveryServiceVO getVariableSetting(List<String> groups, List<String> devices, List<String> variables) throws ServiceLayerException {
+		DeliveryServiceVO retVO = new DeliveryServiceVO();
+
+		try {
+			if ((groups == null || (groups != null && groups.isEmpty()))
+					|| (devices == null || (devices != null && devices.isEmpty()))
+					|| (variables == null || (variables != null && variables.isEmpty()))) {
+				throw new ServiceLayerException("查詢客製變數選單發生錯誤<br>(錯誤描述:傳入參數錯誤)");
+
+			} else if (groups.size() != devices.size()) {
+				throw new ServiceLayerException("查詢客製變數選單發生錯誤<br>(錯誤描述:傳入參數錯誤，群組與設備數量不一致)");
+			}
+
+			/*
+			 * deviceVarMap 資料結構:
+			 * 第一層Key: 群組+設備ID
+			 * 第二層Key: 變數名稱
+			 * 第二層Value: 該設備變數值選單
+			 */
+			Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<String, Map<String, List<DeviceDetailInfo>>>();
+			/*
+			 * 查詢此腳本的變數是否有系統客製函式
+			 */
+			for (String key : variables) {
+				List<DeviceDetailMapping> mapping = deviceListDAO.findDeviceDetailMapping(key);
+
+				if (mapping == null || (mapping != null && mapping.isEmpty())) {
+					continue;
+
+				} else {
+					Map<String, List<DeviceDetailInfo>> varMap = null;
+
+					for (int i=0; i<devices.size(); i++) {
+						final String groupId = groups.get(i);
+						final String deviceId = devices.get(i);
+						final String mapKey = groupId + Env.COMM_SEPARATE_SYMBOL + deviceId;
+
+						List<DeviceDetailInfo> infos = deviceListDAO.findDeviceDetailInfo(null, groupId, deviceId, key);
+
+						if (deviceVarMap.containsKey(mapKey)) {
+							varMap = deviceVarMap.get(mapKey);
+
+						} else {
+							varMap = new HashMap<String, List<DeviceDetailInfo>>();
+						}
+
+						varMap.put(key, infos);
+						deviceVarMap.put(mapKey, varMap);
+					}
+				}
+			}
+
+			retVO.setDeviceVarMap(deviceVarMap);
+
+		} catch (ServiceLayerException sle) {
+			log.error(sle.toString(), sle);
+			throw sle;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("查詢客製變數選單發生錯誤，請改以手動輸入或重新操作");
+		}
+		return retVO;
+	}
+
 
 	private boolean checkDeliveryParameter(DeliveryParameterVO pVO) {
 		try {
@@ -414,5 +488,92 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		}
 
 		return uuid;
+	}
+
+	@Override
+	public long countProvisionLog(DeliveryServiceVO dsVO) throws ServiceLayerException {
+		long retCount = 0;
+		try {
+			ProvisionLogDAOVO daovo = new ProvisionLogDAOVO();
+			BeanUtils.copyProperties(dsVO, daovo);
+			daovo.setQueryGroupId(dsVO.getQueryGroup());
+			daovo.setQueryDeviceId(dsVO.getQueryDevice());
+			daovo.setQueryBeginTimeStart(dsVO.getQueryTimeBegin());
+			daovo.setQueryBeginTimeEnd(dsVO.getQueryTimeEnd());
+
+			retCount = provisionLogDAO.countProvisionLogByDAOVO(daovo);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException(""); // TODO
+		}
+		return retCount;
+	}
+
+	@Override
+	public List<DeliveryServiceVO> findProvisionLog(DeliveryServiceVO dsVO, Integer startRow, Integer pageLength) throws ServiceLayerException {
+		List<DeliveryServiceVO> retList = new ArrayList<>();
+		try {
+			ProvisionLogDAOVO daovo = new ProvisionLogDAOVO();
+			BeanUtils.copyProperties(dsVO, daovo);
+			daovo.setQueryGroupId(dsVO.getQueryGroup());
+			daovo.setQueryDeviceId(dsVO.getQueryDevice());
+			daovo.setQueryBeginTimeStart(dsVO.getQueryTimeBegin());
+			daovo.setQueryBeginTimeEnd(dsVO.getQueryTimeEnd());
+
+			List<Object[]> entities = provisionLogDAO.findProvisionLogByDAOVO(daovo);
+
+			if (entities != null && !entities.isEmpty()) {
+				DeliveryServiceVO vo;
+
+				for (Object[] entity : entities) {
+					final String logStepId = Objects.toString(entity[2]);
+					final Timestamp beginTime = (entity[4] != null) ? (Timestamp)entity[4] : null;
+					final String userName = Objects.toString(entity[5], "(未知)");
+					final String groupName = Objects.toString(entity[6], "(未知)");
+					final String deviceName = Objects.toString(entity[7], "(未知)");
+					final String systemVersion = Objects.toString(entity[8], "(未知)");
+					final String scriptName = Objects.toString(entity[9], "(未知)");
+					final String reason = Objects.toString(entity[10], "");
+					final String result = Objects.toString(entity[11], "(未知)");
+					final String provisionLog = Objects.toString(entity[12], "");
+
+					vo = new DeliveryServiceVO();
+					vo.setLogStepId(logStepId);
+					vo.setDeliveryBeginTime(beginTime != null ? Constants.FORMAT_YYYYMMDD_HH24MI.format(beginTime) : "");
+					vo.setCreateBy(userName);
+					vo.setGroupName(groupName);
+					vo.setDeviceName(deviceName);
+					vo.setSystemVersion(systemVersion);
+					vo.setScriptName(scriptName);
+					vo.setDeliveryReason(reason);
+					vo.setDeliveryResult(result);
+					vo.setProvisionLog(provisionLog);
+
+					retList.add(vo);
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException(""); // TODO
+		}
+		return retList;
+	}
+
+	@Override
+	public DeliveryServiceVO getProvisionLogById(String logStepId) throws ServiceLayerException {
+		DeliveryServiceVO retVO = new DeliveryServiceVO();
+		try {
+			ProvisionLogStep step = provisionLogDAO.findProvisionLogStepById(logStepId);
+
+			if (step != null) {
+				retVO.setProvisionLog(step.getProcessLog());
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return retVO;
 	}
 }

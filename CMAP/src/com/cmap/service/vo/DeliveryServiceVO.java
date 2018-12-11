@@ -1,5 +1,11 @@
 package com.cmap.service.vo;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.cmap.model.DeviceDetailInfo;
+
 public class DeliveryServiceVO extends CommonServiceVO {
 
 	private String queryGroup;
@@ -8,6 +14,9 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String queryScriptTypeId;
 	private String queryScriptTypeCode;
 	private String queryScriptInfoId;
+	private String queryTimeBegin;
+	private String queryTimeEnd;
+	private String queryLogStepId;
 
 	//by [設備] 角度查詢結果
 	private String deviceListId;
@@ -35,6 +44,11 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String checkKeyWord;
 	private String scriptDescription;
 
+	private String deliveryBeginTime;
+	private String deliveryReason;
+	private String deliveryResult;
+	private String provisionLog;
+
 	private String groupDeviceMenuJsonStr;
 
 	private String createTimeStr;
@@ -48,6 +62,10 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private Integer deliveryDeviceCount;
 	private String deliveryVarKey;
 	private String deliveryVarValue;
+
+	private String logStepId;
+
+	private Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<String, Map<String, List<DeviceDetailInfo>>>();
 
 	public String getQueryGroup() {
 		return queryGroup;
@@ -282,5 +300,59 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	}
 	public void setDeliveryStep(Integer deliveryStep) {
 		this.deliveryStep = deliveryStep;
+	}
+	public Map<String, Map<String, List<DeviceDetailInfo>>> getDeviceVarMap() {
+		return deviceVarMap;
+	}
+	public void setDeviceVarMap(Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap) {
+		this.deviceVarMap = deviceVarMap;
+	}
+	public String getQueryTimeBegin() {
+		return queryTimeBegin;
+	}
+	public void setQueryTimeBegin(String queryTimeBegin) {
+		this.queryTimeBegin = queryTimeBegin;
+	}
+	public String getQueryTimeEnd() {
+		return queryTimeEnd;
+	}
+	public void setQueryTimeEnd(String queryTimeEnd) {
+		this.queryTimeEnd = queryTimeEnd;
+	}
+	public String getDeliveryBeginTime() {
+		return deliveryBeginTime;
+	}
+	public void setDeliveryBeginTime(String deliveryBeginTime) {
+		this.deliveryBeginTime = deliveryBeginTime;
+	}
+	public String getDeliveryReason() {
+		return deliveryReason;
+	}
+	public void setDeliveryReason(String deliveryReason) {
+		this.deliveryReason = deliveryReason;
+	}
+	public String getDeliveryResult() {
+		return deliveryResult;
+	}
+	public void setDeliveryResult(String deliveryResult) {
+		this.deliveryResult = deliveryResult;
+	}
+	public String getProvisionLog() {
+		return provisionLog;
+	}
+	public void setProvisionLog(String provisionLog) {
+		this.provisionLog = provisionLog;
+	}
+	public String getLogStepId() {
+		return logStepId;
+	}
+	public void setLogStepId(String logStepId) {
+		this.logStepId = logStepId;
+	}
+	public String getQueryLogStepId() {
+		return queryLogStepId;
+	}
+	public void setQueryLogStepId(String queryLogStepId) {
+		this.queryLogStepId = queryLogStepId;
 	}
 }

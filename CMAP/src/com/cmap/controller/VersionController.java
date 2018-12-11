@@ -24,6 +24,7 @@ import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.VersionService;
 import com.cmap.service.vo.VersionServiceVO;
@@ -35,7 +36,8 @@ public class VersionController extends BaseController {
 	@Log
 	private static Logger log;
 
-	private static final String[] UI_TABLE_COLUMNS = new String[] {"","","group_Name","device_Name","system_Version","config_Version","create_Time"};
+	private static final String[] UI_MANAGE_TABLE_COLUMNS = new String[] {"","","group_Name","device_Name","system_Version","config_Type", "config_Version","create_Time"};
+	private static final String[] UI_BACKUP_TABLE_COLUMNS = new String[] {"","","dl.group_Name","dl.device_Name","dl.system_Version","cvi.config_Version","cvi.config_Type","cvi.create_Time"};
 
 	@Autowired
 	private VersionService versionService;
@@ -110,6 +112,8 @@ public class VersionController extends BaseController {
 	@RequestMapping(value = "/view", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse viewConfig(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
+
+		final String commonErrorMsg = "預覽內容發生錯誤，請重新操作";
 		try {
 			List<JsonNode> vIdList = jsonData.findValues("value");
 
@@ -138,20 +142,22 @@ public class VersionController extends BaseController {
 					return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);
 
 				} else {
-					return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+					return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, commonErrorMsg);
 				}
 			} else {
-				return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "資料取得異常");
+				return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, commonErrorMsg);
 			}
+
+		} catch (ServiceLayerException sle) {
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, commonErrorMsg);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, commonErrorMsg);
 
 		} finally {
 			initMenu(model, request);
 		}
-
-		return null;
 	}
 
 	/**
@@ -265,7 +271,6 @@ public class VersionController extends BaseController {
 	 * @param orderDirection
 	 * @return
 	 */
-	//@RequestMapping(value = "getVersionInfoData.json", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	@RequestMapping(value = "getVersionInfoData.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse findVersionInfoData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
@@ -307,7 +312,7 @@ public class VersionController extends BaseController {
 			vsVO.setStartNum(startNum);
 			vsVO.setPageLength(pageLength);
 			vsVO.setSearchValue(searchValue);
-			vsVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
+			vsVO.setOrderColumn(UI_MANAGE_TABLE_COLUMNS[orderColIdx]);
 			vsVO.setOrderDirection(orderDirection);
 
 			/*
@@ -329,8 +334,9 @@ public class VersionController extends BaseController {
 				total = vsVO.getAllDeviceList().size();
 			}
 
+		} catch (ServiceLayerException sle) {
 		} catch (Exception e) {
-
+			log.error(e.toString(), e);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -359,7 +365,7 @@ public class VersionController extends BaseController {
 			vsVO.setStartNum(startNum);
 			vsVO.setPageLength(pageLength);
 			vsVO.setSearchValue(searchValue);
-			vsVO.setOrderColumn(UI_TABLE_COLUMNS[orderColIdx]);
+			vsVO.setOrderColumn(UI_BACKUP_TABLE_COLUMNS[orderColIdx]);
 			vsVO.setOrderDirection(orderDirection);
 
 			/*
@@ -377,8 +383,9 @@ public class VersionController extends BaseController {
 
 			total = vsVO.getAllDeviceList().size();
 
+		} catch (ServiceLayerException sle) {
 		} catch (Exception e) {
-
+			log.error(e.toString(), e);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -427,7 +434,7 @@ public class VersionController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 
-			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "備份失敗");
+			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "備份失敗，請重新操作");
 
 		} finally {
 			initMenu(model, request);

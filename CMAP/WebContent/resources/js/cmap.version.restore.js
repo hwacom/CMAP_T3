@@ -4,6 +4,8 @@
 var resutTable;
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_restore");
+	
 	changeDeviceMenu("queryDevice1", $("#queryGroup1").val());
 	
 	//查詢按鈕(Web)點擊事件

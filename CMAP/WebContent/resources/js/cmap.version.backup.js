@@ -4,6 +4,8 @@
 const remarkShowLength = 20;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_backup");
+	
 	changeDeviceMenu("queryDevice", $("#queryGroup").val());
     
     //備份按鈕點擊事件
@@ -63,6 +65,9 @@ function doBackup() {
 					$("#backupDialogModal").modal('hide');
 					
 				}, 500);
+				
+			} else {
+				alert(resp.message);
 			}
 		},
 		error : function(xhr, ajaxOptions, thrownError) {

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 		List<ProvisionServiceVO> retList = new ArrayList<ProvisionServiceVO>();
 
 		try {
+			/*
 			List<ProvisionLogDetail> entities = provisionLogDAO.findProvisionLogByDAOVO(null);
 
 			if (entities != null && !entities.isEmpty()) {
@@ -62,6 +64,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 					retList.add(retPsVO);
 				}
 			}
+			*/
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -143,6 +146,10 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 							stepEntity.setEndTime(new Timestamp(stepVO.getEndTime().getTime()));
 							stepEntity.setCreateBy(userName);
 							stepEntity.setCreateTime(new Timestamp((new Date()).getTime()));
+
+							if (StringUtils.isBlank(stepEntity.getScriptCode())) {
+								stepEntity.setScriptCode("(EMPTY)");
+							}
 
 							stepEntities.add(stepEntity);
 

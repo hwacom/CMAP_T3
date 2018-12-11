@@ -31,6 +31,9 @@ public class ScriptInfo {
 	@Column(name = "script_info_id", unique = true)
 	private String scriptInfoId;
 
+	@Column(name = "system_default", nullable = false)
+	private String systemDefault = "N";
+
 	@Column(name = "script_code", nullable = false)
 	private String scriptCode;
 
@@ -66,7 +69,7 @@ public class ScriptInfo {
 	private String scriptDescription;
 
 	@Column(name = "delete_flag", nullable = false)
-	private String deleteFlag;
+	private String deleteFlag = "N";
 
 	@Column(name = "delete_time", nullable = true)
 	private Timestamp deleteTime;
@@ -96,14 +99,15 @@ public class ScriptInfo {
 		super();
 	}
 
-	public ScriptInfo(String scriptInfoId, String scriptCode, String scriptName, ScriptType scriptType,
-			String systemVersion, String actionScript, String actionScriptVariable, String actionScriptRemark,
-			String checkScript, String checkScriptRemark, String checkKeyword, String scriptDescription,
-			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy, List<ScriptStepAction> scriptStepActions,
+	public ScriptInfo(String scriptInfoId, String systemDefault, String scriptCode, String scriptName,
+			ScriptType scriptType, String systemVersion, String actionScript, String actionScriptVariable,
+			String actionScriptRemark, String checkScript, String checkScriptRemark, String checkKeyword,
+			String scriptDescription, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
+			String createBy, Timestamp updateTime, String updateBy, List<ScriptStepAction> scriptStepActions,
 			List<ScriptStepCheck> scriptStepChecks) {
 		super();
 		this.scriptInfoId = scriptInfoId;
+		this.systemDefault = systemDefault;
 		this.scriptCode = scriptCode;
 		this.scriptName = scriptName;
 		this.scriptType = scriptType;
@@ -132,6 +136,14 @@ public class ScriptInfo {
 
 	public void setScriptInfoId(String scriptInfoId) {
 		this.scriptInfoId = scriptInfoId;
+	}
+
+	public String getSystemDefault() {
+		return systemDefault;
+	}
+
+	public void setSystemDefault(String systemDefault) {
+		this.systemDefault = systemDefault;
 	}
 
 	public String getScriptCode() {

@@ -25,6 +25,7 @@ import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.controller.BaseController;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.JobService;
 import com.cmap.service.vo.JobServiceVO;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,6 +42,10 @@ public class AdminJobController extends BaseController {
 	@Autowired
 	JobService jobService;
 
+	private void init(Model model, HttpServletRequest request) {
+		model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
+	}
+
 	@RequestMapping(value = "main", method = RequestMethod.GET)
 	public String adminJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
@@ -53,7 +58,9 @@ public class AdminJobController extends BaseController {
 		} finally {
 			model.addAttribute("inputSchedType", getMenuItem(Env.MENU_CODE_OF_SCHED_TYPE, true));
 			model.addAttribute("inputConfigType", getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true));
-			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MIS_FIRE_POLICY, true));
+			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MISS_FIRE_POLICY, true));
+
+			init(model, request);
 		}
 
 		return "admin/admin_job";
@@ -81,6 +88,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 	/*
@@ -194,6 +204,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -209,6 +222,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -224,6 +240,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -239,6 +258,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -254,6 +276,9 @@ public class AdminJobController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+			init(model, request);
 		}
 	}
 
@@ -293,6 +318,9 @@ public class AdminJobController extends BaseController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+
+		} finally {
+			init(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -332,6 +360,8 @@ public class AdminJobController extends BaseController {
 
 		} catch (Exception e) {
 
+		} finally {
+			init(model, request);
 		}
 
 		return null;

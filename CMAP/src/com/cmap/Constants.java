@@ -26,6 +26,9 @@ public class Constants {
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
 
+	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS_NOSYMBOL = new SimpleDateFormat("yyyyMMddHHmmss");
+	public static final SimpleDateFormat FORMAT_YYYY_MM_DD_NOSYMBOL = new SimpleDateFormat("yyyyMMdd");
+
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MI = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
@@ -41,6 +44,7 @@ public class Constants {
 	public static final String QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY = "sysCheck4Query";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE = "cleanUpFtpFile";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA = "cleanUpDbData";
+	public static final String QUARTZ_SCHED_TYPE_DATA_POLLER = "dataPoller";
 
 	public static final String QUARTZ_PARA_JSON_STR = "paraJsonStr";
 	public static final String QUARTZ_PARA_DEVICE_LIST_ID = "deviceListIds";
@@ -54,6 +58,10 @@ public class Constants {
 	public static final String QUARTZ_PARA_FTP_ACCOUNT = "ftpAccount";
 	public static final String QUARTZ_PARA_FTP_PASSWORD = "ftpPassword";
 	public static final String QUARTZ_PARA_SYS_CHECK_SQLS = "sysCheckSqls";
+	public static final String QUARTZ_PARA_DATA_POLLER_SETTING_ID = "dataPollerSettingId";
+
+	public static final String DATA_POLLER_FILE_BY_FTP = "FTP";
+	public static final String DATA_POLLER_FILE_BY_LOCAL_DIR = "LOCAL_DIR";
 
 	public static final String JSON_FIELD_SETTING_IDS = "settingIds";
 	public static final String JSON_FIELD_MODIFY_SETTING_NAME = "modifySettingName";
@@ -90,9 +98,28 @@ public class Constants {
 	public static final String DEFAULT_FLAG_Y = "Y";
 	public static final String DEFAULT_FLAG_N = "N";
 
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP = "STEP.TFTP+DEVICE.SSH+FILE_SERVER.TFTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_TELNET_TFTP = "STEP.TFTP+DEVICE.TELNET+FILE_SERVER.TFTP";
+
+	public static final String BACKUP_FILE_BACKUP_MODE_NULL_FTP_FTP = "STEP.NULL+DOWNLOAD.FTP+UPLOAD.FTP";
+	public static final String BACKUP_FILE_BACKUP_MODE_STEP_TFTP_FTP = "STEP.STEP+DOWNLOAD.TFTP+UPLOAD.FTP";
+
 	public static final String FTP_FILE_SEPARATOR = "/";
 	public static final String HTML_BREAK_LINE_SYMBOL = "<br>";
 	public static final String HTML_SEPARATION_LINE_SYMBOL = "<br>";
+
+	public static final String TIME_AM_CHINESE_WORD = "上午";
+	public static final String TIME_PM_CHINESE_WORD = "下午";
+	public static final String TIME_AM_ENGLISH_WORD = "AM";
+	public static final String TIME_PM_ENGLISH_WORD = "PM";
+
+	public static final String RECORD_BY_DAY_REFER_FIELD = "REFER_FIELD";
+
+	public static final String FIELD_TYPE_OF_VARCHAR = "VARCHAR";
+	public static final String FIELD_TYPE_OF_TIMESTAMP = "TIMESTAMP";
+
+	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
 
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
 

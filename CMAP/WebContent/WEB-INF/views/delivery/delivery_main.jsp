@@ -34,7 +34,7 @@
 	    	    <div class="col-lg-3 group-field-other">
 	    	    	<span class="font-weight-bold" style="width: 30%">查詢角度</span>
 	    	    	<select id="searchBySelect" style="width: 50%" onchange="changeSearchBy()">
-	    	    		<option value="device" selected="selected">設備</option>
+	    	    		<option value="device" selected="selected"><spring:message code="device.name" /></option>
 	    	    		<option value="script">腳本</option>
 	    	    	</select>
 	    	    </div>
@@ -45,14 +45,14 @@
 	    	    	</select>
 				</div>
 				<div id="searchBy_device_1" class="col-lg-3 group-field-left" style="display: inline;">
-					<span class="font-weight-bold" style="width: 20%">群組</span>
+					<span class="font-weight-bold" style="width: 20%"><spring:message code="group.name" /></span>
 					<form:select path="group" id="group" style="width: 75%" onchange="changeDeviceMenu(this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${groupList}" />
                     </form:select>
 				</div>
 				<div id="searchBy_device_2" class="col-lg-3 group-field-right" style="display: inline;">
-					<span class="font-weight-bold" style="width: 20%">設備</span>
+					<span class="font-weight-bold" style="width: 20%"><spring:message code="device.name" /></span>
 	    	    	<form:select path="device" id="device" style="width: 75%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${deviceList}" />
@@ -149,14 +149,13 @@
       </div>
       <div class="modal-body">
      	<div class="form-group row">
-        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱</label>
+        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱 :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewScriptModal_scriptContent" class="col-md-12 col-sm-12 col-form-label">腳本內容</label>
-        	<div class="form-control form-control-sm col-md-12 col-sm-12 font" id="viewScriptModal_scriptContent" style="height: 300px;overflow: auto;"></div>
+        	<label for="viewScriptModal_scriptContent" class="col-md-2 col-sm-12 col-form-label">腳本內容 :</label>
+        	<div class="form-control form-control-sm col-md-10 col-sm-12 font script" id="viewScriptModal_scriptContent"></div>
         </div>
-        
       </div>
       <div class="modal-footer">
       </div>
@@ -178,7 +177,7 @@
       <div class="modal-body">
       	<div class="row center">
       		<div class="step-img col-3 step step-current">
-      			<span>Step 1.</span><br><span>選擇設備</span>
+      			<span>Step 1.</span><br><span>選擇<spring:message code="device.name" /></span>
       		</div>
       		<div class="col-1 step-arrow">
       			<i class="fas fa-angle-double-right step-arrow-img"></i>
@@ -203,7 +202,7 @@
       	<div id="stepModal_scroll">
 	      	<div id="step1_section" style="display: inline;">
 	      	  	<div class="form-group row">
-		        	<label for="stepModal_chooseDevice" class="col-md-4 col-sm-6 col-form-label bold">請選擇設備(按住Ctrl可複選) :</label>
+		        	<label for="stepModal_chooseDevice" class="col-md-4 col-sm-6 col-form-label bold">請選擇<spring:message code="device.name" />(按住Ctrl可複選) :</label>
 		        	<label for="stepModal_searchDevice" class="col-md-1 col-sm-1 col-form-label bold right">搜尋</label>
 		    		<input type="text" class="form-control form-control-sm col-md-5 col-sm-" id="stepModal_searchDevice">
 		    		<img src="${pageContext.request.contextPath}/resources/images/loading.gif" id="stepModal_searchWaiting" alt="loading...">
@@ -235,8 +234,8 @@
 		      	  <thead class="center bold">
 		      	  	<tr>
 			      	  	<th rowspan="3" width="5%">序</th>
-			      	  	<th rowspan="3" width="15%">群組名稱</th>
-			      	  	<th rowspan="3" width="20%">設備名稱</th>
+			      	  	<th rowspan="3" width="15%"><spring:message code="group.name" /></th>
+			      	  	<th rowspan="3" width="20%"><spring:message code="device.name" /></th>
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>
 		      	  	</tr>
 		      	  	<tr>

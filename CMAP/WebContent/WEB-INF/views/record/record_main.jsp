@@ -13,14 +13,14 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row">
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<span class="font-weight-bold" style="width: 20%">群組</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="group.name" /></span>
 	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 75%" onchange="changeDeviceMenu('queryDevice', this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${groupList}" />
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-3 group-field-other">
-					<span class="font-weight-bold" style="width: 20%">設備</span>
+					<span class="font-weight-bold" style="width: 20%"><spring:message code="device.name" /></span>
 	    	    	<form:select path="queryDevice" id="queryDevice" style="width: 75%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${deviceList}" />
@@ -55,7 +55,7 @@
 		  	<div class="col-12">
 		  		<form>
 		      	  <div class="form-group row">
-		      	  	<label for="group_1" class="col-sm-2 col-form-label">群組</label>
+		      	  	<label for="group_1" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="queryGroup" id="queryGroup_mobile" class="form-control form-control-sm" onchange="changeDeviceMenu('queryDevice_mobile', this.value)">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -64,7 +64,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	  	<label for="device_1" class="col-sm-2 col-form-label">設備</label>
+		    	  	<label for="device_1" class="col-sm-2 col-form-label"><spring:message code="device.name" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryDevice" id="queryDevice_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />

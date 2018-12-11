@@ -6,6 +6,8 @@ var diffPos = [];
 const remarkShowLength = 20;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_manage");
+	
 	//初始化設備選單
 	changeDeviceMenu("queryDevice1", $("#queryGroup1").val());
     changeDeviceMenu("queryDevice2", $("#queryGroup2").val());
@@ -61,6 +63,8 @@ $(document).ready(function() {
         
         currentDiffPos = -1;
         
+        $('.diffPos').removeClass("compare-current-pos");
+        
         changeCompareDesc(false);
     });
     
@@ -76,8 +80,9 @@ $(document).ready(function() {
             scrollTop: $('.diffPos')[currentDiffPos].offsetTop
         }, '500');
         
-        $(".diffPos").css("background-color", ""); 
-        $('.diffPos')[currentDiffPos].style.background = 'yellow';
+        
+        $('.diffPos').removeClass("compare-current-pos");
+        $('.diffPos').eq(currentDiffPos).addClass("compare-current-pos");
         
         changeCompareDesc(true);
     });
@@ -94,8 +99,8 @@ $(document).ready(function() {
             scrollTop: $('.diffPos')[currentDiffPos].offsetTop
         }, '500');
         
-        $(".diffPos").css("background-color", ""); 
-        $('.diffPos')[currentDiffPos].style.background = 'yellow';
+        $('.diffPos').removeClass("compare-current-pos");
+        $('.diffPos').eq(currentDiffPos).addClass("compare-current-pos");
         
         changeCompareDesc(true);
     });
@@ -110,6 +115,8 @@ $(document).ready(function() {
         $('#compareModal_contentLineNum').animate({
             scrollTop: scrollHeight - offsetHeight
         }, '500');
+        
+        $('.diffPos').removeClass("compare-current-pos");
         
         changeCompareDesc(false);
     });

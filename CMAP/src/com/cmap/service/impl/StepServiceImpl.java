@@ -5,11 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,8 @@ import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.FileOperationException;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
+import com.cmap.model.DeviceDetailInfo;
+import com.cmap.model.DeviceDetailMapping;
 import com.cmap.model.DeviceList;
 import com.cmap.model.ScriptInfo;
 import com.cmap.security.SecurityUtil;
@@ -56,7 +61,7 @@ import com.cmap.utils.impl.TelnetUtils;
 
 @Service("stepService")
 @Transactional
-public class StepServiceImpl implements StepService {
+public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	@Log
 	private static Logger log;
 
@@ -114,30 +119,29 @@ public class StepServiceImpl implements StepService {
 
 		boolean retryRound = false;
 		while (round <= RETRY_TIMES) {
-			log.info("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
 			try {
 				Step[] steps = null;
 				ConnectionMode deviceMode = null;
 				ConnectionMode fileServerMode = null;
 
-				switch (Env.DEFAULT_BACKUP_SCRIPT_CODE) {
-				case "SYS_001":
-					steps = Env.BACKUP_BY_TELNET;
-					deviceMode = ConnectionMode.SSH;
-					fileServerMode = ConnectionMode.FTP;
-					break;
+				switch (Env.DEFAULT_DEVICE_CONFIG_BACKUP_MODE) {
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP:
+						steps = Env.BACKUP_BY_TELNET;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.FTP;
+						break;
 
-				case "SYS_002":
-					steps = Env.BACKUP_BY_TFTP;
-					deviceMode = ConnectionMode.SSH;
-					fileServerMode = ConnectionMode.TFTP;
-					break;
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP:
+						steps = Env.BACKUP_BY_TFTP;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.TFTP;
+						break;
 
-				case "SYS_004":
-					steps = Env.BACKUP_BY_TFTP;
-					deviceMode = ConnectionMode.TELNET;
-					fileServerMode = ConnectionMode.TFTP;
-					break;
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TFTP_TELNET_TFTP:
+						steps = Env.BACKUP_BY_TFTP;
+						deviceMode = ConnectionMode.TELNET;
+						fileServerMode = ConnectionMode.TFTP;
+						break;
 				}
 
 				List<ScriptDAOVO> scripts = null;
@@ -151,89 +155,191 @@ public class StepServiceImpl implements StepService {
 
 					switch (_step) {
 						case LOAD_DEFAULT_SCRIPT:
-							scripts = loadDefaultScript(deviceListId, scripts, ScriptType.BACKUP);
+							try {
+								scripts = loadDefaultScript(deviceListId, scripts, ScriptType.BACKUP);
 
-							/*
-							 * Provision_Log_Step
-							 */
-							final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
-							psStepVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
-							psStepVO.setRemark(scriptName);
+								/*
+								 * Provision_Log_Step
+								 */
+								final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
+								final String scriptCode = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptCode() : null;
 
-							retVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+								psStepVO.setScriptCode(scriptCode);
+								psStepVO.setRemark(scriptName);
 
-							break;
+								retVO.setScriptCode(scriptCode);
 
-						case FIND_DEVICE_CONNECT_INFO:
-							ciVO = findDeviceConfigInfo(ciVO, deviceListId);
-							ciVO.setTimes(String.valueOf(round));
+								break;
 
-							/*
-							 * Provision_Log_Device
-							 */
-							if (!retryRound) {
-								psDeviceVO = new ProvisionServiceVO();
-								psDeviceVO.setDeviceListId(deviceListId);
-								psDeviceVO.setOrderNum(1);
-								psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
-
-								retVO.setDeviceName(ciVO.getDeviceName());
-								retVO.setDeviceIp(ciVO.getDeviceIp());
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("讀取腳本資料時失敗 [ 錯誤代碼: LOAD_DEFAULT_SCRIPT ]");
 							}
 
-							break;
+						case FIND_DEVICE_CONNECT_INFO:
+							try {
+								ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+								ciVO.setTimes(String.valueOf(round));
+
+								/*
+								 * Provision_Log_Device
+								 */
+								if (!retryRound) {
+									psDeviceVO = new ProvisionServiceVO();
+									psDeviceVO.setDeviceListId(deviceListId);
+									psDeviceVO.setOrderNum(1);
+									psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
+
+									retVO.setDeviceName(ciVO.getDeviceName());
+									retVO.setDeviceIp(ciVO.getDeviceIp());
+								}
+
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
+							}
 
 						case FIND_DEVICE_LOGIN_INFO:
-							findDeviceLoginInfo(deviceListId);
-							break;
+							try {
+								findDeviceLoginInfo(deviceListId);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得設備登入帳密設定時失敗 [ 錯誤代碼: FIND_DEVICE_LOGIN_INFO ]");
+							}
 
 						case CONNECT_DEVICE:
-							connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
-							break;
+							try {
+								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("設備連線失敗 [ 錯誤代碼: CONNECT_DEVICE ]");
+							}
 
 						case LOGIN_DEVICE:
-							login2Device(connectUtils, ciVO);
-							break;
+							try {
+								login2Device(connectUtils, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("登入設備失敗 [ 錯誤代碼: LOGIN_DEVICE ]");
+							}
 
 						case SEND_COMMANDS:
-							outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
-							break;
+							try {
+								outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
+							}
 
 						case COMPARE_CONTENTS:
-							outputList = compareContents(ciVO, outputList, fileUtils, fileServerMode, retVO);
-							break;
+							try {
+								outputList = compareContents(ciVO, outputList, fileUtils, fileServerMode, retVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("組態檔內容比對過程失敗 [ 錯誤代碼: COMPARE_CONTENTS ]");
+							}
+
+						case ANALYZE_CONFIG_INFO:
+							try {
+								analyzeConfigInfo(ciVO, outputList, jobTrigger);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("分析取得設備明細內容時失敗 [ 錯誤代碼: ANALYZE_CONFIG_INFO] ");
+							}
 
 						case DEFINE_OUTPUT_FILE_NAME:
-							defineFileName(ciVO);
-							break;
+							try {
+								defineFileName(ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("定義組態檔輸出檔名時失敗 [ 錯誤代碼: DEFINE_OUTPUT_FILE_NAME ]");
+							}
 
 						case COMPOSE_OUTPUT_VO:
-							outputVOList = composeOutputVO(ciVO, outputList);
-							break;
+							try {
+								outputVOList = composeOutputVO(ciVO, outputList);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("建構組態檔輸出物件時失敗 [ 錯誤代碼: COMPOSE_OUTPUT_VO ]");
+							}
 
 						case CONNECT_FILE_SERVER_4_UPLOAD:
-							fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
-							break;
+							try {
+								fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("File Server 連線失敗 [ 錯誤代碼: CONNECT_FILE_SERVER_4_UPLOAD ]");
+							}
 
 						case LOGIN_FILE_SERVER_4_UPLOAD:
-							login2FileServer(fileUtils, ciVO);
-							break;
+							try {
+								login2FileServer(fileUtils, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("File Server 登入失敗 [ 錯誤代碼: LOGIN_FILE_SERVER_4_UPLOAD ]");
+							}
 
 						case UPLOAD_FILE_SERVER:
-							upload2FTP(fileUtils, outputVOList);
-							break;
+							try {
+								upload2FTP(fileUtils, outputVOList);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("File Server 檔案上傳失敗 [ 錯誤代碼: UPLOAD_FILE_SERVER ]");
+							}
 
 						case RECORD_DB_OF_CONFIG_VERSION_INFO:
-							record2DB4ConfigVersionInfo(outputVOList, jobTrigger);
-							break;
+							try {
+								record2DB4ConfigVersionInfo(outputVOList, jobTrigger);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("系統寫入組態備份紀錄時失敗 [ 錯誤代碼: RECORD_DB_OF_CONFIG_VERSION_INFO ]");
+							}
 
 						case CLOSE_DEVICE_CONNECTION:
-							closeDeviceConnection(connectUtils);
-							break;
+							try {
+								closeDeviceConnection(connectUtils);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("關閉與設備間連線時失敗 [ 錯誤代碼: CLOSE_DEVICE_CONNECTION ]");
+							}
 
 						case CLOSE_FILE_SERVER_CONNECTION:
-							closeFileServerConnection(fileUtils);
-							break;
+							try {
+								closeFileServerConnection(fileUtils);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("關閉與 File Server 間連線時失敗 [ 錯誤代碼: CLOSE_FILE_SERVER_CONNECTION ]");
+							}
 
 						default:
 							break;
@@ -243,9 +349,33 @@ public class StepServiceImpl implements StepService {
 				retVO.setSuccess(true);
 				break;
 
-			}	catch (Exception e) {
-				log.error(e.toString(), e);
+			} catch (ServiceLayerException sle) {
+				/*
+				 * Provision_Log_Retry
+				 */
+				psRetryVO = new ProvisionServiceVO();
+				psRetryVO.setResult(Result.ERROR.toString());
+				psRetryVO.setMessage(sle.toString());
+				psRetryVO.setRetryOrder(round);
+				psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
 
+				retVO.setSuccess(false);
+				retVO.setResult(Result.ERROR);
+				retVO.setMessage(sle.toString());
+				retVO.setCmdProcessLog(sle.getMessage());
+
+				retryRound = true;
+				round++;
+
+				if (connectUtils != null) {
+					try {
+						connectUtils.disconnect();
+					} catch (Exception e1) {
+						log.error(e1.toString(), e1);
+					}
+				}
+
+			} catch (Exception e) {
 				/*
 				 * Provision_Log_Retry
 				 */
@@ -258,6 +388,7 @@ public class StepServiceImpl implements StepService {
 				retVO.setSuccess(false);
 				retVO.setResult(Result.ERROR);
 				retVO.setMessage(e.toString());
+				retVO.setCmdProcessLog(e.getMessage());
 
 				retryRound = true;
 				round++;
@@ -266,7 +397,7 @@ public class StepServiceImpl implements StepService {
 					try {
 						connectUtils.disconnect();
 					} catch (Exception e1) {
-						log.error(e.toString(), e);
+						log.error(e1.toString(), e1);
 					}
 				}
 			}
@@ -308,33 +439,29 @@ public class StepServiceImpl implements StepService {
 
 		boolean success = true;
 		while (round <= RETRY_TIMES) {
-			log.info("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
 			try {
 				Step[] steps = null;
 				ConnectionMode downloadMode = null;
 				ConnectionMode uploadMode = null;
 
-				switch (Env.DEFAULT_BACKUP_SCRIPT_CODE) {
-				case "SYS_001":
-					steps = null;
-					downloadMode = ConnectionMode.FTP;
-					uploadMode = ConnectionMode.FTP;
-					break;
+				switch (Env.DEFAULT_BACKUP_FILE_BACKUP_MODE) {
+					case Constants.BACKUP_FILE_BACKUP_MODE_NULL_FTP_FTP:
+						steps = null;
+						downloadMode = ConnectionMode.FTP;
+						uploadMode = ConnectionMode.FTP;
+						break;
 
-				case "SYS_002":
-				case "SYS_004":
-					steps = Env.BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP;
-					downloadMode = ConnectionMode.TFTP;
-					uploadMode = ConnectionMode.FTP;
-					break;
+					case Constants.BACKUP_FILE_BACKUP_MODE_STEP_TFTP_FTP:
+						steps = Env.BACKUP_FILE_DOWNLOAD_FROM_TFTP_AND_UPLOAD_2_FTP;
+						downloadMode = ConnectionMode.TFTP;
+						uploadMode = ConnectionMode.FTP;
+						break;
 				}
 
 				List<ConfigInfoVO> outputVOList = null;		// Output VO
 				FileUtils fileUtils = null;					// 連線FileServer物件
 
 				for (Step _step : steps) {
-					log.info(_step.toString());
-
 					switch (_step) {
 						case CONNECT_FILE_SERVER_4_DOWNLOAD:
 							fileUtils = connect2FileServer(fileUtils, downloadMode, ciVO);
@@ -437,7 +564,7 @@ public class StepServiceImpl implements StepService {
 		String systemVersion = device != null ? device.getSystemVersion() : Env.MEANS_ALL_SYMBOL;
 		final String scriptCode = scriptListDefaultDAO.findDefaultScriptCodeBySystemVersion(type, systemVersion);
 
-		script = scriptListDefaultDAO.findScriptListByScriptCode(scriptCode);
+		script = scriptStepActionDAO.findScriptStepByScriptInfoIdOrScriptCode(null, scriptCode);
 
 		if (script == null || (script != null && script.isEmpty())) {
 			if (!StringUtils.equals(systemVersion, Env.MEANS_ALL_SYMBOL)) {
@@ -667,9 +794,7 @@ public class StepServiceImpl implements StepService {
 
 				VersionServiceVO compareRetVO = versionService.compareConfigFiles(vsVOs);
 
-				log.info("[compareContents] >> Env.TFTP_SERVER_AT_LOCAL: " + Env.TFTP_SERVER_AT_LOCAL);
 				if (StringUtils.isBlank(compareRetVO.getDiffPos())) {
-					log.info("[compareContents] >> outputList.remove");
 					/*
 					 * 版本內容比對相同:
 					 * (1)若[Env.TFTP_SERVER_AT_LOCAL=true]，刪除本機已上傳的檔案;若為false則不處理(另外設定系統排程定期清整temp資料夾內檔案)
@@ -678,7 +803,6 @@ public class StepServiceImpl implements StepService {
 					outputList.remove(output);
 
 					if (Env.TFTP_SERVER_AT_LOCAL) {
-						log.info("[compareContents] >> 刪除本機已上傳的檔案");
 						//TODO:刪除本機已上傳的檔案
 						deleteLocalFile(ciVO);
 					}
@@ -694,7 +818,6 @@ public class StepServiceImpl implements StepService {
 						final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
 						ciVO.setFileFullName(nowVersionTempFileName);
 
-						log.info("[compareContents] >> fileUtils.moveFiles");
 						fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
 					}
 				}
@@ -710,7 +833,6 @@ public class StepServiceImpl implements StepService {
 					final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
 					ciVO.setFileFullName(nowVersionTempFileName);
 
-					log.info("[compareContents] >> fileUtils.moveFiles");
 					fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
 				}
 			}
@@ -724,6 +846,163 @@ public class StepServiceImpl implements StepService {
 		}
 
 		return outputList;
+	}
+
+	private List<String> getConfigContent(ConfigInfoVO configInfoVO) {
+		List<String> retList = new ArrayList<String>();
+
+		try {
+			FileUtils fileUtils = null;
+			String _hostIp = null;
+			Integer _hostPort = null;
+			String _loginAccount = null;
+			String _loginPassword = null;
+
+			// Step1. 建立FileServer傳輸物件
+			switch (Env.FILE_TRANSFER_MODE) {
+			case FTP:
+				fileUtils = new FtpFileUtils();
+				_hostIp = Env.FTP_HOST_IP;
+				_hostPort = Env.FTP_HOST_PORT;
+				_loginAccount = Env.FTP_LOGIN_ACCOUNT;
+				_loginPassword = Env.FTP_LOGIN_PASSWORD;
+				break;
+
+			case TFTP:
+				fileUtils = new TFtpFileUtils();
+				_hostIp = Env.TFTP_HOST_IP;
+				_hostPort = Env.TFTP_HOST_PORT;
+				break;
+			}
+
+			// Step2. FTP連線
+			fileUtils.connect(_hostIp, _hostPort);
+
+			// Step3. FTP登入
+			fileUtils.login(_loginAccount, _loginPassword);
+
+			// Step3. 移動作業目錄至指定的裝置
+			fileUtils.changeDir(configInfoVO.getConfigFileDirPath(), false);
+
+			// Step4. 下載指定的Config落地檔
+			retList = fileUtils.downloadFiles(configInfoVO);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+
+		return retList;
+	}
+
+	/**
+	 * [Step] 解析組態檔內容取得特定資料寫入 Device_Detail_Info for 後續功能使用
+	 * @param configInfoVO
+	 * @param outputList
+	 */
+	private void analyzeConfigInfo(ConfigInfoVO configInfoVO, List<String> outputList, boolean jobTrigger) {
+
+		if (outputList == null || (outputList != null && outputList.isEmpty())) {
+			/*
+			 * outputList 為空表示版本無差異，此時不做內容解析
+			 */
+
+		} else {
+			try {
+				List<DeviceDetailMapping> entities = deviceListDAO.findDeviceDetailMapping(null);
+
+				if (entities != null && !entities.isEmpty()) {
+					final String userName = jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser().getUsername();
+
+					/*
+					 * 版本有差異情況下，先刪除前一次分析取出的內容
+					 */
+					deviceListDAO.deleteDeviceDetailInfoByInfoName(null, configInfoVO.getGroupId(), configInfoVO.getDeviceId(), null, currentTimestamp(), userName);
+
+					List<String> configContent = getConfigContent(configInfoVO);
+
+					List<DeviceDetailInfo> insertEntities = new ArrayList<>();
+					Map<String, Integer> orderMap = new HashMap<>();
+					Map<String, DeviceDetailInfo> analyzeInfoName = new HashMap<>();
+
+					for (final String configStr : configContent) {
+
+						DeviceDetailInfo ddi = null;
+						for (DeviceDetailMapping entity : entities) {
+							final String sourceStrng = entity.getSourceString();
+							final String splitBy = entity.getSplitBy();
+							final Integer getValueIndex = entity.getGetValueIndex();
+							final String targetInfoName = entity.getTargetInfoName();
+							final String targetInfoRemark = entity.getTargetInfoRemark();
+							final String deviceListId = configInfoVO.getDeviceListId();
+							final String groupId = configInfoVO.getGroupId();
+							final String deviceId = configInfoVO.getDeviceId();
+							final Timestamp updateTime = currentTimestamp();
+
+							if (StringUtils.startsWith(configStr, sourceStrng)) {
+								String[] tmpArray = StringUtils.split(configStr, splitBy);
+
+								String getTargetValue = null;
+								if (tmpArray.length > getValueIndex) {
+									getTargetValue = tmpArray[getValueIndex];
+								}
+
+								if (getTargetValue == null) {
+									continue;
+								}
+
+								Integer targetInfoOrder = 1;
+								if (orderMap.containsKey(targetInfoName)) {
+									targetInfoOrder = orderMap.get(targetInfoName);
+									targetInfoOrder++;
+								}
+
+								List<DeviceDetailInfo> info = deviceListDAO.findDeviceDetailInfo(deviceListId, groupId, deviceId, targetInfoName);
+
+								if (info != null && !info.isEmpty()) {
+									continue;
+								}
+
+								ddi = new DeviceDetailInfo();
+								ddi.setInfoId(UUID.randomUUID().toString());
+								ddi.setDeviceListId(deviceListId);
+								ddi.setGroupId(groupId);
+								ddi.setDeviceId(deviceId);
+								ddi.setInfoName(targetInfoName);
+								ddi.setInfoValue(getTargetValue);
+								ddi.setInfoOrder(targetInfoOrder);
+								ddi.setInfoRemark(targetInfoRemark);
+								ddi.setCreateTime(updateTime);
+								ddi.setCreateBy(userName);
+								ddi.setUpdateTime(updateTime);
+								ddi.setUpdateBy(userName);
+
+								insertEntities.add(ddi);
+								orderMap.put(targetInfoName, targetInfoOrder);
+
+								if (!analyzeInfoName.containsKey(targetInfoName)) {
+									analyzeInfoName.put(targetInfoName, ddi);
+								}
+							}
+						}
+					}
+
+					/*
+					//先刪除舊資料
+					for (DeviceDetailInfo ddi : analyzeInfoName.values()) {
+						deviceListDAO.deleteDeviceDetailInfoByInfoName(ddi.getDeviceListId(), ddi.getInfoName(), ddi.getUpdateTime(), ddi.getUpdateBy());
+					}
+					*/
+
+					//再新增新資料
+					if (insertEntities != null && !insertEntities.isEmpty()) {
+						deviceListDAO.insertEntities(insertEntities);
+					}
+				}
+
+			} catch (Exception e) {
+				log.error("更新設備明細資料時異常 >>> "+e.toString(), e);
+			}
+		}
 	}
 
 	/**
@@ -964,8 +1243,6 @@ public class StepServiceImpl implements StepService {
 			tmpVO.setRemoteFileDirPath(vsVO.getRemoteFileDirPath());
 			tmpVO.setFileFullName(vsVO.getFileFullName());
 
-			log.info("Downloading file name ("+i+Env.FTP_DIR_SEPARATE_SYMBOL+vsVOs.size()+"): "+tmpVO.getConfigFileDirPath()+(StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)+tmpVO.getFileFullName());
-
 			if (returnFileString) {
 				final String fileContent = fileUtils.downloadFilesString(tmpVO);
 				tmpVO.setConfigContent(fileContent);
@@ -1016,7 +1293,6 @@ public class StepServiceImpl implements StepService {
 
 		boolean retryRound = false;
 		while (round <= RETRY_TIMES) {
-			log.info("Round: "+round+" of "+RETRY_TIMES+". (retry times)");
 			try {
 				Step[] steps = null;
 				ConnectionMode deviceMode = Constants.DEFAULT_DEVICE_CONNECTION_MODE;
@@ -1027,75 +1303,110 @@ public class StepServiceImpl implements StepService {
 				ConfigInfoVO ciVO = null;					// 裝置相關設定資訊VO
 
 				for (Step _step : steps) {
-					/*
-					 * public static final Step[] SEND_SCRIPT_BY_TELNET = new Step[] {
-								Step.FIND_DEVICE_CONNECT_INFO,
-								Step.FIND_DEVICE_LOGIN_INFO,
-								Step.CONNECT_DEVICE,
-								Step.LOGIN_DEVICE,
-								Step.SEND_COMMANDS,
-								Step.CHECK_PROVISION_RESULT,
-								Step.CLOSE_DEVICE_CONNECTION,
-								Step.RECORD_DB
-						};
-					 */
 					switch (_step) {
 						case LOAD_SPECIFIED_SCRIPT:
-							scripts = loadSpecifiedScript(scriptInfo.getScriptInfoId(), scriptInfo.getScriptCode(), varMap, scripts);
+							try {
+								psStepVO.setScriptCode(scriptInfo.getScriptCode());
+								processVO.setScriptCode(scriptInfo.getScriptCode());
 
-							/*
-							 * Provision_Log_Step
-							 */
-							final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
-							psStepVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
-							psStepVO.setRemark(scriptName);
+								scripts = loadSpecifiedScript(scriptInfo.getScriptInfoId(), scriptInfo.getScriptCode(), varMap, scripts);
 
-							processVO.setScriptCode(Env.DEFAULT_BACKUP_SCRIPT_CODE);
+								/*
+								 * Provision_Log_Step
+								 */
+								final String scriptName = (scripts != null && !scripts.isEmpty()) ? scripts.get(0).getScriptName() : null;
+								psStepVO.setRemark(scriptName);
 
-							break;
+								break;
 
-						case FIND_DEVICE_CONNECT_INFO:
-							ciVO = findDeviceConfigInfo(ciVO, deviceListId);
-							ciVO.setTimes(String.valueOf(round));
-
-							/*
-							 * Provision_Log_Device
-							 */
-							if (!retryRound) {
-								psDeviceVO = new ProvisionServiceVO();
-								psDeviceVO.setDeviceListId(deviceListId);
-								psDeviceVO.setOrderNum(1);
-								psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
-
-								processVO.setDeviceName(ciVO.getDeviceName());
-								processVO.setDeviceIp(ciVO.getDeviceIp());
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("讀取腳本資料時失敗 [ 錯誤代碼: LOAD_SPECIFIED_SCRIPT ]");
 							}
 
-							break;
+						case FIND_DEVICE_CONNECT_INFO:
+							try {
+								ciVO = findDeviceConfigInfo(ciVO, deviceListId);
+								ciVO.setTimes(String.valueOf(round));
+
+								/*
+								 * Provision_Log_Device
+								 */
+								if (!retryRound) {
+									psDeviceVO = new ProvisionServiceVO();
+									psDeviceVO.setDeviceListId(deviceListId);
+									psDeviceVO.setOrderNum(1);
+									psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
+
+									processVO.setDeviceName(ciVO.getDeviceName());
+									processVO.setDeviceIp(ciVO.getDeviceIp());
+								}
+
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
+							}
 
 						case FIND_DEVICE_LOGIN_INFO:
-							findDeviceLoginInfo(deviceListId);
-							break;
+							try {
+								findDeviceLoginInfo(deviceListId);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得設備登入帳密設定時失敗 [ 錯誤代碼: FIND_DEVICE_LOGIN_INFO]");
+							}
 
 						case CONNECT_DEVICE:
-							connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
-							break;
+							try {
+								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("設備連線失敗 [ 錯誤代碼: CONNECT_DEVICE ]");
+							}
 
 						case LOGIN_DEVICE:
-							login2Device(connectUtils, ciVO);
-							break;
+							try {
+								login2Device(connectUtils, ciVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("登入設備失敗 [ 錯誤代碼: LOGIN_DEVICE ]");
+							}
 
 						case SEND_COMMANDS:
-							sendCmds(connectUtils, scripts, ciVO, processVO);
-							break;
+							try {
+								sendCmds(connectUtils, scripts, ciVO, processVO);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
+							}
 
 						case CHECK_PROVISION_RESULT:
+							try {
+								break;
 
-							break;
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("檢核供裝派送結果時失敗 [ 錯誤代碼: CHECK_PROVISION_RESULT ]");
+							}
 
 						case CLOSE_DEVICE_CONNECTION:
-							closeDeviceConnection(connectUtils);
-							break;
+							try {
+								closeDeviceConnection(connectUtils);
+								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("關閉與設備間連線時失敗 [ 錯誤代碼: CLOSE_DEVICE_CONNECTION ]");
+							}
 
 						default:
 							break;
@@ -1106,6 +1417,31 @@ public class StepServiceImpl implements StepService {
 				processVO.setResult(Result.SUCCESS);
 				break;
 
+			} catch (ServiceLayerException sle) {
+				/*
+				 * Provision_Log_Retry
+				 */
+				psRetryVO = new ProvisionServiceVO();
+				psRetryVO.setResult(Result.ERROR.toString());
+				psRetryVO.setMessage(sle.toString());
+				psRetryVO.setRetryOrder(round);
+				psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
+
+				processVO.setSuccess(false);
+				processVO.setResult(Result.ERROR);
+				processVO.setMessage(sle.toString());
+				processVO.setCmdProcessLog(sle.getMessage());
+
+				retryRound = true;
+				round++;
+
+				if (connectUtils != null) {
+					try {
+						connectUtils.disconnect();
+					} catch (Exception e1) {
+						log.error(e1.toString(), e1);
+					}
+				}
 			} catch (Exception e) {
 				log.error(e.toString(), e);
 
@@ -1121,6 +1457,7 @@ public class StepServiceImpl implements StepService {
 				processVO.setSuccess(false);
 				processVO.setResult(Result.ERROR);
 				processVO.setMessage(e.toString());
+				processVO.setCmdProcessLog(e.getMessage());
 
 				retryRound = true;
 				round++;
@@ -1129,7 +1466,7 @@ public class StepServiceImpl implements StepService {
 					try {
 						connectUtils.disconnect();
 					} catch (Exception e1) {
-						log.error(e.toString(), e);
+						log.error(e1.toString(), e1);
 					}
 				}
 			}

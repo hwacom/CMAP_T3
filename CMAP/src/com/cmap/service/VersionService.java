@@ -26,18 +26,6 @@ public interface VersionService {
 	public VersionServiceVO compareConfigFiles(List<VersionServiceVO> voList) throws ServiceLayerException;
 
 	/**
-	 * 舊版備份流程方法
-	 * @deprecated
-	 * @param configType
-	 * @param deviceListIDs
-	 * @param jobTrigger
-	 * @return
-	 * @throws ServiceLayerException
-	 */
-	@Deprecated
-	public VersionServiceVO _backupConfig(String configType, List<String> deviceListIDs, boolean jobTrigger) throws ServiceLayerException;
-
-	/**
 	 * 備份流程方法
 	 * @param configType
 	 * @param deviceListIDs

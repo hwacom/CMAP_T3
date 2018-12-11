@@ -13,14 +13,14 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row">
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<span class="font-weight-bold" style="width: 20%">群組</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="group.name" /></span>
 	    	    	<form:select path="queryGroup1" id="queryGroup" style="width: 75%" onchange="changeDeviceMenu('queryDevice', this.value)">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${group1List}" />
                     </form:select>
 	    	    </div>
 	    	    <div class="col-lg-3 group-field-other">
-					<span class="font-weight-bold" style="width: 20%">設備</span>
+					<span class="font-weight-bold" style="width: 20%"><spring:message code="device.name" /></span>
 	    	    	<form:select path="queryDevice1" id="queryDevice" style="width: 75%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${device1List}" />
@@ -60,7 +60,7 @@
 		  	<div class="col-12">
 		  		<form>
 		      	  <div class="form-group row">
-		      	  	<label for="group_1" class="col-sm-2 col-form-label">群組</label>
+		      	  	<label for="group_1" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="queryGroup1" id="queryGroup_mobile" class="form-control form-control-sm" onchange="changeDeviceMenu('queryDevice_mobile', this.value)">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -69,7 +69,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	  	<label for="device_1" class="col-sm-2 col-form-label">設備</label>
+		    	  	<label for="device_1" class="col-sm-2 col-form-label"><spring:message code="device.name" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryDevice1" id="queryDevice_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />
@@ -96,8 +96,8 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
 		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">群組名稱</th>
-		      <th scope="col" nowrap="nowrap">設備名稱</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap">系統版本</th>
 		      <th scope="col" nowrap="nowrap">最新備份版本號</th>
 		      <th scope="col" nowrap="nowrap">備份類型</th>
@@ -128,17 +128,20 @@
         <form role="form" id="formEdit" name="formEdit">
             <div class="box-body">
             	<div class="form-group">
+            	  <!-- 
                   <label for="queryConfigType" class="control-label">請選擇要備份的組態檔類型:<span class="pull-right" style="color: red;">＊ </span></label>
                   <form:select path="queryConfigType" id="queryConfigType">
                       <form:option value="" label="兩者都要" />
                       <form:options items="${configTypeList}" />
                   </form:select>
+                   -->
+                  <span>按下確認後將立即備份設備中 Running 及 Startup 組態設定<br>請確認是否執行?</span>
                 </div>                              
             </div>
         </form>
       </div>
       <div class="modal-footer">
-      	<button type="button" class="btn btn-default" id="btnClose" data-dismiss="modal">關閉</button>
+      	<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
       	<button type="button" class="btn btn-success" id="btnConfirm">確認</button>
 	  </div>
     </div>

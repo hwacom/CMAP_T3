@@ -321,34 +321,38 @@ public class JobServiceImpl implements JobService {
 		jobDataMap.put(Constants.QUARTZ_PARA_SCHED_TYPE, jsVO.getInputSchedType());
 
 		switch (jsVO.getInputSchedType()) {
-		case Constants.QUARTZ_SCHED_TYPE_BACKUP_CONFIG:
-			jobDataMap.put(Constants.QUARTZ_PARA_DEVICE_LIST_ID, mapper.writeValueAsString(jsVO.getInputDeviceListIds()));
-			jobDataMap.put(Constants.QUARTZ_PARA_GROUP_ID, mapper.writeValueAsString(jsVO.getInputGroupIds()));
-			jobDataMap.put(Constants.QUARTZ_PARA_DEVICE_ID, mapper.writeValueAsString(jsVO.getInputDeviceIds()));
-			jobDataMap.put(Constants.QUARTZ_PARA_CONFIG_TYPE, jsVO.getInputConfigType());
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_BACKUP_CONFIG:
+				jobDataMap.put(Constants.QUARTZ_PARA_DEVICE_LIST_ID, mapper.writeValueAsString(jsVO.getInputDeviceListIds()));
+				jobDataMap.put(Constants.QUARTZ_PARA_GROUP_ID, mapper.writeValueAsString(jsVO.getInputGroupIds()));
+				jobDataMap.put(Constants.QUARTZ_PARA_DEVICE_ID, mapper.writeValueAsString(jsVO.getInputDeviceIds()));
+				jobDataMap.put(Constants.QUARTZ_PARA_CONFIG_TYPE, jsVO.getInputConfigType());
+				break;
 
-		case Constants.QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE:
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE:
+				break;
 
-		case Constants.QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA:
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA:
+				break;
 
-		case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_UPDATE:
-			jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_UPDATE:
+				jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
+				break;
 
-		case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY:
-			jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_SYS_CHECK_QUERY:
+				jobDataMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, jsVO.getInputSysCheckSql());
+				break;
 
-		case Constants.QUARTZ_SCHED_TYPE_UPLOAD_BACKUP_CONFIG_FILE_2_FTP:
-			jobDataMap.put(Constants.QUARTZ_PARA_FTP_NAME, jsVO.getInputFtpName());
-			jobDataMap.put(Constants.QUARTZ_PARA_FTP_HOST, jsVO.getInputFtpHost());
-			jobDataMap.put(Constants.QUARTZ_PARA_FTP_PORT, jsVO.getInputFtpPort());
-			jobDataMap.put(Constants.QUARTZ_PARA_FTP_ACCOUNT, jsVO.getInputFtpAccount());
-			jobDataMap.put(Constants.QUARTZ_PARA_FTP_PASSWORD, jsVO.getInputFtpPassword());
-			break;
+			case Constants.QUARTZ_SCHED_TYPE_UPLOAD_BACKUP_CONFIG_FILE_2_FTP:
+				jobDataMap.put(Constants.QUARTZ_PARA_FTP_NAME, jsVO.getInputFtpName());
+				jobDataMap.put(Constants.QUARTZ_PARA_FTP_HOST, jsVO.getInputFtpHost());
+				jobDataMap.put(Constants.QUARTZ_PARA_FTP_PORT, jsVO.getInputFtpPort());
+				jobDataMap.put(Constants.QUARTZ_PARA_FTP_ACCOUNT, jsVO.getInputFtpAccount());
+				jobDataMap.put(Constants.QUARTZ_PARA_FTP_PASSWORD, jsVO.getInputFtpPassword());
+				break;
+
+			case Constants.QUARTZ_SCHED_TYPE_DATA_POLLER:
+				jobDataMap.put(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID, jsVO.getInputDataPollerSettingId());
+				break;
 		}
 
 		return jobDataMap;
@@ -536,7 +540,7 @@ public class JobServiceImpl implements JobService {
 	}
 
 	private String getMsg() {
-		return "選定{0} {1} 組排程。成功: {2} 組；失敗: {3} 組";
+		return "選定{0} {1} 組排程。<br>成功: {2} 組；失敗: {3} 組";
 	}
 
 	private String composeMsg(final String action, final int totalCount, final int errorCount) {

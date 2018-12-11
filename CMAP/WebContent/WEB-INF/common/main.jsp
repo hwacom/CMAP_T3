@@ -8,7 +8,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>組態設定管理系統</title>
+	<title>網路管理系統</title>
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<meta name="description" content="">
     <meta name="author" content="">
@@ -46,6 +46,8 @@
 	<script src="${pageContext.request.contextPath}/resources/js/underscore/underscore-min.js"></script>
 	<!-- blockUI -->
 	<script src="${pageContext.request.contextPath}/resources/js/blockUI/jquery.blockUI.js"></script>
+	<!-- cleave -->
+	<script src="${pageContext.request.contextPath}/resources/js/cleave/cleave.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/js/common.js"></script>
 	
 	<script>
@@ -62,9 +64,9 @@
 	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
-      	<img class="img" src="${pageContext.request.contextPath}/resources/images/aptg_logo_1.png" width="auto" height="40" />
-      	<!-- <img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" /> -->
-      	<span class="font-weight-bold title-font" style="color:#000079">組態設定管理系統</span>	
+      	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" alt="icon" />
+      	<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40"  alt="icon"/>
+      	<span class="font-weight-bold title-font" style="color:#000079"><spring:message code="cmap.title" /></span>	
       </a>
       <ul class="navbar-nav">
         <li class="nav-item text-nowrap">
@@ -85,42 +87,89 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/version/manage">
+                <a class="nav-link toggleMenuLink" id="toggleMenu_prtg" href="#">
+                  <span data-feather="layout"></span>
+                  	<span>監控平台&nbsp;<span id="toggleMenu_prtg_icon" data-feather="chevron-down"></span></span>
+                </a>
+                <ul aria-expanded="false" id="toggleMenu_prtg_items" class="collapse">
+                    <li class="subMenu-item">
+                    	<a id="mp_index" href="${pageContext.request.contextPath}/prtg/index">
+                    	  <span data-feather="command"></span>
+                    		<span>首頁</span>
+                    	</a>
+                    </li>
+                    <li class="subMenu-item">
+                    	<a id="mp_dashboard" href="${pageContext.request.contextPath}/prtg/dashboard">
+                    	  <span data-feather="hash"></span>
+                    	  	<span>Dashboard</span>
+                    	</a>
+                    </li>
+                </ul>
+	          </li>
+              <li class="nav-item">
+                <a class="nav-link toggleMenuLink" id="toggleMenu_cm" href="#">
                   <span data-feather="file-text"></span>
-                  	<span>版本管理</span>
+                  	<span>組態管理&nbsp;<span id="toggleMenu_cm_icon" data-feather="chevron-down"></span></span>
                 </a>
+                <ul aria-expanded="false" id="toggleMenu_cm_items" class="collapse">
+                    <li class="subMenu-item">
+                    	<a id="cm_manage" href="${pageContext.request.contextPath}/version/manage">
+                    	  <span data-feather="file-text"></span>
+                    		<span>版本管理</span>
+                    	</a>
+                    </li> 
+                    <li class="subMenu-item">
+		                <a id="cm_backup" href="${pageContext.request.contextPath}/version/backup">
+		                  <span data-feather="download"></span>
+		                  	<span>版本備份</span>
+		                </a>
+		            </li>
+		            <li class="subMenu-item">
+		                <a id="cm_restore" href="${pageContext.request.contextPath}/version/restore">
+		                  <span data-feather="upload"></span>
+		                  	<span>版本還原</span>
+		                </a>
+		            </li>
+		            <li class="subMenu-item">
+		                <a id="cm_script" href="${pageContext.request.contextPath}/script">
+		                  <span data-feather="code"></span>
+		                  	<span>腳本管理</span>
+		                </a>
+		            </li>
+		            <li class="subMenu-item">
+		                <a id="cm_delivery" href="${pageContext.request.contextPath}/delivery">
+		                  <span data-feather="send"></span>
+		                  	<span>供裝派送</span>
+		                </a>
+		            </li>
+		            <li class="subMenu-item">
+		                <a id="cm_record" href="${pageContext.request.contextPath}/delivery/record">
+		                  <span data-feather="search"></span>
+		                  	<span>供裝紀錄</span>
+		                </a>
+		            </li>
+                </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/version/backup">
-                  <span data-feather="download"></span>
-                  	<span>版本備份</span>
+                <a class="nav-link toggleMenuLink" id="toggleMenu_plugin" href="#">
+                  <span data-feather="grid"></span>
+                  	<span>附加模組&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
                 </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/version/restore">
-                  <span data-feather="upload"></span>
-                  	<span>版本還原</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/script">
-                  <span data-feather="code"></span>
-                  	<span>腳本管理</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/delivery">
-                  <span data-feather="send"></span>
-                  	<span>供裝派送</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/record">
-                  <span data-feather="search"></span>
-                  	<span>供裝紀錄</span>
-                </a>
-              </li>
-              
+                <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
+                    <li class="subMenu-item">
+                    	<a id="cm_wifi" href="${pageContext.request.contextPath}/plugin/module/wifiPoller">
+                    	  <span data-feather="wifi"></span>
+                    		<span>WIFI 管理</span>
+                    	</a>
+                    </li>
+                    <li class="subMenu-item">
+                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
+                    	  <span data-feather="shuffle"></span>
+                    	  	<span>Net Flow 管理</span>
+                    	</a>
+                    </li>
+                </ul>
+	          </li>
               <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
               	  <li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
@@ -128,24 +177,28 @@
 	                  	<span>後臺管理&nbsp;<span id="toggleMenu_admin_icon" data-feather="chevron-down"></span></span>
 	                </a>
 	                <ul aria-expanded="false" id="toggleMenu_admin_items" class="collapse">
-	                    <li class="nav-item subMenu-item">
-	                    	<a href="${pageContext.request.contextPath}/admin/env/main">
-	                    		<span data-feather="command"></span> 系統參數維護
+	                    <li class="subMenu-item">
+	                    	<a id="bk_env" href="${pageContext.request.contextPath}/admin/env/main">
+	                    	  <span data-feather="command"></span> 
+	                    		<span>系統參數維護</span>
 	                    	</a>
 	                    </li>
-	                    <li class="nav-item subMenu-item">
-	                    	<a href="${pageContext.request.contextPath}/admin/script/main">
-	                    		<span data-feather="hash"></span> 預設腳本維護
+	                    <li class="subMenu-item">
+	                    	<a id="bk_script" href="${pageContext.request.contextPath}/admin/script/main">
+	                    	  <span data-feather="hash"></span> 
+	                    	  	<span>預設腳本維護</span>
 	                    	</a>
 	                    </li>
-	                    <li class="nav-item subMenu-item">
-	                    	<a href="${pageContext.request.contextPath}/admin/job/main">
-	                    		<span data-feather="check-square"></span> 排程設定維護
+	                    <li class="subMenu-item">
+	                    	<a id="bk_job" href="${pageContext.request.contextPath}/admin/job/main">
+	                    	  <span data-feather="check-square"></span> 
+	                    	  	<span>排程設定維護</span>
 	                    	</a>
 	                    </li>
-	                    <li class="nav-item subMenu-item">
-	                    	<a href="${pageContext.request.contextPath}/admin/log/main">
-	                    		<span data-feather="alert-triangle"></span> 系統LOG查詢
+	                    <li class="subMenu-item">
+	                    	<a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main">
+	                    	  <span data-feather="alert-triangle"></span> 
+	                    	  	<span>系統LOG查詢</span>
 	                    	</a>
 	                    </li>
 	                </ul>
@@ -200,21 +253,21 @@
 		      </div>
 		      <div class="modal-body">
 		     	<div class="form-group row">
-		        	<label for="viewModal_group" class="col-md-2 col-sm-12 col-form-label">群組</label>
+		        	<label for="viewModal_group" class="col-md-2 col-sm-12 col-form-label"><spring:message code="group.name" /> :</label>
 		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_group" readonly>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="viewModal_device" class="col-md-2 col-sm-12 col-form-label">設備</label>
+		        	<label for="viewModal_device" class="col-md-2 col-sm-12 col-form-label"><spring:message code="device.name" /> :</label>
 		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_device" readonly>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="viewModal_version" class="col-md-2 col-sm-12 col-form-label">版本號碼</label>
+		        	<label for="viewModal_version" class="col-md-2 col-sm-12 col-form-label">版本號碼 :</label>
 		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_version" readonly>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="viewModal_content" class="col-md-2 col-sm-12 col-form-label">版本內容</label>
+		        	<label for="viewModal_content" class="col-md-2 col-sm-12 col-form-label">版本內容 :</label>
 		        	<!-- <textarea class="form-control col-md-9 col-sm-12" id="viewModal_content" rows="10" readonly></textarea> -->
-		        	<div class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_content" style="height: 300px;overflow: auto;"></div>
+		        	<div class="form-control form-control-sm col-md-10 col-sm-12 script" id="viewModal_content"></div>
 		        </div>
 		        
 		      </div>

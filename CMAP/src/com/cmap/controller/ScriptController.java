@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cmap.annotation.Log;
+import com.cmap.security.SecurityUtil;
 
 @Controller
 @RequestMapping("/script")
@@ -21,14 +22,17 @@ public class ScriptController extends BaseController {
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String main(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-		
+
 		try {
-			
-			
+
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+
+		} finally {
+			model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
 		}
-		
+
 		return "script/script_main";
 	}
 }

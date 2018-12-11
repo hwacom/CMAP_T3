@@ -31,9 +31,4 @@
 
 </section>
 
-<script>
-	$(document).ready(function() {
-		
-	});
-
-</script>
+<script src="${pageContext.request.contextPath}/resources/js/cmap.admin.script.js"></script>

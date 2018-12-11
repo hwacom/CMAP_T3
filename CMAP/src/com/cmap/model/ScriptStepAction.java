@@ -57,6 +57,9 @@ public class ScriptStepAction {
 	@Column(name = "command_remark", nullable = true)
 	private String commandRemark;
 
+	@Column(name = "command_description", nullable = true)
+	private String commandDescription;
+
 	@Column(name = "delete_flag", nullable = false)
 	private String deleteFlag;
 
@@ -84,8 +87,9 @@ public class ScriptStepAction {
 
 	public ScriptStepAction(String stepId, ScriptInfo scriptInfo, Integer stepOrder, String command,
 			String expectedTerminalSymbol, String outputFlag, Integer headCuttingLines, Integer tailCuttingLines,
-			String errorSymbol, String commandRemark, String deleteFlag, Timestamp deleteTime, String deleteBy,
-			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+			String errorSymbol, String commandRemark, String commandDescription, String deleteFlag,
+			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
+			String updateBy) {
 		super();
 		this.stepId = stepId;
 		this.scriptInfo = scriptInfo;
@@ -97,6 +101,7 @@ public class ScriptStepAction {
 		this.tailCuttingLines = tailCuttingLines;
 		this.errorSymbol = errorSymbol;
 		this.commandRemark = commandRemark;
+		this.commandDescription = commandDescription;
 		this.deleteFlag = deleteFlag;
 		this.deleteTime = deleteTime;
 		this.deleteBy = deleteBy;
@@ -184,6 +189,14 @@ public class ScriptStepAction {
 
 	public void setCommandRemark(String commandRemark) {
 		this.commandRemark = commandRemark;
+	}
+
+	public String getCommandDescription() {
+		return commandDescription;
+	}
+
+	public void setCommandDescription(String commandDescription) {
+		this.commandDescription = commandDescription;
 	}
 
 	public String getDeleteFlag() {

@@ -5,12 +5,14 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 import com.cmap.Constants;
+import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.BaseDAO;
 import com.cmap.model.ConfigVersionInfo;
@@ -150,13 +152,62 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 
 	@Override
 	public boolean insertEntities(List<? extends Object> entities) {
-		// TODO 自動產生的方法 Stub
-		return false;
+		boolean success = true;
+
+		int count = 1;
+		for (Object entity : entities) {
+			getHibernateTemplate().save(entity);
+			count++;
+
+			if (count >= Env.DEFAULT_BATCH_INSERT_FLUSH_COUNT) {
+				getHibernateTemplate().flush();
+			}
+		}
+
+		return success;
 	}
 
 	@Override
 	public boolean deleteEntity(Object entity) {
 		// TODO 自動產生的方法 Stub
 		return false;
+	}
+
+	@Override
+	public boolean insertEntitiesByNativeSQL(List<String> nativeSQLs) {
+		boolean success = true;
+
+		int count = 1;
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+
+		for (String sql : nativeSQLs) {
+			session.createNativeQuery(sql).executeUpdate();
+			count++;
+
+			if (count >= Env.DEFAULT_BATCH_INSERT_FLUSH_COUNT) {
+				getHibernateTemplate().flush();
+			}
+		}
+
+		return success;
+	}
+
+	@Override
+	public boolean deleteEntitiesByNativeSQL(List<String> nativeSQLs) {
+		boolean success = true;
+
+		int count = 1;
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+
+		for (String sql : nativeSQLs) {
+			session.createNativeQuery(sql).executeUpdate();
+			count++;
+
+			if (count >= Env.DEFAULT_BATCH_INSERT_FLUSH_COUNT) {
+				getHibernateTemplate().flush();
+			}
+		}
+
+		return success;
 	}
 }

@@ -112,8 +112,9 @@ public class Env {
 	public static String DEFAULT_DEVICE_LOGIN_PASSWORD;
 	public static String DEFAULT_DEVICE_ENABLE_PASSWORD;
 
-	public static String DEFAULT_BACKUP_SCRIPT_CODE;
 	public static String DEFAULT_RESTORE_SCRIPT_CODE;
+	public static String DEFAULT_DEVICE_CONFIG_BACKUP_MODE;	//預設設備組態檔備份模式 (DEVICE -> TFTP SERVER1)
+	public static String DEFAULT_BACKUP_FILE_BACKUP_MODE;	//預設組態備份檔案備份模式 (TFTP SERVER1 -> FTP SERVER2)
 
 	public static String CONFIG_FILE_EXTENSION_NAME;
 
@@ -129,7 +130,7 @@ public class Env {
 
 	public static String MENU_CODE_OF_CONFIG_TYPE;
 	public static String MENU_CODE_OF_SCHED_TYPE;
-	public static String MENU_CODE_OF_MIS_FIRE_POLICY;
+	public static String MENU_CODE_OF_MISS_FIRE_POLICY;
 
 	public static String MENU_ITEM_COMBINE_SYMBOL;
 
@@ -143,6 +144,13 @@ public class Env {
 
 	public static String MEANS_ALL_SYMBOL;
 	public static String SCRIPT_VAR_KEY_SYMBOL;
+
+	public static String DEFAULT_DATA_POLLER_FILE_CHARSET;
+	public static Integer DEFAULT_BATCH_INSERT_FLUSH_COUNT;
+
+	public static String SETTING_ID_OF_NET_FLOW;
+
+	public static String DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
 
 	public static final Step[] SEND_SCRIPT = new Step[] {
 			Step.LOAD_SPECIFIED_SCRIPT,
@@ -181,6 +189,7 @@ public class Env {
 			Step.CLOSE_DEVICE_CONNECTION,
 			Step.CONNECT_FILE_SERVER_4_UPLOAD,
 			Step.COMPARE_CONTENTS,
+			Step.ANALYZE_CONFIG_INFO,
 			Step.COMPOSE_OUTPUT_VO,
 			Step.RECORD_DB_OF_CONFIG_VERSION_INFO
 	};

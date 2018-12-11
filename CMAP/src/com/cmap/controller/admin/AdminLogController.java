@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.annotation.Log;
+import com.cmap.security.SecurityUtil;
 import com.cmap.service.LogService;
 import com.cmap.service.LogService.LogType;
 import com.cmap.service.vo.LogServiceVO;
@@ -41,6 +42,10 @@ public class AdminLogController {
 	@Autowired
 	LogService logService;
 
+	private void init(Model model, HttpServletRequest request) {
+		model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
+	}
+
 	@RequestMapping(value = "main", method = RequestMethod.GET)
 	public String adminJob(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
@@ -51,6 +56,7 @@ public class AdminLogController {
 			log.error(e.toString(), e);
 
 		} finally {
+			init(model, request);
 		}
 
 		return "admin/admin_log";
@@ -92,6 +98,9 @@ public class AdminLogController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+
+		} finally {
+			init(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -133,6 +142,9 @@ public class AdminLogController {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
+
+		} finally {
+			init(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -171,6 +183,9 @@ public class AdminLogController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return new AppResponse(HttpServletResponse.SC_NOT_FOUND, "資料取得異常", retMap);
+
+		} finally {
+			init(model, request);
 		}
 	}
 }

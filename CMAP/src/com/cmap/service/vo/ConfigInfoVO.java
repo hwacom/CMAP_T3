@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ConfigInfoVO implements Cloneable {
 
+	private String deviceListId;
 	private String groupId;
 	private String groupName;
 	private String groupEngName;
@@ -39,6 +40,8 @@ public class ConfigInfoVO implements Cloneable {
 	private String times;
 	private String tempFilePath;
 	private String tempFileRandomCode;
+
+	private String uploadFileName;
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -283,5 +286,21 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setRemoteFileDirPath(String remoteFileDirPath) {
 		this.remoteFileDirPath = remoteFileDirPath;
+	}
+
+	public String getDeviceListId() {
+		return deviceListId;
+	}
+
+	public void setDeviceListId(String deviceListId) {
+		this.deviceListId = deviceListId;
+	}
+
+	public String getUploadFileName() {
+		return uploadFileName;
+	}
+
+	public void setUploadFileName(String uploadFileName) {
+		this.uploadFileName = uploadFileName;
 	}
 }

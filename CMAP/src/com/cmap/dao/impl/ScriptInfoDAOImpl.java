@@ -32,6 +32,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
+			sb.append(" and si.systemDefault = :systemDefault ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
@@ -41,6 +44,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
+			q.setParameter("systemDefault", daovo.getQuerySystemDefault());
 		}
 
 		return DataAccessUtils.longResult(q.list());
@@ -59,6 +65,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
+			sb.append(" and si.systemDefault = :systemDefault ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
@@ -68,6 +77,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
+			q.setParameter("systemDefault", daovo.getQuerySystemDefault());
 		}
 
 		return (List<ScriptInfo>)q.list();

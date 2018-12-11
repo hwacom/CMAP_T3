@@ -5,6 +5,8 @@ const scriptShowLength = 20;	//設定欄位顯示內容最大長度
 var STEP_NUM = 1;
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_delivery");
+	
 	$("#viewScriptModal").on("shown.bs.modal", function () {
     	setTimeout(function() {
     		$('#viewScriptModal_scriptContent').scrollTop(0);
@@ -266,6 +268,42 @@ function initStep1Panel() {
 }
 
 function initStep2Panel() {
+	var groupArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
+	var deviceArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_));
+	var varKeyArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
+	
+	$.ajax({
+		url : _ctx + '/delivery/getVariableSetting.json',
+		data : {
+			"groupArray" : JSON.stringify(groupArray),
+			"deviceArray" : JSON.stringify(deviceArray),
+			"varKeyArray" : JSON.stringify(varKeyArray)
+		},
+		type : "POST",
+		dataType : 'json',
+		async: true,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
+		success : function(resp) {
+			if (resp.code != '200') {
+				alert(resp.message);
+			}
+			
+			drawStep2Panel(resp.data.info, resp.data.symbol);
+		},
+		error : function(xhr, ajaxOptions, thrownError) {
+			ajaxErrorHandler();
+		}
+	});
+}
+
+function drawStep2Panel(deviceVarMap, symbol) {
+	var groupIdArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
+	var deviceIdArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_));
 	var groupArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_GROUP_NAME_));
 	var deviceArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_NAME_));
 	var varKeyArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
@@ -314,8 +352,11 @@ function initStep2Panel() {
 		
 		for (var i=0; i<count; i++) {
 			var seq = parseInt(i) + 1;
-			var groupName = (i < groupArray.length) ? groupArray[i] : "N/A";
-			var deviceName = (i < deviceArray.length) ? deviceArray[i] : "N/A";
+			const groupName = (i < groupArray.length) ? groupArray[i] : "N/A";
+			const deviceName = (i < deviceArray.length) ? deviceArray[i] : "N/A";
+			const groupId = (i < groupIdArray.length) ? groupIdArray[i] : 0;
+			const deviceId = (i < deviceIdArray.length) ? deviceIdArray[i] : 0;
+			const mapKey = groupId + symbol + deviceId;
 			
 			/* [Example]:
 			 * <div class="row-group-dash">
@@ -354,9 +395,38 @@ function initStep2Panel() {
 					            );
 			
 			if (varKeyArray != null && varKeyArray.length != 0) {
-				var td = $("<td></td>").append($("<input>").attr("type", "text").attr("class", "form-control form-control-sm").attr("name", "input_var").attr("data-idx", i));
+				var tdInput = $("<td></td>").append($("<input>").attr("type", "text").attr("class", "form-control form-control-sm").attr("name", "input_var").attr("data-idx", i));
+				
 				$.each(varKeyArray, function(key, value) {
-					target_el.append($(td).clone());
+					
+					if (!isEmpty(deviceVarMap)) {
+						var deviceMap = deviceVarMap[mapKey];
+						
+						if (deviceMap != undefined) {
+							var varValueList = deviceMap[value];
+							
+							if (varValueList != undefined && varValueList.length > 0) {
+								var tdSelect = $("<td></td>");
+								var select = $("<select></select>").attr("class", "form-control form-control-sm").attr("name", "input_var").attr("data-idx", i);
+								
+								$.each(varValueList, function(idx, info) {
+									var option = $("<option></option>").attr("value", info.infoValue).text(info.infoValue);
+									select.append(option);
+								});
+								
+								tdSelect.append(select);
+								target_el.append(tdSelect);
+								
+							} else {
+								//若該設備抓無此變數的無客製變數明細，則預設為輸入框
+								target_el.append($(tdInput).clone());
+							}
+						}
+						
+					} else {
+						//若無客製變數設定，則預設為輸入框
+						target_el.append($(tdInput).clone());
+					}
 				});
 			}
 			
@@ -543,14 +613,15 @@ function checkDeviceChoose() {
 
 function checkVariable() {
 	var keyArray = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
-	var variables = $("input[name=input_var]");
+	var varInput = $("input[name=input_var]");
+	var varSelect = $("select[name=input_var]");
 	var success = true;
 	
 	var validateErrorObj = [];
 	var inputVar = [];
 	
-	if (variables.length > 0) {
-		$.each(variables, function(key, input) {
+	if (varInput.length > 0) {
+		$.each(varInput, function(key, input) {
 			if (input.value.trim().length == 0) {
 				success = false
 				validateErrorObj.push(input);
@@ -563,6 +634,24 @@ function checkVariable() {
 				}
 				
 				inputVar[varIdx].push(input.value);
+			}
+		});
+	}
+	
+	if (varSelect.length > 0) {
+		$.each(varSelect, function(key, select) {
+			if (select.value.trim().length == 0) {
+				success = false
+				validateErrorObj.push(select);
+				
+			} else {
+				var varIdx = $(select).data("idx");
+				
+				if (inputVar[varIdx] === undefined) {
+					inputVar[varIdx] = [];
+				}
+				
+				inputVar[varIdx].push(select.value);
 			}
 		});
 	}
@@ -635,10 +724,10 @@ function doDelivery() {
 		dataType : 'json',
 		async: true,
 		beforeSend : function() {
-			$("#processing").show();
+			showProcessing();
 		},
 		complete : function() {
-			$("#processing").hide();
+			hideProcessing();
 		},
 		success : function(resp) {
 			if (resp.code == '200') {
@@ -702,12 +791,16 @@ function showFullScript(jObj) {
 	var scriptContent = jObj.attr('content');
 	
 	$('#viewScriptModal_scriptName').val(scriptName);
-	$('#viewScriptModal_scriptContent').html('<pre>'+scriptContent+'</pre>');
+	
+	var scriptContent = scriptContent != null ? scriptContent.replace(/(\r\n|\r|\n)/g, "<br>") : "異常無紀錄";
+	
+	$('#viewScriptModal_scriptContent').html(scriptContent);
 	$('#viewScriptModal').modal('show');
 }
 
 //查詢按鈕動作
 function findData(from) {
+	$('#queryFrom').val(from);
 	
 	if (typeof resutTable !== "undefined") {
 		//resutTable.clear().draw(); server-side is enabled.

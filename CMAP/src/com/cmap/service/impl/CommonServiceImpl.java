@@ -115,7 +115,8 @@ public class CommonServiceImpl implements CommonService {
 								Map<String, String> deviceInfoMap = deviceMap.get(deviceId);
 
 								// 先撈取查看此群組+設備ID資料是否已存在
-								dl = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+								// Y181203, 改成只看設備ID, 否則若從PRTG內將設備移動到別的群組下會更新不到
+								dl = deviceListDAO.findDeviceListByGroupAndDeviceId(null, deviceId);
 
 								final String localFileDirPath = composeFilePath(deviceInfoMap, true);
 								final String remoteFileDirPath = composeFilePath(deviceInfoMap, false);
@@ -137,6 +138,11 @@ public class CommonServiceImpl implements CommonService {
 
 								} else {
 									// 若已存在，確認以下欄位是否有異動，若其中一項有異動的話則後面要進行更新
+									// Y181203, 增加判斷群組ID是否有異動
+									if (noNeedToAddOrModify) {
+										noNeedToAddOrModify =
+												(StringUtils.isBlank(dl.getGroupId()) ? "" : dl.getGroupId()).equals(deviceInfoMap.get(Constants.GROUP_ID));
+									}
 									if (noNeedToAddOrModify) {
 										noNeedToAddOrModify =
 												(StringUtils.isBlank(dl.getGroupName()) ? "" : dl.getGroupName()).equals(deviceInfoMap.get(Constants.GROUP_NAME));

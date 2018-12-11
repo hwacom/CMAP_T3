@@ -30,7 +30,7 @@ public class LoginContoller extends BaseController {
 				return "redirect:/login";
 			}
 
-			RequestDispatcher rd = request.getRequestDispatcher("/version/manage");
+			RequestDispatcher rd = request.getRequestDispatcher("/prtg/index");
 			rd.forward(request,response);
 
 		} catch (Exception e) {
@@ -47,7 +47,7 @@ public class LoginContoller extends BaseController {
 				return "redirect:/login";
 			}
 
-			RequestDispatcher rd = request.getRequestDispatcher("/version/manage");
+			RequestDispatcher rd = request.getRequestDispatcher("/prtg/index");
 			rd.forward(request,response);
 
 		} catch (Exception e) {

@@ -26,12 +26,23 @@ img {
   vertical-align: middle;
 }
 
+.must {
+  color: blue;
+}
+
 .cursor_zoom_in {
   cursor: zoom-in;
 }
 
 .cursor_zoom_out {
   cursor: zoom-out;
+}
+
+.script {
+  height: 300px;
+  overflow: auto;
+  background-color: #000;
+  color: #fff !important;
 }
 
 span {
@@ -49,9 +60,25 @@ nav > ul > li {
   margin-right: 0px !important;
 }
 
+.navbar-nav .nav-link {
+  color: rgba(107, 107, 107, 0.5) !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #004bff !important;
+}
+
 .table-hover tbody tr:hover {
   background-color: #f9f872 !important;
   cursor: pointer;
+}
+
+.compare-current-pos {
+  background-color: yellow;
+}
+
+.compare-current-pos::before {
+  content: "> ";
 }
 
 @font-face {
@@ -88,6 +115,14 @@ nav a {
 }
 
 nav a:hover {
+  text-decoration: none;
+}
+
+.href {
+  text-decoration: underline;
+}
+
+.href:hover {
   text-decoration: none;
 }
 
@@ -176,8 +211,19 @@ nav img {
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }
 
+/*
 .sidebar-sticky ul li {
   border:1px rgba(0, 0, 0, .3) solid;
+}
+*/
+
+.nav-item {
+  border-bottom: 1px solid rgba(0,0,0,.3);
+}
+
+.subMenu-item {
+  list-style: none;
+  margin-left: -1rem;
 }
 
 @supports ((position: -webkit-sticky) or (position: sticky)) {
@@ -435,6 +481,7 @@ select:focus, input:focus {
   color: #FFFFFF;
   border-color: #FFFFFF;
   margin-top: 5px;
+  overflow-x: auto;
 }
 
 .myTableSection td a {
@@ -500,7 +547,11 @@ select:focus, input:focus {
 }
 
 .icon-hightlight {
-  color: #f9ff00;
+  color: #ff2000;
+}
+
+.icon-hightlight:hover {
+  color: #004bff;
 }
 
 @media (min-width: 320px) {
@@ -650,7 +701,7 @@ select:focus, input:focus {
 }
 
 .yellow {
-  color: #FFFF00;
+  color: #FFFF00 !important;
 }
 
 .bold {

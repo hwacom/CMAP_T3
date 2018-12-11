@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="${pageContext.request.contextPath}/resources/images/icon.ico">
 
-    <title><spring:message code="login.cmap.title" /></title>
+    <title><spring:message code="cmap.title" /></title>
 
     <!-- Bootstrap core CSS -->
     <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -33,7 +33,7 @@
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-title">
 			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" style="padding-top: 3px" />
       					<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40" style="padding-top: 3px" />
-			  			<span class="h3 font-weight-bold" style="color:#1C2269"><spring:message code="login.cmap.title" /></span>	
+			  			<span class="h3 font-weight-bold" style="color:#1C2269"><spring:message code="cmap.title" /></span>	
 			  		</div>
 			  	</div>
 			  	<div class="row">
@@ -51,20 +51,20 @@
 				  		  </div>
 				  		  <div class="form-group row" style="vertical-align: middle;">
 				  		  	<div class="col-3">
-				  		  		<span class="h5 font-weight-bold" style="color: black">帳號:</span>
+				  		  		<span class="h5 font-weight-bold" style="color: black"><spring:message code="login.account" />:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
-				  		  		<label for="inputAccount" class="sr-only">帳號</label>
-				  		  		<input type="text" name="username" id="inputAccount" class="form-control" placeholder="帳號" required autofocus>
+				  		  		<label for="inputAccount" class="sr-only"><spring:message code="login.account" /></label>
+				  		  		<input type="text" name="username" id="inputAccount" class="form-control" placeholder="<spring:message code="login.account" />" required autofocus>
 				  		  	</div>
 				  		  </div>
 					      <div class="form-group row">
 					      	<div class="col-3">
-					      		<span class="h5 font-weight-bold" style="color: black">密碼:</span>
+					      		<span class="h5 font-weight-bold" style="color: black"><spring:message code="login.password" />:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
-				  		  		<label for="inputPassword" class="sr-only">密碼</label>
-				  		  		<input type="password" name="password" id="inputPassword" class="form-control" placeholder="密碼" required>
+				  		  		<label for="inputPassword" class="sr-only"><spring:message code="login.password" /></label>
+				  		  		<input type="password" name="password" id="inputPassword" class="form-control" placeholder="<spring:message code="login.password" />" required>
 				  		  	</div>
 				  		  </div>
 				  		  <!-- 
@@ -80,7 +80,7 @@
 				  		   -->
 					      <div class="row">
 				  		  	<div class="col-sm-12">
-				  		  		<button class="btn btn-block btn-success" type="submit">登入</button> <!-- Sign in -->
+				  		  		<button class="btn btn-block btn-success" type="submit"><spring:message code="login" /></button> <!-- Sign in -->
 				  		  	</div>
 				  		  </div>
 					    </form>

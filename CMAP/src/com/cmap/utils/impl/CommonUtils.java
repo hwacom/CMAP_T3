@@ -18,6 +18,7 @@ public class CommonUtils {
 	private static Logger log = LoggerFactory.getLogger(CommonUtils.class);
 
 	public static String composeConfigFileName(ConfigInfoVO vo, int seqNo) {
+
 		String fileName = StringUtils.isNotBlank(Env.BACKUP_FILENAME_FORMAT) ? Env.BACKUP_FILENAME_FORMAT : "";
 
 		/*

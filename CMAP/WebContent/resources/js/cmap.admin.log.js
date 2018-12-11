@@ -7,6 +7,8 @@ var resutTable_jobLog;			//DataTable
 const remarkShowLength = 50;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_admin", "toggleMenu_admin_items", "bk_log");
+	
 	//查詢按鈕(Web)點擊事件
     $('#btnSearchErrorLog_web').click(function (e) {
     	findErrorLogData('WEB');

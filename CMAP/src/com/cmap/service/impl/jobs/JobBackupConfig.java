@@ -48,10 +48,6 @@ public class JobBackupConfig extends BaseJobImpl implements BaseJobService {
 			final String deviceId = jMap.getString(Constants.QUARTZ_PARA_DEVICE_ID);
 			final String configType = jMap.getString(Constants.QUARTZ_PARA_CONFIG_TYPE);
 
-			log.info("groupId: "+groupId);
-			log.info("deviceId: "+deviceId);
-			log.info("configType: "+configType);
-
 			ObjectMapper mapper = new ObjectMapper();
 			groupIds = mapper.readValue(groupId, new TypeReference<List<String>>(){});
 			deviceIds = mapper.readValue(deviceId, new TypeReference<List<String>>(){});
