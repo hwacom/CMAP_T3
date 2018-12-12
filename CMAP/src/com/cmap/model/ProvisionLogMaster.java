@@ -44,8 +44,8 @@ public class ProvisionLogMaster {
 	@Column(name = "spend_time_in_seconds", nullable = false)
 	private Integer spendTimeInSeconds;
 
-	@Column(name = "remark", nullable = true)
-	private String remark;
+	@Column(name = "reason", nullable = true)
+	private String reason;
 
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
@@ -61,7 +61,7 @@ public class ProvisionLogMaster {
 	}
 
 	public ProvisionLogMaster(String logMasterId, String result, String message, Timestamp beginTime, Timestamp endTime,
-			Integer spendTimeInSeconds, String remark, Timestamp createTime, String createBy,
+			Integer spendTimeInSeconds, String reason, Timestamp createTime, String createBy,
 			List<ProvisionLogDetail> provisionLogDetail) {
 		super();
 		this.logMasterId = logMasterId;
@@ -70,7 +70,7 @@ public class ProvisionLogMaster {
 		this.beginTime = beginTime;
 		this.endTime = endTime;
 		this.spendTimeInSeconds = spendTimeInSeconds;
-		this.remark = remark;
+		this.reason = reason;
 		this.createTime = createTime;
 		this.createBy = createBy;
 		this.provisionLogDetail = provisionLogDetail;
@@ -124,12 +124,12 @@ public class ProvisionLogMaster {
 		this.spendTimeInSeconds = spendTimeInSeconds;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
 	public Timestamp getCreateTime() {

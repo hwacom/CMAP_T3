@@ -22,6 +22,7 @@ public class Constants {
 	public static final String FIELD_NAME_UPDATE_BY = "updateBy";
 	public static final String UNKNOWN = "unknown";
 
+	public static final String LOGIN_AUTH_MODE_OIDC = "OIDC";
 	public static final String LOGIN_AUTH_MODE_PRTG = "PRTG";
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
@@ -99,6 +100,8 @@ public class Constants {
 	public static final String DEFAULT_FLAG_N = "N";
 
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_SSH_FTP = "STEP.FTP+DEVICE.SSH+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_TELNET_FTP = "STEP.FTP+DEVICE.TELNET+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP = "STEP.TFTP+DEVICE.SSH+FILE_SERVER.TFTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_TELNET_TFTP = "STEP.TFTP+DEVICE.TELNET+FILE_SERVER.TFTP";
 

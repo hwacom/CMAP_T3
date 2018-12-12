@@ -310,7 +310,6 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			String psJSON = dsVO.getDeliveryParameters();
 
 			DeliveryParameterVO pVO = (DeliveryParameterVO)transJSON2Object(psJSON, DeliveryParameterVO.class);
-			System.out.println(pVO);
 
 			/*
 			 * Step 1.再次驗證傳入的參數值合法性
@@ -397,8 +396,6 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 					}
 				}
 
-				System.out.println("Device ID: " + deviceIdList.get(idx) + " ::: script: " + script);
-
 				//Step 3.呼叫共用執行腳本
 				StepServiceVO processVO = null;
 				try {
@@ -453,6 +450,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 		masterVO.setEndTime(new Date());
 		masterVO.setResult(CommonUtils.converMsg(msg, args));
+		masterVO.setReason(psVO.getReason());
 
 		provisionService.insertProvisionLog(masterVO);
 

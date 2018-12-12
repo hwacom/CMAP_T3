@@ -422,7 +422,7 @@ public class VersionController extends BaseController {
 		VersionServiceVO retVO;
 		try {
 			List<String> deviceListIDs = new ArrayList<>();
-			String configType = jsonData.findValue("configType").asText();
+			String configType = jsonData.findValue("configType") != null ? jsonData.findValue("configType").asText() : null;
 			for (JsonNode jn : jsonData.findValues("deviceListId")) {
 				deviceListIDs.add(jn.asText());
 			}

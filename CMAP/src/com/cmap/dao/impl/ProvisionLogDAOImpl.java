@@ -102,7 +102,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 		  .append("   dl.device_name, ")		//index: 7
 		  .append("   dl.system_version, ")		//index: 8
 		  .append("   si.script_name, ")		//index: 9
-		  .append("   plm.remark, ")			//index: 10
+		  .append("   plm.reason, ")			//index: 10
 		  .append("   pls.result, ")			//index: 11
 		  .append("   pls.process_log ")		//index: 12
 		  .append(" from Provision_Log_Master plm ")

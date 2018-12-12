@@ -142,6 +142,18 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						deviceMode = ConnectionMode.TELNET;
 						fileServerMode = ConnectionMode.TFTP;
 						break;
+
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_FTP_SSH_FTP:
+						steps = Env.BACKUP_BY_FTP;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.FTP;
+						break;
+
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_FTP_TELNET_FTP:
+						steps = Env.BACKUP_BY_FTP;
+						deviceMode = ConnectionMode.TELNET;
+						fileServerMode = ConnectionMode.FTP;
+						break;
 				}
 
 				List<ScriptDAOVO> scripts = null;
@@ -1204,8 +1216,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				// 8-3. 移動作業目錄至指定的裝置
 				ftpUtils.changeDir(remoteFileDirPath, true);
 
+				String configFileName = new String(ciVO.getConfigFileName().getBytes("UTF-8"),"iso-8859-1");
+
 				ftpUtils.uploadFiles(
-						ciVO.getConfigFileName(),
+						configFileName,
 						IOUtils.toInputStream(ciVO.getConfigContent(), Constants.CHARSET_UTF8)
 						);
 			}

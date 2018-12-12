@@ -123,17 +123,21 @@ public class FtpFileUtils implements FileUtils {
 				//若目標路徑目錄不存在，則依循路徑建立資料夾
 				if (createFolder) {
 					String stepDirPath = "";
+					String decodeDirPath = "";
 					boolean actionSuccess = false;
 					for (String dir : targetDirPath.split(Constants.FTP_FILE_SEPARATOR)) {
 						if (StringUtils.isNotBlank(dir)) {
 							stepDirPath = stepDirPath.concat(Constants.FTP_FILE_SEPARATOR).concat(dir);
+							decodeDirPath = new String(stepDirPath.getBytes("UTF-8"),"iso-8859-1");
+							//stepDirPath = new String(stepDirPath.concat(Constants.FTP_FILE_SEPARATOR).concat(dir).getBytes("UTF-8"),"iso-8859-1");
+							//stepDirPath = stepDirPath.concat(Constants.FTP_FILE_SEPARATOR).concat(dir);
 
-							if (ftp.cwd(stepDirPath) == FTPReply.FILE_UNAVAILABLE) {
-								actionSuccess = ftp.makeDirectory(stepDirPath);
+							if (ftp.cwd(decodeDirPath) == FTPReply.FILE_UNAVAILABLE) {
+								actionSuccess = ftp.makeDirectory(decodeDirPath);
 							}
 
-							if (ftp.cwd(stepDirPath) == FTPReply.FILE_ACTION_OK) {
-								actionSuccess = ftp.changeWorkingDirectory(stepDirPath);
+							if (ftp.cwd(decodeDirPath) == FTPReply.FILE_ACTION_OK) {
+								actionSuccess = ftp.changeWorkingDirectory(decodeDirPath);
 							}
 
 							if (!actionSuccess) {

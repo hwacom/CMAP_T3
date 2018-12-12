@@ -59,8 +59,16 @@ function confirm(msg, callback) {
 	     modal: true,
 	     show: { effect: "fadeIn", duration: 300 },
 	     resizable: false,
+	     open : function() {
+				$(".ui-dialog").css('z-index', 2000);
+				$(".ui-widget-overlay").css('z-index', 1999);
+				$(".ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").hide();
+				$(".ui-button.ui-corner-all.ui-widget").css("font-family", "MicrosoftJhengHei");
+			},
 	     buttons : {
 	          "確認" : function() {
+	        	  $(this).dialog("close");
+	        	  
 	        	  var fn = window[callback];
 	        	  if (typeof fn === "function") {
 	        		  fn();

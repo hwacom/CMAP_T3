@@ -24,11 +24,7 @@ $(document).ready(function() {
 	});
 
 	$("#btnDelete").click(function() {
-		const confirmMsg = confirm("確認是否刪除?");
-		
-		if (confirmMsg) {
-			jobAction('delete');
-		}
+		confirm("確認是否刪除?", "doDelete");
 	});
 	
 	$("#btnModify").click(function() {
@@ -49,6 +45,10 @@ $(document).ready(function() {
 		changeSchedView($(this).val());
 	});
 });
+
+function doDelete() {
+	jobAction('delete');
+}
 
 function changeSchedView(schedType) {
 	$("div[id^=sec_]").hide();

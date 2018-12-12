@@ -54,10 +54,13 @@ function changeModifyView() {
 		var hasInnerText = (document.getElementsByTagName("body")[0].innerText !== undefined) ? true : false;
 		
 		$('input[name=chkbox]:checked:eq('+i+')').attr('disabled','disabled'); //關閉列表勾選框
+		
+		$('input[name=chkbox]:checked:eq('+i+')').parents("tr").children().eq(2).removeAttr("onclick"); //移除TD點擊放大鏡event
+		
 		$('input[name=chkbox]:checked:eq('+i+')').parents("tr").children().eq(2).html(
 			//切換「備註」欄位為輸入框
 			function() {
-				var html = '<input type="text" name="modifySettingRemark" value="' + $(this).text() +'" class="form-control form-control-sm" style="min-width: 200px" />';
+				var html = '<input type="text" name="modifySettingRemark" value="' + $(this).attr("content") +'" class="form-control form-control-sm" style="min-width: 200px" />';
 				return html;
 			}
 		);
