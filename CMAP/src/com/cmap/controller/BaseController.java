@@ -51,7 +51,7 @@ public class BaseController {
 	SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	@Autowired
-	private CommonService commonService;
+	protected CommonService commonService;
 
 	public BaseController() {
 		super();
@@ -154,7 +154,7 @@ public class BaseController {
 
 	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt) {
 		//Map<String, String> reverseMenuMap = new LinkedHashMap<String, String>();
-		Map<String, String> menuMap = new LinkedHashMap<String, String>();
+		Map<String, String> menuMap = new LinkedHashMap<>();
 
 		Map<String, Map<String, Map<String, String>>> groupDeviceMap
 			= (Map<String, Map<String, Map<String, String>>>)request.getSession().getAttribute(Constants.GROUP_DEVICE_MAP);
@@ -364,7 +364,7 @@ public class BaseController {
 						if (fieldNode.asText().indexOf("\r\n") != -1) {
 							String[] tmp = fieldNode.asText().split("\r\n");
 
-							List<String> sqlList = new ArrayList<String>();
+							List<String> sqlList = new ArrayList<>();
 							StringBuffer sb = new StringBuffer();
 							for (String str : tmp) {
 								sb.append(str).append("\r\n");

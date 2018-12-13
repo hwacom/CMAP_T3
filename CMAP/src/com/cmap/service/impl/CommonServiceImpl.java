@@ -20,13 +20,16 @@ import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.MenuItemDAO;
+import com.cmap.dao.PrtgDAO;
 import com.cmap.dao.ScriptTypeDAO;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.MenuItem;
+import com.cmap.model.PrtgAccountMapping;
 import com.cmap.model.ScriptType;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.CommonService;
+import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +48,9 @@ public class CommonServiceImpl implements CommonService {
 
 	@Autowired
 	ScriptTypeDAO scriptTypeDAO;
+
+	@Autowired
+	PrtgDAO prtgDAO;
 
 	/**
 	 * 組合 Local / Remote 落地檔路徑資料夾
@@ -271,5 +277,23 @@ public class CommonServiceImpl implements CommonService {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	@Override
+	public PrtgServiceVO findPrtgLoginInfo(String sourceId) {
+		PrtgServiceVO retVO = null;
+		try {
+			PrtgAccountMapping mapping = prtgDAO.findPrtgAccountMappingBySourceId(sourceId);
+
+			if (mapping != null) {
+				retVO = new PrtgServiceVO();
+				retVO.setAccount(mapping.getPrtgAccount());
+				retVO.setPassword(mapping.getPrtgPassword());
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return retVO;
 	}
 }

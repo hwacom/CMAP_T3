@@ -125,6 +125,31 @@ public class Constants {
 	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
 
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
+	
+	/*
+	 * OIDC
+	 */
+	public static final String OIDC_CLIENT_ID = "OIDC_CLIENT_ID";
+	public static final String OIDC_CLIENT_SECRET = "OIDC_CLIENT_SECRET";
+	public static final String OIDC_TOKEN_ENDPOINT = "OIDC_TOKEN_ENDPOINT";
+	public static final String OIDC_USER_INFO_ENDPOINT = "OIDC_USER_INFO_ENDPOINT";
+	public static final String OIDC_EDU_INFO_ENDPOINT = "OIDC_EDU_INFO_ENDPOINT";
+	public static final String OIDC_JWKS_URI = "OIDC_JWKS_URI";
+	public static final String OIDC_REDIRECT_URI = "OIDC_REDIRECT_URI";
+	public static final String OIDC_STATE = "OIDC_STATE";
+	public static final String OIDC_CODE = "OIDC_CODE";
+	public static final String OIDC_ACCESS_TOKEN = "OIDC_ACCESS_TOKEN";
+	public static final String OIDC_ID_TOKEN = "OIDC_ID_TOKEN";
+	public static final String OIDC_REFRESH_TOKEN = "OIDC_REFRESH_TOKEN";
+	public static final String OIDC_USER_INFO_JSON = "OIDC_USER_INFO_JSON";
+	public static final String OIDC_EDU_INFO_JSON = "OIDC_EDU_INFO_JSON";
+	public static final String OIDC_OPEN_2_ID = "OIDC_OPEN_2_ID";
+	public static final String OIDC_SUB = "OIDC_SUB";
+	public static final String OIDC_SCHOOL_ID = "OIDC_SCHOOL_ID";
+	public static final String OIDC_EMAIL = "OIDC_EMAIL";
+	public static final String OIDC_USER_NAME = "OIDC_USER_NAME";
+	
+	public static final String PRTG_LOGIN_ACCOUNT = "PRTG_LOGIN_ACCOUNT";
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {
 			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "file_full_name", "create_time"
