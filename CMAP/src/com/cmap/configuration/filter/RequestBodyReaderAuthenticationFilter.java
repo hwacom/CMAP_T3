@@ -113,13 +113,13 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 
             } else {
                 //moe clientid
-                clientID = new ClientID("e1dea85308ad402e988d73c9dd7d27b7");
-                clientSecret = new Secret("52ba124a2aeb74927646a28e6e9869d5e79d225cd1b1db2318e4582d07c72254");
+                clientID = new ClientID("3c884188c8a654ecebf78e560468e1cb");
+                clientSecret = new Secret("0380462b62942f35e21714ff0f321c6a6a88b89c66166a73303ddd1105a46d1a");
                 authEndpoint = new URI("https://mlc.sso.edu.tw/oidc/v1/azp");
                 tokenEndpoint = new URI("https://mlc.sso.edu.tw/oidc/v1/token");
                 userinfoEndpointURL = new URI("https://mlc.sso.edu.tw/oidc/v1/userinfo");
                 jwksURI = "https://mlc.sso.edu.tw/oidc/v1/jwksets";
-                redirectURI = "https://163.19.163.170/login/code";
+                redirectURI = "https://163.19.163.170:443/login/code";
 
             }
 
@@ -148,7 +148,7 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
             AuthenticationRequest authzReq = new AuthenticationRequest(
                     authEndpoint,
                     new ResponseType("code"),
-                    Scope.parse("openid profile email openid2"),
+                    Scope.parse("openid profile eduinfo openid2 email"),
                     clientID,
                     callback,
                     state,

@@ -3,6 +3,7 @@ package com.cmap.security;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ConnectTimeoutException;
@@ -39,13 +40,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	//並返回User放到spring的全域緩存SecurityContextHolder中，以供授權器使用
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		final boolean isAdmin = request.getSession().getAttribute(Constants.ISADMIN) != null
-									? (boolean)request.getSession().getAttribute(Constants.ISADMIN) : false;
-		final String password = (String)request.getSession().getAttribute(Constants.PASSWORD);
-		final String passhash = (String)request.getSession().getAttribute(Constants.PASSHASH);
-		final String ipAddr = (String)request.getSession().getAttribute(Constants.IP_ADDR);
-		final String role = (String)request.getSession().getAttribute(Constants.USERROLE);
-		final Object error = request.getSession().getAttribute(Constants.ERROR);
+		HttpSession session = request.getSession();
+		
+		final boolean isAdmin = session.getAttribute(Constants.ISADMIN) != null
+									? (boolean)session.getAttribute(Constants.ISADMIN) : false;
+		
+		final String userChineseName = (String)session.getAttribute(Constants.OIDC_USER_NAME);
+		final String userUnit = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
+		final String email = (String)session.getAttribute(Constants.OIDC_EMAIL);
+		final String prtgLoginAccount  = (String)session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT);
+		final String oidcSub = (String)session.getAttribute(Constants.OIDC_SUB);
+		final String password = (String)session.getAttribute(Constants.PASSWORD);
+		final String passhash = (String)session.getAttribute(Constants.PASSHASH);
+		final String ipAddr = (String)session.getAttribute(Constants.IP_ADDR);
+		final String role = (String)session.getAttribute(Constants.USERROLE);
+		final String schoolId = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
+		final Object error = session.getAttribute(Constants.ERROR);
 		final String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 		if (StringUtils.equals(Env.LOGIN_AUTH_MODE, Constants.LOGIN_AUTH_MODE_PRTG)) {
@@ -57,12 +67,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			}
 		}
 
-		User user = new User();
-		user.setUserName(username);
-		user.setPassword(password);
-		user.setRoles(roles);
-		user.setPasshash(passhash);
-		user.setIp(ipAddr);
+		User user = new User(username, userChineseName, userUnit, email, prtgLoginAccount,
+				oidcSub, password, passhash, ipAddr, schoolId, roles);
 
 		boolean accountEnabled = true;
 		boolean accountNonExpired = true;

@@ -70,12 +70,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 			.antMatchers("/resources/**").permitAll()
+			.antMatchers("/login/code/**").permitAll()
+			.antMatchers("/login/authByOIDC/**").permitAll()
 			.anyRequest().hasAnyRole("ADMIN", "USER", "ROLE_USER")
 			.and()
 			.addFilterBefore(authenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class)
-		.formLogin().loginPage("/login")
-		.permitAll()
+		.formLogin().loginPage("/login").permitAll()
 //			.successHandler(authSuccessHandler())
 //			.failureHandler(authUnsuccessHandler())
 			.and()

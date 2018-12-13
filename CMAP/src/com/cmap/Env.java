@@ -151,6 +151,25 @@ public class Env {
 	public static String SETTING_ID_OF_NET_FLOW;
 
 	public static String DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
+	
+	/*
+	 * OpenID
+	 */
+	public static String OIDC_CLIENT_ID;
+	public static String OIDC_CIENT_SECRET;
+	public static String OIDC_AUTH_ENDPOINT;
+	public static String OIDC_TOKEN_ENDPOINT;
+	public static String OIDC_USER_INFO_ENDPOINT;
+	public static String OIDC_EDU_INFO_ENDPOINT;
+	public static String OIDC_JWKS_URI;
+	public static String OIDC_REDIRECT_URI;
+	public static String OIDC_RESPONSE_TYPE;
+	public static String OIDC_SCOPE;
+	
+	public static String OIDC_AUTH_ENDPOINT_REQUEST_PARA_CODE;
+	public static String OIDC_AUTH_ENDPOINT_REQUEST_STATE_CODE;
+	public static String OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE;
+	public static String OIDC_EDUINFO_ENDPOINT_JSON_SCHOOLID_NODE;
 
 	public static final Step[] SEND_SCRIPT = new Step[] {
 			Step.LOAD_SPECIFIED_SCRIPT,
