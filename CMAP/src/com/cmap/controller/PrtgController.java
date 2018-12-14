@@ -25,6 +25,16 @@ public class PrtgController extends BaseController {
 		model.addAttribute("PRTG_IP_ADDR", Env.PRTG_SERVER_IP);
 		model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
 	}
+	
+	@RequestMapping(value = "/getPrtgMap", method = RequestMethod.GET)
+	public String getPrtgMap(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "redirect";
+	}
 
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {

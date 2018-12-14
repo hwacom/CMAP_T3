@@ -1,4 +1,4 @@
-package com.cmap.extension.openid;
+package com.cmap.extension.openid.connect.sdk;
 
 import java.util.Collections;
 import java.util.HashSet;

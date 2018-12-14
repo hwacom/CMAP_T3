@@ -1,10 +1,10 @@
-package com.cmap.extension.openid;
+package com.cmap.extension.openid.connect.sdk;
 
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.Response;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 
-public abstract class EduInfoResponse implements Response {
+public abstract class ConfigurationResponse implements Response {
 	
 	
 	/**
@@ -12,8 +12,8 @@ public abstract class EduInfoResponse implements Response {
 	 *
 	 * @return The UserInfo success response.
 	 */
-	public EduInfoSuccessResponse toSuccessResponse() {
-		return (EduInfoSuccessResponse) this;
+	public ConfigurationSuccessResponse toSuccessResponse() {
+		return (ConfigurationSuccessResponse) this;
 	}
 	
 	
@@ -22,8 +22,8 @@ public abstract class EduInfoResponse implements Response {
 	 *
 	 * @return The UserInfo error response.
 	 */
-	public EduInfoErrorResponse toErrorResponse() {
-		return (EduInfoErrorResponse) this;
+	public ConfigurationErrorResponse toErrorResponse() {
+		return (ConfigurationErrorResponse) this;
 	}
 
 
@@ -37,12 +37,12 @@ public abstract class EduInfoResponse implements Response {
 	 * @throws ParseException If the HTTP response couldn't be parsed to a 
 	 *                        UserInfo response.
 	 */
-	public static EduInfoResponse parse(final HTTPResponse httpResponse)
+	public static ConfigurationResponse parse(final HTTPResponse httpResponse)
 		throws ParseException {
 		
 		if (httpResponse.getStatusCode() == HTTPResponse.SC_OK)
-			return EduInfoSuccessResponse.parse(httpResponse);
+			return ConfigurationSuccessResponse.parse(httpResponse);
 		else
-			return EduInfoErrorResponse.parse(httpResponse);
+			return ConfigurationErrorResponse.parse(httpResponse);
 	}
 }

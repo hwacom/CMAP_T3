@@ -58,7 +58,7 @@ public class PrtgApiUtils implements ApiUtils {
 		try {
 			checkPasshash(request);
 
-			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{username}", SecurityUtil.getSecurityUser().getUser().getUserName());
+			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{username}", SecurityUtil.getSecurityUser().getUser().getPrtgLoginAccount());
 			API_SENSOR_TREE = StringUtils.replace(API_SENSOR_TREE, "{passhash}", SecurityUtil.getSecurityUser().getUser().getPasshash());
 
 			String apiUrl = PRTG_ROOT.concat(API_SENSOR_TREE);
@@ -166,6 +166,7 @@ public class PrtgApiUtils implements ApiUtils {
 				if (StringUtils.isNotBlank(retVal)) {
 					//PRTG驗證成功後將密碼hash_code存入Spring security USER物件內，供後續作業使用
 					//					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
+					request.getSession().setAttribute(Constants.PRTG_LOGIN_ACCOUNT, username);
 					request.getSession().setAttribute(Constants.PASSHASH, retVal);
 					return true;
 				}

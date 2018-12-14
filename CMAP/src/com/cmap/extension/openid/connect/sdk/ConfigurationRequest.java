@@ -1,4 +1,4 @@
-package com.cmap.extension.openid;
+package com.cmap.extension.openid.connect.sdk;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -11,12 +11,11 @@ import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.http.CommonContentTypes;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
-import com.nimbusds.openid.connect.sdk.UserInfoRequest;
 
 import net.jcip.annotations.Immutable;
 
 @Immutable
-public class EduInfoRequest extends ProtectedResourceRequest {
+public class ConfigurationRequest extends ProtectedResourceRequest {
 
 	/**
 	 * The HTTP method.
@@ -32,7 +31,7 @@ public class EduInfoRequest extends ProtectedResourceRequest {
 	 * @param accessToken An OAuth 2.0 Bearer access token for the request.
 	 *                    Must not be {@code null}.
 	 */
-	public EduInfoRequest(final URI uri, final BearerAccessToken accessToken) {
+	public ConfigurationRequest(final URI uri, final BearerAccessToken accessToken) {
 	
 		this(uri, HTTPRequest.Method.GET, accessToken);
 	}
@@ -49,7 +48,7 @@ public class EduInfoRequest extends ProtectedResourceRequest {
 	 * @param accessToken An OAuth 2.0 Bearer access token for the request.
 	 *                    Must not be {@code null}.
 	 */
-	public EduInfoRequest(final URI uri, final HTTPRequest.Method httpMethod, final BearerAccessToken accessToken) {
+	public ConfigurationRequest(final URI uri, final HTTPRequest.Method httpMethod, final BearerAccessToken accessToken) {
 	
 		super(uri, accessToken);
 		
@@ -119,7 +118,7 @@ public class EduInfoRequest extends ProtectedResourceRequest {
 	 * @throws ParseException If the HTTP request couldn't be parsed to a 
 	 *                        UserInfo request.
 	 */
-	public static EduInfoRequest parse(final HTTPRequest httpRequest)
+	public static ConfigurationRequest parse(final HTTPRequest httpRequest)
 		throws ParseException {
 		
 		HTTPRequest.Method httpMethod = httpRequest.getMethod();
@@ -137,6 +136,6 @@ public class EduInfoRequest extends ProtectedResourceRequest {
 			throw new ParseException(e.getMessage(), e);
 		}
 	
-		return new EduInfoRequest(endpointURI, httpMethod, accessToken);
+		return new ConfigurationRequest(endpointURI, httpMethod, accessToken);
 	}
 }

@@ -131,6 +131,7 @@ public class Constants {
 	 */
 	public static final String OIDC_CLIENT_ID = "OIDC_CLIENT_ID";
 	public static final String OIDC_CLIENT_SECRET = "OIDC_CLIENT_SECRET";
+	public static final String OIDC_CONFIGURATION_ENDPOINT = "OIDC_CONFIGURATION_ENDPOINT";
 	public static final String OIDC_TOKEN_ENDPOINT = "OIDC_TOKEN_ENDPOINT";
 	public static final String OIDC_USER_INFO_ENDPOINT = "OIDC_USER_INFO_ENDPOINT";
 	public static final String OIDC_EDU_INFO_ENDPOINT = "OIDC_EDU_INFO_ENDPOINT";
@@ -148,6 +149,8 @@ public class Constants {
 	public static final String OIDC_SCHOOL_ID = "OIDC_SCHOOL_ID";
 	public static final String OIDC_EMAIL = "OIDC_EMAIL";
 	public static final String OIDC_USER_NAME = "OIDC_USER_NAME";
+	
+	public static final String OIDC_MLC_CONFIGURATION_ENDPOINT = "https://mlc.sso.edu.tw/.well-known/openid-configuration";
 	
 	public static final String PRTG_LOGIN_ACCOUNT = "PRTG_LOGIN_ACCOUNT";
 

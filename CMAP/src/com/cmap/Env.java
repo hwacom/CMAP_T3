@@ -155,6 +155,7 @@ public class Env {
 	/*
 	 * OpenID
 	 */
+	public static String OIDC_CONFIGURATION_ENDPOINT;
 	public static String OIDC_CLIENT_ID;
 	public static String OIDC_CIENT_SECRET;
 	public static String OIDC_AUTH_ENDPOINT;
@@ -168,6 +169,8 @@ public class Env {
 	
 	public static String OIDC_AUTH_ENDPOINT_REQUEST_PARA_CODE;
 	public static String OIDC_AUTH_ENDPOINT_REQUEST_STATE_CODE;
+	public static String OIDC_USERINFO_ENDPOINT_JSON_NAME_NODE;
+	public static String OIDC_USERINFO_ENDPOINT_JSON_EMAIL_NODE;
 	public static String OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE;
 	public static String OIDC_EDUINFO_ENDPOINT_JSON_SCHOOLID_NODE;
 

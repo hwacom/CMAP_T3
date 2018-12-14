@@ -72,10 +72,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/resources/**").permitAll()
 			.antMatchers("/login/code/**").permitAll()
 			.antMatchers("/login/authByOIDC/**").permitAll()
-			.anyRequest().hasAnyRole("ADMIN", "USER", "ROLE_USER")
+			.antMatchers("/admin/env/refreshAll").permitAll()
+			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
+			/*
 			.addFilterBefore(authenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class)
+	                */
 		.formLogin().loginPage("/login").permitAll()
 //			.successHandler(authSuccessHandler())
 //			.failureHandler(authUnsuccessHandler())

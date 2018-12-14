@@ -1,16 +1,17 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="../../common/taglib.jsp" %>
+
 <!DOCTYPE html>
 
-<link rel="import" href="${PRTG_IP_ADDR}welcome.htm">
-
-<section>
-
-  <div id="content" class="container-fluid">
-  	PRTG首頁
-  </div>
+  <style>
+  	body {
+  		overflow: hidden;
+  	}
+  </style>
   
-</section>
-
+  <iframe id="indexFrame" class="scrollbar-macosx" width=100% height=450px frameborder="0"
+		src="https://163.19.163.169:1443/welcome.htm">
+   </iframe>
+                
 <script src="${pageContext.request.contextPath}/resources/js/plugin/module/cmap.prtg.index.js"></script>

@@ -11,10 +11,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +22,14 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
 import com.cmap.configuration.security.CustomAuthenticationProvider;
 import com.cmap.exception.AuthenticateException;
-import com.cmap.extension.openid.EduInfoErrorResponse;
-import com.cmap.extension.openid.EduInfoRequest;
-import com.cmap.extension.openid.EduInfoResponse;
-import com.cmap.extension.openid.EduInfoSuccessResponse;
+import com.cmap.extension.openid.connect.sdk.ConfigurationErrorResponse;
+import com.cmap.extension.openid.connect.sdk.ConfigurationRequest;
+import com.cmap.extension.openid.connect.sdk.ConfigurationResponse;
+import com.cmap.extension.openid.connect.sdk.ConfigurationSuccessResponse;
+import com.cmap.extension.openid.connect.sdk.EduInfoErrorResponse;
+import com.cmap.extension.openid.connect.sdk.EduInfoRequest;
+import com.cmap.extension.openid.connect.sdk.EduInfoResponse;
+import com.cmap.extension.openid.connect.sdk.EduInfoSuccessResponse;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.ApiUtils;
@@ -71,6 +71,8 @@ import com.nimbusds.openid.connect.sdk.UserInfoRequest;
 import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 
+import net.minidev.json.JSONObject;
+
 @Controller
 @RequestMapping("/login/code")
 public class OidcController extends BaseController {
@@ -82,12 +84,50 @@ public class OidcController extends BaseController {
 
 	private ClientID clientID = null;
 	private Secret clientSecret = null;
+	private URI configurationEndpointURL = null;
 	private URI tokenEndpoint = null;
 	private AuthorizationCode code = null;
 	private URI callback = null;
 	private URI userinfoEndpointURL = null;
 	private URI eduinfoEndpointURL = null;
 
+	@RequestMapping(value = "getConfig", method = RequestMethod.GET)
+	public String getConfig(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
+		HttpSession session = request.getSession();
+		
+		try {
+			configurationEndpointURL = new URI(session.getAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT).toString());
+
+	        // Append the access token to form actual request
+	        ConfigurationRequest configurationReq = new ConfigurationRequest(configurationEndpointURL, new BearerAccessToken());
+
+	        HTTPResponse configurationHTTPResponse = null;
+	        //觀察送出的header
+	        log.info("configuration request header:" + configurationReq.toHTTPRequest().getHeaderMap().toString());
+	        configurationHTTPResponse = configurationReq.toHTTPRequest().send();
+
+	        ConfigurationResponse configurationResponse = ConfigurationResponse.parse(configurationHTTPResponse);
+
+	        if (configurationResponse instanceof ConfigurationErrorResponse) {
+	            ErrorObject error = ((ConfigurationErrorResponse) configurationResponse).getErrorObject();
+	            // TODO error handling
+	        }
+
+	        ConfigurationSuccessResponse successConfigurationResponse = (ConfigurationSuccessResponse) configurationResponse;
+	        JSONObject configurationJSON = successConfigurationResponse.getGeneralInfo().toJSONObject();
+	        log.info("configurationJSON: " + configurationJSON);
+	        
+	        final String AUTH_ENDPOINT = configurationJSON.getAsString("authorization_endpoint");
+	        final String JWKS_URI = configurationJSON.getAsString("jwks_uri");
+	        final String TOKEN_ENDPOINT = configurationJSON.getAsString("token_endpoint");
+	        final String USER_INFO_ENDPOINT = configurationJSON.getAsString("userinfo_endpoint");
+	        
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return null;
+	}
+	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String getCode(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
 	    HttpSession session = request.getSession();
@@ -219,8 +259,15 @@ public class OidcController extends BaseController {
         }
 
         UserInfoSuccessResponse successUserInfoResponse = (UserInfoSuccessResponse) userInfoResponse;
-        String msg = successUserInfoResponse.getUserInfo().toJSONObject().toString();
-        log.info("UserInfoSuccessResponse: " + msg);
+        JSONObject userInfoJSON = successUserInfoResponse.getUserInfo().toJSONObject();
+        String userName = userInfoJSON.getAsString(Env.OIDC_USERINFO_ENDPOINT_JSON_NAME_NODE);
+        String email = userInfoJSON.getAsString(Env.OIDC_USERINFO_ENDPOINT_JSON_EMAIL_NODE);
+        String jsonStr = userInfoJSON.toJSONString();
+        log.info("UserInfoSuccessResponse: " + jsonStr);
+        
+        session.setAttribute(Constants.OIDC_USER_INFO_JSON, jsonStr);
+        session.setAttribute(Constants.OIDC_USER_NAME, userName);
+        session.setAttribute(Constants.OIDC_EMAIL, email);
 
         // Set up a JWT processor to parse the tokens and then check their signature
         // and validity time window (bounded by the "iat", "nbf" and "exp" claims)
@@ -257,8 +304,9 @@ public class OidcController extends BaseController {
         log.info("jsonnode:" + root.toString());
         log.info("open2_id: " + root.get(Env.OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE).toString().replace("\"", ""));
 
-        session.setAttribute(Constants.OIDC_USER_INFO_JSON, root.toString());
-        session.setAttribute(Constants.OIDC_OPEN_2_ID, root.get(Env.OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE).toString());
+        String oidcOpen2Id = root.get(Env.OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE).toString();
+        
+        session.setAttribute(Constants.OIDC_OPEN_2_ID, oidcOpen2Id);
         session.setAttribute(Constants.OIDC_SUB, claimsSet.getSubject());	// 取得Subject值做為識別, 進行帳號識別
 
         return getEduInfo(model, principal, request, response);
@@ -289,7 +337,7 @@ public class OidcController extends BaseController {
         }
 
         EduInfoSuccessResponse successEduInfoResponse = (EduInfoSuccessResponse) eduInfoResponse;
-        String eduInfo = successEduInfoResponse.getUserInfo().toJSONObject().toString();
+        String eduInfo = successEduInfoResponse.getGeneralInfo().toJSONObject().toString();
         log.info("EduInfoSuccessResponse: " + eduInfo);
 
         //migration from openid2.0
@@ -330,6 +378,7 @@ public class OidcController extends BaseController {
 			}
 
 			request.getSession().setAttribute(Constants.USERROLE, Constants.USERROLE_USER);
+			BaseAuthentication.authAdminRole(request, prtgVO.getAccount());
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -338,15 +387,6 @@ public class OidcController extends BaseController {
             return "redirect:/login";
 		}
 
-		BaseAuthentication.authAdminRole(request, prtgVO.getAccount());
-
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(prtgVO.getAccount(), prtgVO.getPassword());
-        token.setDetails(new WebAuthenticationDetails(request));
-
-        Authentication authentication = customerAuthProvider.authenticate(token);
-        log.debug("Logging in with [{}]", authentication.getPrincipal());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		return "index";
+		return super.manualAuthenticatd4EduOIDC(model, principal, request);
 	}
 }

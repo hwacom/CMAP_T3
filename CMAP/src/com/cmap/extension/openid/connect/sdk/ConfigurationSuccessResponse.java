@@ -1,36 +1,36 @@
-package com.cmap.extension.openid;
+package com.cmap.extension.openid.connect.sdk;
 
 import javax.mail.internet.ContentType;
 
+import com.cmap.extension.openid.connect.sdk.claims.GeneralInfo;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.SuccessResponse;
 import com.nimbusds.oauth2.sdk.http.CommonContentTypes;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 
-public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessResponse {
+public class ConfigurationSuccessResponse extends ConfigurationResponse implements SuccessResponse {
 
 	/**
-	 * The UserInfo claims set, serialisable to a JSON object.
+	 * The GeneralInfo claims set, serialisable to a JSON object.
 	 */
-	private final UserInfo claimsSet;
+	private final GeneralInfo claimsSet;
 	
 	
 	/**
-	 * The UserInfo claims set, as plain, signed or encrypted JWT.
+	 * The GeneralInfo claims set, as plain, signed or encrypted JWT.
 	 */
 	private final JWT jwt;
 	
 	
 	/**
-	 * Creates a new UserInfo success response where the claims are 
-	 * specified as an unprotected UserInfo claims set.
+	 * Creates a new GeneralInfo success response where the claims are 
+	 * specified as an unprotected GeneralInfo claims set.
 	 *
-	 * @param claimsSet The UserInfo claims set. Must not be {@code null}.
+	 * @param claimsSet The GeneralInfo claims set. Must not be {@code null}.
 	 */
-	public EduInfoSuccessResponse(final UserInfo claimsSet) {
+	public ConfigurationSuccessResponse(final GeneralInfo claimsSet) {
 	
 		if (claimsSet == null)
 			throw new IllegalArgumentException("The claims must not be null");
@@ -42,12 +42,12 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 	
 	
 	/**
-	 * Creates a new UserInfo success response where the claims are 
+	 * Creates a new GeneralInfo success response where the claims are 
 	 * specified as a plain, signed or encrypted JSON Web Token (JWT).
 	 *
-	 * @param jwt The UserInfo claims set. Must not be {@code null}.
+	 * @param jwt The GeneralInfo claims set. Must not be {@code null}.
 	 */
-	public EduInfoSuccessResponse(final JWT jwt) {
+	public ConfigurationSuccessResponse(final JWT jwt) {
 	
 		if (jwt == null)
 			throw new IllegalArgumentException("The claims JWT must not be null");
@@ -66,7 +66,7 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 	
 	
 	/**
-	 * Gets the content type of this UserInfo response.
+	 * Gets the content type of this GeneralInfo response.
 	 *
 	 * @return The content type, according to the claims format.
 	 */
@@ -80,26 +80,26 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 	
 	
 	/**
-	 * Gets the UserInfo claims set as an unprotected UserInfo claims set.
+	 * Gets the GeneralInfo claims set as an unprotected GeneralInfo claims set.
 	 *
-	 * @return The UserInfo claims set, {@code null} if it was specified as
+	 * @return The GeneralInfo claims set, {@code null} if it was specified as
 	 *         JSON Web Token (JWT) instead.
 	 */
-	public UserInfo getUserInfo() {
+	public GeneralInfo getGeneralInfo() {
 	
 		return claimsSet;
 	}
 	
 	
 	/**
-	 * Gets the UserInfo claims set as a plain, signed or encrypted JSON
+	 * Gets the GeneralInfo claims set as a plain, signed or encrypted JSON
 	 * Web Token (JWT).
 	 *
-	 * @return The UserInfo claims set as a JSON Web Token (JWT), 
-	 *         {@code null} if it was specified as an unprotected UserInfo
+	 * @return The GeneralInfo claims set as a JSON Web Token (JWT), 
+	 *         {@code null} if it was specified as an unprotected GeneralInfo
 	 *         claims set instead.
 	 */
-	public JWT getUserInfoJWT() {
+	public JWT getGeneralInfoJWT() {
 	
 		return jwt;
 	}
@@ -125,7 +125,7 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 				
 			} catch (IllegalStateException e) {
 			
-				throw new SerializeException("Couldn't serialize UserInfo claims JWT: " + 
+				throw new SerializeException("Couldn't serialize GeneralInfo claims JWT: " + 
 					                     e.getMessage(), e);
 			}
 		}
@@ -137,7 +137,7 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 	
 	
 	/**
-	 * Parses a UserInfo response from the specified HTTP response.
+	 * Parses a GeneralInfo response from the specified HTTP response.
 	 *
 	 * <p>Example HTTP response:
 	 *
@@ -157,12 +157,12 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 	 *
 	 * @param httpResponse The HTTP response. Must not be {@code null}.
 	 *
-	 * @return The UserInfo response.
+	 * @return The GeneralInfo response.
 	 *
 	 * @throws ParseException If the HTTP response couldn't be parsed to a 
-	 *                        UserInfo response.
+	 *                        GeneralInfo response.
 	 */
-	public static EduInfoSuccessResponse parse(final HTTPResponse httpResponse)
+	public static ConfigurationSuccessResponse parse(final HTTPResponse httpResponse)
 		throws ParseException {
 		
 		httpResponse.ensureStatusCode(HTTPResponse.SC_OK);
@@ -172,22 +172,22 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 		ContentType ct = httpResponse.getContentType();
 		
 		
-		EduInfoSuccessResponse response;
+		ConfigurationSuccessResponse response;
 		
 		if (ct.match(CommonContentTypes.APPLICATION_JSON)) {
 		
-			UserInfo claimsSet;
+			GeneralInfo claimsSet;
 			
 			try {
-				claimsSet = new UserInfo(httpResponse.getContentAsJSONObject());
+				claimsSet = new GeneralInfo(httpResponse.getContentAsJSONObject());
 				
 			} catch (Exception e) {
 				
-				throw new ParseException("Couldn't parse UserInfo claims: " + 
+				throw new ParseException("Couldn't parse GeneralInfo claims: " + 
 					                 e.getMessage(), e);
 			}
 			
-			response = new EduInfoSuccessResponse(claimsSet);
+			response = new ConfigurationSuccessResponse(claimsSet);
 		}
 		else if (ct.match(CommonContentTypes.APPLICATION_JWT)) {
 		
@@ -198,11 +198,11 @@ public class EduInfoSuccessResponse extends EduInfoResponse implements SuccessRe
 				
 			} catch (ParseException e) {
 			
-				throw new ParseException("Couldn't parse UserInfo claims JWT: " + 
+				throw new ParseException("Couldn't parse GeneralInfo claims JWT: " + 
 					                 e.getMessage(), e);
 			}
 			
-			response = new EduInfoSuccessResponse(jwt);
+			response = new ConfigurationSuccessResponse(jwt);
 		}
 		else {
 			throw new ParseException("Unexpected Content-Type, must be " + 

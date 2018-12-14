@@ -28,6 +28,7 @@
     <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/blog.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/resources/css/fontawesome/all.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/resources/css/jquery-scrollbar/jquery.scrollbar.css" rel="stylesheet">
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
@@ -37,6 +38,7 @@
     <script src="${pageContext.request.contextPath}/resources/js/popper/popper.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/bootstrap/bootstrap.min.js"></script>
     <script src="${pageContext.request.contextPath}/resources/js/jquery-ui/jquery-ui.min.js"></script>
+    <script src="${pageContext.request.contextPath}/resources/js/jquery-scrollbar/jquery.scrollbar.min.js"></script>
     <!-- Icons -->
     <script src="${pageContext.request.contextPath}/resources/js/feather-icons/feather.min.js"></script>
 	<!-- dataTable -->
