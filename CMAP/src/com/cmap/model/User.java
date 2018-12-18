@@ -7,15 +7,17 @@ public class User implements Serializable {
 	private static final long serialVersionUID = -5010954824778186468L;
 
 	private String userName;
-	
+
 	private String userChineseName;
-	
+
 	private String userUnit;
-	
+
 	private String email;
-	
+
 	private String prtgLoginAccount;
-	
+
+	private String prtgLoginPassword;
+
 	private String oidcSub;
 
 	private String password;
@@ -25,7 +27,7 @@ public class User implements Serializable {
 	private String ip;
 
 	private String schoolId;
-	
+
 	private String[] roles;
 
 	public User() {
@@ -33,13 +35,15 @@ public class User implements Serializable {
 	}
 
 	public User(String userName, String userChineseName, String userUnit, String email, String prtgLoginAccount,
-			String oidcSub, String password, String passhash, String ip, String schoolId, String[] roles) {
+			String prtgLoginPassword, String oidcSub, String password, String passhash, String ip, String schoolId,
+			String[] roles) {
 		super();
 		this.userName = userName;
 		this.userChineseName = userChineseName;
 		this.userUnit = userUnit;
 		this.email = email;
 		this.prtgLoginAccount = prtgLoginAccount;
+		this.prtgLoginPassword = prtgLoginPassword;
 		this.oidcSub = oidcSub;
 		this.password = password;
 		this.passhash = passhash;
@@ -86,6 +90,14 @@ public class User implements Serializable {
 
 	public void setPrtgLoginAccount(String prtgLoginAccount) {
 		this.prtgLoginAccount = prtgLoginAccount;
+	}
+
+	public String getPrtgLoginPassword() {
+		return prtgLoginPassword;
+	}
+
+	public void setPrtgLoginPassword(String prtgLoginPassword) {
+		this.prtgLoginPassword = prtgLoginPassword;
 	}
 
 	public String getOidcSub() {

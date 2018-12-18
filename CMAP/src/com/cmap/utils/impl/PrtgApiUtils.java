@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,9 +24,6 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.User;
-import com.cmap.prtg.PrtgDocument;
-import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2;
-import com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device;
 import com.cmap.security.SecurityUtil;
 import com.cmap.utils.ApiUtils;
 
@@ -40,6 +38,148 @@ public class PrtgApiUtils implements ApiUtils {
 		PRTG_ROOT = Env.PRTG_SERVER_IP;
 		API_LOGIN = Env.PRTG_API_LOGIN;
 		API_SENSOR_TREE = Env.PRTG_API_SENSOR_TREE;
+	}
+
+	/**
+	 * 解析 PRTG API 回傳 XML for 非HA架構模式
+	 * @param prtgDoc
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	/*
+	private Object[] parsePrtgDocument(com.cmap.prtg.PrtgDocument prtgDoc) throws ServiceLayerException {
+		Object[] retObj = new Object[4];
+		com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2[] groups = null;
+
+		try {
+			//無HA架構
+			groups = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenode().getGroupArray();
+
+		} catch (Exception e) {
+			throw new ServiceLayerException("取得PRTG API >> groupArray異常 :: "+e.toString());
+		}
+
+		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<>();
+		Map<String, Map<String, String>> deviceMap = null;
+		Map<String, String> deviceInfoMap = null;
+		Map<String, String> groupInfoMap = new HashMap<>();
+
+		List<String> groupLabelList = new ArrayList<>();
+		List<String> groupValueList = new ArrayList<>();
+		if (groups != null) {
+			for (com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2 group : groups) {
+				if (group == null) {
+					continue;
+				}
+				if (!Env.PRTG_EXCLUDE_GROUP_NAME.contains(group.getName())) {
+
+					String groupId = String.valueOf(group.getId());	//群組ID
+					String groupName = group.getName();	//群組名稱
+
+					groupInfoMap.put(groupId, groupName);
+
+					groupLabelList.add(groupName);
+					groupValueList.add(groupId);
+
+					com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device[] devices = group.getDeviceArray();
+
+					for (com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device device : devices) {
+						deviceInfoMap = composeDeviceInfoMap(group, device);	//組成裝置資訊MAP
+
+						if (groupDeviceMap.containsKey(groupId)) {
+							groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), deviceInfoMap);
+
+						} else {
+							deviceMap = new HashMap<>();
+							deviceMap.put(String.valueOf(device.getId()), deviceInfoMap);
+							groupDeviceMap.put(groupId, deviceMap);
+						}
+					}
+				}
+			}
+		}
+
+		retObj[0] = groupDeviceMap;
+		retObj[1] = deviceMap;
+		retObj[2] = deviceInfoMap;
+		retObj[3] = groupInfoMap;
+
+		return retObj;
+	}
+	*/
+
+	/**
+	 * 解析 PRTG API 回傳 XML for HA架構模式
+	 * @param prtgDoc
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	private Object[] parsePrtgDocument4HA(com.cmap.prtg.ha.PrtgDocument prtgDoc) throws ServiceLayerException {
+		Object[] retObj = new Object[4];
+		List<com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2> groups = new ArrayList<>();
+
+		try {
+			//HA架構
+			com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode[] pbNodes = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenodeArray();
+
+			for (com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode pbNode : pbNodes) {
+				String pbNodeID = Objects.toString(pbNode.getId(), null);
+
+				if (pbNodeID == null || (pbNodeID != null && Env.PRTG_EXCLUDE_PROBENODE_ID.contains(pbNodeID))) {
+					continue;
+				}
+
+				groups.add(pbNode.getGroup());
+			}
+
+		} catch (Exception e) {
+			throw new ServiceLayerException("取得PRTG API >> groupArray異常 :: "+e.toString());
+		}
+
+		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<>();
+		Map<String, Map<String, String>> deviceMap = null;
+		Map<String, String> deviceInfoMap = null;
+		Map<String, String> groupInfoMap = new HashMap<>();
+
+		List<String> groupLabelList = new ArrayList<>();
+		List<String> groupValueList = new ArrayList<>();
+		for (com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2 group : groups) {
+			if (group == null) {
+				continue;
+			}
+			if (!Env.PRTG_EXCLUDE_GROUP_NAME.contains(group.getName())) {
+
+				String groupId = String.valueOf(group.getId());	//群組ID
+				String groupName = group.getName();	//群組名稱
+
+				groupInfoMap.put(groupId, groupName);
+
+				groupLabelList.add(groupName);
+				groupValueList.add(groupId);
+
+				com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device[] devices = group.getDeviceArray();
+
+				for (com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device device : devices) {
+					deviceInfoMap = composeDeviceInfoMap4HA(group, device);	//組成裝置資訊MAP
+
+					if (groupDeviceMap.containsKey(groupId)) {
+						groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), deviceInfoMap);
+
+					} else {
+						deviceMap = new HashMap<>();
+						deviceMap.put(String.valueOf(device.getId()), deviceInfoMap);
+						groupDeviceMap.put(groupId, deviceMap);
+					}
+				}
+			}
+		}
+
+		retObj[0] = groupDeviceMap;
+		retObj[1] = deviceMap;
+		retObj[2] = deviceInfoMap;
+		retObj[3] = groupInfoMap;
+
+		return retObj;
 	}
 
 	@Override
@@ -66,45 +206,28 @@ public class PrtgApiUtils implements ApiUtils {
 			String retVal = callPrtg(apiUrl);
 			if (StringUtils.isNotBlank(retVal)) {
 
-				PrtgDocument prtgDoc = PrtgDocument.Factory.parse(retVal);
-				Group2[] groups = null;
+				Object[] obj = null;
+				if (Env.PRTG_HA) {
+					com.cmap.prtg.ha.PrtgDocument prtgDoc = com.cmap.prtg.ha.PrtgDocument.Factory.parse(retVal);
+					obj = parsePrtgDocument4HA(prtgDoc);
 
-				try {
-					groups = prtgDoc.getPrtg().getSensortree().getNodes().getGroup().getProbenode().getGroupArray();
 
-				} catch (Exception e) {
-					throw new ServiceLayerException("取得PRTG API >> groupArray異常 :: "+e.toString());
+				} else {
+					/*
+					com.cmap.prtg.PrtgDocument prtgDoc = com.cmap.prtg.PrtgDocument.Factory.parse(retVal);
+					obj = parsePrtgDocument(prtgDoc);
+					*/
 				}
 
-				groupInfoMap = new HashMap<>();
-				List<String> groupLabelList = new ArrayList<>();
-				List<String> groupValueList = new ArrayList<>();
-				for (Group2 group : groups) {
-					if (!Env.PRTG_EXCLUDE_GROUP_NAME.contains(group.getName())) {
-
-						String groupId = String.valueOf(group.getId());	//群組ID
-						String groupName = group.getName();	//群組名稱
-
-						groupInfoMap.put(groupId, groupName);
-
-						groupLabelList.add(groupName);
-						groupValueList.add(groupId);
-
-						Device[] devices = group.getDeviceArray();
-
-						for (Device device : devices) {
-							deviceInfoMap = composeDeviceInfoMap(group, device);	//組成裝置資訊MAP
-
-							if (groupDeviceMap.containsKey(groupId)) {
-								groupDeviceMap.get(groupId).put(String.valueOf(device.getId()), deviceInfoMap);
-
-							} else {
-								deviceMap = new HashMap<>();
-								deviceMap.put(String.valueOf(device.getId()), deviceInfoMap);
-								groupDeviceMap.put(groupId, deviceMap);
-							}
-						}
-					}
+				if (obj != null) {
+					/*
+					 	retObj[0] = groupDeviceMap;
+						retObj[1] = deviceMap;
+						retObj[2] = deviceInfoMap;
+						retObj[3] = groupInfoMap;
+					 */
+					groupInfoMap = (Map<String, String>)obj[3];
+					groupDeviceMap = (Map<String, Map<String, Map<String, String>>>)obj[0];
 				}
 			}
 
@@ -121,7 +244,33 @@ public class PrtgApiUtils implements ApiUtils {
 		return retObj;
 	}
 
-	private Map<String, String> composeDeviceInfoMap(Group2 group, Device device) {
+	/*
+	private Map<String, String> composeDeviceInfoMap(
+			com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2 group,
+			com.cmap.prtg.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device device) {
+		Map<String, String> deviceInfoMap = null;
+		try {
+			deviceInfoMap = new HashMap<>();
+			deviceInfoMap.put(Constants.GROUP_ID, String.valueOf(group.getId()));
+			deviceInfoMap.put(Constants.GROUP_NAME, getName(group.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_NAME));
+			deviceInfoMap.put(Constants.GROUP_ENG_NAME, getName(group.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_GROUP_ENG_NAME));
+			deviceInfoMap.put(Constants.DEVICE_ID, String.valueOf(device.getId()));
+			deviceInfoMap.put(Constants.DEVICE_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME));
+			deviceInfoMap.put(Constants.DEVICE_ENG_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME));
+			deviceInfoMap.put(Constants.DEVICE_IP, device.getHost());
+			deviceInfoMap.put(Constants.DEVICE_SYSTEM, device.getTags());
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+
+		return deviceInfoMap;
+	}
+	*/
+
+	private Map<String, String> composeDeviceInfoMap4HA(
+			com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2 group,
+			com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2.Device device) {
 		Map<String, String> deviceInfoMap = null;
 		try {
 			deviceInfoMap = new HashMap<>();
@@ -167,6 +316,7 @@ public class PrtgApiUtils implements ApiUtils {
 					//PRTG驗證成功後將密碼hash_code存入Spring security USER物件內，供後續作業使用
 					//					SecurityUtil.getSecurityUser().getUser().setPasshash(retVal);
 					request.getSession().setAttribute(Constants.PRTG_LOGIN_ACCOUNT, username);
+					request.getSession().setAttribute(Constants.PRTG_LOGIN_PASSWORD, password);
 					request.getSession().setAttribute(Constants.PASSHASH, retVal);
 					return true;
 				}
@@ -181,8 +331,8 @@ public class PrtgApiUtils implements ApiUtils {
 
 	private void checkPasshash(HttpServletRequest request) throws Exception {
 		User user = SecurityUtil.getSecurityUser().getUser();
-		String username = user.getUserName();
-		String password = user.getPassword();
+		String username = user.getPrtgLoginAccount();
+		String password = user.getPrtgLoginPassword();
 
 		if (StringUtils.isBlank(user.getPasshash())) {
 			login(request, username, password);

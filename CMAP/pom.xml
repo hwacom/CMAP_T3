@@ -284,7 +284,14 @@
 	    <artifactId>prtg</artifactId>
 	    <scope>system</scope>
 	    <version>1.0</version>
-	    <systemPath>${project.basedir}/WebContent/WEB-INF/lib/prtg.jar</systemPath>
+	    <systemPath>${project.basedir}/lib/prtg.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>prtg</groupId>
+	    <artifactId>prtg_ha</artifactId>
+	    <scope>system</scope>
+	    <version>1.0</version>
+	    <systemPath>${project.basedir}/WebContent/WEB-INF/lib/prtg_ha.jar</systemPath>
 	</dependency>
 	
 	<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->

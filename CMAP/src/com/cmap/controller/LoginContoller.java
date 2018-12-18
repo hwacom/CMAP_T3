@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 
@@ -78,32 +80,42 @@ public class LoginContoller extends BaseController {
 			Locale locale,
 			Principal principal,
 			Model model) {
+
+		HttpSession session = request.getSession();
 		LocaleContextHolder.getLocale();
-		
-		if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
-			URI configurationEndpoint = null;
-			try {
-				configurationEndpoint = new URI(Env.OIDC_CONFIGURATION_ENDPOINT);
-				
-			} catch (URISyntaxException e) {
-				log.error(e.toString(), e);
-				
-				try {
-					configurationEndpoint = new URI(Constants.OIDC_MLC_CONFIGURATION_ENDPOINT);
-					
-				} catch (URISyntaxException e1) {
-					log.error(e1.toString(), e1);
-				}
-			}
-			request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
-			
+
+		final String loginError = Objects.toString(session.getAttribute(Constants.MODEL_ATTR_LOGIN_ERROR), null);
+		if (StringUtils.isNotBlank(loginError)) {
+			model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, loginError);
+			session.removeAttribute(Constants.MODEL_ATTR_LOGIN_ERROR);
 			return "login_openid";
-			
+
 		} else {
-			return "login_openid";
+			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+				URI configurationEndpoint = null;
+				try {
+					configurationEndpoint = new URI(Env.OIDC_CONFIGURATION_ENDPOINT);
+
+				} catch (URISyntaxException e) {
+					log.error(e.toString(), e);
+
+					try {
+						configurationEndpoint = new URI(Constants.OIDC_MLC_CONFIGURATION_ENDPOINT);
+
+					} catch (URISyntaxException e1) {
+						log.error(e1.toString(), e1);
+					}
+				}
+				request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
+
+				return "login_openid";
+
+			} else {
+				return "login_openid";
+			}
 		}
 	}
-	
+
 	@RequestMapping(value = "login/authByOIDC", method = {RequestMethod.GET, RequestMethod.POST})
 	public String authByOIDC(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		ClientID clientID = null;
@@ -182,18 +194,18 @@ public class LoginContoller extends BaseController {
 
 			} catch (IOException ioe) {
 				log.error(ioe.toString(), ioe);
-				
-				model.addAttribute("LOGIN_EXCEPTION", "連接苗栗縣教育雲端帳號認證服務失敗，請重新操作或聯絡系統管理員");
+
+				model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "連接苗栗縣教育雲端帳號認證服務失敗，請重新操作或聯絡系統管理員");
 				return "login_openid";
 			}
 
         } catch (URISyntaxException ex) {
         	log.error(ex.toString(), ex);
-        	
-        	model.addAttribute("LOGIN_EXCEPTION", "OIDC授權驗證流程發生問題，請重新操作");
+
+        	model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "OIDC授權驗證流程發生問題，請重新操作");
 			return "login_openid";
         }
-		
+
 		return null;
 	}
 }

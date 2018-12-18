@@ -10,8 +10,8 @@
   	}
   </style>
   
-  <iframe id="indexFrame" class="scrollbar-macosx" width=100% height=450px frameborder="0"
-		src="https://163.19.163.169:1443/welcome.htm">
-   </iframe>
+  <iframe id="indexFrame" class="scrollbar-macosx" width=100% height=450px frameborder="0" src="${IFRAME_URI }?jsessionid=${pageContext.session.id}">
+  	Failed to open PRTG main page.
+  </iframe>
                 
 <script src="${pageContext.request.contextPath}/resources/js/plugin/module/cmap.prtg.index.js"></script>

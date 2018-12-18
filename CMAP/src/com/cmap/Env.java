@@ -11,12 +11,12 @@ import com.cmap.comm.enums.Step;
 
 public class Env {
 
-	public static List<String> DECODE_FIELDS = new ArrayList<String>();
+	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
 	public static String LOGIN_AUTH_MODE;
 	public static String ADMIN_USERNAME;
 	public static String ADMIN_PASSWORD;
-	public static List<String> ADMIN_ROLE_USERNAME = new ArrayList<String>();
+	public static List<String> ADMIN_ROLE_USERNAME = new ArrayList<>();
 	public static String USER_NAME_JOB;
 	public static String USER_IP_JOB;
 	public static String PROVISION_REASON_OF_JOB;
@@ -28,10 +28,13 @@ public class Env {
 
 	public static String RETRY_TIMES;
 
+	public static Boolean PRTG_HA;
+	public static List<String> PRTG_EXCLUDE_PROBENODE_ID = new ArrayList();
+
 	/**
 	 * 設定要排除掉的PRTG群組名稱(不呈顯於CMAP內)
 	 */
-	public static List<String> PRTG_EXCLUDE_GROUP_NAME = new ArrayList<String>();
+	public static List<String> PRTG_EXCLUDE_GROUP_NAME = new ArrayList<>();
 
 	/**
 	 * 設定PRTG上裝置頁簽顯示名稱中，包覆著中文「群組名稱」的符號 >> For UI選單
@@ -151,7 +154,11 @@ public class Env {
 	public static String SETTING_ID_OF_NET_FLOW;
 
 	public static String DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
-	
+
+	public static String PRTG_LOGIN_URI;
+	public static String PRTG_INDEX_URI;
+	public static String PRTG_DASHBOARD_URI;
+
 	/*
 	 * OpenID
 	 */
@@ -166,7 +173,7 @@ public class Env {
 	public static String OIDC_REDIRECT_URI;
 	public static String OIDC_RESPONSE_TYPE;
 	public static String OIDC_SCOPE;
-	
+
 	public static String OIDC_AUTH_ENDPOINT_REQUEST_PARA_CODE;
 	public static String OIDC_AUTH_ENDPOINT_REQUEST_STATE_CODE;
 	public static String OIDC_USERINFO_ENDPOINT_JSON_NAME_NODE;
@@ -251,7 +258,7 @@ public class Env {
 			Step.CLOSE_FILE_SERVER_CONNECTION
 	};
 
-	public static Map<String, String> SCHED_TYPE_CLASS_MAPPING = new HashMap<String, String>();
+	public static Map<String, String> SCHED_TYPE_CLASS_MAPPING = new HashMap<>();
 
 	static {
 		//系統預設值，當SYS_CONFIG_SETTING未設定時採用

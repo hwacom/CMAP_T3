@@ -73,6 +73,7 @@ public class Constants {
 	public static final String DATA_MARK_NOT_DELETE = "N";
 	public static final String DATA_Y = "Y";
 	public static final String DATA_N = "N";
+	public static final String DATA_STAR_SYMBOL = "*";
 
 	public static final String GROUP_ID = "GROUP_ID";
 	public static final String GROUP_NAME = "GROUP_NAME";
@@ -125,7 +126,8 @@ public class Constants {
 	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
 
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
-	
+
+	public static final String MODEL_ATTR_LOGIN_ERROR = "LOGIN_EXCEPTION";
 	/*
 	 * OIDC
 	 */
@@ -149,10 +151,11 @@ public class Constants {
 	public static final String OIDC_SCHOOL_ID = "OIDC_SCHOOL_ID";
 	public static final String OIDC_EMAIL = "OIDC_EMAIL";
 	public static final String OIDC_USER_NAME = "OIDC_USER_NAME";
-	
+
 	public static final String OIDC_MLC_CONFIGURATION_ENDPOINT = "https://mlc.sso.edu.tw/.well-known/openid-configuration";
-	
+
 	public static final String PRTG_LOGIN_ACCOUNT = "PRTG_LOGIN_ACCOUNT";
+	public static final String PRTG_LOGIN_PASSWORD = "PRTG_LOGIN_PASSWORD";
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {
 			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "file_full_name", "create_time"

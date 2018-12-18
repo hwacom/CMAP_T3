@@ -11,5 +11,8 @@
 	<decorator name="outsite" page="common/blank.jsp">
 		<pattern>/outsite*</pattern>
 	</decorator>
+	<decorator name="prtg_welcome_iframe" page="views/prtg/welcome.jsp">
+		<pattern>/prtg/welcome*</pattern>
+	</decorator>
 	
 </decorators>

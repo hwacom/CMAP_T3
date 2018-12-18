@@ -15,8 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,53 +73,55 @@ public class BaseController {
 	protected String manualAuthenticatd4EduOIDC(Model model, Principal principal, HttpServletRequest request) {
 		try {
 			HttpSession session = request.getSession();
-			
+
 			String userRole = Objects.toString(session.getAttribute(Constants.USERROLE), "");
 			String[] userRoles = StringUtils.split(userRole, Env.COMM_SEPARATE_SYMBOL);
 			final String[] USER_ROLES = userRoles;
-			
+
 			final String USER_ACCOUNT = Objects.toString(session.getAttribute(Constants.OIDC_SUB), "");
 			final String USER_NAME = Objects.toString(session.getAttribute(Constants.OIDC_USER_NAME), "");
 			final String USER_UNIT = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), "");
 			final String USER_EMAIL = Objects.toString(session.getAttribute(Constants.OIDC_EMAIL), "");
 			final String USER_IP = Objects.toString(session.getAttribute(Constants.IP_ADDR), "unknow");
 			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
+			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
 			final String PRTG_PASSHASH = Objects.toString(session.getAttribute(Constants.PASSHASH), "");
 			final String OIDC_SUB = Objects.toString(session.getAttribute(Constants.OIDC_SUB), "");
 			final String OIDC_PASSWORD = Objects.toString(session.getAttribute(Constants.OIDC_SUB), "");
 			final String OIDC_SCHOOL_ID = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), "");
-			
+
 			List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-			
+
 			for (String ROLE : USER_ROLES) {
 				authorities.add(new SimpleGrantedAuthority("ROLE_" + ROLE));
 			}
-			
+
 			User user = new User(
-								USER_ACCOUNT, 
-								USER_NAME, 
-								USER_UNIT, 
-								USER_EMAIL, 
-								PRTG_ACCOUNT, 
-								OIDC_SUB, 
-								OIDC_PASSWORD, 
-								PRTG_PASSHASH, 
-								USER_IP, 
-								OIDC_SCHOOL_ID, 
+								USER_ACCOUNT,
+								USER_NAME,
+								USER_UNIT,
+								USER_EMAIL,
+								PRTG_ACCOUNT,
+								PRTG_PASSWORD,
+								OIDC_SUB,
+								OIDC_PASSWORD,
+								PRTG_PASSHASH,
+								USER_IP,
+								OIDC_SCHOOL_ID,
 								USER_ROLES);
 			SecurityUser securityUser = new SecurityUser(user, USER_NAME, OIDC_PASSWORD, true, true, true, true, authorities);
-			
+
 	        Authentication authentication =  new UsernamePasswordAuthenticationToken(securityUser, USER_NAME, authorities);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
-			
+
 	        return "redirect:/prtg/index";
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			return "redirect:/login";
 		}
 	}
-	
+
 
 	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {
 		if (StringUtils.isBlank(queryGroup)) {

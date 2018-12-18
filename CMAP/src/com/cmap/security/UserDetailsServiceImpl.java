@@ -41,14 +41,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		HttpSession session = request.getSession();
-		
+
 		final boolean isAdmin = session.getAttribute(Constants.ISADMIN) != null
 									? (boolean)session.getAttribute(Constants.ISADMIN) : false;
-		
+
 		final String userChineseName = (String)session.getAttribute(Constants.OIDC_USER_NAME);
 		final String userUnit = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
 		final String email = (String)session.getAttribute(Constants.OIDC_EMAIL);
 		final String prtgLoginAccount  = (String)session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT);
+		final String prtgLoginPassword  = (String)session.getAttribute(Constants.PRTG_LOGIN_PASSWORD);
 		final String oidcSub = (String)session.getAttribute(Constants.OIDC_SUB);
 		final String password = (String)session.getAttribute(Constants.PASSWORD);
 		final String passhash = (String)session.getAttribute(Constants.PASSHASH);
@@ -67,7 +68,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			}
 		}
 
-		User user = new User(username, userChineseName, userUnit, email, prtgLoginAccount,
+		User user = new User(username, userChineseName, userUnit, email, prtgLoginAccount, prtgLoginPassword,
 				oidcSub, password, passhash, ipAddr, schoolId, roles);
 
 		boolean accountEnabled = true;
@@ -91,7 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	public ArrayList<GrantedAuthority> getAuthorities(String... roles) {
-		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(roles.length);
+		ArrayList<GrantedAuthority> authorities = new ArrayList<>(roles.length);
 		for (String role : roles) {
 			Assert.isTrue(!role.startsWith("ROLE_"), role + " cannot start with ROLE_ (it is automatically added)");
 			authorities.add(new SimpleGrantedAuthority("ROLE_" + role));

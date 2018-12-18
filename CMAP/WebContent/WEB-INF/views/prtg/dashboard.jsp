@@ -9,8 +9,6 @@
   	 }
    </style>
 
-   <iframe id="dashboardFrame" width=100% height=450px frameborder="0"
-		src="https://163.19.163.169:1443/public/mapshow.htm?id=2956&mapid=2dce289c-01ec-40ef-aa94-27bb5c7f3f4f">
-	</iframe>
+   <iframe id="dashboardFrame" width=100% height=450px frameborder="0"src="${IFRAME_URI }"></iframe>
 
 <script src="${pageContext.request.contextPath}/resources/js/plugin/module/cmap.prtg.dashboard.js"></script>

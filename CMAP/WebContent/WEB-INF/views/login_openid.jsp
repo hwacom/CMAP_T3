@@ -38,16 +38,20 @@
 			  	</div>
 			  	<div class="row">
 			  		<div class="col-md-6 col-sm-12 offset-md-3 m-t-5 login-form">
-			  			<c:if test="${not empty LOGIN_EXCEPTION}">
-					      <span class="red">
-					        	<spring:message code="${LOGIN_EXCEPTION}" />
-					      </span>
-						</c:if>
 			  			<div class="row offset-md-1">
 						  <div class="col-12">
 						  	<img src="${pageContext.request.contextPath}/resources/images/mlc_sso.png" style="float: left; margin: 15px;"/>
 							<p style="text-align: left;">本系統採用苗栗縣教育雲端帳號認證服務<br>按下登入後將導向該登入頁面</p>
 			  			  </div>
+			  			</div>
+			  			<div class="row offset-md-1">
+			  				<c:if test="${not empty LOGIN_EXCEPTION}">
+			  					<div class="col-md-10 col-sm-12 center">
+			  						<span class="red">
+							        	<spring:message code="${LOGIN_EXCEPTION}" />
+							      	</span>
+			  					</div>
+							</c:if>
 			  			</div>
 			  			<div class="row offset-md-1">
 			  		  		<div class="col-md-10 col-sm-12">

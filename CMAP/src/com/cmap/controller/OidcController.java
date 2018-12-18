@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.Principal;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
 import com.cmap.configuration.security.CustomAuthenticationProvider;
 import com.cmap.exception.AuthenticateException;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.extension.openid.connect.sdk.ConfigurationErrorResponse;
 import com.cmap.extension.openid.connect.sdk.ConfigurationRequest;
 import com.cmap.extension.openid.connect.sdk.ConfigurationResponse;
@@ -31,6 +33,7 @@ import com.cmap.extension.openid.connect.sdk.EduInfoRequest;
 import com.cmap.extension.openid.connect.sdk.EduInfoResponse;
 import com.cmap.extension.openid.connect.sdk.EduInfoSuccessResponse;
 import com.cmap.security.SecurityUtil;
+import com.cmap.service.UserService;
 import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
@@ -82,6 +85,9 @@ public class OidcController extends BaseController {
 	@Autowired
 	private CustomAuthenticationProvider customerAuthProvider;
 
+	@Autowired
+	private UserService userService;
+
 	private ClientID clientID = null;
 	private Secret clientSecret = null;
 	private URI configurationEndpointURL = null;
@@ -94,7 +100,7 @@ public class OidcController extends BaseController {
 	@RequestMapping(value = "getConfig", method = RequestMethod.GET)
 	public String getConfig(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
 		HttpSession session = request.getSession();
-		
+
 		try {
 			configurationEndpointURL = new URI(session.getAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT).toString());
 
@@ -116,18 +122,18 @@ public class OidcController extends BaseController {
 	        ConfigurationSuccessResponse successConfigurationResponse = (ConfigurationSuccessResponse) configurationResponse;
 	        JSONObject configurationJSON = successConfigurationResponse.getGeneralInfo().toJSONObject();
 	        log.info("configurationJSON: " + configurationJSON);
-	        
+
 	        final String AUTH_ENDPOINT = configurationJSON.getAsString("authorization_endpoint");
 	        final String JWKS_URI = configurationJSON.getAsString("jwks_uri");
 	        final String TOKEN_ENDPOINT = configurationJSON.getAsString("token_endpoint");
 	        final String USER_INFO_ENDPOINT = configurationJSON.getAsString("userinfo_endpoint");
-	        
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 		}
 		return null;
 	}
-	
+
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String getCode(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) throws URISyntaxException {
 	    HttpSession session = request.getSession();
@@ -157,7 +163,7 @@ public class OidcController extends BaseController {
                 code = successResponse.getAuthorizationCode();
 
                 if (code == null || (code != null && StringUtils.isBlank(code.getValue()))) {
-                	model.addAttribute("LOGIN_EXCEPTION", "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
+                	session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
                     return "redirect:/login";
     			}
 
@@ -169,7 +175,7 @@ public class OidcController extends BaseController {
 
                 // 驗證Session連續性
     			if (!successResponse.getState().toString().equals(state)) {
-    				model.addAttribute("LOGIN_EXCEPTION", "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
+    				session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
     	            return "redirect:/login";
     			}
                 log.info("the same state");
@@ -212,7 +218,7 @@ public class OidcController extends BaseController {
             log.info(errorResponse.getErrorObject().getCode());
             log.error(String.format("%d", errorResponse.getErrorObject().getHTTPStatusCode()));
 
-            model.addAttribute("LOGIN_EXCEPTION", "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
+            session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "取得教育雲授權失敗，請重新操作或聯絡系統管理員");
             return "redirect:/login";
 
         } else {
@@ -264,7 +270,7 @@ public class OidcController extends BaseController {
         String email = userInfoJSON.getAsString(Env.OIDC_USERINFO_ENDPOINT_JSON_EMAIL_NODE);
         String jsonStr = userInfoJSON.toJSONString();
         log.info("UserInfoSuccessResponse: " + jsonStr);
-        
+
         session.setAttribute(Constants.OIDC_USER_INFO_JSON, jsonStr);
         session.setAttribute(Constants.OIDC_USER_NAME, userName);
         session.setAttribute(Constants.OIDC_EMAIL, email);
@@ -305,7 +311,7 @@ public class OidcController extends BaseController {
         log.info("open2_id: " + root.get(Env.OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE).toString().replace("\"", ""));
 
         String oidcOpen2Id = root.get(Env.OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE).toString();
-        
+
         session.setAttribute(Constants.OIDC_OPEN_2_ID, oidcOpen2Id);
         session.setAttribute(Constants.OIDC_SUB, claimsSet.getSubject());	// 取得Subject值做為識別, 進行帳號識別
 
@@ -356,10 +362,38 @@ public class OidcController extends BaseController {
         session.setAttribute(Constants.OIDC_EDU_INFO_JSON, root.toString());
         session.setAttribute(Constants.OIDC_SCHOOL_ID, schoolId);
 
-		return loginAuthByPRTG(model, principal, request, schoolId);
+        boolean canAccess = checkUserCanOrNotAccess(request);
+
+        if (canAccess) {
+        	return loginAuthByPRTG(model, principal, request, schoolId);
+
+        } else {
+        	session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "無網路管理系統存取權限，請與系統管理員聯繫");
+            return "redirect:/login";
+        }
+	}
+
+	private boolean checkUserCanOrNotAccess(HttpServletRequest request) {
+		boolean canAccess = false;
+
+		try {
+			final String account = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB));
+
+			canAccess = userService.checkUserCanAccess(request, account);
+
+		} catch (ServiceLayerException sle) {
+			canAccess = false;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			canAccess = false;
+		}
+
+		return canAccess;
 	}
 
 	private String loginAuthByPRTG(Model model, Principal principal, HttpServletRequest request, String sourceId) {
+		HttpSession session = request.getSession();
 		PrtgServiceVO prtgVO = null;
 
 		try {
@@ -377,13 +411,28 @@ public class OidcController extends BaseController {
 				throw new AuthenticateException("PRTG登入失敗 >> prtgApiUtils.login return false");
 			}
 
-			request.getSession().setAttribute(Constants.USERROLE, Constants.USERROLE_USER);
-			BaseAuthentication.authAdminRole(request, prtgVO.getAccount());
+			String role = Objects.toString(session.getAttribute(Constants.USERROLE), null);
+
+			if (StringUtils.isBlank(role)) {
+				request.getSession().setAttribute(Constants.USERROLE, Constants.USERROLE_USER);
+
+			} else {
+				if (role.indexOf(Constants.USERROLE_USER) == -1) {
+					role = role.concat(Env.COMM_SEPARATE_SYMBOL).concat(Constants.USERROLE_USER);
+					request.getSession().setAttribute(Constants.USERROLE, role);
+				}
+			}
+
+			String userOIDCSub = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB), null);
+
+			if (StringUtils.isNotBlank(userOIDCSub)) {
+				BaseAuthentication.authAdminRole(request, userOIDCSub);
+			}
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 
-			model.addAttribute("LOGIN_EXCEPTION", "PRTG登入失敗，請重新操作或聯絡系統管理員");
+			session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "PRTG登入失敗，請重新操作或聯絡系統管理員");
             return "redirect:/login";
 		}
 

@@ -81,10 +81,18 @@ p {
   /*text-overflow: ellipsis; /*出現省略號*/
   vertical-align : middle;
 }
+
+.center {
+  text-align: center;
+  vertical-align: middle;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
 	
 .login-form {
   background-color: rgba(255,255,255,0.7);
-  height: 150px;
+  height: 165px;
 }
 
 .form-signin {
