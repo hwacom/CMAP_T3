@@ -1,4 +1,5 @@
 <script>
-	location.href = "https://163.19.163.170:1443/welcome.htm";
+	//console.log(document.cookie);
+	//window.open("https://127.0.0.1:1443/welcome.htm");
 
 </script>

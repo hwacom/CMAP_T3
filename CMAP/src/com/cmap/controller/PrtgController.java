@@ -26,7 +26,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -49,7 +51,8 @@ public class PrtgController extends BaseController {
 		model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
 	}
 
-	private void sendLogin(HttpServletRequest request) {
+	private String sendLogin(HttpServletRequest request, HttpServletResponse response) {
+		String retVal = "";
 		HttpSession session = request.getSession();
 
 		try {
@@ -85,20 +88,25 @@ public class PrtgController extends BaseController {
 				log.info("Executing request " + httpPost.getRequestLine());
 
 				HttpClientContext context = HttpClientContext.create();
-				CloseableHttpResponse response = httpclient.execute(httpPost, context);
+				CloseableHttpResponse closeableResponse = httpclient.execute(httpPost, context);
 
 				CookieStore cookieStore = context.getCookieStore();
 				try {
-					int statusCode = response.getStatusLine().getStatusCode();
+					int statusCode = closeableResponse.getStatusLine().getStatusCode();
 					log.info(">>>>>>>>>>>>>>>>>> statusCode: " + statusCode);
 
+					javax.servlet.http.Cookie httpCookie;
 				    List<Cookie> cookies = cookieStore.getCookies();
 				    for (Cookie c : cookies) {
 				    	log.info(c.toString());
+
+				    	System.out.println("Name: " + c.getName() + ", Value: " + c.getValue());
+				    	httpCookie = new javax.servlet.http.Cookie(c.getName(), c.getValue());
+				    	response.addCookie(httpCookie);
 				    }
 
 				} finally {
-				    response.close();
+					closeableResponse.close();
 				}
 
 				/*
@@ -106,7 +114,7 @@ public class PrtgController extends BaseController {
 			     */
 				/*
 				HttpClient client = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
-			    HttpGet httpGet = new HttpGet("https://163.19.163.170:1443/welcome.htm");
+			    HttpGet httpGet = new HttpGet("https://www.google.com/");
 			    httpGet.setConfig(requestConfig);
 
 			    HttpResponse resp = client.execute(httpGet);
@@ -114,13 +122,15 @@ public class PrtgController extends BaseController {
 			    ResponseHandler<String> handler = new BasicResponseHandler();
 			    String body = handler.handleResponse(resp);
 			    System.out.println("******** body: " + body);
-//			    return body;
- * */
+			    return body;
+			    */
 			}
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 		}
+
+		return retVal;
 	}
 
 	@RequestMapping(value = "/welcomePage", method = RequestMethod.GET)
@@ -130,7 +140,20 @@ public class PrtgController extends BaseController {
 			String body = sendLogin(request);
 			model.addAttribute("IFRAME_HTML", body);
 			*/
-			sendLogin(request);
+			/*
+			String cookie = sendLogin(request, response);
+			cookie = cookie.replace("[", "").replace(":", "=").replace("]", ";").replace(" ", "");
+			model.addAttribute("IFRAME_COOKIE", cookie);
+
+			String new_url = "https://163.19.163.170:1443/welcome.htm";
+			String html = "<script type='text/javascript'>location.href='"+new_url+"';</script>";
+			response.getWriter().print(html);
+			*/
+			String html = sendLogin(request, response);
+//			cookie = cookie.replace("[", "").replace(":", "=").replace("]", ";").replace(" ", "");
+//			model.addAttribute("IFRAME_COOKIE", cookie);
+//			model.addAttribute("IFRAME_URI", Env.PRTG_INDEX_URI);
+			model.addAttribute("IFRAME_HTML", html);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -138,13 +161,43 @@ public class PrtgController extends BaseController {
 		return "prtg/welcome";
 	}
 
+	@RequestMapping(value = "getPrtgIndexUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgIndexUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		try {
+			final String BASE_URI = Env.PRTG_INDEX_URI;
+			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
+			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
+			final String prtgIndexUri = BASE_URI + "?a=" + PRTG_ACCOUNT + "&p=" + PRTG_PASSWORD;
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", prtgIndexUri);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
 
-			sendLogin(request);
-			model.addAttribute("IFRAME_URI", Env.PRTG_INDEX_URI);
+//			String html = sendLogin(request, response);
+			/*
+			final String BASE_URI = Env.PRTG_INDEX_URI;
+			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
+			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
+			final String prtgIndexUri = BASE_URI + "?a=" + PRTG_ACCOUNT + "&p=" + PRTG_PASSWORD;
+
+			model.addAttribute("IFRAME_URI", prtgIndexUri);
+			*/
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

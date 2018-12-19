@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.cmap.configuration.filter.RequestBodyReaderAuthenticationFilter;
@@ -27,33 +27,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
+
 	@Bean
 	public AuthSuccessHandler authSuccessHandler() {
 		return new AuthSuccessHandler();
 	};
-	
+
 	@Bean
 	public AuthUnsuccessHandler authUnsuccessHandler() {
 		return new AuthUnsuccessHandler();
 	};
-	
+
+	@Override
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsServiceImpl();
 	};
-	
+
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	};
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		UserDetailsService userDetailsService = userDetailsService();
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
-	
+
 	@Bean
     public RequestBodyReaderAuthenticationFilter authenticationFilter() throws Exception {
         RequestBodyReaderAuthenticationFilter authenticationFilter
@@ -65,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         authenticationFilter.setAuthenticationManager(authenticationManagerBean());
         return authenticationFilter;
     }
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -86,6 +87,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.logout()
 	    .permitAll()
 	    	.and()
+	    	.headers()
+			//.contentSecurityPolicy("default-src 'self'")	//http://www.ruanyifeng.com/blog/2016/09/csp.html
+			//.and()
+			.frameOptions()
+			.disable()
+			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170"))
+			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170:1443"))
+			.and()
 		.csrf().disable();
 	}
 }
