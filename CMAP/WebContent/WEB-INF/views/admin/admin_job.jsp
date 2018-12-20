@@ -265,6 +265,20 @@
 	            </div>
 	            <!-- [END]Data Poller -->
 	            
+	            <!-- 本地檔案操作 -->
+	            <div id="sec_localFileOperation" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputLocalFileOperationNames" class="col-12 col-form-label"><span style="color:blue">*** 本地檔案操作 參數設定 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputLocalFileOperationSettingId" class="col-md-2 col-sm-3 col-form-label">Setting IDs<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-md-10 col-sm-9">
+		            		<input type="text" class="form-control form-control-sm" id="inputLocalFileOperationSettingId" name="inputLocalFileOperationSettingId" placeholder="多組ID以「,」區隔；區間以「ID1~ID2」表示"></input>
+		                </div>
+		            </div>
+	            </div>
+	            <!-- [END]本地檔案操作 -->
+	            
 	            <input type="hidden" id="jobKeyName" name="jobKeyName">
 	            <input type="hidden" id="jobKeyGroup" name="jobKeyGroup">
 	            
@@ -380,6 +394,28 @@
 	            </div>
        	  	</div>
        	  	<!-- [END]系統檢核 -->
+       	  	
+       	  	<!-- Data Poller -->
+       	  	<div id="sec_detail_dataPoller" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewDataPollerSettingId" class="col-md-2 col-sm-3 col-form-label">Data_Poller_Setting.ID:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<textarea rows="5" class="form-control form-control-sm" id="viewDataPollerSettingId" readonly></textarea>
+	                </div>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]Data Poller -->
+       	  	
+       	  	<!-- 本地檔案操作 -->
+       	  	<div id="sec_detail_localFileOperation" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewLocalFileOperationSettingId" class="col-md-2 col-sm-3 col-form-label">Job_File_Operation_Setting.ID:</label>
+	            	<div class="col-md-10 col-sm-9">
+	            		<textarea rows="5" class="form-control form-control-sm" id="viewLocalFileOperationSettingId" readonly></textarea>
+	                </div>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]本地檔案操作 -->
             
           </div>
 		</div>

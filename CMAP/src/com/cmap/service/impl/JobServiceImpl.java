@@ -81,7 +81,7 @@ public class JobServiceImpl implements JobService {
 	}
 
 	private String convertLongTime2DateStr(Long longTime) {
-		return Constants.FORMAT_YYYYMMDD_HH24MI.format(new Date(longTime));
+		return Constants.FORMAT_YYYYMMDD_HH24MISS.format(new Date(longTime));
 	}
 
 	@Override
@@ -138,6 +138,9 @@ public class JobServiceImpl implements JobService {
 
 						final List<String> sqls = (List<String>)jobDataMap.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
 
+						final String dataPollerSettingId = (String)jobDataMap.get(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID);
+						final String localFileOperationSettingId = (String)jobDataMap.get(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID);
+
 						final String sqlsStr = sqls != null ? String.join("\n", sqls) : "";
 
 						retVO.setSchedType(schedType);
@@ -153,6 +156,9 @@ public class JobServiceImpl implements JobService {
 						retVO.setFtpPassword(ftpPassword);
 
 						retVO.setSysCheckSqlStr(sqlsStr);
+
+						retVO.setDataPollerSettingId(dataPollerSettingId);
+						retVO.setLocalFileOperationSettingId(localFileOperationSettingId);
 					}
 
 					retList.add(retVO);
@@ -184,6 +190,8 @@ public class JobServiceImpl implements JobService {
 			final String ftpAccount = (String)jdm.get(Constants.QUARTZ_PARA_FTP_ACCOUNT);
 			final String ftpPassword = (String)jdm.get(Constants.QUARTZ_PARA_FTP_PASSWORD);
 			final List<String> sysChecksqls = (List<String>)jdm.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
+			final String dataPollerSettingId = (String)jdm.get(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID);
+			final String localFileOperationSettingId = (String)jdm.get(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID);
 
 			ObjectMapper mapper = new ObjectMapper();
 			List<String> groupIds = groupId != null ? mapper.readValue(groupId, new TypeReference<List<String>>(){}) : null;
@@ -199,6 +207,8 @@ public class JobServiceImpl implements JobService {
 			retMap.put(Constants.QUARTZ_PARA_FTP_ACCOUNT, ftpAccount);
 			retMap.put(Constants.QUARTZ_PARA_FTP_PASSWORD, ftpPassword);
 			retMap.put(Constants.QUARTZ_PARA_SYS_CHECK_SQLS, sysChecksqls);
+			retMap.put(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID, dataPollerSettingId);
+			retMap.put(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID, localFileOperationSettingId);
 		}
 
 		return retMap;
@@ -293,6 +303,20 @@ public class JobServiceImpl implements JobService {
 							sqlStr.append(sql).append("\n");
 						}
 						retVO.setSysCheckSqlStr(sqlStr.toString());
+
+					} else if (StringUtils.equals(schedType, Constants.QUARTZ_SCHED_TYPE_DATA_POLLER)
+							|| StringUtils.equals(schedType, Constants.QUARTZ_SCHED_TYPE_LOCAL_FILE_OPERATION)) {
+
+						String dataPollerSettingId =
+								jobDataMap.containsKey(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID) ?
+										(String)jobDataMap.get(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID) : null;
+
+						String localFileOperationSettingId =
+								jobDataMap.containsKey(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID) ?
+										(String)jobDataMap.get(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID) : null;
+
+						retVO.setDataPollerSettingId(dataPollerSettingId);
+						retVO.setLocalFileOperationSettingId(localFileOperationSettingId);
 					}
 
 					retVO.setSchedType(schedType);
@@ -352,6 +376,10 @@ public class JobServiceImpl implements JobService {
 
 			case Constants.QUARTZ_SCHED_TYPE_DATA_POLLER:
 				jobDataMap.put(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID, jsVO.getInputDataPollerSettingId());
+				break;
+
+			case Constants.QUARTZ_SCHED_TYPE_LOCAL_FILE_OPERATION:
+				jobDataMap.put(Constants.QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID, jsVO.getInputLocalFileOperationSettingId());
 				break;
 		}
 

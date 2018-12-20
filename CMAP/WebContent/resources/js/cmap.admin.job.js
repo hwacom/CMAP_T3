@@ -16,10 +16,12 @@ $(document).ready(function() {
 	});
 	
 	$("#btnPause").click(function() {
+		isModify = false;
 		jobAction('pause');
 	});
 	
 	$("#btnResume").click(function() {
+		isModify = false;
 		jobAction('resume');
 	});
 
@@ -114,6 +116,7 @@ function jobAction(action) {
 					$("#inputSysCheckSql").val(resp.data.inputSysCheckSql);
 					
 					$("#inputDataPollerSettingId").val(resp.data.inputDataPollerSettingId);
+					$("#inputLocalFileOperationSettingId").val(resp.data.inputLocalFileOperationSettingId);
 					
 					$("#inputMisFirePolicy option").filter(function() {
 					    return $(this).val() == resp.data.inputMisFirePolicy; 
@@ -220,6 +223,9 @@ function viewDetail(key) {
 				$("#viewDetailFtpPassword").val(resp.data.ftpPassword);
 				
 				$("#viewDetailSysCheckSql").val(resp.data.sysCheckSqls);
+				
+				$("#viewDataPollerSettingId").val(resp.data.dataPollerSettingId);
+				$("#viewLocalFileOperationSettingId").val(resp.data.localFileOperationSettingId);
 				
 				const schedType = resp.data.schedType;
 				

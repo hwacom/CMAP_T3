@@ -13,25 +13,26 @@ public class JobServiceVO extends CommonServiceVO {
 	private String inputCronExpression;
 	private Integer inputPriority;
 	private String inputClassName;
-	private List<String> inputDeviceListIds = new ArrayList<String>();
+	private List<String> inputDeviceListIds = new ArrayList<>();
 	private String inputConfigType;
 	private String inputDataKeepDays;
 	private Integer inputMisFirePolicy;
-	private List<String> inputGroupIds = new ArrayList<String>();
-	private List<String> inputDeviceIds = new ArrayList<String>();
+	private List<String> inputGroupIds = new ArrayList<>();
+	private List<String> inputDeviceIds = new ArrayList<>();
 	private String inputFtpName;
 	private String inputFtpHost;
 	private String inputFtpPort;
 	private String inputFtpAccount;
 	private String inputFtpPassword;
-	private List<String> inputSysCheckSql = new ArrayList<String>();
+	private List<String> inputSysCheckSql = new ArrayList<>();
 	private String inputDataPollerSettingId;
+	private String inputLocalFileOperationSettingId;
 
-	private List<JobServiceVO> jobKeySet = new ArrayList<JobServiceVO>();
+	private List<JobServiceVO> jobKeySet = new ArrayList<>();
 	private String jobKeyName;
 	private String jobKeyGroup;
-	private List<String> groupIds = new ArrayList<String>();
-	private List<String> deviceIds = new ArrayList<String>();
+	private List<String> groupIds = new ArrayList<>();
+	private List<String> deviceIds = new ArrayList<>();
 	private String groupIdsStr;
 	private String deviceIdsStr;
 	private String configType;
@@ -40,8 +41,10 @@ public class JobServiceVO extends CommonServiceVO {
 	private String ftpPort;
 	private String ftpAccount;
 	private String ftpPassword;
-	private List<String> sysCheckSql = new ArrayList<String>();
+	private List<String> sysCheckSql = new ArrayList<>();
 	private String sysCheckSqlStr;
+	private String dataPollerSettingId;
+	private String localFileOperationSettingId;
 
 	private String schedType;
 	private String schedTypeName;
@@ -411,5 +414,23 @@ public class JobServiceVO extends CommonServiceVO {
 	}
 	public void setInputDataPollerSettingId(String inputDataPollerSettingId) {
 		this.inputDataPollerSettingId = inputDataPollerSettingId;
+	}
+	public String getInputLocalFileOperationSettingId() {
+		return inputLocalFileOperationSettingId;
+	}
+	public void setInputLocalFileOperationSettingId(String inputLocalFileOperationSettingId) {
+		this.inputLocalFileOperationSettingId = inputLocalFileOperationSettingId;
+	}
+	public String getDataPollerSettingId() {
+		return dataPollerSettingId;
+	}
+	public void setDataPollerSettingId(String dataPollerSettingId) {
+		this.dataPollerSettingId = dataPollerSettingId;
+	}
+	public String getLocalFileOperationSettingId() {
+		return localFileOperationSettingId;
+	}
+	public void setLocalFileOperationSettingId(String localFileOperationSettingId) {
+		this.localFileOperationSettingId = localFileOperationSettingId;
 	}
 }

@@ -94,7 +94,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 	}
 
 	@Override
-	public DataPollerServiceVO excutePolling(String settingId) throws ServiceLayerException {
+	public DataPollerServiceVO executePolling(String settingId) throws ServiceLayerException {
 		DataPollerServiceVO dpsVO = new DataPollerServiceVO();
 		try {
 			// Step 1. 查找設定檔
@@ -165,7 +165,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 			return null;
 
 		} else {
-			Map<Integer, DataPollerServiceVO> mappingMap = new TreeMap<Integer, DataPollerServiceVO>();
+			Map<Integer, DataPollerServiceVO> mappingMap = new TreeMap<>();
 
 			DataPollerServiceVO vo;
 			for (DataPollerMapping mapping : mappingList) {
@@ -216,11 +216,25 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 		File dir = new File(filePath);
 		FileFilter fileFilter = new WildcardFileFilter(fileNameRegex);
+
+		if (!dir.exists()) {
+			//資料夾不存在直接返回
+			return retSqlList;
+		}
+
 		File[] files = dir.listFiles(fileFilter);
+
+		if (files == null || (files != null && files.length == 0)) {
+			//檔案不存在直接返回
+			return retSqlList;
+		}
 
 		File targetFile = null;
 		for (File file : files) {
-			System.out.println(file);
+			if (file == null || !file.exists()) {
+				//檔案有異常則直接跳下一筆
+				continue;
+			}
 
 			/*
 			 * 檔案備份流程 (Backup_Source_File = "Y")
@@ -290,7 +304,6 @@ public class DataPollerServiceImpl implements DataPollerService {
 					}
 				}
 			}
-
 		}
 
 		return retSqlList;
@@ -347,7 +360,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 		try (Stream<String> stream = Files.lines(Paths.get(file.getPath()), Charset.forName(charset))) {
 			stream.forEach(line -> {
 				String[] lineData = line.split(splitBy);
-				Map<String, Map<String, String>> tableFieldMap = new HashMap<String, Map<String, String>>();
+				Map<String, Map<String, String>> tableFieldMap = new HashMap<>();
 
 				if (lineData != null && lineData.length > 0) {
 					if (lineData[0].equals(firstColumnNameOfTitle)) {

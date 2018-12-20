@@ -78,7 +78,7 @@ public class NetFlowController extends BaseController {
 	public String netFlowRun(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			dataPollerService.excutePolling(Env.SETTING_ID_OF_NET_FLOW);
+			dataPollerService.executePolling(Env.SETTING_ID_OF_NET_FLOW);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

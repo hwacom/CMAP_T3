@@ -46,6 +46,7 @@ public class Constants {
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE = "cleanUpFtpFile";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA = "cleanUpDbData";
 	public static final String QUARTZ_SCHED_TYPE_DATA_POLLER = "dataPoller";
+	public static final String QUARTZ_SCHED_TYPE_LOCAL_FILE_OPERATION = "localFileOperation";
 
 	public static final String QUARTZ_PARA_JSON_STR = "paraJsonStr";
 	public static final String QUARTZ_PARA_DEVICE_LIST_ID = "deviceListIds";
@@ -60,6 +61,7 @@ public class Constants {
 	public static final String QUARTZ_PARA_FTP_PASSWORD = "ftpPassword";
 	public static final String QUARTZ_PARA_SYS_CHECK_SQLS = "sysCheckSqls";
 	public static final String QUARTZ_PARA_DATA_POLLER_SETTING_ID = "dataPollerSettingId";
+	public static final String QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID = "jobFileOperationSettingId";
 
 	public static final String DATA_POLLER_FILE_BY_FTP = "FTP";
 	public static final String DATA_POLLER_FILE_BY_LOCAL_DIR = "LOCAL_DIR";
@@ -128,6 +130,15 @@ public class Constants {
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
 
 	public static final String MODEL_ATTR_LOGIN_ERROR = "LOGIN_EXCEPTION";
+
+	public static final String JOB_FILE_OPERATE_ACTION_CUT = "CUT";
+	public static final String JOB_FILE_OPERATE_ACTION_COPY = "COPY";
+	public static final String JOB_FILE_OPERATE_ACTION_DELETE = "DELETE";
+	public static final String JOB_FILE_OPERATE_ACTION_RENAME = "RENAME";
+
+	public static final String FILE_FORMAT_YYYYMMDDHH24MISS = "[YYYYMMDDHH24MISS]";
+	public static final String FILE_FORMAT_FILE_EXT = "[FILE_EXT]";
+
 	/*
 	 * OIDC
 	 */

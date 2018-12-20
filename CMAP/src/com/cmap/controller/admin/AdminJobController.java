@@ -154,7 +154,7 @@ public class AdminJobController extends BaseController {
 	 * @return
 	 */
 	private List<JobServiceVO> retrieveKeyVal(JsonNode jsonData) {
-		List<JobServiceVO> jsVOList = new ArrayList<JobServiceVO>();
+		List<JobServiceVO> jsVOList = new ArrayList<>();
 		JobServiceVO jsVO;
 		for (JsonNode jn : jsonData.findValues("keyVal")) {
 			jsVO = new JobServiceVO();
@@ -171,7 +171,7 @@ public class AdminJobController extends BaseController {
 			@RequestBody JsonNode jsonData) {
 
 		try {
-			Map<String, Object> retMap = new HashMap<String, Object>();
+			Map<String, Object> retMap = new HashMap<>();
 			JobServiceVO retVO;
 
 			List<JobServiceVO> inputVOs = retrieveKeyVal(jsonData);
@@ -198,6 +198,8 @@ public class AdminJobController extends BaseController {
 			retMap.put("inputFtpAccount", retVO.getFtpAccount());
 			retMap.put("inputFtpPassword", retVO.getFtpPassword());
 			retMap.put("inputSysCheckSql", retVO.getSysCheckSqlStr());
+			retMap.put("inputDataPollerSettingId", retVO.getDataPollerSettingId());
+			retMap.put("inputLocalFileOperationSettingId", retVO.getLocalFileOperationSettingId());
 
 			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
 
@@ -293,7 +295,7 @@ public class AdminJobController extends BaseController {
 
 		long total = 0;
 		long filterdTotal = 0;
-		List<JobServiceVO> dataList = new ArrayList<JobServiceVO>();
+		List<JobServiceVO> dataList = new ArrayList<>();
 		JobServiceVO jsVO;
 		try {
 			jsVO = new JobServiceVO();
@@ -339,7 +341,7 @@ public class AdminJobController extends BaseController {
 
 			jsVO = jobService.findJobDetails(jsVO);
 
-			Map<String, Object> retMap = new HashMap<String, Object>();
+			Map<String, Object> retMap = new HashMap<>();
 			if (jsVO != null) {
 				retMap.put("schedType", jsVO.getSchedType());
 				retMap.put("schedTypeName", jsVO.getSchedTypeName());
@@ -354,6 +356,8 @@ public class AdminJobController extends BaseController {
 				retMap.put("ftpPassword", jsVO.getFtpPassword());
 
 				retMap.put("sysCheckSqls", jsVO.getSysCheckSqlStr());
+				retMap.put("dataPollerSettingId", jsVO.getDataPollerSettingId());
+				retMap.put("localFileOperationSettingId", jsVO.getLocalFileOperationSettingId());
 			}
 
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);

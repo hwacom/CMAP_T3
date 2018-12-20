@@ -143,8 +143,10 @@ public class CommonUtils {
 	public static int calculateSpendTime(Timestamp beginDate, Timestamp endDate) {
 		final long beginTime = beginDate.getTime();
 		final long endTime = endDate.getTime();
+//		final long spendTimeInSeconds =
+//				TimeUnit.MILLISECONDS.toSeconds(endTime-beginTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-beginTime));
 		final long spendTimeInSeconds =
-				TimeUnit.MILLISECONDS.toSeconds(endTime-beginTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endTime-beginTime));
+				TimeUnit.MILLISECONDS.toSeconds(endTime-beginTime);
 
 		int spendTime = 0;
 
