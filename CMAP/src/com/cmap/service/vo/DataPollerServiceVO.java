@@ -2,6 +2,7 @@ package com.cmap.service.vo;
 
 public class DataPollerServiceVO extends CommonServiceVO {
 
+	private String isSourceColumn;
 	private Integer sourceColumnIdx;
 	private String sourceColumnName;
 	private String sourceColumnType;
@@ -9,6 +10,7 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	private String sourceColumnSqlFormat;
 	private String targetTableName;
 	private String targetFieldName;
+	private Integer targetFieldIdx;
 
 	public Integer getSourceColumnIdx() {
 		return sourceColumnIdx;
@@ -51,5 +53,17 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	}
 	public void setTargetFieldName(String targetFieldName) {
 		this.targetFieldName = targetFieldName;
+	}
+	public Integer getTargetFieldIdx() {
+		return targetFieldIdx;
+	}
+	public void setTargetFieldIdx(Integer targetFieldIdx) {
+		this.targetFieldIdx = targetFieldIdx;
+	}
+	public String getIsSourceColumn() {
+		return isSourceColumn;
+	}
+	public void setIsSourceColumn(String isSourceColumn) {
+		this.isSourceColumn = isSourceColumn;
 	}
 }

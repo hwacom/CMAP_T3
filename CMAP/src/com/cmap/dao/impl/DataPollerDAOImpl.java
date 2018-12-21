@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
 import com.cmap.dao.DataPollerDAO;
+import com.cmap.model.DataPollerMapping;
 import com.cmap.model.DataPollerSetting;
 
 @Repository("dataPollerDAO")
@@ -16,7 +17,7 @@ import com.cmap.model.DataPollerSetting;
 public class DataPollerDAOImpl extends BaseDaoHibernate implements DataPollerDAO {
 
 	@Override
-	public DataPollerSetting findDataPollerSettingById(String settingId) {
+	public DataPollerSetting findDataPollerSettingBySettingId(String settingId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from DataPollerSetting dps ")
 		  .append(" where 1=1 ")
@@ -28,6 +29,28 @@ public class DataPollerDAOImpl extends BaseDaoHibernate implements DataPollerDAO
 	    q.setParameter("settingId", settingId);
 
 	    List<DataPollerSetting> retList = (List<DataPollerSetting>)q.list();
+
+	    if (retList != null && !retList.isEmpty()) {
+	    	return retList.get(0);
+	    } else {
+	    	return null;
+	    }
+	}
+
+	@Override
+	public DataPollerMapping findDataPollerMappingBySettingIdAndSourceColumnName(String settingId, String sourceColumnName) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from DataPollerMapping dpm ")
+		  .append(" where 1=1 ")
+		  .append(" and dpm.settingId = :settingId ")
+		  .append(" and dpm.sourceColumnName = :sourceColumnName ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    q.setParameter("settingId", settingId);
+	    q.setParameter("sourceColumnName", sourceColumnName);
+
+	    List<DataPollerMapping> retList = (List<DataPollerMapping>)q.list();
 
 	    if (retList != null && !retList.isEmpty()) {
 	    	return retList.get(0);

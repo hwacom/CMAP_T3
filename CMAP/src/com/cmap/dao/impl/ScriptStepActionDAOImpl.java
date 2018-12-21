@@ -18,6 +18,10 @@ public class ScriptStepActionDAOImpl extends ScriptStepDAOImpl implements Script
 
 	@Override
 	public List<ScriptDAOVO> findScriptStepByScriptInfoIdOrScriptCode(String scriptInfoId, String scriptCode) {
+		if (StringUtils.isBlank(scriptInfoId) && StringUtils.isBlank(scriptCode)) {
+			return null;
+		}
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from ScriptStepAction ssa ")
 		  .append(" where 1=1 ")

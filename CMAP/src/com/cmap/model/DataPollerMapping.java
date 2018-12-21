@@ -27,7 +27,10 @@ public class DataPollerMapping {
 	@Column(name = "mapping_id", unique = true)
 	private String mappingId;
 
-	@Column(name = "source_column_idx", nullable = false)
+	@Column(name = "is_source_column", nullable = false)
+	private String isSourceColumn;
+
+	@Column(name = "source_column_idx", nullable = true)
 	private Integer sourceColumnIdx;
 
 	@Column(name = "source_column_name", nullable = true)
@@ -48,6 +51,9 @@ public class DataPollerMapping {
 	@Column(name = "target_field_name", nullable = false)
 	private String targetFieldName;
 
+	@Column(name = "target_field_idx", nullable = false)
+	private Integer targetFieldIdx;
+
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
 
@@ -62,12 +68,13 @@ public class DataPollerMapping {
 		super();
 	}
 
-	public DataPollerMapping(String mappingId, Integer sourceColumnIdx, String sourceColumnName,
+	public DataPollerMapping(String mappingId, String isSourceColumn, Integer sourceColumnIdx, String sourceColumnName,
 			String sourceColumnType, String sourceColumnJavaFormat, String sourceColumnSqlFormat,
-			String targetTableName, String targetFieldName, Timestamp createTime, String createBy,
-			DataPollerSetting dataPollerSetting) {
+			String targetTableName, String targetFieldName, Integer targetFieldIdx, Timestamp createTime,
+			String createBy, DataPollerSetting dataPollerSetting) {
 		super();
 		this.mappingId = mappingId;
+		this.isSourceColumn = isSourceColumn;
 		this.sourceColumnIdx = sourceColumnIdx;
 		this.sourceColumnName = sourceColumnName;
 		this.sourceColumnType = sourceColumnType;
@@ -75,6 +82,7 @@ public class DataPollerMapping {
 		this.sourceColumnSqlFormat = sourceColumnSqlFormat;
 		this.targetTableName = targetTableName;
 		this.targetFieldName = targetFieldName;
+		this.targetFieldIdx = targetFieldIdx;
 		this.createTime = createTime;
 		this.createBy = createBy;
 		this.dataPollerSetting = dataPollerSetting;
@@ -86,6 +94,14 @@ public class DataPollerMapping {
 
 	public void setMappingId(String mappingId) {
 		this.mappingId = mappingId;
+	}
+
+	public String getIsSourceColumn() {
+		return isSourceColumn;
+	}
+
+	public void setIsSourceColumn(String isSourceColumn) {
+		this.isSourceColumn = isSourceColumn;
 	}
 
 	public Integer getSourceColumnIdx() {
@@ -142,6 +158,14 @@ public class DataPollerMapping {
 
 	public void setTargetFieldName(String targetFieldName) {
 		this.targetFieldName = targetFieldName;
+	}
+
+	public Integer getTargetFieldIdx() {
+		return targetFieldIdx;
+	}
+
+	public void setTargetFieldIdx(Integer targetFieldIdx) {
+		this.targetFieldIdx = targetFieldIdx;
 	}
 
 	public Timestamp getCreateTime() {

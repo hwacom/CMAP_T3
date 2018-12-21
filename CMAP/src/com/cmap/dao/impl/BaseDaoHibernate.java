@@ -5,8 +5,10 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
@@ -209,5 +211,54 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 		}
 
 		return success;
+	}
+
+	@Override
+	public Integer loadDataInFile(String tableName, String filePath, String charset, String fieldsTerminatedBy,
+			String linesTerminatedBy, String extraSetStr) {
+		// LOAD DATA LOCAL INFILE 'D:\\Net_Flow_Log\\Streams Sensor_20181220164000_20181220164011.csv' INTO TABLE cmap.net_flow_raw_data_3 CHARACTER SET big5 FIELDS TERMINATED BY ','  LINES TERMINATED BY '\r\n';
+		StringBuffer sql = new StringBuffer();
+		sql.append(" LOAD DATA LOCAL INFILE ")
+		   //.append(" :filePath ")
+		   .append(" '").append(filePath).append("' ")
+		   //.append(" INTO TABLE :tableName ");
+		   .append(" INTO TABLE ").append(tableName).append(" ");
+
+		if (StringUtils.isNotBlank(charset)) {
+			//sql.append(" CHARACTER SET :charset ");
+			sql.append(" CHARACTER SET ").append(charset).append(" ");
+		}
+		if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
+			//sql.append(" FIELDS TERMINATED BY :fieldsTerminatedBy ");
+			sql.append(" FIELDS TERMINATED BY '").append(fieldsTerminatedBy).append("' ");
+		}
+		if (StringUtils.isNotBlank(linesTerminatedBy)) {
+			//sql.append(" LINES TERMINATED BY :linesTerminatedBy ");
+			sql.append(" LINES TERMINATED BY '").append(linesTerminatedBy).append("' ");
+		}
+		if (StringUtils.isNotBlank(extraSetStr)) {
+			sql.append(" :extraSetStr ");
+		}
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+		Query<?> q = session.createNativeQuery(sql.toString());
+		/*
+		q.setParameter("filePath", filePath);
+		q.setParameter("tableName", tableName);
+		if (StringUtils.isNotBlank(charset)) {
+			q.setParameter("charset", charset);
+		}
+		if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
+			q.setParameter("fieldsTerminatedBy", fieldsTerminatedBy);
+		}
+		if (StringUtils.isNotBlank(linesTerminatedBy)) {
+			q.setParameter("linesTerminatedBy", linesTerminatedBy);
+		}
+		if (StringUtils.isNotBlank(extraSetStr)) {
+			q.setParameter("extraSetStr", extraSetStr);
+		}
+		*/
+
+		return q.executeUpdate();
 	}
 }

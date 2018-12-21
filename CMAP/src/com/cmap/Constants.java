@@ -139,6 +139,9 @@ public class Constants {
 	public static final String FILE_FORMAT_YYYYMMDDHH24MISS = "[YYYYMMDDHH24MISS]";
 	public static final String FILE_FORMAT_FILE_EXT = "[FILE_EXT]";
 
+	public static final String DATA_POLLER_INSERT_DB_BY_SQL = "SQL";
+	public static final String DATA_POLLER_INSERT_DB_BY_CSV_FILE = "CSV_FILE";
+
 	/*
 	 * OIDC
 	 */

@@ -159,6 +159,10 @@ public class Env {
 	public static String PRTG_INDEX_URI;
 	public static String PRTG_DASHBOARD_URI;
 
+	public static String DEFAULT_INSERT_DB_FILE_DIR;
+	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
+	public static String DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP;
+
 	/*
 	 * OpenID
 	 */

@@ -6,6 +6,8 @@ public interface BaseDAO {
 
 	public boolean insertEntity(Object entity);
 
+	public Integer loadDataInFile(String tableName, String filePath, String charset, String fieldsTerminatedBy, String linesTerminatedBy, String extraSetStr);
+
 	public boolean insertEntities(List<? extends Object> entities);
 
 	public boolean updateEntity(Object entity);

@@ -48,6 +48,12 @@ public class DataPollerSetting {
 	@Column(name = "file_charset", nullable = true)
 	private String fileCharset;
 
+	@Column(name = "fields_terminated_by", nullable = true)
+	private String fieldsTerminatedBy;
+
+	@Column(name = "lines_terminated_by", nullable = true)
+	private String linesTerminatedBy;
+
 	@Column(name = "source_ip", nullable = false)
 	private String sourceIp;
 
@@ -62,6 +68,12 @@ public class DataPollerSetting {
 
 	@Column(name = "split_symbol", nullable = false)
 	private String splitSymbol;
+
+	@Column(name = "insert_db_method", nullable = false)
+	private String insertDbMethod;
+
+	@Column(name = "insert_file_dir", nullable = true)
+	private String insertFileDir;
 
 	@Column(name = "record_by_day", nullable = false)
 	private String recordByDay;
@@ -113,8 +125,9 @@ public class DataPollerSetting {
 	}
 
 	public DataPollerSetting(String settingId, String dataType, String method, String specialVarSetting,
-			String filePath, String fileNameRegex, String fileNameFormat, String fileCharset, String sourceIp,
-			String sourcePort, String loginAccount, String loginPassword, String splitSymbol, String recordByDay,
+			String filePath, String fileNameRegex, String fileNameFormat, String fileCharset, String fieldsTerminatedBy,
+			String linesTerminatedBy, String sourceIp, String sourcePort, String loginAccount, String loginPassword,
+			String splitSymbol, String insertDbMethod, String insertFileDir, String recordByDay,
 			String recordByDayInterval, String recordByDayClean, String recordByDayReferField, String deleteSourceFile,
 			String backupSourceFile, String backupFilePath, String deleteFlag, Timestamp deleteTime, String deleteBy,
 			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy,
@@ -128,11 +141,15 @@ public class DataPollerSetting {
 		this.fileNameRegex = fileNameRegex;
 		this.fileNameFormat = fileNameFormat;
 		this.fileCharset = fileCharset;
+		this.fieldsTerminatedBy = fieldsTerminatedBy;
+		this.linesTerminatedBy = linesTerminatedBy;
 		this.sourceIp = sourceIp;
 		this.sourcePort = sourcePort;
 		this.loginAccount = loginAccount;
 		this.loginPassword = loginPassword;
 		this.splitSymbol = splitSymbol;
+		this.insertDbMethod = insertDbMethod;
+		this.insertFileDir = insertFileDir;
 		this.recordByDay = recordByDay;
 		this.recordByDayInterval = recordByDayInterval;
 		this.recordByDayClean = recordByDayClean;
@@ -214,6 +231,22 @@ public class DataPollerSetting {
 		this.fileCharset = fileCharset;
 	}
 
+	public String getFieldsTerminatedBy() {
+		return fieldsTerminatedBy;
+	}
+
+	public void setFieldsTerminatedBy(String fieldsTerminatedBy) {
+		this.fieldsTerminatedBy = fieldsTerminatedBy;
+	}
+
+	public String getLinesTerminatedBy() {
+		return linesTerminatedBy;
+	}
+
+	public void setLinesTerminatedBy(String linesTerminatedBy) {
+		this.linesTerminatedBy = linesTerminatedBy;
+	}
+
 	public String getSourceIp() {
 		return sourceIp;
 	}
@@ -252,6 +285,22 @@ public class DataPollerSetting {
 
 	public void setSplitSymbol(String splitSymbol) {
 		this.splitSymbol = splitSymbol;
+	}
+
+	public String getInsertDbMethod() {
+		return insertDbMethod;
+	}
+
+	public void setInsertDbMethod(String insertDbMethod) {
+		this.insertDbMethod = insertDbMethod;
+	}
+
+	public String getInsertFileDir() {
+		return insertFileDir;
+	}
+
+	public void setInsertFileDir(String insertFileDir) {
+		this.insertFileDir = insertFileDir;
 	}
 
 	public String getRecordByDay() {

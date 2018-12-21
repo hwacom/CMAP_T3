@@ -62,8 +62,6 @@
 			  	</div>
 	  		</div>
 		</div>
-		<div id="test" style="width: 60%; height: 200px;">
-		</div>
 		<div class="row">
             <div class="col-12">
             	<span class="font-weight-bold copyright" style="color: gray">Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	
@@ -84,6 +82,7 @@
 		  */
 	  });
 	  
+	/*
 	  function reqListener () {
 		  console.log(this.responseText);
 	  }
@@ -97,5 +96,6 @@
 	  }
 	  
 	  include("https://163.19.163.170:1443/public/login.htm");
+	*/
   </script>
 </html>
