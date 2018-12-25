@@ -25,6 +25,10 @@ const _DELIVERY_VAR_VALUE_ = "DELIVERY_VAR_VALUE";
 
 $(window).on('load', function() {
     $(".loader").fadeOut("slow");
+    
+    if(!Modernizr.inputtypes.date) {
+    	$("input[type=date]").datepicker({ dateFormat: 'yy-mm-dd' });
+    }
 });
 
 function clearDialog() {

@@ -50,6 +50,7 @@
 	<script src="${pageContext.request.contextPath}/resources/js/blockUI/jquery.blockUI.js"></script>
 	<!-- cleave -->
 	<script src="${pageContext.request.contextPath}/resources/js/cleave/cleave.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/modernizr/modernizr-custom.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/js/common.js"></script>
 	
 	<script>
@@ -95,13 +96,13 @@
                 </a>
                 <ul aria-expanded="false" id="toggleMenu_prtg_items" class="collapse">
                     <li class="subMenu-item">
-                    	<a id="mp_index" href="${pageContext.request.contextPath}/prtg/index">
+                    	<a id="mp_index" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/index')">
                     	  <span data-feather="command"></span>
                     		<span>首頁</span>
                     	</a>
                     </li>
                     <li class="subMenu-item">
-                    	<a id="mp_dashboard" href="${pageContext.request.contextPath}/prtg/dashboard">
+                    	<a id="mp_dashboard" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/dashboard')">
                     	  <span data-feather="hash"></span>
                     	  	<span>Dashboard</span>
                     	</a>
@@ -216,7 +217,7 @@
         <div class="mobile-menu nav-scroller py-1 mb-2">
 	        <nav class="nav d-flex justify-content-between">
 	          <div>
-	          	<span style="color: white;padding-top:9px;position: fixed;z-index: 999;background-color: #344e6a;width: 12px;height: 2.75rem;margin-top: -3px"><</span>
+	          	<span style="color: white;padding-top:9px;position: fixed;z-index: 999;background-color: #344e6a;width: 12px;height: 2.75rem;margin-top: -3px"></span>
 	          </div>
 	          	<span class="p-2"><a href="${pageContext.request.contextPath}/version/manage">版本管理</a></span>
 	            <span class="p-2" style="color:white">|</span>

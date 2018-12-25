@@ -11,16 +11,6 @@ $(document).ready(function() {
 		adjustHeight();
 		
 	}, 1000));
-});
-
-function adjustHeight() {
-	var navAndMenuAndFooterHeight = 0;
-	if ($('.mobile-menu').css('display') != 'none') {
-		navAndMenuAndFooterHeight = $('.navbar').outerHeight() + $(".footer").outerHeight() + $('.mobile-menu').outerHeight();
-	} else {
-		navAndMenuAndFooterHeight = $('.navbar').outerHeight() + $(".footer").outerHeight();
-	}
 	
-	var height = $(window).height() - navAndMenuAndFooterHeight - 15;
-    $('iframe').css('height', height);
-}
+	getPrtgUri(URI_DASHBOARD);
+});

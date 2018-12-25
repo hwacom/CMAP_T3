@@ -37,7 +37,7 @@ function viewDetail(key) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				$("#detailsModal").modal();

@@ -131,7 +131,7 @@ function envAction(action) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				alert(resp.message);

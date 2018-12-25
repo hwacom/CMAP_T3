@@ -49,8 +49,8 @@ function doBackup() {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
-		beforeSend : function() {
+		async: true,
+		beforeSend : function(xhr) {
 			showProcessing();
 		},
 		complete : function() {

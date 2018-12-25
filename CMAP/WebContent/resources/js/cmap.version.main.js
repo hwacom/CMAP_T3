@@ -157,7 +157,7 @@ function compareFile() {
 			},
 			type : "POST",
 			dataType : 'json',
-			async: false,
+			async: true,
 			success : function(resp) {
 				if (resp.code == '200') {
 					
@@ -169,7 +169,6 @@ function compareFile() {
 					
 					currentDiffPos = 0;
 					
-					console.log("resp.data.diffPos: "+resp.data.diffPos);
 					if (resp.data.diffPos != "") {
 						diffPos = resp.data.diffPos.split(",");
 						$('#compareModal_summary').html("共 " + diffPos.length + " 個差異");
@@ -223,7 +222,7 @@ function deleteDataGO() {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				clearDialog();

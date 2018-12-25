@@ -1,0 +1,171 @@
+﻿<!-- for 備份用，修改PRTG login頁面讀取url queryString & 自動登入 (C:\Program Files (x86)\PRTG Network Monitor\webroot\public)
+<#lang key="html.index.title" default="Welcome" var="pagetitle">
+<#include file="includes\htmlheader_mini.htm" bodyclass="loginscreen">
+
+<div id="login-container">
+
+  <div class="login-form" style="<#system type="browserdependent" browsertype="MSIE" belowversion="10" browsercontent="margin-top:50px">">
+    <div class="login-cell box">
+            <div class="cell-left cell-login">
+            <h1><#system type="sitename"></h1>
+            <noscript>
+              <div style="margin-bottom:10px">
+                <div class="nagscreen-box" >
+                  <p class="nagscreen-head"><#lang key="html.index.htm.noscript1b" default="Javascript is not available!"></p>
+                  <p class="nagscreen-cell">
+                    <#lang key="html.index.htm.noscript2b" default="You cannot use the AJAX Web Interface without Javascript. <br>Javascript seems to be disabled or not supported by your browser.">
+                  </p>
+                </div>
+              </div>
+            </noscript>
+            <div id="notofficiallysupported" style="display:none" class="nagscreen-box">
+              <p class="nagscreen-head">
+                <#lang key="html.index.htm.notofficiallysupported1" default="Your browser is not officially supported!">
+              </p>
+              <p class="nagscreen-cell">
+                <#lang key="html.index.htm.notofficiallysupported2a" default="Some functionalities may not work correctly or not at all. Consider upgrading to a modern browser version. We recommend <a href='https://www.google.com/chrome/'>Chrome</a> or <a href='http://www.mozilla.org/firefox/'>Firefox</a>.">
+              </p>
+            </div>
+            <div id="unsupportedbrowser" style="display:none;">
+              <div class="nagscreen-box" >
+                <p class="nagscreen-head">
+                 <#lang key="html.index.htm.browsernotsupported2" default="Sorry, your browser is not supported!">
+                </p>
+                <p class="nagscreen-cell">
+                  <b><#lang key="html.index.htm.unsupportedA" default="You might not be able to access all PRTG features with this browser!"></b><br>
+                  <#lang key="html.index.htm.unsupportedB" default="Please upgrade to a modern browser version. We recommend <a href='https://www.google.com/chrome/'>Chrome</a> or <a href='http://www.mozilla.org/firefox/'>Firefox</a>.">
+                </p>
+              </div>
+            </div>
+            <div id="dontuselocalhost" style="display:none;">
+              <div class="nagscreen-box" >
+                <p class="nagscreen-head">
+                  <#lang key="html.index.htm.dontuselocalhost1" default="Please do not use http://localhost to access the PRTG web server!">
+                </p>
+                <p class="nagscreen-cell">
+                  <#lang key="html.index.htm.dontlocalhost2" default="This may considerably slow down the PRTG web interface on some browsers. Use your IP or DNS name instead.">
+                </p>
+              </div>
+            </div>
+            <form id="loginform" class="loginform" accept-charset="UTF-8" action="/public/checklogin.htm" method="post" <#system type="autocomplete">>
+                    <#system type="loginurl">
+                <p class="login-error"><#system type="errormsg" nosession="1"></p>
+                <div class="controlgroup">
+                <label for="loginusername"><#lang key="html.index.htm.LoginNamenbsp" default="Login&nbsp;Name"></label>
+                <input tabindex="1" autofocus class="text" id="loginusername" name="username" type="text" value="<#system type="defaultlogin" code="prtgadmin">" <#system type="autocomplete"> />
+                </div>
+
+                <div class="controlgroup">
+                <label for="loginpassword"><#lang key="html.index.htm.Password" default="Password"></label>
+                <input tabindex="1" class="text" id="loginpassword" name="password" type="password" value="<#system type="defaultlogin" code="prtgadmin">" <#system type="autocomplete"> />
+                </div>
+                <p class="buttonbar">
+                	<button class="loginbutton button big" type="submit"><#lang key="html.index.htm.login" default="Login"></button>
+                </p>
+            </form>
+                <span class="downloadclients">
+                    <a class="nohjax" href="/downloads.htm"><#lang key="html.index.htm.clients" default="Download Client Software (optional, for Windows, iOS, Android)"></a>
+                </span>
+
+                <span class="forgotpw">
+                    <a class="nohjax" href="/public/forgotpassword.htm"><#lang key="html.index.htm.Forgotyourpassword1" default="Forgot password?"></a>
+
+                    <a target="_blank" href="/help/login.htm#login"><#lang key="html.index.htm.NeedHelp" default="Need Help?"></a>
+                </span>
+            </div>
+          <div class="cell-left cell-news" style="<#system type="browserdependent" browsertype="MSIE" belowversion="7" browsercontent="display:none">">
+            <div class="logo-box">
+            <img class="prtg-logo-big" width="250" height="150" src="/images/prtg_logo_gray.png" />
+            </div>
+            <#include file="public\newsfeed.htm">
+        </div>
+        <div class="cell-left cell-banner">
+            <#lang key="html.index.system.editiondependedhtml.freeversiononly0" default="<h2>Thank you for using PRTG Network Monitor</h2>
+
+                <p>You are using the Freeware version of <a href='https://www.paessler.com?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>PRTG Network Monitor</a>. We're glad to help you cover all aspects of the current state-of-the-art <a href='https://www.paessler.com/network_monitoring?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>network monitoring!</a>.
+                PRTG Network Monitor enables you to monitor <a href='https://www.paessler.com/uptime_monitoring?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>uptime </a>,
+                <a href='https://www.paessler.com/bandwidth_monitoring?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>traffic, and bandwidth usage</a> with only one tool. You can also create comprehensive data reports with the integrated reporting and analysis features. This makes PRTG a clear and simple monitoring solution for your entire network.</p>
+                <p>The software runs 24/7 to monitor your network. All you need is a computer with a Windows operating system. PRTG includes everything that you need in one installation, so you can start monitoring your network right away. The software records bandwidth and network usage and stores the data in an integrated high-performance database.
+                Add all the network devices that you want to monitor via an easy-to-use web-based user interface and configure sensors that retrieve the desired data.
+                You can create usage reports and provide colleagues
+                and customers access to data graphs and tables thanks to a convenient user management.
+                </p>
+                <p> PRTG supports all common protocols to get network data: <a href='https://www.paessler.com/prtg7/infographic/?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Simple Network Management Protocol (SNMP), Windows Management Instrumentation (WMI)</a>,
+                <a href='https://www.paessler.com/packet_sniffing?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Packet Sniffing</a>,
+                <a href='https://www.paessler.com/netflow_monitoring?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Cisco NetFlow</a> and other vendor specific flow protocols, as well as SSH, SOAP, and many other network protocols.</p><p>
+                PRTG Network Monitor provides about 200 sensor types so you can start monitoring your standard systems directly after installation.
+                These include monitoring Ping times, HTTP pages, SMTP, POP3, and IMAP mail servers, FTP servers, Linux systems, and many other hardware components and network services.
+                You can easily monitor the performance of your network permanently to recognize imminent outages before they occur. In the case of an error, you will receive emails, SMS, or push messages immediately.
+                PRTG constantly records performance data and downtimes in the database so you can compile reports about performance, downtimes, and SLAs at any time.
+                </p>
+                <p>The <a href='https://www.paessler.com/prtg?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Freeware Edition</a> of PRTG Network Monitor is completely free for personal and commercial use.
+                If you want to complete your monitoring or have larger networks, use one of our <a href='https://www.paessler.com/order?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Commercial Editions</a> that provide you with a suitable license.</p>
+                <p><b>More about <a href='https://www.paessler.com/prtg?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>PRTG Network Monitor</a> and <a href='https://www.paessler.com?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-freeware'>Paessler - The Network Monitoring Company</a>.</b></p>" var="freeversiononly">
+            <div><#system type="editiondependedhtml" varexpand="freeversiononly" freeversiononly="@freeversiononly"></div>
+            </div>
+    </div>
+  </div>
+
+  <div class="footer">
+        <span class="paesslerlogo">
+      <a href="https://www.paessler.com?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-homepage" target="_blank" title="Paessler AG - The Network Monitoring Company"><img border=0 id="paesslerlogo" src="/images/paessler.png"></a>
+    </span>
+    <span class="prtgversion">&nbsp;<#system type="codename"> <#system type="version"> <#system type="expiry"></span>
+    <span class="copyright">&copy; <#copyrightyear> <a href="https://www.paessler.com?utm_source=prtg&utm_medium=referral&utm_campaign=webgui-homepage" target="_blank" title="The Network Monitoring Company">Paessler AG</a></span>
+  </div>
+</div>
+<script>
+  var actualBrowserInclude = <#javascriptinclude file="javascript\lib\browsers.json">;
+  <#include file="javascript/lib/browsercheck.js">
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+
+  if(!document.addEventListener) {
+      document.getElementById("unsupportedbrowser").style.display = "block";
+    }
+  else {
+      document.addEventListener("DOMContentLoaded", function(event) {
+      var mobile = false;
+      var unofficiallysupported=false;
+      var unsupportedbrowser=false;
+
+    // OK, this code runs, we have least Javascript in this browser
+        byId("loginusername").addEventListener('keydown',function(event){
+          byId("loginpassword").type = "password";
+    },{once:true})
+    <#webdebug content="// Clear the session storage cache (debugging only)">
+    <#webdebug content="!!window.sessionStorage&&window.sessionStorage.clear();">
+
+    <#system type="browsercheck" supportedcode="" unofficialsupportedbrowsercode="unofficiallysupported = true;" unsupportedcode="unsupportedbrowser = true;" supportedmobilecode="mobile = true;">
+    if (unsupportedbrowser) {
+      byId("unsupportedbrowser").style.display="block";
+      return;
+    }
+
+    if (window.location.host=="localhost") {
+        byId("dontuselocalhost").style.display="block";
+      }
+    });
+  }
+  
+  function getQueryStringValue (key) {  
+	return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+  }
+  
+  window.onload = function(e) {
+	var acc = getQueryStringValue("a");
+	var pwd = getQueryStringValue("p");
+	
+	if (acc != null && pwd != null) {
+		byId("loginusername").value = acc;
+		byId("loginpassword").value = pwd;
+		
+		byId("loginform").submit();
+	}
+  };
+</script>
+<#include file="includes\htmlfooter_mini.htm">
+ -->

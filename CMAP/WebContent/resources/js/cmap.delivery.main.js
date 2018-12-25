@@ -56,7 +56,7 @@ function showDeliveryPanel() {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				/* **************************************************************************
@@ -91,6 +91,7 @@ function showDeliveryPanel() {
 		error : function(xhr, ajaxOptions, thrownError) {
 			ajaxErrorHandler();
 		},
+		/*
 		complete : function() {
 			console.log("_DELIVERY_SCRIPT_INFO_ID_ : " + window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_));
 			console.log("_DELIVERY_SCRIPT_CODE_ : " + window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_));
@@ -104,6 +105,7 @@ function showDeliveryPanel() {
 			console.log("_DELIVERY_VAR_VALUE_ : " + window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_));
 			console.log("_DELIVERY_GROUP_ID_ : " + window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
 		}
+		*/
 	});
 }
 
@@ -179,6 +181,7 @@ function goStep(num) {
 	initStepBtn();
 	initStepImg();
 	
+	/*
 	console.log("_DELIVERY_SCRIPT_INFO_ID_ : " + window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_));
 	console.log("_DELIVERY_SCRIPT_CODE_ : " + window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_));
 	console.log("_DELIVERY_SCRIPT_NAME_ : " + window.sessionStorage.getItem(_DELIVERY_SCRIPT_NAME_));
@@ -190,6 +193,7 @@ function goStep(num) {
 	console.log("_DELIVERY_VAR_KEY_ : " + window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
 	console.log("_DELIVERY_VAR_VALUE_ : " + window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_));
 	console.log("_DELIVERY_GROUP_ID_ : " + window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
+	*/
 }
 
 function checkStepRequirement(nowStep) {
@@ -655,7 +659,6 @@ function checkVariable() {
 			}
 		});
 	}
-	console.log(inputVar);
 	
 	if (!success) {
 		$.each(validateErrorObj, function(key, input) {
@@ -712,8 +715,6 @@ function doDelivery() {
 		"varValue" : varValue,
 		"reason" : reason
 	};
-	
-	console.log(JSON.stringify(ps));
 	
 	$.ajax({
 		url : _ctx + '/delivery/doDelivery.json',

@@ -26,16 +26,19 @@ public class PrtgAccountMapping {
 
 	@Column(name = "source_id", nullable = false)
 	private String sourceId;
-	
+
 	@Column(name = "prtg_account", nullable = false)
 	private String prtgAccount;
-	
+
 	@Column(name = "prtg_password", nullable = false)
 	private String prtgPassword;
-	
+
+	@Column(name = "dashboard_map_url", nullable = true)
+	private String dashboardMapUrl;
+
 	@Column(name = "remark", nullable = true)
 	private String remark;
-	
+
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
 
@@ -46,13 +49,14 @@ public class PrtgAccountMapping {
 		super();
 	}
 
-	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword, String remark,
-			Timestamp createTime, String createBy) {
+	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword,
+			String dashboardMapUrl, String remark, Timestamp createTime, String createBy) {
 		super();
 		this.id = id;
 		this.sourceId = sourceId;
 		this.prtgAccount = prtgAccount;
 		this.prtgPassword = prtgPassword;
+		this.dashboardMapUrl = dashboardMapUrl;
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
@@ -88,6 +92,14 @@ public class PrtgAccountMapping {
 
 	public void setPrtgPassword(String prtgPassword) {
 		this.prtgPassword = prtgPassword;
+	}
+
+	public String getDashboardMapUrl() {
+		return dashboardMapUrl;
+	}
+
+	public void setDashboardMapUrl(String dashboardMapUrl) {
+		this.dashboardMapUrl = dashboardMapUrl;
 	}
 
 	public String getRemark() {

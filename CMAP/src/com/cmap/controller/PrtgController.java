@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -34,6 +35,7 @@ import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.CommonService;
+import com.cmap.service.PrtgService;
 import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.impl.CloseableHttpClientUtils;
 
@@ -45,6 +47,9 @@ public class PrtgController extends BaseController {
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private PrtgService prtgService;
 
 	private void init(Model model) {
 		model.addAttribute("PRTG_IP_ADDR", Env.PRTG_SERVER_IP);
@@ -184,6 +189,32 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "getPrtgDashboardUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgDashboardUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		try {
+			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+			String dashboardMapUrl = prtgService.getDashboardMapBySourceId(schoolId);
+
+			if (StringUtils.isBlank(dashboardMapUrl)) {
+				dashboardMapUrl = Env.PRTG_DEFAULT_DASHBOARD_URI;	//如果沒設定則取得預設MAP
+			}
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", dashboardMapUrl);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -209,7 +240,6 @@ public class PrtgController extends BaseController {
 	public String prtgDashboard(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
-			model.addAttribute("IFRAME_URI", Env.PRTG_DASHBOARD_URI);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

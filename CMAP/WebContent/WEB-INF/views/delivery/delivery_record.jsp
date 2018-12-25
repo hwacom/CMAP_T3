@@ -1,8 +1,6 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="../../common/taglib.jsp" %>
-<!DOCTYPE html>
-
 <section>
 
   <div id="content" class="container-fluid">
@@ -29,9 +27,9 @@
 				</div>
 	    	    <div class="col-lg-4 group-field-other">
 	    	    	<span class="font-weight-bold" style="width: 20%">執行日期</span>
-	    	    	<input type="date" id="queryExcuteDateBegin" style="width: 35%">
+	    	    	<input type="date" id="queryExcuteDateBegin" style="width: 35%" placeholder="yyyy-mm-dd">
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
-	    	    	<input type="date" id="queryExcuteDateEnd" style="width: 35%">
+	    	    	<input type="date" id="queryExcuteDateEnd" style="width: 35%" placeholder="yyyy-mm-dd">
 	    	    </div>
 	    	    <div class="col-lg-2" style="padding-top: 5px;">
 	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>

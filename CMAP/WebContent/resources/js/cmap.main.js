@@ -297,7 +297,7 @@ function changeDeviceMenu(deviceMenuObjId, groupId) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 
 			if (resp.code == '200') {
@@ -329,7 +329,7 @@ function viewConfig(viewConfig) {
 		    'Content-Type': 'application/json'
 		},
 		type : "POST",
-		async: false,
+		async: true,
 		beforeSend : function() {
 			showProcessing();
 		},

@@ -169,7 +169,7 @@ function viewProvisionLog(obj) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				var ps = {
@@ -183,8 +183,6 @@ function viewProvisionLog(obj) {
 					"result" : result,
 					"log" : resp.data.log
 				}
-				console.log(ps);
-				
 				var provisionLog = resp.data.log != null ? (resp.data.log).replace(/(\r\n|\r|\n)/g, "<br>") : "異常無紀錄";
 				
 				$("#viewModal_beginTime").val(beginTime);

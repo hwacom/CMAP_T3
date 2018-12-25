@@ -91,7 +91,7 @@ function jobAction(action) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				if (action == 'modify') {
@@ -176,7 +176,7 @@ function saveJob(isModify) {
 		*/
 		type : 'POST',
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				alert(resp.message);
@@ -206,7 +206,7 @@ function viewDetail(key) {
 		},
 		type : "POST",
 		dataType : 'json',
-		async: false,
+		async: true,
 		success : function(resp) {
 			if (resp.code == '200') {
 				$("#jobDetailsModal").modal();

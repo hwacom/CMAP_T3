@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -129,7 +130,9 @@ public class PrtgApiUtils implements ApiUtils {
 					continue;
 				}
 
-				groups.add(pbNode.getGroup());
+				for (com.cmap.prtg.ha.PrtgDocument.Prtg.Sensortree.Nodes.Group.Probenode.Group2 group2 : pbNode.getGroupArray()) {
+					groups.add(group2);
+				}
 			}
 
 		} catch (Exception e) {
@@ -139,7 +142,7 @@ public class PrtgApiUtils implements ApiUtils {
 		Map<String, Map<String, Map<String, String>>> groupDeviceMap = new HashMap<>();
 		Map<String, Map<String, String>> deviceMap = null;
 		Map<String, String> deviceInfoMap = null;
-		Map<String, String> groupInfoMap = new HashMap<>();
+		Map<String, String> groupInfoMap = new TreeMap<>();
 
 		List<String> groupLabelList = new ArrayList<>();
 		List<String> groupValueList = new ArrayList<>();

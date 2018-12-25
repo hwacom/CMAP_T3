@@ -157,7 +157,7 @@ public class Env {
 
 	public static String PRTG_LOGIN_URI;
 	public static String PRTG_INDEX_URI;
-	public static String PRTG_DASHBOARD_URI;
+	public static String PRTG_DEFAULT_DASHBOARD_URI;
 
 	public static String DEFAULT_INSERT_DB_FILE_DIR;
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
