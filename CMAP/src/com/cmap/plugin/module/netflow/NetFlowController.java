@@ -56,6 +56,7 @@ public class NetFlowController extends BaseController {
 			model.addAttribute("groupList", groupListMap);
 
 			model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
+			model.addAttribute("timeout", Env.TIMEOUT_4_NET_FLOW_QUERY);
 		}
 	}
 
@@ -113,8 +114,11 @@ public class NetFlowController extends BaseController {
 	public @ResponseBody DatatableResponse getNetFlowData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="queryGroup", required=false, defaultValue="") String queryGroup,
-			@RequestParam(name="queryIp", required=false, defaultValue="") String queryIp,
-			@RequestParam(name="queryPort", required=false, defaultValue="") String queryPort,
+			@RequestParam(name="querySourceIp", required=false, defaultValue="") String querySourceIp,
+			@RequestParam(name="queryDestinationIp", required=false, defaultValue="") String queryDestinationIp,
+			@RequestParam(name="querySenderIp", required=false, defaultValue="") String querySenderIp,
+			@RequestParam(name="querySourcePort", required=false, defaultValue="") String querySourcePort,
+			@RequestParam(name="queryDestinationPort", required=false, defaultValue="") String queryDestinationPort,
 			@RequestParam(name="queryMac", required=false, defaultValue="") String queryMac,
 			@RequestParam(name="queryDateBegin", required=false, defaultValue="") String queryDateBegin,
 			@RequestParam(name="queryDateEnd", required=false, defaultValue="") String queryDateEnd,
@@ -139,11 +143,12 @@ public class NetFlowController extends BaseController {
 
 			nfVO = new NetFlowVO();
 			nfVO.setQueryGroupId(queryGroup);
-			nfVO.setQueryIp(queryIp);
-			nfVO.setQueryPort(queryPort);
-			nfVO.setQueryMac(queryMac);
+			nfVO.setQuerySourceIp(querySourceIp);
+			nfVO.setQuerySourcePort(querySourcePort);
+			nfVO.setQueryDestinationIp(queryDestinationIp);
+			nfVO.setQueryDestinationPort(queryDestinationPort);
+			nfVO.setQuerySenderIp(querySenderIp);
 			nfVO.setQueryDateBegin(queryDateBegin);
-			nfVO.setQueryDateEnd(queryDateEnd);
 			nfVO.setStartNum(startNum);
 			nfVO.setPageLength(pageLength);
 			nfVO.setSearchValue(searchValue);

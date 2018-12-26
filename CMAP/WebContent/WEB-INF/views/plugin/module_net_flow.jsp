@@ -20,15 +20,48 @@
                     </form:select>
 	    	    </div>
 	    	     -->
-	    	    <div class="col-lg-4 group-field-other">
-	    	    	<label for="queryDateBegin" class="font-weight-bold must" style="width: 18%"><spring:message code="date" /></label>
-	    	    	<input type="date" id="queryDateBegin" style="width: 35%">
+	    	    <div class="col-lg-3 group-field-other">
+	    	    	<label for="queryDateBegin" class="font-weight-bold must" style="width: 35%"><spring:message code="date" /></label>
+	    	    	<input type="date" id="queryDateBegin" style="width: 60%">
 	    	    	<!-- 
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
 	    	    	<input type="date" id="queryDateEnd" style="width: 35%">
 	    	    	 -->
 	    	    </div>
+	    	    <div class="col-lg-2" style="padding-top: 5px;">
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">
+	    	    		<spring:message code="btn.query" />
+	    	    	</button>
+	    	    </div>
+	    	    <div class="col-lg-2 group-field-other">
+	    	    	<input type="text" id="timeoutMsg" readonly="readonly">
+	    	    </div>
 	    	  </div>
+	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
+	    	    <div class="col-lg-3 group-field-other">
+					<label for="query_SourceIp" class="font-weight-bold" style="width: 35%">Source_IP</label>
+					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(後模糊查詢)">
+				</div>
+				<div class="col-lg-3 group-field-other">
+					<label for="query_DestinationIp" class="font-weight-bold" style="width: 45%">Destination_IP</label>
+					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(後模糊查詢)">
+				</div>
+				<div class="col-lg-3 group-field-other">
+					<label for="query_SenderIp" class="font-weight-bold" style="width: 35%">Sender_IP</label>
+					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(後模糊查詢)">
+				</div>
+			  </div>
+			  <div class="form-group row" style="margin-bottom: -.2rem;">
+			  	<div class="col-lg-3 group-field-other">
+					<label for="query_SourcePort" class="font-weight-bold" style="width: 35%">Source_Port</label>
+					<input type="text" id="query_SourcePort" class="input-port" style="width: 60%" placeholder="(完全比對)">
+				</div>
+				<div class="col-lg-3 group-field-other">
+					<label for="query_DestinationPort" class="font-weight-bold" style="width: 45%">Destination_Port</label>
+					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%" placeholder="(完全比對)">
+				</div>
+			  </div>
+			  <!-- 
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
 	    	    <div class="col-lg-3 group-field-other">
 					<label for="queryIp" class="font-weight-bold must" style="width: 25%">IP</label>
@@ -48,6 +81,7 @@
 	    	    	</button>
 	    	    </div>
 	      	  </div>
+	      	   -->
 	      	</div>
 		</form>
       </div>
@@ -76,12 +110,24 @@
 		    	  </div>
 		    	   -->
 		    	  <div class="form-group row">
-		    	  	<label for="queryIp_mobile" class="col-sm-2 col-form-label">IP</label>
-		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="queryIp_mobile">
+		    	  	<label for="query_SourceIp_mobile" class="col-sm-2 col-form-label">Source_IP</label>
+		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_SourceIp_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="queryPort_mobile" class="col-sm-2 col-form-label">Port</label>
-		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="queryPort_mobile">
+		    	  	<label for="query_SourcePort_mobile" class="col-sm-2 col-form-label">Source_Port</label>
+		    	  	<input type="text" class="col-sm-10 form-control form-control-sm input-port" id="query_SourcePort_mobile">
+				  </div>
+				  <div class="form-group row">
+		    	  	<label for="query_DestinationIp_mobile" class="col-sm-2 col-form-label">Destination_IP</label>
+		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_DestinationIp_mobile">
+				  </div>
+				  <div class="form-group row">
+		    	  	<label for="query_DestinationPort_mobile" class="col-sm-2 col-form-label">Destination_Port</label>
+		    	  	<input type="text" class="col-sm-10 form-control form-control-sm input-port" id="query_DestinationPort_mobile">
+				  </div>
+				  <div class="form-group row">
+		    	  	<label for="query_SenderIp_mobile" class="col-sm-2 col-form-label">Sender_IP</label>
+		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_SenderIp_mobile">
 				  </div>
 				  <div class="form-group row">
 		    	  	<label for="queryMac_mobile" class="col-sm-2 col-form-label">MAC</label>

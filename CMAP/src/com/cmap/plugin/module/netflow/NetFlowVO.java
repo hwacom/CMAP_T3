@@ -7,6 +7,11 @@ public class NetFlowVO extends CommonServiceVO {
 	private String queryGroupId;
 	private String queryIp;
 	private String queryPort;
+	private String querySourceIp;
+	private String querySourcePort;
+	private String queryDestinationIp;
+	private String queryDestinationPort;
+	private String querySenderIp;
 	private String queryMac;
 	private String queryDateBegin;
 	private String queryDateEnd;
@@ -301,5 +306,45 @@ public class NetFlowVO extends CommonServiceVO {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public String getQuerySourceIp() {
+		return querySourceIp;
+	}
+
+	public void setQuerySourceIp(String querySourceIp) {
+		this.querySourceIp = querySourceIp;
+	}
+
+	public String getQuerySourcePort() {
+		return querySourcePort;
+	}
+
+	public void setQuerySourcePort(String querySourcePort) {
+		this.querySourcePort = querySourcePort;
+	}
+
+	public String getQueryDestinationIp() {
+		return queryDestinationIp;
+	}
+
+	public void setQueryDestinationIp(String queryDestinationIp) {
+		this.queryDestinationIp = queryDestinationIp;
+	}
+
+	public String getQueryDestinationPort() {
+		return queryDestinationPort;
+	}
+
+	public void setQueryDestinationPort(String queryDestinationPort) {
+		this.queryDestinationPort = queryDestinationPort;
+	}
+
+	public String getQuerySenderIp() {
+		return querySenderIp;
+	}
+
+	public void setQuerySenderIp(String querySenderIp) {
+		this.querySenderIp = querySenderIp;
 	}
 }

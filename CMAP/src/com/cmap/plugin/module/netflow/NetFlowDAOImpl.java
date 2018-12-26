@@ -25,14 +25,20 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
 			sb.append(" and nfrd.group_id = :groupId ");
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryIp())) {
-			sb.append(" and ( nfrd.source_ip like :queryIp ")
-			  .append("       or nfrd.destination_ip like :queryIp ")
-			  .append("       or nfrd.sender_ip like :queryIp ) ");
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			sb.append(" and nfrd.source_ip like :querySourceIp ");
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryPort())) {
-			sb.append(" and ( nfrd.source_port = :queryPort ")
-			  .append("       or nfrd.destination_port = :queryPort ) ");
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			sb.append(" and nfrd.source_port = :querySourcePort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			sb.append(" and nfrd.destination_ip like :queryDestinationIp ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			sb.append(" and nfrd.sender_ip like :querySenderIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
 			sb.append(" and ( nfrd.source_MAC like :queryMac ")
@@ -76,11 +82,20 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
 	    	q.setParameter("groupId", nfVO.getQueryGroupId());
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryIp())) {
-			q.setParameter("queryIp", nfVO.getQueryIp().concat("%"));
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			q.setParameter("querySourceIp", nfVO.getQuerySourceIp().concat("%"));
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryPort())) {
-			q.setParameter("queryPort", nfVO.getQueryPort());
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp().concat("%"));
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			q.setParameter("querySenderIp", nfVO.getQuerySenderIp().concat("%"));
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
 			q.setParameter("queryMac", nfVO.getQueryMac().concat("%"));
@@ -108,14 +123,20 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
 			sb.append(" and nfrd.group_id = :groupId ");
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryIp())) {
-			sb.append(" and ( nfrd.source_ip like :queryIp ")
-			  .append("       or nfrd.destination_ip like :queryIp ")
-			  .append("       or nfrd.sender_ip like :queryIp ) ");
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			sb.append(" and nfrd.source_ip like :querySourceIp ");
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryPort())) {
-			sb.append(" and ( nfrd.source_port = :queryPort ")
-			  .append("       or nfrd.destination_port = :queryPort ) ");
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			sb.append(" and nfrd.source_port = :querySourcePort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			sb.append(" and nfrd.destination_ip like :queryDestinationIp ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			sb.append(" and nfrd.sender_ip like :querySenderIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
 			sb.append(" and ( nfrd.source_MAC like :queryMac ")
@@ -166,11 +187,20 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
 	    	q.setParameter("groupId", nfVO.getQueryGroupId());
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryIp())) {
-			q.setParameter("queryIp", nfVO.getQueryIp().concat("%"));
+	    if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			q.setParameter("querySourceIp", nfVO.getQuerySourceIp().concat("%"));
 		}
-		if (StringUtils.isNotBlank(nfVO.getQueryPort())) {
-			q.setParameter("queryPort", nfVO.getQueryPort());
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp().concat("%"));
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			q.setParameter("querySenderIp", nfVO.getQuerySenderIp().concat("%"));
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
 			q.setParameter("queryMac", nfVO.getQueryMac().concat("%"));

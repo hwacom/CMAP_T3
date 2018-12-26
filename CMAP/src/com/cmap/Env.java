@@ -164,6 +164,8 @@ public class Env {
 	public static String DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP;
 	public static String DATA_POLLER_SETTING_TYPE_OF_USER;
 
+	public static String TIMEOUT_4_NET_FLOW_QUERY;
+
 	/*
 	 * OpenID
 	 */

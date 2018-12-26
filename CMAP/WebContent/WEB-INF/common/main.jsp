@@ -13,6 +13,7 @@
 	<meta name="description" content="">
     <meta name="author" content="">
     <meta name="ctx" content="${pageContext.request.contextPath}" />
+    <meta name="timeout" content="${timeout}" />
     
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/icon.ico">
@@ -60,6 +61,9 @@
 	</script>
 </head>
 
+<%
+	boolean hiddenFunc = true;
+%>
 <body>
 	<div class="loader"></div>
 	<div class="mask" style="display: none;"></div>
@@ -127,6 +131,9 @@
 		                  	<span>版本備份</span>
 		                </a>
 		            </li>
+		            <%
+		            	if (!hiddenFunc) {
+		            %>
 		            <li class="subMenu-item">
 		                <a id="cm_restore" href="${pageContext.request.contextPath}/version/restore">
 		                  <span data-feather="upload"></span>
@@ -139,6 +146,9 @@
 		                  	<span>腳本管理</span>
 		                </a>
 		            </li>
+		            <%
+		            	}
+		            %>
 		            <li class="subMenu-item">
 		                <a id="cm_delivery" href="${pageContext.request.contextPath}/delivery">
 		                  <span data-feather="send"></span>
@@ -159,12 +169,18 @@
                   	<span>附加模組&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
                 </a>
                 <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
+                	<%
+		            	if (!hiddenFunc) {
+		            %>
                     <li class="subMenu-item">
                     	<a id="cm_wifi" href="${pageContext.request.contextPath}/plugin/module/wifiPoller">
                     	  <span data-feather="wifi"></span>
                     		<span>WIFI 管理</span>
                     	</a>
                     </li>
+                    <%
+		            	}
+                    %>
                     <li class="subMenu-item">
                     	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
                     	  <span data-feather="shuffle"></span>

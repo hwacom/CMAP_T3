@@ -2,27 +2,33 @@
  * 
  */
 
+var timer;
+
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_netflow");
 	
 	$("input").val("");
 	
+	/*
 	var inputIp = new Cleave('.input-ip', {
 		numericOnly: true,
 		delimiter: '.',
 	    blocks: [3, 3, 3, 3]
 	});
+	*/
 	
 	var inputPort = new Cleave('.input-port', {
 		numericOnly: true,
 		blocks: [5]
 	});
 	
+	/*
 	var inputMac = new Cleave('.input-mac', {
 		delimiter: ':',
 		blocks: [2, 2, 2, 2, 2, 2],
 		uppercase: true
 	});
+	*/
 	
 	$("#resutTable").on('xhr.dt', function ( e, settings, json, xhr ) {
 		if (json.msg != null) {
@@ -39,6 +45,24 @@ $(document).ready(function() {
 	$("#queryDateBegin").val(year+"-"+month+"-"+date);
 	
 });
+
+function countDown(status) {
+	if (status == 'START') {
+		var startTime = parseInt(_timeout) - 1;
+		
+		timer = setInterval(function () {
+			$("#timeoutMsg").val("Timeout倒數 : " + startTime + " 秒");
+			startTime--;
+			
+	    }, 1000);
+		
+	} else {
+		var spent = parseInt(_timeout) - parseInt(startTime);
+		$("#timeoutMsg").val("查詢花費時間 : " + startTime + " 秒");
+		
+		clearInterval(timer);
+	}
+}
 
 //查詢按鈕動作
 function findData(from) {
@@ -85,26 +109,39 @@ function findData(from) {
 				"data" : function ( d ) {
 					if ($('#queryFrom').val() == 'WEB') {
 						d.queryGroup = $("#queryGroup").val(),
-						d.queryIp = $("#queryIp").val(),
-						d.queryPort = $("#queryPort").val(),
-						d.queryMac = $("#queryMac").val(),
-						d.queryDateBegin = $("#queryDateBegin").val(),
-						d.queryDateEnd = $("#queryDateEnd").val()
+						d.querySourceIp = $("#query_SourceIp").val(),
+						d.queryDestinationIp = $("#query_DestinationIp").val(),
+						d.querySenderIp = $("#query_SenderIp").val(),
+						d.querySourcePort = $("#query_SourcePort").val(),
+						d.queryDestinationPort = $("#query_DestinationPort").val(),
+						//d.queryMac = $("#queryMac").val(),
+						d.queryDateBegin = $("#queryDateBegin").val()
+						//d.queryDateEnd = $("#queryDateEnd").val()
 					
 					} else if ($('#queryFrom').val() == 'MOBILE') {
 						d.queryGroup = $("#queryGroup_mobile").val(),
-						d.queryIp = $("#queryIp_mobile").val(),
-						d.queryPort = $("#queryPort_mobile").val(),
-						d.queryMac = $("#queryMac_mobile").val();
-						d.queryDateBegin = $("#queryDateBegin_mobile").val(),
-						d.queryDateEnd = $("#queryDateEnd_mobile").val()
+						d.querySourceIp = $("#query_SourceIp_mobile").val(),
+						d.queryDestinationIp = $("#query_DestinationIp_mobile").val(),
+						d.querySenderIp = $("#query_SenderIp_mobile").val(),
+						d.querySourcePort = $("#query_SourcePort_mobile").val(),
+						d.queryDestinationPort = $("#query_DestinationPort_mobile").val(),
+						//d.queryMac = $("#queryMac_mobile").val();
+						d.queryDateBegin = $("#queryDateBegin_mobile").val()
+						//d.queryDateEnd = $("#queryDateEnd_mobile").val()
 					}
 					
 					return d;
 				},
+				beforeSend : function() {
+					countDown('START');
+				},
+				complete : function() {
+					countDown('STOP');
+				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
 					ajaxErrorHandler();
-				}
+				},
+				"timeout" : parseInt(_timeout) * 1000 //設定60秒Timeout
 			},
 			/*"order": [[6 , 'desc' ]],*/
 			"initComplete": function(settings, json) {

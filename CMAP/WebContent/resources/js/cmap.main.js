@@ -4,6 +4,7 @@
 feather.replace();
 
 var _ctx = $("meta[name='ctx']").attr("content");
+var _timeout = $("meta[name='timeout']").attr("content");
 var resutTable;					//DataTable
 var navAndMenuAndFooterHeight;	//導覽列+Mobile選單+Footer區塊高度
 var deductHeight;				//額外扣除高度 for DataTable資料呈顯區塊高度
