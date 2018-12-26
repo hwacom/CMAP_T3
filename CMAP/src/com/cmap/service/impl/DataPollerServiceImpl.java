@@ -141,6 +141,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 				// Step 4. 依照設定值，取得檔案並解析內容
 				String retVal = pollingFiles(recordList, setting, mappingMap, specialSetFieldMap);
 
+				boolean success = true;
 				// Step 5. 寫入DB
 				switch (insertDBMethod) {
 					case Constants.DATA_POLLER_INSERT_DB_BY_SQL:
@@ -148,14 +149,26 @@ public class DataPollerServiceImpl implements DataPollerService {
 						break;
 
 					case Constants.DATA_POLLER_INSERT_DB_BY_CSV_FILE:
-						final String targetTableName = retVal;
-						insertData2DBByFile(targetTableName, setting, recordList, specialSetFieldMap);
+						if (StringUtils.isBlank(retVal)) {
+							dpsVO.setJobExcuteResult(Result.SUCCESS);
+							dpsVO.setJobExcuteResultRecords(recordList != null ? String.valueOf(recordList.size()) : "0");
+							dpsVO.setJobExcuteRemark("無資料須解析");
+
+							success = false;
+
+						} else {
+							final String targetTableName = retVal;
+							insertData2DBByFile(targetTableName, setting, recordList, mappingMap, specialSetFieldMap);
+						}
+
 						break;
 				}
 
-				dpsVO.setJobExcuteResult(Result.SUCCESS);
-				dpsVO.setJobExcuteResultRecords(recordList != null ? String.valueOf(recordList.size()) : "0");
-				dpsVO.setJobExcuteRemark("Data polling success. [setting_id = " + settingId + "]");
+				if (success) {
+					dpsVO.setJobExcuteResult(Result.SUCCESS);
+					dpsVO.setJobExcuteResultRecords(recordList != null ? String.valueOf(recordList.size()) : "0");
+					dpsVO.setJobExcuteRemark("Data polling success. [setting_id = " + settingId + "]");
+				}
 			}
 
 		} catch (ServiceLayerException sle) {
@@ -456,7 +469,18 @@ public class DataPollerServiceImpl implements DataPollerService {
 						/*
 						 * 當前欄位為來源CSV內欄位 >> 塞值來源 = CSV讀取內容
 						 */
-						targetStr[targetFieldIdx] = lineData[sourceColumnIdx];
+						String targetValue = lineData[sourceColumnIdx];
+
+						switch (sourceColumnType) {
+							case Constants.FIELD_TYPE_OF_VARCHAR:
+								break;
+
+							case Constants.FIELD_TYPE_OF_TIMESTAMP:
+								targetValue = transSourceDateColumnFormatFromChinese2English(targetValue);
+								break;
+						}
+
+						targetStr[targetFieldIdx] = targetValue;
 
 					} else {
 						if (specialFieldMap.containsKey(targetFieldName)) {
@@ -478,9 +502,18 @@ public class DataPollerServiceImpl implements DataPollerService {
 					 * 判斷當前欄位型態是否為日期
 					 */
 					if (StringUtils.equals(sourceColumnType, Env.DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP)) {
-						//STR_TO_DATE(@var1,'%m/%d/%Y %k:%i');
-						String funcStr = "STR_TO_DATE(@" + sourceColumnName + ", '" + sourceColumnSqlFormat + "') ";
+						String funcStr = "STR_TO_DATE(@`" + targetFieldName + "`, '" + sourceColumnSqlFormat + "') ";
+
+						if (!StringUtils.equals(isSourceColumn, Constants.DATA_Y)) {
+							//非原始CSV檔內欄位(e.g. Create_Time、Update_Time)，一律以 NOW()函式(設定在Source_Column_SQL_Format欄位)取得當下日期時間即可
+							funcStr = sourceColumnSqlFormat;
+						}
+
 						specialSetFieldMap.put(targetFieldName, funcStr);
+
+					} else if (StringUtils.equals(sourceColumnType, Env.DATA_POLLER_SETTING_TYPE_OF_USER)) {
+						String userName = "'" + Env.USER_NAME_JOB + "'";
+						specialSetFieldMap.put(targetFieldName, userName);
 					}
 				}
 
@@ -613,17 +646,23 @@ public class DataPollerServiceImpl implements DataPollerService {
 		}
 	}
 
+	private String transSourceDateColumnFormatFromChinese2English(String sourceDateStrInChinese) {
+		if (sourceDateStrInChinese.contains(Constants.TIME_AM_CHINESE_WORD)) {
+			sourceDateStrInChinese = sourceDateStrInChinese.replace(Constants.TIME_AM_CHINESE_WORD, "");
+			sourceDateStrInChinese += " " + Constants.TIME_AM_ENGLISH_WORD;
+
+		} else if (sourceDateStrInChinese.contains(Constants.TIME_PM_CHINESE_WORD)) {
+			sourceDateStrInChinese = sourceDateStrInChinese.replace(Constants.TIME_PM_CHINESE_WORD, "");
+			sourceDateStrInChinese += " " + Constants.TIME_PM_ENGLISH_WORD;
+		}
+
+		return sourceDateStrInChinese;
+	}
+
 	private Date transSourceDateColumnFormat2DateObj(String sourceDateStr, String fieldJavaFormat) {
 		Date retDate = null;
 
-		if (sourceDateStr.contains(Constants.TIME_AM_CHINESE_WORD)) {
-			sourceDateStr = sourceDateStr.replace(Constants.TIME_AM_CHINESE_WORD, "");
-			sourceDateStr += " " + Constants.TIME_AM_ENGLISH_WORD;
-
-		} else if (sourceDateStr.contains(Constants.TIME_PM_CHINESE_WORD)) {
-			sourceDateStr = sourceDateStr.replace(Constants.TIME_PM_CHINESE_WORD, "");
-			sourceDateStr += " " + Constants.TIME_PM_ENGLISH_WORD;
-		}
+		sourceDateStr = transSourceDateColumnFormatFromChinese2English(sourceDateStr);
 
 		SimpleDateFormat sdf = new SimpleDateFormat(fieldJavaFormat, Locale.ENGLISH);
 		try {
@@ -705,7 +744,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 		}
 	}
 
-	private void insertData2DBByFile(String targetTableName, DataPollerSetting setting, List<String> csvRecords, Map<String, String> specialSetFieldMap) throws ServiceLayerException {
+	private void insertData2DBByFile(String targetTableName, DataPollerSetting setting, List<String> csvRecords, Map<Integer, DataPollerServiceVO> mappingMap, Map<String, String> specialSetFieldMap) throws ServiceLayerException {
 		try {
 			/*
 			 * Step 1. 將重組好的CSV語句輸出成檔案
@@ -725,10 +764,57 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 			FileUtils.writeLines(targetFilePath.toFile(), fileCharset, csvRecords, null, true);
 
+			String extraSetStr = null;
 			/*
 			 * Step 2. 判斷是否有特殊欄位(e.g. Timestamp)需做SET語句轉換
 			 */
+			if (specialSetFieldMap != null && !specialSetFieldMap.isEmpty()) {
+				StringBuffer fields = new StringBuffer();
+				StringBuffer sets = new StringBuffer();
 
+				fields.append(" ( ");
+				sets.append(" SET ");
+
+				/*
+				 * LOAD DATA INFILE '~/infile.txt'
+					INTO TABLE People
+					FIELDS TERMINATED BY ','
+					LINES TERMINATED BY '\n'
+					(@DATE, NAME)
+					SET DATE = NOW();
+				 */
+				int idxMappingMap = 0;
+				int idxSpecialMap = 0;
+				for (Map.Entry<Integer, DataPollerServiceVO> entry : mappingMap.entrySet()) {
+					String fieldName = entry.getValue().getTargetFieldName();
+
+					if (specialSetFieldMap.containsKey(fieldName)) {
+						String fieldFunc = specialSetFieldMap.get(fieldName);
+
+						fields.append(" @`").append(fieldName).append("` ");
+						sets.append(fieldName).append(" = ").append(fieldFunc);
+
+						if (idxSpecialMap < specialSetFieldMap.size() - 1) {
+							sets.append(", ");
+							idxSpecialMap++;
+						}
+
+					} else {
+						fields.append(" `").append(fieldName).append("` ");
+					}
+
+					if (idxMappingMap < mappingMap.size() - 1) {
+						fields.append(", ");
+					}
+					if (idxMappingMap == mappingMap.size() - 1) {
+						fields.append(" ) ");
+					}
+
+					idxMappingMap++;
+				}
+
+				extraSetStr = fields.toString() + sets.toString();
+			}
 
 			/*
 			 * Step 3. 呼叫執行 LOAD DATA INFILE 指令
@@ -736,7 +822,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 			final String fieldsTerminatedBy = setting.getFieldsTerminatedBy();
 
 			String sqlFilePath = targetFilePath.toString().replace("\\", "\\\\");
-			dataPollerDAO.loadDataInFile(targetTableName, sqlFilePath, fileCharset, fieldsTerminatedBy, linesTerminatedBy, null);
+			dataPollerDAO.loadDataInFile(targetTableName, sqlFilePath, fileCharset, fieldsTerminatedBy, linesTerminatedBy, extraSetStr);
 
 		} catch (IOException e) {
 			log.error(e.toString(), e);
@@ -763,10 +849,12 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 				if (mappingList != null && !mappingList.isEmpty()) {
 					mappingList.forEach(mapping -> {
-						retList.add(
-							fieldType.equals(FIELD_TYPE_SOURCE)
-								? mapping.getSourceColumnName()
-								: mapping.getTargetFieldName());
+						if (StringUtils.equals(mapping.getShowFlag(), Constants.DATA_Y)) {
+							retList.add(
+									fieldType.equals(FIELD_TYPE_SOURCE)
+										? mapping.getSourceColumnName()
+										: mapping.getTargetFieldName());
+						}
 					});
 				}
 			}

@@ -54,6 +54,9 @@ public class DataPollerMapping {
 	@Column(name = "target_field_idx", nullable = false)
 	private Integer targetFieldIdx;
 
+	@Column(name = "show_flag", nullable = false)
+	private String showFlag;
+
 	@Column(name = "create_time", nullable = false)
 	private Timestamp createTime;
 
@@ -70,8 +73,8 @@ public class DataPollerMapping {
 
 	public DataPollerMapping(String mappingId, String isSourceColumn, Integer sourceColumnIdx, String sourceColumnName,
 			String sourceColumnType, String sourceColumnJavaFormat, String sourceColumnSqlFormat,
-			String targetTableName, String targetFieldName, Integer targetFieldIdx, Timestamp createTime,
-			String createBy, DataPollerSetting dataPollerSetting) {
+			String targetTableName, String targetFieldName, Integer targetFieldIdx, String showFlag,
+			Timestamp createTime, String createBy, DataPollerSetting dataPollerSetting) {
 		super();
 		this.mappingId = mappingId;
 		this.isSourceColumn = isSourceColumn;
@@ -83,6 +86,7 @@ public class DataPollerMapping {
 		this.targetTableName = targetTableName;
 		this.targetFieldName = targetFieldName;
 		this.targetFieldIdx = targetFieldIdx;
+		this.showFlag = showFlag;
 		this.createTime = createTime;
 		this.createBy = createBy;
 		this.dataPollerSetting = dataPollerSetting;
@@ -166,6 +170,14 @@ public class DataPollerMapping {
 
 	public void setTargetFieldIdx(Integer targetFieldIdx) {
 		this.targetFieldIdx = targetFieldIdx;
+	}
+
+	public String getShowFlag() {
+		return showFlag;
+	}
+
+	public void setShowFlag(String showFlag) {
+		this.showFlag = showFlag;
 	}
 
 	public Timestamp getCreateTime() {

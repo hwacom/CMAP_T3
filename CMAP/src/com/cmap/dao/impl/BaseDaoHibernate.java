@@ -237,7 +237,7 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 			sql.append(" LINES TERMINATED BY '").append(linesTerminatedBy).append("' ");
 		}
 		if (StringUtils.isNotBlank(extraSetStr)) {
-			sql.append(" :extraSetStr ");
+			sql.append(extraSetStr);
 		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();

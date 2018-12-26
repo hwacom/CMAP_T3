@@ -23,6 +23,8 @@ const _DELIVERY_REASON_ = "DELIVERY_REASON";
 const _DELIVERY_VAR_KEY_ = "DELIVERY_VAR_KEY";
 const _DELIVERY_VAR_VALUE_ = "DELIVERY_VAR_VALUE";
 
+var openWindow = null;
+
 $(window).on('load', function() {
     $(".loader").fadeOut("slow");
     
@@ -30,6 +32,14 @@ $(window).on('load', function() {
     	$("input[type=date]").datepicker({ dateFormat: 'yy-mm-dd' });
     }
 });
+
+function closeTabAndGo(_uri) {
+	if (openWindow != null) {
+		openWindow.close();
+	}
+	
+	window.location = _uri;
+}
 
 function clearDialog() {
 	$(".ui-dialog").hide()

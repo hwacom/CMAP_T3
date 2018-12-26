@@ -232,9 +232,9 @@
 		      	<table id="step2_target_table" class="myTable">
 		      	  <thead class="center bold">
 		      	  	<tr>
-			      	  	<th rowspan="3" width="5%">序</th>
-			      	  	<th rowspan="3" width="15%"><spring:message code="group.name" /></th>
-			      	  	<th rowspan="3" width="20%"><spring:message code="device.name" /></th>
+			      	  	<th rowspan="3" width="3%">序</th>
+			      	  	<th rowspan="3" width="12%"><spring:message code="group.name" /></th>
+			      	  	<th rowspan="3" width="25%"><spring:message code="device.name" /></th>
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>
 		      	  	</tr>
 		      	  	<tr>

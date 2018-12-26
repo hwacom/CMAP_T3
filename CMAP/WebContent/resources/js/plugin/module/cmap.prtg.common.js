@@ -4,8 +4,6 @@
 const URI_INDEX = "getPrtgIndexUri";
 const URI_DASHBOARD = "getPrtgDashboardUri";
 
-var openWindow = null;
-
 function getPrtgUri(method) {
 	$.ajax({
 		url : _ctx + '/prtg/' + method,
@@ -28,14 +26,6 @@ function getPrtgUri(method) {
 			alert("取得PRTG資訊失敗，請重新操作或連繫系統管理員");
 		}
 	});
-}
-
-function closeTabAndGo(_uri) {
-	if (openWindow != null) {
-		openWindow.close();
-	}
-	
-	window.location = _uri;
 }
 
 function openPrtgWindow(_uri) {

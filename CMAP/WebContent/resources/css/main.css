@@ -833,7 +833,7 @@ button {
 
 #step2_target_section {
   margin-top: -0.5rem;
-  max-height: 450px;
+  max-height: 430px;
   overflow-y: auto;
   overflow-x: auto;
 }

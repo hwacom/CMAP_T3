@@ -13,6 +13,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 import com.cmap.configuration.hibernate.HibernateConfiguration;
+import com.cmap.configuration.listener.SessionListener;
 import com.cmap.configuration.security.WebSecurityConfig;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 
@@ -28,6 +29,7 @@ public class AppInitializer implements WebApplicationInitializer {
 		container.addListener(new Log4jServletContextListener());
 		container.addListener(new ContextLoaderListener(ctx));
 		container.addListener(new RequestContextListener());
+		container.addListener(new SessionListener());
 		ctx.setServletContext(container);
 
 		ServletRegistration.Dynamic servlet = container.addServlet("dispatcher", new DispatcherServlet(ctx));

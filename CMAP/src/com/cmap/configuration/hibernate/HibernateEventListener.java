@@ -37,7 +37,7 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
 		final String updateBy = getUpdateBy(event.getDeletedState(), event.getPersister().getPropertyNames());
-		log.info("***[onPostDelete]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
+		//log.info("***[onPostDelete]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
 
 		StringBuffer des = new StringBuffer();//操作描述
 		des.append("[DELETE]::{");
@@ -45,8 +45,8 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		des.append(del);
 		des.append("}");
 
-		log.info(des.toString());
-		log.info("******************************************************************************");
+		//log.info(des.toString());
+		//log.info("******************************************************************************");
 
 		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
@@ -56,7 +56,7 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 	@Override
 	public void onPostInsert(PostInsertEvent event) {
 		final String updateBy = getUpdateBy(event.getState(), event.getPersister().getPropertyNames());
-		log.info("***[onPostInsert]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
+		//log.info("***[onPostInsert]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
 		/*
 		if(!(event.getEntity() instanceof Useroper)){//当是对用户操作表的插入时，不进行操作，否则进入死循环
 		 */
@@ -66,8 +66,8 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		des.append(inser);
 		des.append("}");
 
-		log.info(des.toString());
-		log.info("******************************************************************************");
+		//log.info(des.toString());
+		//log.info("******************************************************************************");
 
 		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
@@ -77,7 +77,7 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 	@Override
 	public void onPostUpdate(PostUpdateEvent event) {
 		final String updateBy = getUpdateBy(event.getState(), event.getPersister().getPropertyNames());
-		log.info("***[onPostUpdate]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
+		//log.info("***[onPostUpdate]: Entity >> " + event.getEntity().getClass().getSimpleName() + ", Id: " + event.getId() + ", updateBy: " + updateBy);
 
 		StringBuffer des = new StringBuffer();//操作描述
 		des.append("[UPDATE]::{");
@@ -85,8 +85,8 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		des.append(diff);
 		des.append("}");
 
-		log.info(des.toString());
-		log.info("******************************************************************************");
+		//log.info(des.toString());
+		//log.info("******************************************************************************");
 
 		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);

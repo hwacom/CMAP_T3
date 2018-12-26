@@ -129,10 +129,12 @@ function searchDevice(searchTxt) {
 				
 				$("#stepModal_chooseDevice option").remove();
 				
+				var groupId = "";
 				var groupName = "";
 				var obj = $.parseJSON(resp.data.groupDeviceMenu);
 				$.each(obj, function(key, value) {
 					if (key.startsWith("GROUP")) {
+						groupId = key.split("_")[1];
 						groupName = value;
 						$("#stepModal_chooseDevice").append($("<option></option>").attr("class", "multi-option-topic")
 																				  .attr("value", "")
@@ -144,6 +146,7 @@ function searchDevice(searchTxt) {
 						$("#stepModal_chooseDevice").append($("<option></option>").attr("class", "multi-option-item")
 																				  .attr("value", deviceKey)
 																				  .attr("data-group-name", groupName)
+																				  .attr("data-group-id", groupId)
 																				  .text(value));
 					}
 				});
@@ -605,6 +608,8 @@ function checkDeviceChoose() {
 		/* **************************************************************************
 		 * 派送Step 1. >> 紀錄目標設備ID、供裝原因 
 		 * **************************************************************************/
+		console.log(window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_));
+		console.log(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
 		window.sessionStorage.setItem(_DELIVERY_DEVICE_ID_, JSON.stringify(deviceId));
 		window.sessionStorage.setItem(_DELIVERY_DEVICE_NAME_, JSON.stringify(deviceName));
 		window.sessionStorage.setItem(_DELIVERY_GROUP_ID_, JSON.stringify(groupId));

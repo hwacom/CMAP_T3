@@ -405,6 +405,10 @@ public class VersionServiceImpl implements VersionService {
 			retList.add(vo);
 		}
 
+		vo = new VersionServiceVO();
+		vo.setLine("");
+		retList.add(vo);
+
 		return retList;
 	}
 
@@ -564,7 +568,8 @@ public class VersionServiceImpl implements VersionService {
 			log.info("diffPos: " + retVO.getDiffPos());
 
 			//			log.info("**************************************************************************************");
-			int max = retOriList.size() >= retRevList.size() ? retOriList.size() : retRevList.size();
+			//int max = retOriList.size() >= retRevList.size() ? retOriList.size() : retRevList.size();
+			/*
 			for (int i=0; i<max; i++) {
 				retOriList.size();
 				retOriList.get(i);
@@ -573,6 +578,7 @@ public class VersionServiceImpl implements VersionService {
 				retRevList.get(i);
 				new VersionServiceVO();
 			}
+			*/
 			//			log.info("**************************************************************************************");
 
 			retVO.setDiffRetOriList(retOriList);
@@ -612,7 +618,7 @@ public class VersionServiceImpl implements VersionService {
 			diff = vo.isLineDiff();
 
 			if (vo.getLine().equals(Constants.ADD_LINE)) {
-				sb.append("<div class=\"progress\" style=\"margin-top: 5px; background-color: #637381;\">")
+				sb.append("<div class=\"progress\" style=\"margin-top: 5px; background-color: #637381; height: 1.1rem;\">")
 				.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
 				.append("</div>")
 				.append("</span>");

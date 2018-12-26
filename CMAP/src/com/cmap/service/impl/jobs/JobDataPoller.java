@@ -39,6 +39,10 @@ public class JobDataPoller extends BaseJobImpl implements BaseJobService {
 		} catch (Exception e) {
 			log.error("JID:["+JOB_ID+"] >> "+e.toString(), e);
 
+			dpsVO.setJobExcuteResult(Result.FAILED);
+			dpsVO.setJobExcuteResultRecords("0");
+			dpsVO.setJobExcuteRemark(e.getMessage() + ", JID:["+JOB_ID+"]");
+
 		} finally {
 			Timestamp endTime = new Timestamp((new Date()).getTime());
 

@@ -28,7 +28,7 @@ public class HibernateInterceptor extends EmptyInterceptor {
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
-			log.info("***[HibernateInterceptor]: onSave ***");
+			//log.info("***[HibernateInterceptor]: onSave ***");
 			String _user = Constants.SYS;
 			try {
 				_user = SecurityUtil.getSecurityUser().getUsername();
