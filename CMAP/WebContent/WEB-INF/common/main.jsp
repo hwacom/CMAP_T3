@@ -111,6 +111,12 @@
                     	  	<span>Dashboard</span>
                     	</a>
                     </li>
+                    <li class="subMenu-item">
+                    	<a id="mp_netFlowSummary" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/netFlowSummary')">
+                    	  <span data-feather="hash"></span>
+                    	  	<span>各校 NetFlow 統計</span>
+                    	</a>
+                    </li>
                 </ul>
 	          </li>
               <li class="nav-item">

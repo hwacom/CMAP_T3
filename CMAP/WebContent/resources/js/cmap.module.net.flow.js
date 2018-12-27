@@ -2,7 +2,7 @@
  * 
  */
 
-var timer;
+var timer, startTime, timer_start, timer_end;
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_netflow");
@@ -48,8 +48,9 @@ $(document).ready(function() {
 
 function countDown(status) {
 	if (status == 'START') {
-		var startTime = parseInt(_timeout) - 1;
+		startTime = parseInt(_timeout) - 1;
 		
+		timer_start = performance.now();
 		timer = setInterval(function () {
 			$("#timeoutMsg").val("Timeout倒數 : " + startTime + " 秒");
 			startTime--;
@@ -57,8 +58,9 @@ function countDown(status) {
 	    }, 1000);
 		
 	} else {
-		var spent = parseInt(_timeout) - parseInt(startTime);
-		$("#timeoutMsg").val("查詢花費時間 : " + startTime + " 秒");
+		timer_end = performance.now();
+		var spent = (parseInt(timer_end) - parseInt(timer_start)) / 1000;
+		$("#timeoutMsg").val("查詢花費時間 : " + spent + " 秒");
 		
 		clearInterval(timer);
 	}

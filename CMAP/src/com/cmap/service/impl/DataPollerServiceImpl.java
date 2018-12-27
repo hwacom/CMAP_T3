@@ -471,13 +471,8 @@ public class DataPollerServiceImpl implements DataPollerService {
 						 */
 						String targetValue = lineData[sourceColumnIdx];
 
-						switch (sourceColumnType) {
-							case Constants.FIELD_TYPE_OF_VARCHAR:
-								break;
-
-							case Constants.FIELD_TYPE_OF_TIMESTAMP:
-								targetValue = transSourceDateColumnFormatFromChinese2English(targetValue);
-								break;
+						if (StringUtils.startsWith(sourceColumnType, Constants.FIELD_TYPE_OF_TIMESTAMP)) {
+							targetValue = transSourceDateColumnFormatFromChinese2English(targetValue);
 						}
 
 						targetStr[targetFieldIdx] = targetValue;
@@ -501,12 +496,24 @@ public class DataPollerServiceImpl implements DataPollerService {
 					/*
 					 * 判斷當前欄位型態是否為日期
 					 */
-					if (StringUtils.equals(sourceColumnType, Env.DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP)) {
+					if (StringUtils.startsWith(sourceColumnType, Env.DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP)) {
 						String funcStr = "STR_TO_DATE(@`" + targetFieldName + "`, '" + sourceColumnSqlFormat + "') ";
 
 						if (!StringUtils.equals(isSourceColumn, Constants.DATA_Y)) {
 							//非原始CSV檔內欄位(e.g. Create_Time、Update_Time)，一律以 NOW()函式(設定在Source_Column_SQL_Format欄位)取得當下日期時間即可
 							funcStr = sourceColumnSqlFormat;
+
+						} else {
+							/*
+							 * 判斷是否有設定要 ADDTIME
+							 * (e.g. TIMESTAMP+0:8:0 >> 表示要加8小時)
+							 */
+							if (StringUtils.contains(sourceColumnType, "+")) {
+								String[] str = sourceColumnType.split("\\+");
+								String addTime = str[1];
+
+								funcStr = "ADDTIME(" + funcStr + ", \"" + addTime + "\")";
+							}
 						}
 
 						specialSetFieldMap.put(targetFieldName, funcStr);

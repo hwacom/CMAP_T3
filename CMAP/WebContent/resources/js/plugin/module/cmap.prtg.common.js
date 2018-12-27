@@ -3,6 +3,7 @@
  */
 const URI_INDEX = "getPrtgIndexUri";
 const URI_DASHBOARD = "getPrtgDashboardUri";
+const URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
 
 function getPrtgUri(method) {
 	$.ajax({

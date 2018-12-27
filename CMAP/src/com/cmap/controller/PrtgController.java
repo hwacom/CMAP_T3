@@ -215,6 +215,25 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "getPrtgNetFlowSummaryUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgNetFlowSummaryUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		try {
+			String netFlowSummaryUrl = Env.PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", netFlowSummaryUrl);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -245,5 +264,17 @@ public class PrtgController extends BaseController {
 			log.error(e.toString(), e);
 		}
 		return "prtg/dashboard";
+	}
+
+
+	@RequestMapping(value = "/netFlowSummary", method = RequestMethod.GET)
+	public String netFlowSummary(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			init(model);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "prtg/netFlowSummary";
 	}
 }

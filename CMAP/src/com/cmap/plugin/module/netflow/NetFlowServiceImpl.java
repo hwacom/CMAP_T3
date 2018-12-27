@@ -1,5 +1,7 @@
 package com.cmap.plugin.module.netflow;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -117,7 +119,27 @@ public class NetFlowServiceImpl implements NetFlowService {
 								}
 
 							} else if (oriName.equals("Size")) {
-								fValue = Objects.toString(data[dataIdx]);
+								BigDecimal sizeByte = new BigDecimal(Objects.toString(data[dataIdx], "0"));
+
+								int scale = 1;
+								BigDecimal sizeKb = sizeByte.divide(new BigDecimal("1024"), scale, RoundingMode.HALF_UP);
+								BigDecimal sizeMb = (sizeByte.divide(new BigDecimal("1024"))).divide(new BigDecimal("1024"), scale, RoundingMode.HALF_UP);
+								BigDecimal zeroSize = new BigDecimal("0.0");
+
+								String convertedSize = "";
+								if (sizeMb.compareTo(zeroSize) == 1) {
+									convertedSize = sizeMb.toString() + " MB";
+
+								} else {
+									if (sizeKb.compareTo(zeroSize) == 1) {
+										convertedSize = sizeKb.toString() + " KB";
+
+									} else {
+										convertedSize = sizeByte.toString() + " B";
+									}
+								}
+
+								fValue = convertedSize;
 
 							} else if (oriName.equals("GroupId")) {
 								String groupId = Objects.toString(data[dataIdx]);

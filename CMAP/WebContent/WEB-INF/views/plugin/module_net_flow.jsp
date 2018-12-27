@@ -34,7 +34,7 @@
 	    	    	</button>
 	    	    </div>
 	    	    <div class="col-lg-2 group-field-other">
-	    	    	<input type="text" id="timeoutMsg" readonly="readonly">
+	    	    	<input type="text" id="timeoutMsg" disabled="disabled" style="width: 100%">
 	    	    </div>
 	    	  </div>
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">

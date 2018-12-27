@@ -193,6 +193,12 @@ public class FileOperationServiceImpl implements FileOperationService {
 		String targetFileName = targetFileNameFormat;
 
 		try {
+			//原始檔名
+			if (targetFileName.contains(Constants.FILE_FORMAT_ORI_FILE_NAME)) {
+				String oriFileName = sourceFileName.substring(0, sourceFileName.lastIndexOf("."));
+				targetFileName = targetFileName.replace(
+											Constants.FILE_FORMAT_ORI_FILE_NAME, oriFileName);
+			}
 			//日期戳記
 			if (targetFileName.contains(Constants.FILE_FORMAT_YYYYMMDDHH24MISS)) {
 				Calendar cal = Calendar.getInstance();

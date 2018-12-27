@@ -136,6 +136,7 @@ public class Constants {
 	public static final String JOB_FILE_OPERATE_ACTION_DELETE = "DELETE";
 	public static final String JOB_FILE_OPERATE_ACTION_RENAME = "RENAME";
 
+	public static final String FILE_FORMAT_ORI_FILE_NAME = "[ORI_FILE_NAME]";
 	public static final String FILE_FORMAT_YYYYMMDDHH24MISS = "[YYYYMMDDHH24MISS]";
 	public static final String FILE_FORMAT_FILE_EXT = "[FILE_EXT]";
 
