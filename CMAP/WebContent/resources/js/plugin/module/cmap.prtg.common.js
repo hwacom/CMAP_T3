@@ -34,10 +34,10 @@ function openPrtgWindow(_uri) {
     wdw.close();
     
   	var obj = $("#uriFrame").get(0).getBoundingClientRect();
-  	var x = parseInt(obj.left) + parseInt((window.screenX != undefined ? window.screenX : window.screenLeft));
-  	var y = parseInt(obj.top) + parseInt((window.screenY != undefined ? window.screenY : window.screenTop)) + 50;
+  	var x = parseInt(obj.left) + parseInt((window.screenX != undefined ? window.screenX : window.screenLeft)) + 30;
+  	var y = parseInt(obj.top) + parseInt((window.screenY != undefined ? window.screenY : window.screenTop)) + 100;
   	var width = obj.width;
-  	var height = obj.height;
+  	var height = obj.height - 50;
   	
   	openWindow = window.open(
   			_uri, 
