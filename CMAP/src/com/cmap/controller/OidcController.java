@@ -388,7 +388,6 @@ public class OidcController extends BaseController {
 			log.error(e.toString(), e);
 			canAccess = false;
 		}
-
 		return canAccess;
 	}
 

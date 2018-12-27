@@ -2,6 +2,7 @@ package com.cmap.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -163,7 +164,7 @@ public class FileOperationServiceImpl implements FileOperationService {
 		return retVO;
 	}
 
-	private void moveFile(Path sourcePath, Path targetPath, boolean createDir, boolean deleteSourceFile) throws ServiceLayerException {
+	private void moveFile(Path sourcePath, Path targetPath, boolean createDir, boolean deleteSourceFile) throws FileSystemException,ServiceLayerException {
 		try {
 			Path targetFileDirPath = targetPath.getParent();
 
@@ -182,6 +183,10 @@ public class FileOperationServiceImpl implements FileOperationService {
 			if (deleteSourceFile) {
 				Files.deleteIfExists(sourcePath);
 			}
+
+		} catch (FileSystemException jse) {
+			log.error(jse.toString());
+			throw jse;
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -221,14 +226,16 @@ public class FileOperationServiceImpl implements FileOperationService {
 		return targetFileName;
 	}
 
-	private FileOperationServiceVO composeResultVO(String action, int totalCount, int successCount) {
+	private FileOperationServiceVO composeResultVO(String action, int totalCount, int successCount, int lockCount) {
 		FileOperationServiceVO retVO = new FileOperationServiceVO();
 
 		retVO.setJobExcuteResult(
 				successCount == 0 ? Result.FAILED : (totalCount != successCount)
 															? Result.PARTIAL_SUCCESS : Result.SUCCESS);
 		retVO.setJobExcuteResultRecords(String.valueOf(totalCount));
-		retVO.setJobExcuteRemark(action + ", 總筆數: " + totalCount + ", 成功: " + successCount + " 筆,  失敗: " + (totalCount - successCount) + " 筆");
+
+		int errorCount = totalCount - lockCount - successCount;
+		retVO.setJobExcuteRemark(action + ", 總筆數: " + totalCount + ", 成功: " + successCount + " 筆,  Lock: " + lockCount + " 筆,  失敗: " + errorCount + " 筆");
 
 		return retVO;
 	}
@@ -236,6 +243,7 @@ public class FileOperationServiceImpl implements FileOperationService {
 	private FileOperationServiceVO doFileCut(List<Path> matchedFile, JobFileOperationSetting setting) {
 		int totalCount = matchedFile.size();
 		int successCount = 0;
+		int lockCount = 0;
 
 		for (Path sourcePath : matchedFile) {
 			try {
@@ -258,8 +266,11 @@ public class FileOperationServiceImpl implements FileOperationService {
 				moveFile(sourcePath, targetPath, true, true);
 				successCount++;
 
+			} catch (FileSystemException fse) {
+				lockCount++;
+				continue;
+
 			} catch (ServiceLayerException sle) {
-				log.error(sle.toString());
 				continue;
 
 			} catch (Exception e) {
@@ -268,7 +279,7 @@ public class FileOperationServiceImpl implements FileOperationService {
 			}
 		};
 
-		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount);
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, lockCount);
 	}
 
 	private FileOperationServiceVO doFileCopy(List<Path> matchedFile, JobFileOperationSetting setting) {
@@ -306,7 +317,7 @@ public class FileOperationServiceImpl implements FileOperationService {
 			}
 		};
 
-		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount);
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, 0);
 	}
 
 	private FileOperationServiceVO doFileDelete(List<Path> matchedFile, JobFileOperationSetting setting) {
@@ -324,6 +335,6 @@ public class FileOperationServiceImpl implements FileOperationService {
 			}
 		};
 
-		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount);
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, 0);
 	}
 }

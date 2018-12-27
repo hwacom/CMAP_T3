@@ -32,7 +32,13 @@ public class UserServiceImpl implements UserService {
 			UserRightSetting entity = userDAO.findUserRightSetting(account);
 
 			if (entity == null) {
-				canAccess = false;
+
+				if (!StringUtils.equals(account, "*")) {
+					return checkUserCanAccess(request, "*");
+
+				} else {
+					canAccess = false;
+				}
 
 			} else {
 				final boolean access =
