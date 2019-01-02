@@ -11,6 +11,12 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	private String targetTableName;
 	private String targetFieldName;
 	private Integer targetFieldIdx;
+	private String targetFieldType;
+	private String targetValueFormat;
+	private String voFieldName;
+
+	private String retTableName;
+	private String retOriFileName;
 
 	public Integer getSourceColumnIdx() {
 		return sourceColumnIdx;
@@ -65,5 +71,35 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	}
 	public void setIsSourceColumn(String isSourceColumn) {
 		this.isSourceColumn = isSourceColumn;
+	}
+	public String getTargetFieldType() {
+		return targetFieldType;
+	}
+	public void setTargetFieldType(String targetFieldType) {
+		this.targetFieldType = targetFieldType;
+	}
+	public String getTargetValueFormat() {
+		return targetValueFormat;
+	}
+	public void setTargetValueFormat(String targetValueFormat) {
+		this.targetValueFormat = targetValueFormat;
+	}
+	public String getRetTableName() {
+		return retTableName;
+	}
+	public void setRetTableName(String retTableName) {
+		this.retTableName = retTableName;
+	}
+	public String getRetOriFileName() {
+		return retOriFileName;
+	}
+	public void setRetOriFileName(String retOriFileName) {
+		this.retOriFileName = retOriFileName;
+	}
+	public String getVoFieldName() {
+		return voFieldName;
+	}
+	public void setVoFieldName(String voFieldName) {
+		this.voFieldName = voFieldName;
 	}
 }

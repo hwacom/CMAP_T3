@@ -9,7 +9,11 @@ public interface DataPollerDAO extends BaseDAO {
 
 	public DataPollerSetting findDataPollerSettingBySettingId(String settingId);
 
-	public DataPollerMapping findDataPollerMappingBySettingIdAndSourceColumnName(String settingId, String sourceColumnName);
+	public List<DataPollerMapping> findDataPollerMappingByMappingCode(String mappingCode);
 
 	public List<String> findTargetTableName(String settingId);
+
+	public List<DataPollerSetting> findDataPollerSettingByDataType(String dataType);
+
+	public DataPollerSetting findDataPollerSettingByDataTypeAndQueryId(String dataType, String queryId);
 }

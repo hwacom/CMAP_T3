@@ -2,6 +2,10 @@ package com.cmap.dao.impl;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -260,5 +264,42 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 		*/
 
 		return q.executeUpdate();
+	}
+
+	@Override
+	public boolean insertEntities2File(Path filePath, List<String> recordList, boolean appendFile) {
+		long begin = System.currentTimeMillis();
+
+		FileWriter fw = null;
+		try {
+			Path fileFolderPath = filePath.getParent();
+			if (!Files.exists(fileFolderPath)) {
+				Files.createDirectories(fileFolderPath);
+			}
+
+			fw = new FileWriter(filePath.toString(), appendFile);
+
+			for (String content : recordList) {
+				fw.write(content + "\r\n");
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return false;
+
+		} finally {
+			if (fw != null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
+					log.error(e.toString(), e);
+				}
+			}
+
+			long end = System.currentTimeMillis();
+			log.info("readTxt1方法,使用記憶體="+(Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())+",使用時間毫秒="+(end-begin));
+
+		}
+		return true;
 	}
 }

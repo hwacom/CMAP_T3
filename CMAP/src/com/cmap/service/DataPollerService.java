@@ -12,5 +12,7 @@ public interface DataPollerService {
 
 	public List<String> getFieldName(String settingId, String fieldType) throws ServiceLayerException;
 
+	public String getStoreMethodByDataType(String dataType) throws ServiceLayerException;
+
 	public DataPollerServiceVO executePolling(String settingId) throws ServiceLayerException;
 }

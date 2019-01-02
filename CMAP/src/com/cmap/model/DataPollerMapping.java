@@ -4,12 +4,9 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -26,6 +23,9 @@ public class DataPollerMapping {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "mapping_id", unique = true)
 	private String mappingId;
+
+	@Column(name = "mapping_code", nullable = false)
+	private String mappingCode;
 
 	@Column(name = "is_source_column", nullable = false)
 	private String isSourceColumn;
@@ -54,6 +54,15 @@ public class DataPollerMapping {
 	@Column(name = "target_field_idx", nullable = false)
 	private Integer targetFieldIdx;
 
+	@Column(name = "target_field_type", nullable = true)
+	private String targetFieldType;
+
+	@Column(name = "target_value_format", nullable = true)
+	private String targetValueFormat;
+
+	@Column(name = "vo_field_name", nullable = true)
+	private String voFieldName;
+
 	@Column(name = "show_flag", nullable = false)
 	private String showFlag;
 
@@ -63,20 +72,18 @@ public class DataPollerMapping {
 	@Column(name = "create_by", nullable = false)
 	private String createBy;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "setting_id", nullable = false)
-	private DataPollerSetting dataPollerSetting;
-
 	public DataPollerMapping() {
 		super();
 	}
 
-	public DataPollerMapping(String mappingId, String isSourceColumn, Integer sourceColumnIdx, String sourceColumnName,
-			String sourceColumnType, String sourceColumnJavaFormat, String sourceColumnSqlFormat,
-			String targetTableName, String targetFieldName, Integer targetFieldIdx, String showFlag,
-			Timestamp createTime, String createBy, DataPollerSetting dataPollerSetting) {
+	public DataPollerMapping(String mappingId, String mappingCode, String isSourceColumn, Integer sourceColumnIdx,
+			String sourceColumnName, String sourceColumnType, String sourceColumnJavaFormat,
+			String sourceColumnSqlFormat, String targetTableName, String targetFieldName, Integer targetFieldIdx,
+			String targetFieldType, String targetValueFormat, String voFieldName, String showFlag, Timestamp createTime,
+			String createBy) {
 		super();
 		this.mappingId = mappingId;
+		this.mappingCode = mappingCode;
 		this.isSourceColumn = isSourceColumn;
 		this.sourceColumnIdx = sourceColumnIdx;
 		this.sourceColumnName = sourceColumnName;
@@ -86,10 +93,12 @@ public class DataPollerMapping {
 		this.targetTableName = targetTableName;
 		this.targetFieldName = targetFieldName;
 		this.targetFieldIdx = targetFieldIdx;
+		this.targetFieldType = targetFieldType;
+		this.targetValueFormat = targetValueFormat;
+		this.voFieldName = voFieldName;
 		this.showFlag = showFlag;
 		this.createTime = createTime;
 		this.createBy = createBy;
-		this.dataPollerSetting = dataPollerSetting;
 	}
 
 	public String getMappingId() {
@@ -98,6 +107,14 @@ public class DataPollerMapping {
 
 	public void setMappingId(String mappingId) {
 		this.mappingId = mappingId;
+	}
+
+	public String getMappingCode() {
+		return mappingCode;
+	}
+
+	public void setMappingCode(String mappingCode) {
+		this.mappingCode = mappingCode;
 	}
 
 	public String getIsSourceColumn() {
@@ -172,6 +189,30 @@ public class DataPollerMapping {
 		this.targetFieldIdx = targetFieldIdx;
 	}
 
+	public String getTargetFieldType() {
+		return targetFieldType;
+	}
+
+	public void setTargetFieldType(String targetFieldType) {
+		this.targetFieldType = targetFieldType;
+	}
+
+	public String getTargetValueFormat() {
+		return targetValueFormat;
+	}
+
+	public void setTargetValueFormat(String targetValueFormat) {
+		this.targetValueFormat = targetValueFormat;
+	}
+
+	public String getVoFieldName() {
+		return voFieldName;
+	}
+
+	public void setVoFieldName(String voFieldName) {
+		this.voFieldName = voFieldName;
+	}
+
 	public String getShowFlag() {
 		return showFlag;
 	}
@@ -194,13 +235,5 @@ public class DataPollerMapping {
 
 	public void setCreateBy(String createBy) {
 		this.createBy = createBy;
-	}
-
-	public DataPollerSetting getDataPollerSetting() {
-		return dataPollerSetting;
-	}
-
-	public void setDataPollerSetting(DataPollerSetting dataPollerSetting) {
-		this.dataPollerSetting = dataPollerSetting;
 	}
 }

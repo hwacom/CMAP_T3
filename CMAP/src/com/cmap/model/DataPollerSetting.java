@@ -1,15 +1,12 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -27,11 +24,23 @@ public class DataPollerSetting {
 	@Column(name = "setting_id", unique = true)
 	private String settingId;
 
+	@Column(name = "mapping_code", nullable = false)
+	private String mappingCode;
+
 	@Column(name = "data_type", nullable = false)
 	private String dataType;
 
-	@Column(name = "method", nullable = false)
-	private String method;
+	@Column(name = "query_id", nullable = true)
+	private String queryId;
+
+	@Column(name = "remark", nullable = true)
+	private String remark;
+
+	@Column(name = "get_source_method", nullable = false)
+	private String getSourceMethod;
+
+	@Column(name = "store_method", nullable = false)
+	private String storeMethod;
 
 	@Column(name = "special_var_setting", nullable = true)
 	private String specialVarSetting;
@@ -75,6 +84,12 @@ public class DataPollerSetting {
 	@Column(name = "insert_file_dir", nullable = true)
 	private String insertFileDir;
 
+	@Column(name = "store_file_dir", nullable = true)
+	private String storeFileDir;
+
+	@Column(name = "store_file_name_format", nullable = true)
+	private String storeFileNameFormat;
+
 	@Column(name = "record_by_day", nullable = false)
 	private String recordByDay;
 
@@ -117,25 +132,27 @@ public class DataPollerSetting {
 	@Column(name = "update_by", nullable = false)
 	private String updateBy;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "dataPollerSetting")
-	private List<DataPollerMapping> dataPollerMappings;
-
 	public DataPollerSetting() {
 		super();
 	}
 
-	public DataPollerSetting(String settingId, String dataType, String method, String specialVarSetting,
-			String filePath, String fileNameRegex, String fileNameFormat, String fileCharset, String fieldsTerminatedBy,
-			String linesTerminatedBy, String sourceIp, String sourcePort, String loginAccount, String loginPassword,
-			String splitSymbol, String insertDbMethod, String insertFileDir, String recordByDay,
-			String recordByDayInterval, String recordByDayClean, String recordByDayReferField, String deleteSourceFile,
-			String backupSourceFile, String backupFilePath, String deleteFlag, Timestamp deleteTime, String deleteBy,
-			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy,
-			List<DataPollerMapping> dataPollerMappings) {
+	public DataPollerSetting(String settingId, String mappingCode, String dataType, String queryId, String remark,
+			String getSourceMethod, String storeMethod, String specialVarSetting, String filePath, String fileNameRegex,
+			String fileNameFormat, String fileCharset, String fieldsTerminatedBy, String linesTerminatedBy,
+			String sourceIp, String sourcePort, String loginAccount, String loginPassword, String splitSymbol,
+			String insertDbMethod, String insertFileDir, String storeFileDir, String storeFileNameFormat,
+			String recordByDay, String recordByDayInterval, String recordByDayClean, String recordByDayReferField,
+			String deleteSourceFile, String backupSourceFile, String backupFilePath, String deleteFlag,
+			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
+			String updateBy) {
 		super();
 		this.settingId = settingId;
+		this.mappingCode = mappingCode;
 		this.dataType = dataType;
-		this.method = method;
+		this.queryId = queryId;
+		this.remark = remark;
+		this.getSourceMethod = getSourceMethod;
+		this.storeMethod = storeMethod;
 		this.specialVarSetting = specialVarSetting;
 		this.filePath = filePath;
 		this.fileNameRegex = fileNameRegex;
@@ -150,6 +167,8 @@ public class DataPollerSetting {
 		this.splitSymbol = splitSymbol;
 		this.insertDbMethod = insertDbMethod;
 		this.insertFileDir = insertFileDir;
+		this.storeFileDir = storeFileDir;
+		this.storeFileNameFormat = storeFileNameFormat;
 		this.recordByDay = recordByDay;
 		this.recordByDayInterval = recordByDayInterval;
 		this.recordByDayClean = recordByDayClean;
@@ -164,7 +183,6 @@ public class DataPollerSetting {
 		this.createBy = createBy;
 		this.updateTime = updateTime;
 		this.updateBy = updateBy;
-		this.dataPollerMappings = dataPollerMappings;
 	}
 
 	public String getSettingId() {
@@ -175,6 +193,14 @@ public class DataPollerSetting {
 		this.settingId = settingId;
 	}
 
+	public String getMappingCode() {
+		return mappingCode;
+	}
+
+	public void setMappingCode(String mappingCode) {
+		this.mappingCode = mappingCode;
+	}
+
 	public String getDataType() {
 		return dataType;
 	}
@@ -183,12 +209,36 @@ public class DataPollerSetting {
 		this.dataType = dataType;
 	}
 
-	public String getMethod() {
-		return method;
+	public String getQueryId() {
+		return queryId;
 	}
 
-	public void setMethod(String method) {
-		this.method = method;
+	public void setQueryId(String queryId) {
+		this.queryId = queryId;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getGetSourceMethod() {
+		return getSourceMethod;
+	}
+
+	public void setGetSourceMethod(String getSourceMethod) {
+		this.getSourceMethod = getSourceMethod;
+	}
+
+	public String getStoreMethod() {
+		return storeMethod;
+	}
+
+	public void setStoreMethod(String storeMethod) {
+		this.storeMethod = storeMethod;
 	}
 
 	public String getSpecialVarSetting() {
@@ -303,6 +353,22 @@ public class DataPollerSetting {
 		this.insertFileDir = insertFileDir;
 	}
 
+	public String getStoreFileDir() {
+		return storeFileDir;
+	}
+
+	public void setStoreFileDir(String storeFileDir) {
+		this.storeFileDir = storeFileDir;
+	}
+
+	public String getStoreFileNameFormat() {
+		return storeFileNameFormat;
+	}
+
+	public void setStoreFileNameFormat(String storeFileNameFormat) {
+		this.storeFileNameFormat = storeFileNameFormat;
+	}
+
 	public String getRecordByDay() {
 		return recordByDay;
 	}
@@ -413,13 +479,5 @@ public class DataPollerSetting {
 
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
-	}
-
-	public List<DataPollerMapping> getDataPollerMappings() {
-		return dataPollerMappings;
-	}
-
-	public void setDataPollerMappings(List<DataPollerMapping> dataPollerMappings) {
-		this.dataPollerMappings = dataPollerMappings;
 	}
 }

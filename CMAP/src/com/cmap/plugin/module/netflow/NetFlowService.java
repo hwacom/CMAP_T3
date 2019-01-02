@@ -6,7 +6,9 @@ import com.cmap.exception.ServiceLayerException;
 
 public interface NetFlowService {
 
-	public long countNetFlowRecord(NetFlowVO nfVO, List<String> searchLikeField) throws ServiceLayerException;
+	public long countNetFlowRecordFromDB(NetFlowVO nfVO, List<String> searchLikeField) throws ServiceLayerException;
 
-	public List<NetFlowVO> findNetFlowRecord(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException;
+	public List<NetFlowVO> findNetFlowRecordFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException;
+
+	public NetFlowVO findNetFlowRecordFromFile(NetFlowVO nfVO, Integer startRow, Integer pageLength) throws ServiceLayerException;
 }

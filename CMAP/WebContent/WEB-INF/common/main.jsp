@@ -111,68 +111,71 @@
                     	  	<span>Dashboard</span>
                     	</a>
                     </li>
-                    <li class="subMenu-item">
+                   	<li class="subMenu-item">
                     	<a id="mp_netFlowSummary" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/netFlowSummary')">
                     	  <span data-feather="hash"></span>
-                    	  	<span>各校 NetFlow 統計</span>
+                    	  	<span>流量統計</span>
                     	</a>
                     </li>
                 </ul>
 	          </li>
-              <li class="nav-item">
-                <a class="nav-link toggleMenuLink" id="toggleMenu_cm" href="#">
-                  <span data-feather="file-text"></span>
-                  	<span>組態管理&nbsp;<span id="toggleMenu_cm_icon" data-feather="chevron-down"></span></span>
-                </a>
-                <ul aria-expanded="false" id="toggleMenu_cm_items" class="collapse">
-                    <li class="subMenu-item">
-                    	<a id="cm_manage" href="${pageContext.request.contextPath}/version/manage">
-                    	  <span data-feather="file-text"></span>
-                    		<span>版本管理</span>
-                    	</a>
-                    </li> 
-                    <li class="subMenu-item">
-		                <a id="cm_backup" href="${pageContext.request.contextPath}/version/backup">
-		                  <span data-feather="download"></span>
-		                  	<span>版本備份</span>
-		                </a>
-		            </li>
-		            <%
-		            	if (!hiddenFunc) {
-		            %>
-		            <li class="subMenu-item">
-		                <a id="cm_restore" href="${pageContext.request.contextPath}/version/restore">
-		                  <span data-feather="upload"></span>
-		                  	<span>版本還原</span>
-		                </a>
-		            </li>
-		            <li class="subMenu-item">
-		                <a id="cm_script" href="${pageContext.request.contextPath}/script">
-		                  <span data-feather="code"></span>
-		                  	<span>腳本管理</span>
-		                </a>
-		            </li>
-		            <%
-		            	}
-		            %>
-		            <li class="subMenu-item">
-		                <a id="cm_delivery" href="${pageContext.request.contextPath}/delivery">
-		                  <span data-feather="send"></span>
-		                  	<span>供裝派送</span>
-		                </a>
-		            </li>
-		            <li class="subMenu-item">
-		                <a id="cm_record" href="${pageContext.request.contextPath}/delivery/record">
-		                  <span data-feather="search"></span>
-		                  	<span>供裝紀錄</span>
-		                </a>
-		            </li>
-                </ul>
-              </li>
+	          <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+	          	<li class="nav-item">
+	                <a class="nav-link toggleMenuLink" id="toggleMenu_cm" href="#">
+	                  <span data-feather="file-text"></span>
+	                  	<span>組態管理&nbsp;<span id="toggleMenu_cm_icon" data-feather="chevron-down"></span></span>
+	                </a>
+	                <ul aria-expanded="false" id="toggleMenu_cm_items" class="collapse">
+	                    <li class="subMenu-item">
+	                    	<a id="cm_manage" href="${pageContext.request.contextPath}/version/manage">
+	                    	  <span data-feather="file-text"></span>
+	                    		<span>版本管理</span>
+	                    	</a>
+	                    </li> 
+	                    <li class="subMenu-item">
+			                <a id="cm_backup" href="${pageContext.request.contextPath}/version/backup">
+			                  <span data-feather="download"></span>
+			                  	<span>版本備份</span>
+			                </a>
+			            </li>
+			            <%
+			            	if (!hiddenFunc) {
+			            %>
+			            <li class="subMenu-item">
+			                <a id="cm_restore" href="${pageContext.request.contextPath}/version/restore">
+			                  <span data-feather="upload"></span>
+			                  	<span>版本還原</span>
+			                </a>
+			            </li>
+			            <li class="subMenu-item">
+			                <a id="cm_script" href="${pageContext.request.contextPath}/script">
+			                  <span data-feather="code"></span>
+			                  	<span>腳本管理</span>
+			                </a>
+			            </li>
+			            <%
+			            	}
+			            %>
+			            <li class="subMenu-item">
+			                <a id="cm_delivery" href="${pageContext.request.contextPath}/delivery">
+			                  <span data-feather="send"></span>
+			                  	<span>供裝派送</span>
+			                </a>
+			            </li>
+			            <li class="subMenu-item">
+			                <a id="cm_record" href="${pageContext.request.contextPath}/delivery/record">
+			                  <span data-feather="search"></span>
+			                  	<span>供裝紀錄</span>
+			                </a>
+			            </li>
+	                </ul>
+	              </li>
+	          </sec:authorize>
+              
               <li class="nav-item">
                 <a class="nav-link toggleMenuLink" id="toggleMenu_plugin" href="#">
-                  <span data-feather="grid"></span>
-                  	<span>附加模組&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
+                  <span data-feather="alert-triangle"></span>
+                  	<span>資安通報&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
                 </a>
                 <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
                 	<%
@@ -191,6 +194,12 @@
                     	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
                     	  <span data-feather="shuffle"></span>
                     	  	<span>Net Flow 管理</span>
+                    	</a>
+                    </li>
+                    <li class="subMenu-item">
+                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
+                    	  <span data-feather="shield-off"></span>
+                    	  	<span>開關 Port</span>
                     	</a>
                     </li>
                 </ul>

@@ -1,10 +1,14 @@
 package com.cmap.plugin.module.netflow;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cmap.service.vo.CommonServiceVO;
 
 public class NetFlowVO extends CommonServiceVO {
 
 	private String queryGroupId;
+	private String querySchoolId;
 	private String queryIp;
 	private String queryPort;
 	private String querySourceIp;
@@ -13,8 +17,14 @@ public class NetFlowVO extends CommonServiceVO {
 	private String queryDestinationPort;
 	private String querySenderIp;
 	private String queryMac;
+	private String queryDate;
 	private String queryDateBegin;
 	private String queryDateEnd;
+	private String queryValue;
+	private String queryCondition;
+
+	private List<NetFlowVO> matchedList = new ArrayList<>();
+	private int totalCount = 0;
 
 	private String groupId;
 	private String groupName;
@@ -346,5 +356,53 @@ public class NetFlowVO extends CommonServiceVO {
 
 	public void setQuerySenderIp(String querySenderIp) {
 		this.querySenderIp = querySenderIp;
+	}
+
+	public String getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(String queryDate) {
+		this.queryDate = queryDate;
+	}
+
+	public String getQueryValue() {
+		return queryValue;
+	}
+
+	public void setQueryValue(String queryValue) {
+		this.queryValue = queryValue;
+	}
+
+	public String getQueryCondition() {
+		return queryCondition;
+	}
+
+	public void setQueryCondition(String queryCondition) {
+		this.queryCondition = queryCondition;
+	}
+
+	public List<NetFlowVO> getMatchedList() {
+		return matchedList;
+	}
+
+	public void setMatchedList(List<NetFlowVO> matchedList) {
+		this.matchedList = matchedList;
+	}
+
+	public int getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}
+
+	public String getQuerySchoolId() {
+		return querySchoolId;
+	}
+
+	public void setQuerySchoolId(String querySchoolId) {
+		this.querySchoolId = querySchoolId;
 	}
 }

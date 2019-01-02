@@ -127,6 +127,9 @@ public class Constants {
 
 	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
 
+	public static final String STORE_METHOD_OF_FILE = "FILE";
+	public static final String STORE_METHOD_OF_DB = "DB";
+
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
 
 	public static final String MODEL_ATTR_LOGIN_ERROR = "LOGIN_EXCEPTION";
@@ -140,8 +143,28 @@ public class Constants {
 	public static final String FILE_FORMAT_YYYYMMDDHH24MISS = "[YYYYMMDDHH24MISS]";
 	public static final String FILE_FORMAT_FILE_EXT = "[FILE_EXT]";
 
+	public static final String DATA_POLLER_STORE_METHOD_FILE = "FILE";
+	public static final String DATA_POLLER_STORE_METHOD_DB = "DB";
 	public static final String DATA_POLLER_INSERT_DB_BY_SQL = "SQL";
 	public static final String DATA_POLLER_INSERT_DB_BY_CSV_FILE = "CSV_FILE";
+
+	public static final String DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP = "TIMESTAMP";
+	public static final String DATA_POLLER_SETTING_TYPE_OF_USER = "@USER@";
+
+	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_NOW = "@NOW@";
+	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_USER = "@USER@";
+	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_SPECIAL_VAR = "@SPECIAL_VAR@";
+
+	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_SCHOOL_ID = "[SCHOOL_ID]";
+	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_YYYYMMDD = "[YYYYMMDD]";
+	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_FILE_EXT = "[FILE_EXT]";
+
+	public static final String SYMBOL_EQUAL = "=";
+	public static final String SYMBOL_FRONT_END_LIKE = "%...%";
+	public static final String SYMBOL_FRONT_LIKE = "%...";
+	public static final String SYMBOL_END_LIKE = "...%";
+	public static final String SYMBOL_GREATER_OR_EQUAL = ">=";
+	public static final String SYMBOL_LESS_OR_EQUAL = "<=";
 
 	/*
 	 * OIDC

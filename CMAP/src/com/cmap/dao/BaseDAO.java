@@ -1,5 +1,6 @@
 package com.cmap.dao;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public interface BaseDAO {
@@ -17,4 +18,6 @@ public interface BaseDAO {
 	public boolean insertEntitiesByNativeSQL(List<String> nativeSQLs);
 
 	public boolean deleteEntitiesByNativeSQL(List<String> nativeSQLs);
+
+	public boolean insertEntities2File(Path filePath, List<String> recordList, boolean appendFile);
 }

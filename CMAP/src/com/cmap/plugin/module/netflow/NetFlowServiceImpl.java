@@ -6,7 +6,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -18,10 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.dao.DataPollerDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.DataPollerMapping;
+import com.cmap.model.DataPollerSetting;
 import com.cmap.model.DeviceList;
 import com.cmap.service.DataPollerService;
+import com.cmap.service.vo.DataPollerServiceVO;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 @Service("netFlowService")
 @Transactional
@@ -34,6 +41,9 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 	@Autowired
 	private DataPollerService dataPollerService;
+
+	@Autowired
+	private DataPollerDAO dataPollerDAO;
 
 	@Autowired
 	private DeviceListDAO deviceListDAO;
@@ -74,10 +84,10 @@ public class NetFlowServiceImpl implements NetFlowService {
 	}
 
 	@Override
-	public long countNetFlowRecord(NetFlowVO nfVO, List<String> searchLikeField) throws ServiceLayerException {
+	public long countNetFlowRecordFromDB(NetFlowVO nfVO, List<String> searchLikeField) throws ServiceLayerException {
 		long retCount = 0;
 		try {
-			retCount = netFlowDAO.countNetFlowData(nfVO, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
+			retCount = netFlowDAO.countNetFlowDataFromDB(nfVO, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -87,10 +97,10 @@ public class NetFlowServiceImpl implements NetFlowService {
 	}
 
 	@Override
-	public List<NetFlowVO> findNetFlowRecord(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException {
+	public List<NetFlowVO> findNetFlowRecordFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException {
 		List<NetFlowVO> retList = new ArrayList<>();
 		try {
-			List<Object[]> dataList = netFlowDAO.findNetFlowData(nfVO, startRow, pageLength, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
+			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
 
 			if (dataList != null && !dataList.isEmpty()) {
 				List<String> fieldList = dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_SOURCE);
@@ -170,6 +180,108 @@ public class NetFlowServiceImpl implements NetFlowService {
 			throw new ServiceLayerException("查詢失敗，請重新操作");
 		}
 		return retList;
+	}
+
+	private Map<String, NetFlowVO> composeQueryMap(NetFlowVO nfVO) {
+		Map<String, NetFlowVO> retMap = new HashMap<>();
+
+		NetFlowVO vo = new NetFlowVO();
+		vo.setQueryValue(nfVO.getQueryDate());
+		vo.setQueryCondition(Constants.SYMBOL_EQUAL);
+		retMap.put("FromDateTime", vo);
+
+		vo = new NetFlowVO();
+		vo.setQueryValue(nfVO.getQueryDate());
+		vo.setQueryCondition(Constants.SYMBOL_EQUAL);
+		retMap.put("ToDateTime", vo);
+
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			vo = new NetFlowVO();
+			vo.setQueryValue(nfVO.getQuerySourceIp());
+			vo.setQueryCondition(Constants.SYMBOL_END_LIKE);
+			retMap.put("SourceIP", vo);
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			vo = new NetFlowVO();
+			vo.setQueryValue(nfVO.getQuerySourcePort());
+			vo.setQueryCondition(Constants.SYMBOL_EQUAL);
+			retMap.put("SourcePort", vo);
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			vo = new NetFlowVO();
+			vo.setQueryValue(nfVO.getQueryDestinationIp());
+			vo.setQueryCondition(Constants.SYMBOL_END_LIKE);
+			retMap.put("DestinationIP", vo);
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			vo = new NetFlowVO();
+			vo.setQueryValue(nfVO.getQueryDestinationIp());
+			vo.setQueryCondition(Constants.SYMBOL_EQUAL);
+			retMap.put("DestinationPort", vo);
+		}
+
+		return retMap;
+	}
+
+	private NetFlowVO doQuery(
+			DataPollerSetting setting,
+			Map<Integer, DataPollerServiceVO> fieldIdxMap,
+			Map<String, DataPollerServiceVO> fieldVOMap,
+			Map<String, NetFlowVO> queryMap,
+			Integer startRow,
+			Integer pageLength) throws Exception {
+
+		NetFlowVO retVO = new NetFlowVO();
+
+		String mappingCode = setting.getMappingCode();
+		List<DataPollerMapping> mappings = dataPollerDAO.findDataPollerMappingByMappingCode(mappingCode);
+
+		if (mappings != null && !mappings.isEmpty()) {
+			DataPollerServiceVO dpsVO = null;
+			for (DataPollerMapping dpm : mappings) {
+				dpsVO = new DataPollerServiceVO();
+				BeanUtils.copyProperties(dpsVO, dpm);
+
+				fieldIdxMap.put(dpm.getTargetFieldIdx(), dpsVO);
+				fieldVOMap.put(dpm.getTargetFieldName(), dpsVO);
+
+			}
+		}
+
+		retVO = netFlowDAO.findNetFlowDataFromFile(setting, fieldIdxMap, fieldVOMap, queryMap, startRow, pageLength);
+
+		return retVO;
+	}
+
+	@Override
+	public NetFlowVO findNetFlowRecordFromFile(NetFlowVO nfVO, Integer startRow, Integer pageLength) throws ServiceLayerException {
+		NetFlowVO retVO = new NetFlowVO();
+		try {
+			String querySchoolId = nfVO.getQuerySchoolId();
+			DataPollerSetting setting = dataPollerDAO.findDataPollerSettingByDataTypeAndQueryId(Constants.DATA_TYPE_OF_NET_FLOW, querySchoolId);
+
+			Map<Integer, DataPollerServiceVO> fieldIdxMap = new HashMap<>();
+			Map<String, DataPollerServiceVO> fieldVOMap = new HashMap<>();
+
+			Map<String, NetFlowVO> queryMap = composeQueryMap(nfVO);
+
+			if (setting == null) {
+				List<DataPollerSetting> settings = dataPollerDAO.findDataPollerSettingByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
+
+				NetFlowVO tmpVO = null;
+				for (DataPollerSetting dps : settings) {
+					tmpVO = doQuery(dps, fieldIdxMap, fieldVOMap, queryMap, startRow, pageLength);
+				}
+
+			} else {
+				retVO = doQuery(setting, fieldIdxMap, fieldVOMap, queryMap, startRow, pageLength);
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("查詢失敗，請重新操作");
+		}
+		return retVO;
 	}
 
 }

@@ -31,8 +31,8 @@ $(document).ready(function() {
 	
 	$("#btnModify").click(function() {
 		isModify = true;
-		jobAction('modify');
 		changeSchedView($("#inputSchedType").val());
+		jobAction('modify');
 	});
 	
 	$("#btnSave").click(function() {

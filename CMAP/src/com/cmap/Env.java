@@ -154,6 +154,7 @@ public class Env {
 	public static String SETTING_ID_OF_NET_FLOW;
 
 	public static String DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
+	public static String NET_FLOW_OUTPUT_FILE_EXT_NAE;
 
 	public static String PRTG_LOGIN_URI;
 	public static String PRTG_INDEX_URI;
@@ -162,8 +163,6 @@ public class Env {
 
 	public static String DEFAULT_INSERT_DB_FILE_DIR;
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
-	public static String DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP;
-	public static String DATA_POLLER_SETTING_TYPE_OF_USER;
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
 
@@ -188,6 +187,8 @@ public class Env {
 	public static String OIDC_USERINFO_ENDPOINT_JSON_EMAIL_NODE;
 	public static String OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE;
 	public static String OIDC_EDUINFO_ENDPOINT_JSON_SCHOOLID_NODE;
+
+	public static String FILE_EXTENSION_NAME_OF_NET_FLOW;
 
 	public static final Step[] SEND_SCRIPT = new Step[] {
 			Step.LOAD_SPECIFIED_SCRIPT,

@@ -29,24 +29,28 @@ public class JobDataPoller extends BaseJobImpl implements BaseJobService {
 		Timestamp startTime = new Timestamp((new Date()).getTime());
 		DataPollerServiceVO dpsVO = new DataPollerServiceVO();
 
-		try {
-			JobDataMap jMap = context.getJobDetail().getJobDataMap();
-			final String settingId = jMap.getString(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID);
+		JobDataMap jMap = context.getJobDetail().getJobDataMap();
+		final String settingIdVar = jMap.getString(Constants.QUARTZ_PARA_DATA_POLLER_SETTING_ID);
+		String[] settingIds = settingIdVar.split(",");
 
-			dataPollerService = (DataPollerService)ApplicationContextUtil.getBean("dataPollerService");
-			dpsVO = dataPollerService.executePolling(settingId);
+		dataPollerService = (DataPollerService)ApplicationContextUtil.getBean("dataPollerService");
 
-		} catch (Exception e) {
-			log.error("JID:["+JOB_ID+"] >> "+e.toString(), e);
+		for (String settingId : settingIds) {
+			try {
+				dpsVO = dataPollerService.executePolling(settingId);
 
-			dpsVO.setJobExcuteResult(Result.FAILED);
-			dpsVO.setJobExcuteResultRecords("0");
-			dpsVO.setJobExcuteRemark(e.getMessage() + ", JID:["+JOB_ID+"]");
+			} catch (Exception e) {
+				log.error("JID:["+JOB_ID+"] >> "+e.toString(), e);
 
-		} finally {
-			Timestamp endTime = new Timestamp((new Date()).getTime());
+				dpsVO.setJobExcuteResult(Result.FAILED);
+				dpsVO.setJobExcuteResultRecords("0");
+				dpsVO.setJobExcuteRemark(e.getMessage() + ", JID:["+JOB_ID+"]");
 
-			super.insertSysJobLog(JOB_ID, context, dpsVO.getJobExcuteResult(), dpsVO.getJobExcuteResultRecords(), startTime, endTime, dpsVO.getJobExcuteRemark());
+			} finally {
+				Timestamp endTime = new Timestamp((new Date()).getTime());
+
+				super.insertSysJobLog(JOB_ID, context, dpsVO.getJobExcuteResult(), dpsVO.getJobExcuteResultRecords(), startTime, endTime, dpsVO.getJobExcuteRemark());
+			}
 		}
 	}
 }

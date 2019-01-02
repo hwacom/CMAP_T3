@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -155,15 +156,32 @@ public class NetFlowController extends BaseController {
 			nfVO.setOrderColumn(getOrderColumnName(orderColIdx));
 			nfVO.setOrderDirection(orderDirection);
 
-			filterdTotal = netFlowService.countNetFlowRecord(nfVO, targetFieldList);
+			String storeMethod = dataPollerService.getStoreMethodByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
 
-			if (filterdTotal != 0) {
-				dataList = netFlowService.findNetFlowRecord(nfVO, startNum, pageLength, targetFieldList);
+			if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_FILE)) {
+				/*
+				 * Option 1. 走 FILE 模式查詢
+				 */
+				NetFlowVO retVO = netFlowService.findNetFlowRecordFromFile(nfVO, startNum, pageLength);
+
+				filterdTotal = retVO.getMatchedList().size();
+				dataList = retVO.getMatchedList();
+				total = retVO.getTotalCount();
+
+			} else if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_DB)) {
+				/*
+				 * Option 2. 走 DB 模式查詢
+				 */
+				filterdTotal = netFlowService.countNetFlowRecordFromDB(nfVO, targetFieldList);
+
+				if (filterdTotal != 0) {
+					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
+				}
+
+				NetFlowVO newVO = new NetFlowVO();
+				newVO.setQueryDateBegin(queryDateBegin);
+				total = netFlowService.countNetFlowRecordFromDB(newVO, targetFieldList);
 			}
-
-			NetFlowVO newVO = new NetFlowVO();
-			newVO.setQueryDateBegin(queryDateBegin);
-			total = netFlowService.countNetFlowRecord(newVO, targetFieldList);
 
 		} catch (ServiceLayerException sle) {
 		} catch (Exception e) {
