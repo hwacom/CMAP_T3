@@ -101,19 +101,19 @@
                 <ul aria-expanded="false" id="toggleMenu_prtg_items" class="collapse">
                     <li class="subMenu-item">
                     	<a id="mp_index" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/index')">
-                    	  <span data-feather="command"></span>
+                    	  <span data-feather="home"></span>
                     		<span>首頁</span>
                     	</a>
                     </li>
                     <li class="subMenu-item">
                     	<a id="mp_dashboard" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/dashboard')">
-                    	  <span data-feather="hash"></span>
+                    	  <span data-feather="grid"></span>
                     	  	<span>Dashboard</span>
                     	</a>
                     </li>
                    	<li class="subMenu-item">
                     	<a id="mp_netFlowSummary" href="#" onclick="closeTabAndGo('${pageContext.request.contextPath}/prtg/netFlowSummary')">
-                    	  <span data-feather="hash"></span>
+                    	  <span data-feather="activity"></span>
                     	  	<span>流量統計</span>
                     	</a>
                     </li>
@@ -193,11 +193,11 @@
                     <li class="subMenu-item">
                     	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
                     	  <span data-feather="shuffle"></span>
-                    	  	<span>Net Flow 管理</span>
+                    	  	<span>Net Flow 查詢</span>
                     	</a>
                     </li>
                     <li class="subMenu-item">
-                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
+                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/switchPort">
                     	  <span data-feather="shield-off"></span>
                     	  	<span>開關 Port</span>
                     	</a>

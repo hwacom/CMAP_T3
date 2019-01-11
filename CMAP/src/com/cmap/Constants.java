@@ -166,6 +166,8 @@ public class Constants {
 	public static final String SYMBOL_GREATER_OR_EQUAL = ">=";
 	public static final String SYMBOL_LESS_OR_EQUAL = "<=";
 
+	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
+	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";
 	/*
 	 * OIDC
 	 */

@@ -36,6 +36,9 @@ public class PrtgAccountMapping {
 	@Column(name = "dashboard_map_url", nullable = true)
 	private String dashboardMapUrl;
 
+	@Column(name = "net_flow_map_url", nullable = true)
+	private String netFlowMapUrl;
+
 	@Column(name = "remark", nullable = true)
 	private String remark;
 
@@ -50,13 +53,14 @@ public class PrtgAccountMapping {
 	}
 
 	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword,
-			String dashboardMapUrl, String remark, Timestamp createTime, String createBy) {
+			String dashboardMapUrl, String netFlowMapUrl, String remark, Timestamp createTime, String createBy) {
 		super();
 		this.id = id;
 		this.sourceId = sourceId;
 		this.prtgAccount = prtgAccount;
 		this.prtgPassword = prtgPassword;
 		this.dashboardMapUrl = dashboardMapUrl;
+		this.netFlowMapUrl = netFlowMapUrl;
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
@@ -100,6 +104,14 @@ public class PrtgAccountMapping {
 
 	public void setDashboardMapUrl(String dashboardMapUrl) {
 		this.dashboardMapUrl = dashboardMapUrl;
+	}
+
+	public String getNetFlowMapUrl() {
+		return netFlowMapUrl;
+	}
+
+	public void setNetFlowMapUrl(String netFlowMapUrl) {
+		this.netFlowMapUrl = netFlowMapUrl;
 	}
 
 	public String getRemark() {

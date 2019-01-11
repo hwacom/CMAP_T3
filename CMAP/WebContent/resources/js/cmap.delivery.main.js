@@ -5,7 +5,13 @@ const scriptShowLength = 20;	//設定欄位顯示內容最大長度
 var STEP_NUM = 1;
 
 $(document).ready(function() {
-	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_delivery");
+	if ($("#onlySwitchPort").val() == "Y") {
+		initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_switchPort");
+		findData('WEB');
+		
+	} else {
+		initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_delivery");
+	}
 	
 	$("#viewScriptModal").on("shown.bs.modal", function () {
     	setTimeout(function() {
@@ -856,6 +862,8 @@ function findData(from) {
 						d.queryScriptTypeCode = $("#queryScriptTypeCode_mobile").val();
 					}
 					
+					d.onlySwitchPort = $("#onlySwitchPort").val();
+					
 					return d;
 				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
@@ -942,5 +950,4 @@ function findData(from) {
 			],
 		});
 	}
-	
 }

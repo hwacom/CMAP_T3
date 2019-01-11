@@ -166,6 +166,8 @@ public class Env {
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
 
+	// 設定資安通報下「開關PORT」的腳本SCRIPT_CODE
+	public static List<String> DELIVERY_SWITCH_PORT_SCRIPT_CODE = new ArrayList<>();
 	/*
 	 * OpenID
 	 */

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cmap.Constants;
 import com.cmap.annotation.Log;
 import com.cmap.dao.PrtgDAO;
 import com.cmap.exception.ServiceLayerException;
@@ -22,7 +23,7 @@ public class PrtgServiceImpl implements PrtgService {
 	private PrtgDAO prtgDAO;
 
 	@Override
-	public String getDashboardMapBySourceId(String sourceId) throws ServiceLayerException {
+	public String getMapUrlBySourceIdAndType(String sourceId, String type) throws ServiceLayerException {
 		try {
 			if (StringUtils.isBlank(sourceId)) {
 				throw new ServiceLayerException("取得PRTG dashboard MAP失敗! >> Source_ID 不得為空");
@@ -34,7 +35,16 @@ public class PrtgServiceImpl implements PrtgService {
 				throw new ServiceLayerException("取得PRTG dashboard MAP失敗! >> 查無資料, Source_ID: " + sourceId);
 			}
 
-			return mapping.getDashboardMapUrl();
+			switch (type) {
+				case Constants.MAP_URL_OF_DASHBOARD:
+					return mapping.getDashboardMapUrl();
+
+				case Constants.MAP_URL_OF_NET_FLOW_SUMMARY:
+					return mapping.getNetFlowMapUrl();
+
+				default:
+					return null;
+			}
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

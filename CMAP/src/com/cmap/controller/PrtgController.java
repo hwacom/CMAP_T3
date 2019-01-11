@@ -197,7 +197,7 @@ public class PrtgController extends BaseController {
 		try {
 			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
 
-			String dashboardMapUrl = prtgService.getDashboardMapBySourceId(schoolId);
+			String dashboardMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_DASHBOARD);
 
 			if (StringUtils.isBlank(dashboardMapUrl)) {
 				dashboardMapUrl = Env.PRTG_DEFAULT_DASHBOARD_URI;	//如果沒設定則取得預設MAP
@@ -219,11 +219,18 @@ public class PrtgController extends BaseController {
 	public @ResponseBody AppResponse getPrtgNetFlowSummaryUri(
 			Model model, HttpServletRequest request, HttpServletResponse response) {
 
+		HttpSession session = request.getSession();
 		try {
-			String netFlowSummaryUrl = Env.PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
+			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+			String netFlowSummaryMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_NET_FLOW_SUMMARY);
+
+			if (StringUtils.isBlank(netFlowSummaryMapUrl)) {
+				netFlowSummaryMapUrl = Env.PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;	//如果沒設定則取得預設MAP
+			}
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
-			app.putData("uri", netFlowSummaryUrl);
+			app.putData("uri", netFlowSummaryMapUrl);
 			return app;
 
 		} catch (Exception e) {

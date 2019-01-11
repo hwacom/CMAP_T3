@@ -5,6 +5,7 @@ public class ScriptInfoDAOVO extends CommonDAOVO {
 	private String queryScriptTypeId;
 	private String queryScriptInfoId;
 	private String querySystemDefault;
+	private boolean onlySwitchPort = false;
 
 	public String getQueryScriptTypeId() {
 		return queryScriptTypeId;
@@ -28,5 +29,13 @@ public class ScriptInfoDAOVO extends CommonDAOVO {
 
 	public void setQuerySystemDefault(String querySystemDefault) {
 		this.querySystemDefault = querySystemDefault;
+	}
+
+	public boolean isOnlySwitchPort() {
+		return onlySwitchPort;
+	}
+
+	public void setOnlySwitchPort(boolean onlySwitchPort) {
+		this.onlySwitchPort = onlySwitchPort;
 	}
 }

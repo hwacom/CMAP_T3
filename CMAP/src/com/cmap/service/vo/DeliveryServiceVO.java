@@ -17,6 +17,7 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String queryTimeBegin;
 	private String queryTimeEnd;
 	private String queryLogStepId;
+	private boolean onlySwitchPort = false;
 
 	//by [設備] 角度查詢結果
 	private String deviceListId;
@@ -65,7 +66,7 @@ public class DeliveryServiceVO extends CommonServiceVO {
 
 	private String logStepId;
 
-	private Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<String, Map<String, List<DeviceDetailInfo>>>();
+	private Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<>();
 
 	public String getQueryGroup() {
 		return queryGroup;
@@ -354,5 +355,11 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	}
 	public void setQueryLogStepId(String queryLogStepId) {
 		this.queryLogStepId = queryLogStepId;
+	}
+	public boolean isOnlySwitchPort() {
+		return onlySwitchPort;
+	}
+	public void setOnlySwitchPort(boolean onlySwitchPort) {
+		this.onlySwitchPort = onlySwitchPort;
 	}
 }

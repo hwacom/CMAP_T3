@@ -4,6 +4,6 @@ import com.cmap.exception.ServiceLayerException;
 
 public interface PrtgService {
 
-	public String getDashboardMapBySourceId(String sourceId) throws ServiceLayerException;
+	public String getMapUrlBySourceIdAndType(String sourceId, String type) throws ServiceLayerException;
 
 }

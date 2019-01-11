@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
+import com.cmap.Env;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.vo.ScriptInfoDAOVO;
 import com.cmap.model.ScriptInfo;
@@ -35,6 +36,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			sb.append(" and si.systemDefault = :systemDefault ");
 		}
+		if (daovo.isOnlySwitchPort()) {
+			sb.append(" and si.scriptCode in (:scriptCode) ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
@@ -47,6 +51,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			q.setParameter("systemDefault", daovo.getQuerySystemDefault());
+		}
+		if (daovo.isOnlySwitchPort()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
 		}
 
 		return DataAccessUtils.longResult(q.list());
@@ -68,6 +75,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			sb.append(" and si.systemDefault = :systemDefault ");
 		}
+		if (daovo.isOnlySwitchPort()) {
+			sb.append(" and si.scriptCode in (:scriptCode) ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
@@ -80,6 +90,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			q.setParameter("systemDefault", daovo.getQuerySystemDefault());
+		}
+		if (daovo.isOnlySwitchPort()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
 		}
 
 		return (List<ScriptInfo>)q.list();
