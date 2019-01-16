@@ -131,6 +131,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						fileServerMode = ConnectionMode.FTP;
 						break;
 
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_TFTP:
+						steps = Env.BACKUP_BY_TELNET;
+						deviceMode = ConnectionMode.SSH;
+						fileServerMode = ConnectionMode.TFTP;
+						break;
+
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP:
 						steps = Env.BACKUP_BY_TFTP;
 						deviceMode = ConnectionMode.SSH;
@@ -359,6 +365,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				}
 
 				retVO.setSuccess(true);
+				retVO.setResult(Result.SUCCESS);
 				break;
 
 			} catch (ServiceLayerException sle) {
@@ -779,7 +786,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 			List<VersionServiceVO> vsVOs;
 			if (entityList != null && !entityList.isEmpty()) {
-				final ConfigVersionInfo cviEneity = (ConfigVersionInfo)entityList.get(0)[0];
+				final ConfigVersionInfo cviEntity = (ConfigVersionInfo)entityList.get(0)[0];
 				final DeviceList dlEntity = (DeviceList)entityList.get(0)[1];
 
 				vsVOs = new ArrayList<>();
@@ -787,7 +794,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				//前一版本VO
 				VersionServiceVO preVersionVO = new VersionServiceVO();
 				preVersionVO.setConfigFileDirPath(dlEntity.getConfigFileDirPath());
-				preVersionVO.setFileFullName(cviEneity.getFileFullName());
+				preVersionVO.setFileFullName(cviEntity.getFileFullName());
+				preVersionVO.setCreateDate(cviEntity.getCreateTime() != null ? new Date(cviEntity.getCreateTime().getTime()) : null);
 				vsVOs.add(preVersionVO);
 
 				//當下備份上傳版本VO
@@ -894,7 +902,14 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			fileUtils.login(_loginAccount, _loginPassword);
 
 			// Step3. 移動作業目錄至指定的裝置
-			fileUtils.changeDir(configInfoVO.getConfigFileDirPath(), false);
+			String fileDir = configInfoVO.getConfigFileDirPath();
+
+			if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+				SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+				fileDir = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+			}
+
+			fileUtils.changeDir(fileDir, false);
 
 			// Step4. 下載指定的Config落地檔
 			retList = fileUtils.downloadFiles(configInfoVO);

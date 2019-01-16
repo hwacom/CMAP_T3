@@ -4,8 +4,12 @@
 	<decorator name="main" page="common/main.jsp">
 		<pattern>/*</pattern>
 	</decorator>
-	<decorator name="login" page="views/login_openid.jsp">
-		<pattern>/login*</pattern>
+	<decorator name="login" page="views/login.jsp">
+		<pattern>/login</pattern>
+		<pattern>/accessdenied*</pattern>
+	</decorator>
+	<decorator name="loginOIDC" page="views/login_openid.jsp">
+		<pattern>/loginOIDC</pattern>
 		<pattern>/accessdenied*</pattern>
 	</decorator>
 	<decorator name="outsite" page="common/blank.jsp">

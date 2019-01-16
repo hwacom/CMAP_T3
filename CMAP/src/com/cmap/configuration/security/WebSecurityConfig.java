@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -76,11 +77,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/admin/env/refreshAll").permitAll()
 			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
-			/*
 			.addFilterBefore(authenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class)
-	                */
-		.formLogin().loginPage("/login").permitAll()
+			.formLogin().loginPage("/login").permitAll()
 //			.successHandler(authSuccessHandler())
 //			.failureHandler(authUnsuccessHandler())
 			.and()

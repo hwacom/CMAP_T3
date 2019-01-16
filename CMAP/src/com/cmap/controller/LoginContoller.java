@@ -42,10 +42,15 @@ public class LoginContoller extends BaseController {
 	public String index(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			if (null == principal) {
-				return "redirect:/login";
+				if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+					return "redirect:/loginOIDC";
+
+				} else {
+					return "redirect:/login";
+				}
 			}
 
-			RequestDispatcher rd = request.getRequestDispatcher("/prtg/index");
+			RequestDispatcher rd = request.getRequestDispatcher(Env.HOME_PAGE);
 			rd.forward(request,response);
 
 		} catch (Exception e) {
@@ -59,10 +64,15 @@ public class LoginContoller extends BaseController {
 	public String indexPage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			if (null == principal) {
-				return "redirect:/login";
+				if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+					return "redirect:/loginOIDC";
+
+				} else {
+					return "redirect:/login";
+				}
 			}
 
-			RequestDispatcher rd = request.getRequestDispatcher("/prtg/index");
+			RequestDispatcher rd = request.getRequestDispatcher(Env.HOME_PAGE);
 			rd.forward(request,response);
 
 		} catch (Exception e) {
@@ -88,7 +98,7 @@ public class LoginContoller extends BaseController {
 		if (StringUtils.isNotBlank(loginError)) {
 			model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, loginError);
 			session.removeAttribute(Constants.MODEL_ATTR_LOGIN_ERROR);
-			return "login_openid";
+			return "login";
 
 		} else {
 			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
@@ -111,8 +121,47 @@ public class LoginContoller extends BaseController {
 				return "login_openid";
 
 			} else {
-				return "login_openid";
+		        return "login";
 			}
+		}
+	}
+
+	@RequestMapping(value = "loginOIDC", method = {RequestMethod.GET, RequestMethod.POST})
+	public String loginOIDCPage(
+			HttpServletRequest request,
+			HttpServletResponse response,
+			@RequestParam(value = "langType", defaultValue = "en_US") String langType,
+			Locale locale,
+			Principal principal,
+			Model model) {
+
+		HttpSession session = request.getSession();
+		LocaleContextHolder.getLocale();
+
+		final String loginError = Objects.toString(session.getAttribute(Constants.MODEL_ATTR_LOGIN_ERROR), null);
+		if (StringUtils.isNotBlank(loginError)) {
+			model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, loginError);
+			session.removeAttribute(Constants.MODEL_ATTR_LOGIN_ERROR);
+			return "login_openid";
+
+		} else {
+			URI configurationEndpoint = null;
+			try {
+				configurationEndpoint = new URI(Env.OIDC_CONFIGURATION_ENDPOINT);
+
+			} catch (URISyntaxException e) {
+				log.error(e.toString(), e);
+
+				try {
+					configurationEndpoint = new URI(Constants.OIDC_MLC_CONFIGURATION_ENDPOINT);
+
+				} catch (URISyntaxException e1) {
+					log.error(e1.toString(), e1);
+				}
+			}
+			request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
+
+			return "login_openid";
 		}
 	}
 

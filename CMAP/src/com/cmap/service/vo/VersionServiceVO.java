@@ -1,6 +1,7 @@
 package com.cmap.service.vo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.cmap.Constants;
@@ -48,6 +49,8 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String configFileDirPath;
 	private String remoteFileDirPath;
 	private String deviceListId;
+
+	private Date createDate;
 
 	private String configFileContent;
 	private int lineNumber;
@@ -386,5 +389,11 @@ public class VersionServiceVO extends CommonServiceVO {
 	}
 	public void setRemoteFileDirPath(String remoteFileDirPath) {
 		this.remoteFileDirPath = remoteFileDirPath;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 }

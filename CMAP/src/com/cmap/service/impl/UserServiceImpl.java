@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Override
-	public boolean checkUserCanAccess(HttpServletRequest request, String account) throws ServiceLayerException {
+	public boolean checkUserCanAccess(HttpServletRequest request, String account) {
 		boolean canAccess = false;
 		try {
 			UserRightSetting entity = userDAO.findUserRightSetting(account);

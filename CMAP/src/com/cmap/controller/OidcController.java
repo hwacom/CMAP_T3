@@ -23,7 +23,6 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
 import com.cmap.configuration.security.CustomAuthenticationProvider;
 import com.cmap.exception.AuthenticateException;
-import com.cmap.exception.ServiceLayerException;
 import com.cmap.extension.openid.connect.sdk.ConfigurationErrorResponse;
 import com.cmap.extension.openid.connect.sdk.ConfigurationRequest;
 import com.cmap.extension.openid.connect.sdk.ConfigurationResponse;
@@ -362,7 +361,8 @@ public class OidcController extends BaseController {
         session.setAttribute(Constants.OIDC_EDU_INFO_JSON, root.toString());
         session.setAttribute(Constants.OIDC_SCHOOL_ID, schoolId);
 
-        boolean canAccess = checkUserCanOrNotAccess(request);
+        final String account = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB));
+        boolean canAccess = checkUserCanOrNotAccess(request, account);
 
         if (canAccess) {
         	return loginAuthByPRTG(model, principal, request, schoolId);
@@ -371,24 +371,6 @@ public class OidcController extends BaseController {
         	session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "無網路管理系統存取權限，請與系統管理員聯繫");
             return "redirect:/login";
         }
-	}
-
-	private boolean checkUserCanOrNotAccess(HttpServletRequest request) {
-		boolean canAccess = false;
-
-		try {
-			final String account = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB));
-
-			canAccess = userService.checkUserCanAccess(request, account);
-
-		} catch (ServiceLayerException sle) {
-			canAccess = false;
-
-		} catch (Exception e) {
-			log.error(e.toString(), e);
-			canAccess = false;
-		}
-		return canAccess;
 	}
 
 	private String loginAuthByPRTG(Model model, Principal principal, HttpServletRequest request, String sourceId) {

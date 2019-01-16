@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.model.User;
+import com.cmap.service.UserService;
 
 @Service
 @Transactional
@@ -34,6 +35,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	 */
 
 	@Autowired
+	private UserService userService;
+
+	@Autowired
 	private HttpServletRequest request;
 
 	//登陸驗證時，通過username獲取使用者的所有權限資訊，
@@ -44,20 +48,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		final boolean isAdmin = session.getAttribute(Constants.ISADMIN) != null
 									? (boolean)session.getAttribute(Constants.ISADMIN) : false;
-
-		final String userChineseName = (String)session.getAttribute(Constants.OIDC_USER_NAME);
-		final String userUnit = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
-		final String email = (String)session.getAttribute(Constants.OIDC_EMAIL);
+		final String passhash = (String)session.getAttribute(Constants.PASSHASH);
 		final String prtgLoginAccount  = (String)session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT);
 		final String prtgLoginPassword  = (String)session.getAttribute(Constants.PRTG_LOGIN_PASSWORD);
-		final String oidcSub = (String)session.getAttribute(Constants.OIDC_SUB);
-		final String password = (String)session.getAttribute(Constants.PASSWORD);
-		final String passhash = (String)session.getAttribute(Constants.PASSHASH);
-		final String ipAddr = (String)session.getAttribute(Constants.IP_ADDR);
-		final String role = (String)session.getAttribute(Constants.USERROLE);
-		final String schoolId = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
 		final Object error = session.getAttribute(Constants.ERROR);
-		final String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 		if (StringUtils.equals(Env.LOGIN_AUTH_MODE, Constants.LOGIN_AUTH_MODE_PRTG)) {
 			if (error != null && error instanceof ConnectTimeoutException) {
@@ -66,7 +60,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			} else if (!isAdmin && StringUtils.isBlank(passhash)) {
 				throw new UsernameNotFoundException("帳號或密碼輸入錯誤");
 			}
+
+			if (!chkCanAccessOrNot(request, prtgLoginAccount)) {
+				throw new UsernameNotFoundException("帳號或密碼輸入錯誤");
+			}
 		}
+
+		final String userChineseName = (String)session.getAttribute(Constants.OIDC_USER_NAME);
+		final String userUnit = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
+		final String email = (String)session.getAttribute(Constants.OIDC_EMAIL);
+		final String oidcSub = (String)session.getAttribute(Constants.OIDC_SUB);
+		final String password = (String)session.getAttribute(Constants.PASSWORD);
+		final String ipAddr = (String)session.getAttribute(Constants.IP_ADDR);
+		final String role = (String)session.getAttribute(Constants.USERROLE);
+		final String schoolId = (String)session.getAttribute(Constants.OIDC_SCHOOL_ID);
+		final String[] roles = StringUtils.isNotBlank(role) ? role.split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 		User user = new User(username, userChineseName, userUnit, email, prtgLoginAccount, prtgLoginPassword,
 				oidcSub, password, passhash, ipAddr, schoolId, roles);
@@ -89,6 +97,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				);
 		//		sysLogService.saveSysLog(new SysLog(user, SysLogService.LOGIN));
 		return securityUser;
+	}
+
+	private boolean chkCanAccessOrNot(HttpServletRequest request, String account) {
+        return userService.checkUserCanAccess(request, account);
 	}
 
 	public ArrayList<GrantedAuthority> getAuthorities(String... roles) {

@@ -3,7 +3,7 @@
  */
 var currentDiffPos = -1;
 var diffPos = [];
-const remarkShowLength = 20;	//設定欄位顯示內容最大長度
+var remarkShowLength = 20;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_manage");

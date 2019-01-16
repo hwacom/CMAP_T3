@@ -11,6 +11,11 @@ import com.cmap.comm.enums.Step;
 
 public class Env {
 
+	/**
+	 * 設定正常登入後要導向哪個頁面
+	 */
+	public static String HOME_PAGE;
+
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
 	public static String LOGIN_AUTH_MODE;

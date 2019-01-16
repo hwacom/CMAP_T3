@@ -1,9 +1,9 @@
 /**
  * 
  */
-const URI_INDEX = "getPrtgIndexUri";
-const URI_DASHBOARD = "getPrtgDashboardUri";
-const URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
+var URI_INDEX = "getPrtgIndexUri";
+var URI_DASHBOARD = "getPrtgDashboardUri";
+var URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
 
 function getPrtgUri(method) {
 	$.ajax({

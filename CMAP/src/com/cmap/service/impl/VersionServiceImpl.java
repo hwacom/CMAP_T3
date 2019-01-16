@@ -1,5 +1,6 @@
 package com.cmap.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.dao.ConfigVersionInfoDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
@@ -303,6 +305,8 @@ public class VersionServiceImpl implements VersionService {
 						BeanUtils.copyProperties(dl, vo);
 						retList.add(vo);
 					}
+
+					vo.setCreateDate(cvi.getCreateTime() != null ? new Date(cvi.getCreateTime().getTime()) : null);
 				}
 			}
 
@@ -331,19 +335,19 @@ public class VersionServiceImpl implements VersionService {
 
 				// Step1. 建立FileServer傳輸物件
 				switch (Env.FILE_TRANSFER_MODE) {
-				case FTP:
-					fileUtils = new FtpFileUtils();
-					_hostIp = Env.FTP_HOST_IP;
-					_hostPort = Env.FTP_HOST_PORT;
-					_loginAccount = Env.FTP_LOGIN_ACCOUNT;
-					_loginPassword = Env.FTP_LOGIN_PASSWORD;
-					break;
+					case FTP:
+						fileUtils = new FtpFileUtils();
+						_hostIp = Env.FTP_HOST_IP;
+						_hostPort = Env.FTP_HOST_PORT;
+						_loginAccount = Env.FTP_LOGIN_ACCOUNT;
+						_loginPassword = Env.FTP_LOGIN_PASSWORD;
+						break;
 
-				case TFTP:
-					fileUtils = new TFtpFileUtils();
-					_hostIp = Env.TFTP_HOST_IP;
-					_hostPort = Env.TFTP_HOST_PORT;
-					break;
+					case TFTP:
+						fileUtils = new TFtpFileUtils();
+						_hostIp = Env.TFTP_HOST_IP;
+						_hostPort = Env.TFTP_HOST_PORT;
+						break;
 				}
 
 				// Step2. FTP連線
@@ -353,7 +357,17 @@ public class VersionServiceImpl implements VersionService {
 				fileUtils.login(_loginAccount, _loginPassword);
 
 				// Step3. 移動作業目錄至指定的裝置
-				fileUtils.changeDir(vsVO.getConfigFileDirPath(), false);
+				String fileDir = vsVO.getConfigFileDirPath();
+
+				if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+					SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+
+					// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
+					String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
+					fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+				}
+
+				fileUtils.changeDir(fileDir, false);
 
 				// Step4. 下載指定的Config落地檔
 				ConfigInfoVO ciVO = new ConfigInfoVO();
@@ -510,7 +524,17 @@ public class VersionServiceImpl implements VersionService {
 					fileUtils.login(_loginAccount, _loginPassword);
 
 					// Step3. 移動作業目錄至指定的裝置
-					fileUtils.changeDir(vsVO.getConfigFileDirPath(), false);
+					String fileDir = vsVO.getConfigFileDirPath();
+
+					if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+						SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+
+						// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
+						String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
+						fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+					}
+
+					fileUtils.changeDir(fileDir, false);
 
 					// Step4. 下載指定的Config落地檔
 					ConfigInfoVO ciVO = new ConfigInfoVO();

@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
-import com.cmap.comm.BaseAuthentication;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.security.SecurityUtil;
 import com.cmap.utils.ApiUtils;
@@ -79,8 +78,10 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 			log.error(e.toString(), e);
 		}
 
+		/*
 		BaseAuthentication.authAdminUser(request, username, password);
 		BaseAuthentication.authAdminRole(request, username);
+		*/
 	}
 
 	private void loginAuthByOIDC(HttpServletRequest request, HttpServletResponse response) {

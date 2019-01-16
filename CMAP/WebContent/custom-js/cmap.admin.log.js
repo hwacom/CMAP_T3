@@ -4,7 +4,7 @@
 var isModify = false;
 var resutTable_errorLog;		//DataTable
 var resutTable_jobLog;			//DataTable
-const remarkShowLength = 50;	//設定欄位顯示內容最大長度
+var remarkShowLength = 50;		//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_admin", "toggleMenu_admin_items", "bk_log");

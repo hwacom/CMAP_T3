@@ -20,6 +20,11 @@ import org.springframework.stereotype.Component;
 import com.cmap.Constants;
 import com.cmap.annotation.Log;
 import com.cmap.dao.impl.BaseDaoHibernate;
+import com.cmap.model.ProvisionLogDetail;
+import com.cmap.model.ProvisionLogDevice;
+import com.cmap.model.ProvisionLogMaster;
+import com.cmap.model.ProvisionLogRetry;
+import com.cmap.model.ProvisionLogStep;
 import com.cmap.model.UserOperationLog;
 
 @Component
@@ -48,7 +53,13 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		//log.info(des.toString());
 		//log.info("******************************************************************************");
 
-		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)				// UserOperationLog 本身異動不作紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogMaster.class)		// ProvisionLog 相關TABLE不紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDetail.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDevice.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogStep.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogRetry.class)) {
+
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
 		}
 	}
@@ -69,7 +80,13 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		//log.info(des.toString());
 		//log.info("******************************************************************************");
 
-		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)				// UserOperationLog 本身異動不作紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogMaster.class)		// ProvisionLog 相關TABLE不紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDetail.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDevice.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogStep.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogRetry.class)) {
+
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
 		}
 	}
@@ -88,7 +105,13 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 		//log.info(des.toString());
 		//log.info("******************************************************************************");
 
-		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)) { // UserOperationLog 本身異動不作紀錄
+		if (!event.getEntity().getClass().isAssignableFrom(UserOperationLog.class)				// UserOperationLog 本身異動不作紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogMaster.class)		// ProvisionLog 相關TABLE不紀錄
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDetail.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogDevice.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogStep.class)
+				&& !event.getEntity().getClass().isAssignableFrom(ProvisionLogRetry.class)) {
+
 			saveLog(event.getSession(), event.getEntity().getClass().getSimpleName(), event.getId(), des, updateBy);
 		}
 	}

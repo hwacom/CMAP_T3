@@ -427,4 +427,4 @@
 </div>
 <!-- Modal [JobDetails] end -->
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.admin.job.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.admin.job.min.js"></script>

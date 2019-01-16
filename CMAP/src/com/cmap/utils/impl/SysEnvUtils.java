@@ -120,7 +120,9 @@ public class SysEnvUtils implements EnvUtils {
 					}
 
 					for (String value : entry.getValue()) {
-						list.add(value);
+						if (value != null) {
+							list.add(value);
+						}
 					}
 
 				} else if (dynamicClass.isAssignableFrom(Map.class)) {

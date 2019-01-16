@@ -1,7 +1,7 @@
 /**
  * 
  */
-const reasonShowLength = 20;	//設定欄位顯示內容最大長度
+var reasonShowLength = 20;	//設定欄位顯示內容最大長度
 var STEP_NUM = 1;
 
 $(document).ready(function() {
@@ -152,15 +152,15 @@ function findData(from) {
 }
 
 function viewProvisionLog(obj) {
-	const logStepId = $(obj).data("step-id");
-	const beginTime = $(obj).closest("tr").find("td").eq(1).text();
-	const userName = $(obj).closest("tr").find("td").eq(2).text();
-	const groupName = $(obj).closest("tr").find("td").eq(3).text();
-	const deviceName = $(obj).closest("tr").find("td").eq(4).text();
-	const systemVersion = $(obj).closest("tr").find("td").eq(5).text();
-	const scriptName = $(obj).closest("tr").find("td").eq(6).text();
-	const reason = $(obj).closest("tr").find("td").eq(7).text();
-	const result = $(obj).text();
+	var logStepId = $(obj).data("step-id");
+	var beginTime = $(obj).closest("tr").find("td").eq(1).text();
+	var userName = $(obj).closest("tr").find("td").eq(2).text();
+	var groupName = $(obj).closest("tr").find("td").eq(3).text();
+	var deviceName = $(obj).closest("tr").find("td").eq(4).text();
+	var systemVersion = $(obj).closest("tr").find("td").eq(5).text();
+	var scriptName = $(obj).closest("tr").find("td").eq(6).text();
+	var reason = $(obj).closest("tr").find("td").eq(7).text();
+	var result = $(obj).text();
 	
 	$.ajax({
 		url : _ctx + '/delivery/viewProvisionLog.json',

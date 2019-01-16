@@ -165,4 +165,4 @@
 </div>
 <!-- Modal [Compare] end -->
 	
-<script src="${pageContext.request.contextPath}/resources/js/cmap.module.wifi.poller.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.module.wifi.poller.min.js"></script>

@@ -152,12 +152,21 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 				for (ScriptDAOVO vo : scriptList) {
 					output = "";
 
+					/*
+					 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
+					 * e.g. 「#」 > 「NK-HeNBGW-04#」
+					 */
+					String expectedTerminalSymbol = vo.getExpectedTerminalSymbol();
+					if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
+						expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
+					}
+
 					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 					// 送出命令
 					cmd = replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark());
 					write(cmd);
-					output = readUntil(vo.getExpectedTerminalSymbol());
+					output = readUntil(expectedTerminalSymbol);
 
 					processLog.append(output);
 

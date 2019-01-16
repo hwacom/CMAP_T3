@@ -47,6 +47,7 @@ import com.cmap.Env;
 import com.cmap.model.User;
 import com.cmap.security.SecurityUser;
 import com.cmap.service.CommonService;
+import com.cmap.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 
@@ -62,6 +63,9 @@ public class BaseController {
 
 	@Autowired
 	protected CommonService commonService;
+
+	@Autowired
+	private UserService userService;
 
 	public BaseController() {
 		super();
@@ -114,7 +118,7 @@ public class BaseController {
 	        Authentication authentication =  new UsernamePasswordAuthenticationToken(securityUser, USER_NAME, authorities);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-	        return "redirect:/prtg/index";
+	        return "redirect:" + Env.HOME_PAGE;
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -122,6 +126,9 @@ public class BaseController {
 		}
 	}
 
+	protected boolean checkUserCanOrNotAccess(HttpServletRequest request, String account) {
+		return userService.checkUserCanAccess(request, account);
+	}
 
 	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {
 		if (StringUtils.isBlank(queryGroup)) {
