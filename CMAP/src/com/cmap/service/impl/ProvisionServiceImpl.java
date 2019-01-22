@@ -51,7 +51,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 
 	@Override
 	public List<ProvisionServiceVO> findProvisionLog(ProvisionServiceVO psVO) throws ServiceLayerException {
-		List<ProvisionServiceVO> retList = new ArrayList<ProvisionServiceVO>();
+		List<ProvisionServiceVO> retList = new ArrayList<>();
 
 		try {
 			/*
@@ -100,10 +100,10 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 				masterEntity.setCreateBy(userName);
 				masterEntity.setCreateTime(new Timestamp((new Date()).getTime()));
 
-				detailEntities = new ArrayList<ProvisionLogDetail>();
-				stepEntities = new ArrayList<ProvisionLogStep>();
-				deviceEntities = new ArrayList<ProvisionLogDevice>();
-				retryEntities = new ArrayList<ProvisionLogRetry>();
+				detailEntities = new ArrayList<>();
+				stepEntities = new ArrayList<>();
+				deviceEntities = new ArrayList<>();
+				retryEntities = new ArrayList<>();
 
 				ProvisionLogDetail detailEntity = null;
 				List<ProvisionServiceVO> detailVOs = masterVO.getDetailVO();
@@ -166,7 +166,13 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 									deviceEntity.setLogDeviceId(UUID.randomUUID().toString());
 									deviceEntity.setProvisionLogStep(stepEntity);
 
-									deviceListEntity = deviceListDAO.findDeviceListByDeviceListId(deviceVO.getDeviceListId());
+									if (StringUtils.isNotBlank(deviceVO.getDeviceListId())) {
+										deviceListEntity = deviceListDAO.findDeviceListByDeviceListId(deviceVO.getDeviceListId());
+
+									} else {
+										deviceListEntity = new DeviceList();
+										deviceListEntity.setDeviceListId(deviceVO.getDeviceInfoStr());
+									}
 									deviceEntity.setDeviceList(deviceListEntity);
 
 									deviceEntity.setCreateBy(userName);

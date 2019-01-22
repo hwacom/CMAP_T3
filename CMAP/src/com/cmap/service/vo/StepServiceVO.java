@@ -2,6 +2,7 @@ package com.cmap.service.vo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import com.cmap.service.StepService;
 
@@ -19,6 +20,7 @@ public class StepServiceVO extends CommonServiceVO {
 	private String deviceIp;
 	private String actionFromIp;
 	private Integer retryTimes;
+	private List<String> cmdOutputList;
 
 	private ProvisionServiceVO psVO;
 
@@ -167,5 +169,13 @@ public class StepServiceVO extends CommonServiceVO {
 
 	public void setPsDeviceVO(ProvisionServiceVO psDeviceVO) {
 		this.psDeviceVO = psDeviceVO;
+	}
+
+	public List<String> getCmdOutputList() {
+		return cmdOutputList;
+	}
+
+	public void setCmdOutputList(List<String> cmdOutputList) {
+		this.cmdOutputList = cmdOutputList;
 	}
 }

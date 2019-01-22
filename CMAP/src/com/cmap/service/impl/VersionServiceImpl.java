@@ -31,6 +31,7 @@ import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.ProvisionService;
+import com.cmap.service.ScriptService;
 import com.cmap.service.StepService;
 import com.cmap.service.StepService.Result;
 import com.cmap.service.VersionService;
@@ -51,7 +52,7 @@ import difflib.Patch;
 
 @Service("versionService")
 @Transactional
-public class VersionServiceImpl implements VersionService {
+public class VersionServiceImpl extends CommonServiceImpl implements VersionService {
 	@Log
 	private static Logger log;
 
@@ -70,6 +71,9 @@ public class VersionServiceImpl implements VersionService {
 
 	@Autowired
 	private ProvisionService provisionService;
+
+	@Autowired
+	private ScriptService scriptService;
 
 	/**
 	 * 查找使用者有權限之群組+設備的資料筆數 for UI分頁區塊中的total使用
@@ -283,9 +287,6 @@ public class VersionServiceImpl implements VersionService {
 		return retList;
 	}
 
-	/**
-	 * 取得指定裝置的Config落地檔資訊 for UI查看Config檔內容 or 版本比對
-	 */
 	@Override
 	public List<VersionServiceVO> findConfigFilesInfo(List<String> versionIDs) throws ServiceLayerException {
 		List<VersionServiceVO> retList = null;
@@ -317,9 +318,6 @@ public class VersionServiceImpl implements VersionService {
 		return retList;
 	}
 
-	/**
-	 * 取得裝置Config落地檔 for UI查看Config檔內容 or 版本比對
-	 */
 	@Override
 	public VersionServiceVO getConfigFileContent(VersionServiceVO vsVO) throws ServiceLayerException {
 		try {
@@ -376,6 +374,8 @@ public class VersionServiceImpl implements VersionService {
 
 				// Step5. 轉換為String for UI輸出
 				if (contentList != null && !contentList.isEmpty()) {
+					vsVO.setConfigContentList(contentList);
+
 					sb = new StringBuffer();
 
 					for (String content : contentList) {
@@ -758,8 +758,72 @@ public class VersionServiceImpl implements VersionService {
 	}
 
 	@Override
-	public VersionServiceVO recoverConfig(VersionServiceVO vsVO) throws ServiceLayerException {
-		// TODO Auto-generated method stub
-		return null;
+	public VersionServiceVO recoverConfig(String recoverMethod, VersionServiceVO vsVO, String triggerBy, String reason) throws ServiceLayerException {
+		ProvisionServiceVO masterVO = new ProvisionServiceVO();
+		VersionServiceVO retVO = new VersionServiceVO();
+		final int totalCount = 1;
+		retVO.setJobExcuteResultRecords(Integer.toString(totalCount));
+
+		int successCount = 0;
+		int errorCount = 0;
+		int noDiffCount = 0;
+
+		try {
+			masterVO.setLogMasterId(UUID.randomUUID().toString());
+			masterVO.setBeginTime(new Date());
+			masterVO.setUserName(triggerBy);
+
+			StepServiceVO stepServiceVO = new StepServiceVO();
+			StepServiceVO ssVO = stepService.doRecoverStep(recoverMethod, stepServiceVO, triggerBy, reason);
+
+			masterVO.getDetailVO().addAll(ssVO.getPsVO().getDetailVO());
+
+			successCount += ssVO.isSuccess() && (ssVO.getResult() != Result.NO_DIFFERENT) ? 1 : 0;
+			errorCount += !ssVO.isSuccess() ? 1 : 0;
+			noDiffCount += ssVO.getResult() == Result.NO_DIFFERENT ? 1 : 0;
+
+			log.info(ssVO.toString());
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			masterVO.setMessage(e.toString());
+		}
+
+		String msg = "";
+		String[] args = null;
+		if (totalCount == 1) {
+			if (successCount == 1) {
+				msg = "備份成功";
+
+			} else if (errorCount == 1) {
+				msg = "備份失敗";
+
+			} else if (noDiffCount == 1) {
+				msg = "版本無差異";
+			}
+
+		} else {
+			msg = "選定備份 {0} 筆設備: 備份成功 {1} 筆；失敗 {2} 筆；版本無差異 {3} 筆";
+			args = new String[] {
+					String.valueOf(totalCount),
+					String.valueOf(successCount),
+					String.valueOf(errorCount),
+					String.valueOf(noDiffCount)
+			};
+		}
+
+		masterVO.setEndTime(new Date());
+		masterVO.setResult(CommonUtils.converMsg(msg, args));
+
+		try {
+			provisionService.insertProvisionLog(masterVO);
+		} catch (ServiceLayerException e) {
+			log.error(e.toString(), e);
+		}
+
+		retVO.setRetMsg(CommonUtils.converMsg(msg, args));
+		retVO.setJobExcuteRemark(retVO.getRetMsg());
+
+		return retVO;
 	}
 }

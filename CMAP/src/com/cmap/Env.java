@@ -171,6 +171,9 @@ public class Env {
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
 
+	public static ConnectionMode CONNECTION_MODE_OF_DELIVERY;
+	public static ConnectionMode CONNECTION_MODE_OF_VM_SWITCH;
+
 	// 設定資安通報下「開關PORT」的腳本SCRIPT_CODE
 	public static List<String> DELIVERY_SWITCH_PORT_SCRIPT_CODE = new ArrayList<>();
 	/*

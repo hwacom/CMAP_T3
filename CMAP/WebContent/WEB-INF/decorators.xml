@@ -18,5 +18,8 @@
 	<decorator name="prtg_welcome_iframe" page="views/prtg/welcome.jsp">
 		<pattern>/prtg/welcome*</pattern>
 	</decorator>
+	<decorator name="vm_switch" page="views/plugin/module_vm_switch.jsp">
+		<pattern>/plugin/module/vmswitch*</pattern>
+	</decorator>
 	
 </decorators>

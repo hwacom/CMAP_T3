@@ -27,6 +27,7 @@ import com.cmap.annotation.Log;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.DeliveryService;
+import com.cmap.service.vo.DeliveryParameterVO;
 import com.cmap.service.vo.DeliveryServiceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -260,9 +261,10 @@ public class DeliveryController extends BaseController {
 
 		DeliveryServiceVO dsVO;
 		try {
-			dsVO = new DeliveryServiceVO();
-			dsVO.setDeliveryParameters(ps);
-			String retVal = deliveryService.doDelivery(dsVO, false);
+			DeliveryParameterVO pVO = (DeliveryParameterVO)transJSON2Object(ps, DeliveryParameterVO.class);
+
+			DeliveryServiceVO retVO = deliveryService.doDelivery(Env.CONNECTION_MODE_OF_DELIVERY, pVO, false, null, null, true);
+			String retVal = retVO.getRetMsg();
 
 			return new AppResponse(HttpServletResponse.SC_OK, retVal);
 

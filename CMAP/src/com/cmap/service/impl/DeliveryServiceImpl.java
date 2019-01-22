@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.ScriptInfoDAO;
@@ -93,7 +94,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 	@Override
 	public List<DeliveryServiceVO> findScriptList(DeliveryServiceVO dsVO, Integer startRow, Integer pageLength) throws ServiceLayerException {
-		List<DeliveryServiceVO> retList = new ArrayList<DeliveryServiceVO>();
+		List<DeliveryServiceVO> retList = new ArrayList<>();
 		try {
 			ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
 			BeanUtils.copyProperties(dsVO, siDAOVO);
@@ -276,7 +277,6 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			//Step 5.檢核設備是否皆存在 且 是否與JSON內設備ID相符
 			final List<String> jsonGroupIdList = pVO.getGroupId();
 
-
 			if (jsonGroupIdList.size() != jsonDeviceIdList.size()) {
 				return false;
 			}
@@ -304,23 +304,26 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 	}
 
 	@Override
-	public String doDelivery(DeliveryServiceVO dsVO, boolean jobTrigger) throws ServiceLayerException {
-		String result = "";
+	public DeliveryServiceVO doDelivery(ConnectionMode connectionMode, DeliveryParameterVO dpVO, boolean sysTrigger, String triggerBy, String triggerRemark, boolean chkParameters) throws ServiceLayerException {
+		DeliveryServiceVO retVO = new DeliveryServiceVO();
 		try {
-			String psJSON = dsVO.getDeliveryParameters();
-
-			DeliveryParameterVO pVO = (DeliveryParameterVO)transJSON2Object(psJSON, DeliveryParameterVO.class);
-
 			/*
 			 * Step 1.再次驗證傳入的參數值合法性
 			 */
-			boolean chkSuccess = checkDeliveryParameter(pVO);
+			boolean chkSuccess = false;
+
+			if (chkParameters) {
+				chkSuccess = checkDeliveryParameter(dpVO);
+
+			} else {
+				chkSuccess = true;
+			}
 
 			if (!chkSuccess) {
 				throw new ServiceLayerException("供裝前系統檢核不通過，請重新操作；若仍再次出現此訊息，請與系統維護商聯繫");
 
 			} else {
-				result = goDelivery(pVO, jobTrigger);
+				retVO = goDelivery(connectionMode, dpVO, sysTrigger, triggerBy, triggerRemark);
 			}
 
 		} catch (ServiceLayerException sle) {
@@ -331,10 +334,11 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			log.error(e.toString(), e);
 			throw new ServiceLayerException(e);
 		}
-		return result;
+		return retVO;
 	}
 
-	private String goDelivery(DeliveryParameterVO psVO, boolean jobTrigger) throws ServiceLayerException {
+	private DeliveryServiceVO goDelivery(ConnectionMode connectionMode, DeliveryParameterVO psVO, boolean sysTrigger, String triggerBy, String triggerRemark) throws ServiceLayerException {
+		DeliveryServiceVO retVO = new DeliveryServiceVO();
 		String retMsg = "";
 
 		//Step 1.取得腳本資料
@@ -349,37 +353,51 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		final List<String> varKeyList = psVO.getVarKey();
 		final List<List<String>> deviceVarValueList = psVO.getVarValue();
 		final String actionScript = scriptInfo.getActionScript();
+
+		final Map<String, String> deviceInfo = psVO.getDeviceInfo();
 		final List<String> groupIdList = psVO.getGroupId();
 		final List<String> deviceIdList = psVO.getDeviceId();
 
 		ProvisionServiceVO masterVO = new ProvisionServiceVO();
 		masterVO.setLogMasterId(UUID.randomUUID().toString());
 		masterVO.setBeginTime(new Date());
-		masterVO.setUserName(jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser().getUsername());
+		masterVO.setUserName(sysTrigger ? triggerBy : SecurityUtil.getSecurityUser().getUsername());
 
 		StringBuffer errorSb = new StringBuffer();
-		int deviceCount = deviceIdList.size();
+		int deviceCount = deviceIdList != null ? deviceIdList.size() : 1;
 		int successCount = 0;
 		int failedCount = 0;
-		for (int idx=0; idx<deviceIdList.size(); idx++) {
+		for (int idx=0; idx<deviceCount; idx++) {
 
-			final String groupId = groupIdList.get(idx);
-			final String deviceId = deviceIdList.get(idx);
+			final String groupId = groupIdList != null ? groupIdList.get(idx) : "N/A";
+			final String deviceId = deviceIdList != null ? deviceIdList.get(idx) : "N/A";
 
 			try {
-				DeviceList deviceList = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+				String groupName;
+				String deviceName;
+				String deviceListId;
 
-				if (deviceList == null) {
-					throw new ServiceLayerException("查無設備資料 >> groupId: " + groupId + " , deviceId: " + deviceId);
+				if (deviceInfo == null || (deviceInfo != null && deviceInfo.isEmpty())) {
+					DeviceList deviceList = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+
+					if (deviceList == null) {
+						throw new ServiceLayerException("查無設備資料 >> groupId: " + groupId + " , deviceId: " + deviceId);
+					}
+
+					groupName = deviceList.getGroupName();
+					deviceName = deviceList.getDeviceName();
+					deviceListId = deviceList.getDeviceListId();
+
+				} else {
+					groupName = "N/A";
+					deviceName = deviceInfo.get(Constants.DEVICE_NAME);
+					deviceListId = null;
 				}
 
-				final String groupName = deviceList.getGroupName();
-				final String deviceName = deviceList.getDeviceName();
-				final String deviceListId = deviceList.getDeviceListId();
 				String script = actionScript;
 
 				Map<String, String> varMap = null;
-				if (!varKeyList.isEmpty()) {
+				if (varKeyList != null && !varKeyList.isEmpty()) {
 					final List<String> vValueList = deviceVarValueList.get(idx);
 
 					varMap = new HashMap<String, String>();
@@ -399,7 +417,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 				//Step 3.呼叫共用執行腳本
 				StepServiceVO processVO = null;
 				try {
-					processVO = stepService.doScript(deviceListId, scriptInfo, varMap, jobTrigger);
+					processVO = stepService.doScript(connectionMode, deviceListId, deviceInfo, scriptInfo, varMap, sysTrigger, triggerBy, triggerRemark);
 
 					masterVO.getDetailVO().addAll(processVO.getPsVO().getDetailVO());
 
@@ -411,6 +429,10 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 					errorSb.append("[" + (idx+1) + "] >> 群組名稱:【" + groupName + "】/設備名稱:【" + deviceName + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
 					failedCount++;
 					continue;
+				}
+
+				if (processVO.getCmdOutputList() != null && !processVO.getCmdOutputList().isEmpty()) {
+					retVO.setCmdOutputList(processVO.getCmdOutputList());
 				}
 
 			} catch (ServiceLayerException sle) {
@@ -455,8 +477,9 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		provisionService.insertProvisionLog(masterVO);
 
 		retMsg += CommonUtils.converMsg(msg, args) + Constants.HTML_BREAK_LINE_SYMBOL + Constants.HTML_SEPARATION_LINE_SYMBOL + errorSb.toString();
+		retVO.setRetMsg(retMsg);
 
-		return retMsg;
+		return retVO;
 	}
 
 	@Override

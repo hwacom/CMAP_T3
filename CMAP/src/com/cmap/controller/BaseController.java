@@ -49,6 +49,7 @@ import com.cmap.security.SecurityUser;
 import com.cmap.service.CommonService;
 import com.cmap.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 
@@ -72,6 +73,16 @@ public class BaseController {
 		sdfYearMonth.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sdfDate.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sdfDateTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
+
+	protected Object transJSON2Object(String jsonStr, Class<?> mClass) {
+		ObjectMapper oMapper = new ObjectMapper();
+		try {
+			return oMapper.readValue(jsonStr, mClass);
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	protected String manualAuthenticatd4EduOIDC(Model model, Principal principal, HttpServletRequest request) {

@@ -53,6 +53,8 @@ public class VersionServiceVO extends CommonServiceVO {
 	private Date createDate;
 
 	private String configFileContent;
+	private List<String> configContentList;
+
 	private int lineNumber;
 	private String line = Constants.ADD_LINE;
 	private String line1;
@@ -60,8 +62,8 @@ public class VersionServiceVO extends CommonServiceVO {
 	private boolean lineDiff = false;
 	private boolean line1Diff = false;
 	private boolean line2Diff = false;
-	private List<VersionServiceVO> diffRetOriList = new ArrayList<VersionServiceVO>();
-	private List<VersionServiceVO> diffRetRevList = new ArrayList<VersionServiceVO>();
+	private List<VersionServiceVO> diffRetOriList = new ArrayList<>();
+	private List<VersionServiceVO> diffRetRevList = new ArrayList<>();
 	private String diffPos = "";
 	private String configDiffOriContent;
 	private String configDiffRevContent;
@@ -71,6 +73,10 @@ public class VersionServiceVO extends CommonServiceVO {
 
 	private String retMsg;
 	private String errMsg;
+
+	//--------- Recover ----------//
+	private String recover2Version;
+	private List<String> recoverCliList = new ArrayList<>();
 
 	public String getQueryGroup() {
 		return queryGroup;
@@ -132,11 +138,23 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setQueryDateEnd2(String queryDateEnd2) {
 		this.queryDateEnd2 = queryDateEnd2;
 	}
+	public String getQueryConfigType() {
+		return queryConfigType;
+	}
+	public void setQueryConfigType(String queryConfigType) {
+		this.queryConfigType = queryConfigType;
+	}
 	public boolean isQueryNewChkbox() {
 		return queryNewChkbox;
 	}
 	public void setQueryNewChkbox(boolean queryNewChkbox) {
 		this.queryNewChkbox = queryNewChkbox;
+	}
+	public boolean isJobTrigger() {
+		return jobTrigger;
+	}
+	public void setJobTrigger(boolean jobTrigger) {
+		this.jobTrigger = jobTrigger;
 	}
 	public List<String> getQueryGroupList() {
 		return queryGroupList;
@@ -222,6 +240,12 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setSystemVersion(String systemVersion) {
 		this.systemVersion = systemVersion;
 	}
+	public String getConfigType() {
+		return configType;
+	}
+	public void setConfigType(String configType) {
+		this.configType = configType;
+	}
 	public String getConfigVersion() {
 		return configVersion;
 	}
@@ -252,17 +276,35 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setConfigFileDirPath(String configFileDirPath) {
 		this.configFileDirPath = configFileDirPath;
 	}
+	public String getRemoteFileDirPath() {
+		return remoteFileDirPath;
+	}
+	public void setRemoteFileDirPath(String remoteFileDirPath) {
+		this.remoteFileDirPath = remoteFileDirPath;
+	}
 	public String getDeviceListId() {
 		return deviceListId;
 	}
 	public void setDeviceListId(String deviceListId) {
 		this.deviceListId = deviceListId;
 	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 	public String getConfigFileContent() {
 		return configFileContent;
 	}
 	public void setConfigFileContent(String configFileContent) {
 		this.configFileContent = configFileContent;
+	}
+	public List<String> getConfigContentList() {
+		return configContentList;
+	}
+	public void setConfigContentList(List<String> configContentList) {
+		this.configContentList = configContentList;
 	}
 	public int getLineNumber() {
 		return lineNumber;
@@ -366,34 +408,16 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setErrMsg(String errMsg) {
 		this.errMsg = errMsg;
 	}
-	public String getConfigType() {
-		return configType;
+	public String getRecover2Version() {
+		return recover2Version;
 	}
-	public void setConfigType(String configType) {
-		this.configType = configType;
+	public void setRecover2Version(String recover2Version) {
+		this.recover2Version = recover2Version;
 	}
-	public String getQueryConfigType() {
-		return queryConfigType;
+	public List<String> getRecoverCliList() {
+		return recoverCliList;
 	}
-	public void setQueryConfigType(String queryConfigType) {
-		this.queryConfigType = queryConfigType;
-	}
-	public boolean isJobTrigger() {
-		return jobTrigger;
-	}
-	public void setJobTrigger(boolean jobTrigger) {
-		this.jobTrigger = jobTrigger;
-	}
-	public String getRemoteFileDirPath() {
-		return remoteFileDirPath;
-	}
-	public void setRemoteFileDirPath(String remoteFileDirPath) {
-		this.remoteFileDirPath = remoteFileDirPath;
-	}
-	public Date getCreateDate() {
-		return createDate;
-	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
+	public void setRecoverCliList(List<String> recoverCliList) {
+		this.recoverCliList = recoverCliList;
 	}
 }

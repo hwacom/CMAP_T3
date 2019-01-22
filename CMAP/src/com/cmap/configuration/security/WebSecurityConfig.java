@@ -75,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/login/code/**").permitAll()
 			.antMatchers("/login/authByOIDC/**").permitAll()
 			.antMatchers("/admin/env/refreshAll").permitAll()
+			.antMatchers("/plugin/module/vmswitch/**").permitAll()	//提供PRTG呼叫切換VM備援 (Y190117, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
 			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
 			.addFilterBefore(authenticationFilter(),

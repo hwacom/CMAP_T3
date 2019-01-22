@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.CommandExecuteException;
 import com.cmap.exception.ConnectionException;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.utils.ConnectUtils;
 
@@ -100,7 +100,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 	}
 
 	@Override
-	public List<String> sendCommands(List<ScriptDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
+	public List<String> sendCommands(List<ScriptServiceVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		List<String> cmdOutputs = new ArrayList<String>();
 		try {
 			checkSshStatus();
@@ -124,7 +124,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			StringBuilder processLog = new StringBuilder();
 			try {
 				String output;
-				for (ScriptDAOVO vo : scriptList) {
+				for (ScriptServiceVO vo : scriptList) {
 					output = "";
 
 					/*

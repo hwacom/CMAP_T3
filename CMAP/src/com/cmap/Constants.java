@@ -36,6 +36,10 @@ public class Constants {
 
 	public static final String FTP = "FTP";
 	public static final String TFTP = "TFTP";
+	public static final String TELNET = "TELNET";
+	public static final String SSH = "SSH";
+	public static final String WMI = "WMI";
+	public static final String SNMP = "SNMP";
 
 	public static final String QUARTZ_JOB_BACKUP_CONFIG_FILES = "backupConfigFiles";
 
@@ -85,6 +89,9 @@ public class Constants {
 	public static final String DEVICE_ENG_NAME = "DEVICE_ENG_NAME";
 	public static final String DEVICE_IP = "DEVICE_IP";
 	public static final String DEVICE_SYSTEM = "DEVICE_SYSTEM";
+	public static final String DEVICE_LOGIN_ACCOUNT = "DEVICE_LOGIN_ACCOUNT";
+	public static final String DEVICE_LOGIN_PASSWORD = "DEVICE_LOGIN_PASSWORD";
+	public static final String DEVICE_ENABLE_PASSWORD = "DEVICE_ENABLE_PASSWORD";
 
 	public static final String DIR_PATH_GROUP_ID = "[gID]";
 	public static final String DIR_PATH_GROUP_NAME = "[gName]";
@@ -166,6 +173,9 @@ public class Constants {
 	public static final String SYMBOL_END_LIKE = "...%";
 	public static final String SYMBOL_GREATER_OR_EQUAL = ">=";
 	public static final String SYMBOL_LESS_OR_EQUAL = "<=";
+
+	public static final String RECOVER_METHOD_BY_FILE = "RECOVER_METHOD_BY_FILE";	//組態備份還原 BY檔案方式
+	public static final String RECOVER_METHOD_BY_CLI = "RECOVER_METHOD_BY_CLI";	//組態備份還原 BY Command Line(CLI)逐行派送
 
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
 	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";

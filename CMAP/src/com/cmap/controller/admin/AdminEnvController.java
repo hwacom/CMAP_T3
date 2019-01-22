@@ -175,7 +175,7 @@ public class AdminEnvController extends BaseController {
 		return new DatatableResponse(total, dataList, filterdTotal, msg);
 	}
 
-	@RequestMapping(value="refreshAll", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value="refreshAll", method = {RequestMethod.POST, RequestMethod.GET}, produces="application/json")
 	public @ResponseBody AppResponse refreshAllEnv(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
 

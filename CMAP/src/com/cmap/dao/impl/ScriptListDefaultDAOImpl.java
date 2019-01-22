@@ -21,7 +21,7 @@ import com.cmap.model.ScriptListDefault;
 public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements ScriptListDAO {
 
 	private List<ScriptDAOVO> transModel2DAOVO(List<ScriptListDefault> modelList) {
-		List<ScriptDAOVO> voList = new ArrayList<ScriptDAOVO>();
+		List<ScriptDAOVO> voList = new ArrayList<>();
 
 		ScriptDAOVO daovo;
 		for (ScriptListDefault model : modelList) {
@@ -55,17 +55,6 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 
 	@Override
 	public String findDefaultScriptCodeBySystemVersion(ScriptType scriptType, String systemVersion) {
-		String type = "";
-		switch (scriptType) {
-		case BACKUP:
-			type = "BACKUP";
-			break;
-
-		case RECOVERY:
-			type = "RECOVERY";
-			break;
-		}
-
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select sdm ")
 		.append(" from ScriptDefaultMapping sdm ")
@@ -75,7 +64,7 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
-		q.setParameter("scriptType", type);
+		q.setParameter("scriptType", scriptType.toString());
 		q.setParameter("systemVersion", StringUtils.isBlank(systemVersion) ? "*" : systemVersion);
 
 		List<ScriptDefaultMapping> entity = (List<ScriptDefaultMapping>)q.list();

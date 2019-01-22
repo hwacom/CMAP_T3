@@ -33,13 +33,14 @@ public class ProvisionServiceVO extends CommonServiceVO {
 	// Provision_Log_Device
 	private Integer orderNum;
 	private String deviceListId;
+	private String deviceInfoStr;
 
 	private Integer retryOrder;
 
-	private List<ProvisionServiceVO> detailVO = new ArrayList<ProvisionServiceVO>();
-	private List<ProvisionServiceVO> stepVO = new ArrayList<ProvisionServiceVO>();
-	private List<ProvisionServiceVO> retryVO = new ArrayList<ProvisionServiceVO>();
-	private List<ProvisionServiceVO> deviceVO = new ArrayList<ProvisionServiceVO>();
+	private List<ProvisionServiceVO> detailVO = new ArrayList<>();
+	private List<ProvisionServiceVO> stepVO = new ArrayList<>();
+	private List<ProvisionServiceVO> retryVO = new ArrayList<>();
+	private List<ProvisionServiceVO> deviceVO = new ArrayList<>();
 
 	public String getLogMasterId() {
 		return logMasterId;
@@ -184,5 +185,11 @@ public class ProvisionServiceVO extends CommonServiceVO {
 	}
 	public void setDeviceVO(List<ProvisionServiceVO> deviceVO) {
 		this.deviceVO = deviceVO;
+	}
+	public String getDeviceInfoStr() {
+		return deviceInfoStr;
+	}
+	public void setDeviceInfoStr(String deviceInfoStr) {
+		this.deviceInfoStr = deviceInfoStr;
 	}
 }

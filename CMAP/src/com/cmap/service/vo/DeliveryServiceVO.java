@@ -1,5 +1,6 @@
 package com.cmap.service.vo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,9 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String queryTimeEnd;
 	private String queryLogStepId;
 	private boolean onlySwitchPort = false;
+
+	private String retMsg;
+	private List<String> cmdOutputList = new ArrayList<>();
 
 	//by [設備] 角度查詢結果
 	private String deviceListId;
@@ -361,5 +365,17 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	}
 	public void setOnlySwitchPort(boolean onlySwitchPort) {
 		this.onlySwitchPort = onlySwitchPort;
+	}
+	public String getRetMsg() {
+		return retMsg;
+	}
+	public void setRetMsg(String retMsg) {
+		this.retMsg = retMsg;
+	}
+	public List<String> getCmdOutputList() {
+		return cmdOutputList;
+	}
+	public void setCmdOutputList(List<String> cmdOutputList) {
+		this.cmdOutputList = cmdOutputList;
 	}
 }
