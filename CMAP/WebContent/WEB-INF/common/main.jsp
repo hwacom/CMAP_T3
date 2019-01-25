@@ -1,4 +1,5 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="com.cmap.Env" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="taglib.jsp" %>
 <!DOCTYPE html>
@@ -62,8 +63,9 @@
 </head>
 
 <%
-	boolean hiddenFunc = false;
+	final String __SHOW__ = "Y";
 %>
+
 <body>
 	<div class="loader"></div>
 	<div class="mask" style="display: none;"></div>
@@ -94,7 +96,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <%
-              	if (hiddenFunc) {
+              	if (Env.SHOW_MENU_TREE_PRTG.equals(__SHOW__)) {
               %>
               <li class="nav-item">
                 <a class="nav-link toggleMenuLink" id="toggleMenu_prtg" href="#">
@@ -151,7 +153,7 @@
 			                </a>
 			            </li>
 			            <%
-			            	if (hiddenFunc) {
+			            if (Env.SHOW_MENU_ITEM_CM_SCRIPT.equals(__SHOW__)) {
 			            %>
 			            <li class="subMenu-item">
 			                <a id="cm_script" href="${pageContext.request.contextPath}/script">
@@ -179,7 +181,7 @@
 	          </sec:authorize>
               
               <%
-              	if (hiddenFunc) {
+              if (Env.SHOW_MENU_TREE_PLUGIN.equals(__SHOW__)) {
               %>
 	              <li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_plugin" href="#">
@@ -187,24 +189,38 @@
 	                  	<span>資安通報&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
 	                </a>
 	                <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
+	                	<%
+			            	if (Env.SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER.equals(__SHOW__)) {
+			            %>
 	                    <li class="subMenu-item">
 	                    	<a id="cm_wifi" href="${pageContext.request.contextPath}/plugin/module/wifiPoller">
 	                    	  <span data-feather="wifi"></span>
 	                    		<span>WIFI 管理</span>
 	                    	</a>
 	                    </li>
+	                    <%
+			            	}
+			            	if (Env.SHOW_MENU_ITEM_PLUGIN_NET_FLOW.equals(__SHOW__)) {
+			            %>
 	                    <li class="subMenu-item">
 	                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
 	                    	  <span data-feather="shuffle"></span>
 	                    	  	<span>Net Flow 查詢</span>
 	                    	</a>
 	                    </li>
+	                    <%
+			            	}
+			            	if (Env.SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT.equals(__SHOW__)) {
+			            %>
 	                    <li class="subMenu-item">
 	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/switchPort">
 	                    	  <span data-feather="shield-off"></span>
 	                    	  	<span>開關 Port</span>
 	                    	</a>
 	                    </li>
+	                    <%
+			            	}
+	                    %>
 	                </ul>
 		          </li>
 	          <%

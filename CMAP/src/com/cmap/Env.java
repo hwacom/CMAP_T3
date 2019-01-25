@@ -16,6 +16,13 @@ public class Env {
 	 */
 	public static String HOME_PAGE;
 
+	public static String SHOW_MENU_TREE_PRTG;
+	public static String SHOW_MENU_ITEM_CM_SCRIPT;
+	public static String SHOW_MENU_TREE_PLUGIN;
+	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;
+	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;
+	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;
+
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
 	public static String LOGIN_AUTH_MODE;
