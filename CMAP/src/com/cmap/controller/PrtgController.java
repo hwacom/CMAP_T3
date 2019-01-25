@@ -166,8 +166,8 @@ public class PrtgController extends BaseController {
 		return "prtg/welcome";
 	}
 
-	@RequestMapping(value = "getPrtgIndexUri", method = RequestMethod.POST)
-	public @ResponseBody AppResponse getPrtgIndexUri(
+	@RequestMapping(value = "getLoginUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getLoginUri(
 			Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		HttpSession session = request.getSession();
@@ -179,6 +179,32 @@ public class PrtgController extends BaseController {
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", prtgIndexUri);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
+	@RequestMapping(value = "getPrtgIndexUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgIndexUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		try {
+			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+			String indexUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_INDEX);
+
+			if (StringUtils.isBlank(indexUrl)) {
+				indexUrl = Env.PRTG_DEFAULT_INDEX_URI;	//如果沒設定則取得預設MAP
+			}
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", indexUrl);
 			return app;
 
 		} catch (Exception e) {
@@ -241,20 +267,22 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "/index/login", method = RequestMethod.GET)
+	public String prtgIndexAndLogin(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			init(model);
+			model.addAttribute("DO_LOGIN", "Y");
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "prtg/index";
+	}
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
-
-//			String html = sendLogin(request, response);
-			/*
-			final String BASE_URI = Env.PRTG_INDEX_URI;
-			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
-			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
-			final String prtgIndexUri = BASE_URI + "?a=" + PRTG_ACCOUNT + "&p=" + PRTG_PASSWORD;
-
-			model.addAttribute("IFRAME_URI", prtgIndexUri);
-			*/
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -74,13 +75,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/login/code/**").permitAll()
 			.antMatchers("/login/authByOIDC/**").permitAll()
 			.antMatchers("/admin/env/refreshAll").permitAll()
+			.antMatchers("/plugin/module/vmswitch/**").permitAll()	//提供PRTG呼叫切換VM備援 (Y190117, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
 			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
-			/*
 			.addFilterBefore(authenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class)
-	                */
-		.formLogin().loginPage("/login").permitAll()
+			.formLogin().loginPage("/login").permitAll()
 //			.successHandler(authSuccessHandler())
 //			.failureHandler(authUnsuccessHandler())
 			.and()

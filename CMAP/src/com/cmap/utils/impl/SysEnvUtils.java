@@ -98,13 +98,29 @@ public class SysEnvUtils implements EnvUtils {
 					ConnectionMode cMode = null;
 
 					switch (entry.getValue().get(0)) {
-					case Constants.FTP:
-						cMode = ConnectionMode.FTP;
-						break;
+						case Constants.FTP:
+							cMode = ConnectionMode.FTP;
+							break;
 
-					case Constants.TFTP:
-						cMode = ConnectionMode.TFTP;
-						break;
+						case Constants.TFTP:
+							cMode = ConnectionMode.TFTP;
+							break;
+
+						case Constants.TELNET:
+							cMode = ConnectionMode.TELNET;
+							break;
+
+						case Constants.SSH:
+							cMode = ConnectionMode.SSH;
+							break;
+
+						case Constants.WMI:
+							cMode = ConnectionMode.WMI;
+							break;
+
+						case Constants.SNMP:
+							cMode = ConnectionMode.SNMP;
+							break;
 					}
 
 					Env.class.getDeclaredField(entry.getKey()).set(env, cMode);
@@ -120,7 +136,9 @@ public class SysEnvUtils implements EnvUtils {
 					}
 
 					for (String value : entry.getValue()) {
-						list.add(value);
+						if (value != null) {
+							list.add(value);
+						}
 					}
 
 				} else if (dynamicClass.isAssignableFrom(Map.class)) {

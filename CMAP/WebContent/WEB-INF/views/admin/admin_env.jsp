@@ -100,4 +100,4 @@
 
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.admin.env.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.admin.env.min.js"></script>

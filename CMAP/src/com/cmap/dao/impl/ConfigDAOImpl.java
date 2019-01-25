@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
-import com.cmap.dao.ConfigVersionInfoDAO;
+import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.model.ConfigVersionInfo;
 
 @Repository
 @Transactional
-public class ConfigVersionInfoDAOImpl extends BaseDaoHibernate implements ConfigVersionInfoDAO {
+public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 
 	@Override
 	public long countConfigVersionInfoByDAOVO(ConfigVersionInfoDAOVO cviDAOVO) {

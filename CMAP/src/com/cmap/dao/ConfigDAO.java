@@ -5,7 +5,7 @@ import java.util.List;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.model.ConfigVersionInfo;
 
-public interface ConfigVersionInfoDAO {
+public interface ConfigDAO {
 	
 	public long countConfigVersionInfoByDAOVO(ConfigVersionInfoDAOVO cviDAOVO);
 	

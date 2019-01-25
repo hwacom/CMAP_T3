@@ -27,6 +27,7 @@ import com.cmap.annotation.Log;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.DeliveryService;
+import com.cmap.service.vo.DeliveryParameterVO;
 import com.cmap.service.vo.DeliveryServiceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -205,9 +206,10 @@ public class DeliveryController extends BaseController {
 		DeliveryServiceVO dsVO;
 		try {
 			dsVO = deliveryService.getScriptInfoById(scriptInfoId);
+			final String systemVersion = dsVO.getSystemVersion();
 
 			//取得Group & Device選單內容
-			Map<String, String> menuMap = getGroupDeviceMenu(request, null);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, null, systemVersion);
 			dsVO.setGroupDeviceMenuJsonStr(new Gson().toJson(menuMap));
 
 			ObjectMapper oMapper = new ObjectMapper();
@@ -258,11 +260,12 @@ public class DeliveryController extends BaseController {
 	public @ResponseBody AppResponse doDelivery(Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="ps", required=true) String ps) {
 
-		DeliveryServiceVO dsVO;
+		DeliveryServiceVO retVO;
 		try {
-			dsVO = new DeliveryServiceVO();
-			dsVO.setDeliveryParameters(ps);
-			String retVal = deliveryService.doDelivery(dsVO, false);
+			DeliveryParameterVO pVO = (DeliveryParameterVO)transJSON2Object(ps, DeliveryParameterVO.class);
+
+			retVO = deliveryService.doDelivery(Env.CONNECTION_MODE_OF_DELIVERY, pVO, false, null, null, true);
+			String retVal = retVO.getRetMsg();
 
 			return new AppResponse(HttpServletResponse.SC_OK, retVal);
 

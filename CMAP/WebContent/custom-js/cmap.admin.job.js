@@ -227,7 +227,7 @@ function viewDetail(key) {
 				$("#viewDataPollerSettingId").val(resp.data.dataPollerSettingId);
 				$("#viewLocalFileOperationSettingId").val(resp.data.localFileOperationSettingId);
 				
-				const schedType = resp.data.schedType;
+				var schedType = resp.data.schedType;
 				
 				$("div[id^=sec_detail_]").hide();
 				

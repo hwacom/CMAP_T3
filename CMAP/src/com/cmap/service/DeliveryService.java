@@ -2,7 +2,9 @@ package com.cmap.service;
 
 import java.util.List;
 
+import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.service.vo.DeliveryParameterVO;
 import com.cmap.service.vo.DeliveryServiceVO;
 
 public interface DeliveryService {
@@ -21,7 +23,20 @@ public interface DeliveryService {
 
 	public String logAccessRecord(DeliveryServiceVO dsVO) throws ServiceLayerException;
 
-	public String doDelivery(DeliveryServiceVO dsVO, boolean jobTrigger) throws ServiceLayerException;
+	/**
+	 * 使用者/系統供裝派送流程
+	 * e.g. 使用者: PORT開關
+	 *      系統: VM備援切換
+	 * @param connectionMode
+	 * @param dpVO
+	 * @param sysTrigger
+	 * @param triggerBy
+	 * @param triggerRemark
+	 * @param chkParameters
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	public DeliveryServiceVO doDelivery(ConnectionMode connectionMode, DeliveryParameterVO dpVO, boolean sysTrigger, String triggerBy, String triggerRemark, boolean chkParameters) throws ServiceLayerException;
 
 	/**
 	 * 依使用者輸入的查詢條件查詢符合的供裝紀錄筆數

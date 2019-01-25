@@ -55,7 +55,7 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public List<LogServiceVO> findSysErrorLogByVO(LogServiceVO lsVO) throws ServiceLayerException {
-		List<LogServiceVO> retList = new ArrayList<LogServiceVO>();
+		List<LogServiceVO> retList = new ArrayList<>();
 
 		try {
 			SysLogDAOVO daovo = new SysLogDAOVO();
@@ -108,7 +108,7 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public List<LogServiceVO> findSysJobLogByVO(LogServiceVO lsVO) throws ServiceLayerException {
-		List<LogServiceVO> retList = new ArrayList<LogServiceVO>();
+		List<LogServiceVO> retList = new ArrayList<>();
 
 		try {
 			SysLogDAOVO daovo = new SysLogDAOVO();

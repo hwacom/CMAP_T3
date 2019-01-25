@@ -2,8 +2,8 @@ package com.cmap.utils;
 
 import java.util.List;
 
-import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 
 public interface ConnectUtils {
@@ -12,7 +12,7 @@ public interface ConnectUtils {
 
 	public boolean login(final String account, final String password) throws Exception;
 
-	public List<String> sendCommands(List<ScriptDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception;
+	public List<String> sendCommands(List<ScriptServiceVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception;
 
 	public boolean logout() throws Exception;
 

@@ -55,4 +55,4 @@
 
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.script.main.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.script.main.min.js"></script>

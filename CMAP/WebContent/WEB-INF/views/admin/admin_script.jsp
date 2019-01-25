@@ -30,4 +30,4 @@
 
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.admin.script.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.admin.script.min.js"></script>

@@ -231,4 +231,4 @@
 </div>
 <!-- Modal [Compare] end -->
 	
-<script src="${pageContext.request.contextPath}/resources/js/cmap.module.net.flow.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.module.net.flow.min.js"></script>

@@ -13,7 +13,7 @@ import com.cmap.model.ScriptInfo;
 public class ScriptStepDAOImpl extends BaseDaoHibernate {
 
 	protected List<ScriptDAOVO> transModel2DAOVO(List<? extends Object> modelList) {
-		List<ScriptDAOVO> voList = new ArrayList<ScriptDAOVO>();
+		List<ScriptDAOVO> voList = new ArrayList<>();
 
 		ScriptDAOVO daovo;
 		for (Object modelObj : modelList) {

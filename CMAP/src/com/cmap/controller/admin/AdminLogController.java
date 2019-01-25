@@ -73,7 +73,7 @@ public class AdminLogController {
 
 		long total = 0;
 		long filterdTotal = 0;
-		List<LogServiceVO> dataList = new ArrayList<LogServiceVO>();
+		List<LogServiceVO> dataList = new ArrayList<>();
 		LogServiceVO lsVO;
 		try {
 			lsVO = new LogServiceVO();
@@ -117,7 +117,7 @@ public class AdminLogController {
 
 		long total = 0;
 		long filterdTotal = 0;
-		List<LogServiceVO> dataList = new ArrayList<LogServiceVO>();
+		List<LogServiceVO> dataList = new ArrayList<>();
 		LogServiceVO lsVO;
 		try {
 			lsVO = new LogServiceVO();

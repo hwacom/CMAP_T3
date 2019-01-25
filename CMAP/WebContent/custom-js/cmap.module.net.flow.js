@@ -38,9 +38,9 @@ $(document).ready(function() {
 	});
 	
 	var today = new Date();
-	const year = today.getFullYear();
-	const month = parseInt(today.getMonth()) + 1;
-	const date = today.getDate();
+	var year = today.getFullYear();
+	var month = parseInt(today.getMonth()) + 1;
+	var date = today.getDate();
 	
 	$("#queryDateBegin").val(year+"-"+month+"-"+date);
 	

@@ -127,4 +127,4 @@
 </div>
 <!-- Modal [details] end -->
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.admin.log.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.admin.log.min.js"></script>

@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
-import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.CommandExecuteException;
 import com.cmap.exception.ConnectionException;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.utils.ConnectUtils;
 
@@ -100,7 +100,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 	}
 
 	@Override
-	public List<String> sendCommands(List<ScriptDAOVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
+	public List<String> sendCommands(List<ScriptServiceVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		List<String> cmdOutputs = new ArrayList<String>();
 		try {
 			checkSshStatus();
@@ -124,17 +124,26 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			StringBuilder processLog = new StringBuilder();
 			try {
 				String output;
-				for (ScriptDAOVO vo : scriptList) {
+				for (ScriptServiceVO vo : scriptList) {
 					output = "";
+
+					/*
+					 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
+					 * e.g. 「#」 > 「NK-HeNBGW-04#」
+					 */
+					String expectedTerminalSymbol = vo.getExpectedTerminalSymbol();
+					if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
+						expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
+					}
 
 					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 					// 送出命令
 					output = expect.sendLine(replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark()))
-							.expect(contains(vo.getExpectedTerminalSymbol()))
+							.expect(contains(expectedTerminalSymbol))
 							.getBefore();
 
-					processLog.append(output + vo.getExpectedTerminalSymbol());
+					processLog.append(output + expectedTerminalSymbol);
 
 					boolean success = true;
 

@@ -3,6 +3,7 @@ package com.cmap.dao.vo;
 public class ScriptInfoDAOVO extends CommonDAOVO {
 
 	private String queryScriptTypeId;
+	private String queryScriptTypeCode;
 	private String queryScriptInfoId;
 	private String querySystemDefault;
 	private boolean onlySwitchPort = false;
@@ -37,5 +38,13 @@ public class ScriptInfoDAOVO extends CommonDAOVO {
 
 	public void setOnlySwitchPort(boolean onlySwitchPort) {
 		this.onlySwitchPort = onlySwitchPort;
+	}
+
+	public String getQueryScriptTypeCode() {
+		return queryScriptTypeCode;
+	}
+
+	public void setQueryScriptTypeCode(String queryScriptTypeCode) {
+		this.queryScriptTypeCode = queryScriptTypeCode;
 	}
 }

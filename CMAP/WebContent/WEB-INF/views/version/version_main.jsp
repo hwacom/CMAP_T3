@@ -264,5 +264,5 @@
 </div>
 <!-- Modal [Compare] end -->
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.version.main.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.version.main.min.js"></script>
 	

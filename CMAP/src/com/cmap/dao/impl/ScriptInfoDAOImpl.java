@@ -13,6 +13,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.vo.ScriptInfoDAOVO;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ScriptInfo;
 
 @Repository
@@ -30,6 +31,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			sb.append(" and si.scriptType.scriptTypeCode = :scriptTypeCode ");
+		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
@@ -45,6 +49,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			q.setParameter("scriptTypeCode", daovo.getQueryScriptTypeCode());
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
@@ -69,6 +76,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			sb.append(" and si.scriptType.scriptTypeCode = :scriptTypeCode ");
+		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
@@ -84,6 +94,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			q.setParameter("scriptTypeCode", daovo.getQueryScriptTypeCode());
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
@@ -109,6 +122,28 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 		q.setParameter("scriptInfoId", scriptInfoId);
+
+		List<ScriptInfo> retList = (List<ScriptInfo>)q.list();
+		return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;
+	}
+
+	@Override
+	public ScriptInfo findDefaultScriptInfoByScriptTypeAndSystemVersion(String scriptType, String systemVersion) throws ServiceLayerException {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select si ")
+		  .append(" from ScriptInfo si ")
+		  .append("     ,ScriptDefaultMapping sdm ")
+		  .append(" where 1=1 ")
+		  .append(" and si.scriptCode = sdm.defaultScriptCode ")
+		  .append(" and si.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+		  .append(" and sdm.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+		  .append(" and sdm.scriptType = :scriptType ")
+		  .append(" and sdm.systemVersion = :systemVersion ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+		Query<?> q = session.createQuery(sb.toString());
+		q.setParameter("scriptType", scriptType);
+		q.setParameter("systemVersion", systemVersion);
 
 		List<ScriptInfo> retList = (List<ScriptInfo>)q.list();
 		return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;

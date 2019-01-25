@@ -40,7 +40,9 @@ public class DeliveryParameterVO {
 	@JsonProperty("reason")
 	private String reason;
 	@JsonIgnore
-	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+	private Map<String, Object> additionalProperties = new HashMap<>();
+	@JsonIgnore
+	private Map<String, String> deviceInfo = new HashMap<>();
 
 	@JsonProperty("scriptInfoId")
 	public String getScriptInfoId() {
@@ -122,8 +124,16 @@ public class DeliveryParameterVO {
 		this.additionalProperties.put(name, value);
 	}
 
+	public Map<String, String> getDeviceInfo() {
+		return deviceInfo;
+	}
+
+	public void setDeviceInfo(Map<String, String> deviceInfo) {
+		this.deviceInfo = deviceInfo;
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("scriptInfoId", scriptInfoId).append("scriptCode", scriptCode).append("groupId", groupId).append("deviceId", deviceId).append("varKey", varKey).append("varValue", varValue).append("reason", reason).append("additionalProperties", additionalProperties).toString();
+		return new ToStringBuilder(this).append("scriptInfoId", scriptInfoId).append("scriptCode", scriptCode).append("groupId", groupId).append("deviceId", deviceId).append("varKey", varKey).append("varValue", varValue).append("reason", reason).append("additionalProperties", additionalProperties).append("deviceInfo", deviceInfo).toString();
 	}
 }

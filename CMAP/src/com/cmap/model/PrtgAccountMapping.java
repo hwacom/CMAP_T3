@@ -33,6 +33,9 @@ public class PrtgAccountMapping {
 	@Column(name = "prtg_password", nullable = false)
 	private String prtgPassword;
 
+	@Column(name = "index_url", nullable = true)
+	private String indexUrl;
+
 	@Column(name = "dashboard_map_url", nullable = true)
 	private String dashboardMapUrl;
 
@@ -52,13 +55,14 @@ public class PrtgAccountMapping {
 		super();
 	}
 
-	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword,
+	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword, String indexUrl,
 			String dashboardMapUrl, String netFlowMapUrl, String remark, Timestamp createTime, String createBy) {
 		super();
 		this.id = id;
 		this.sourceId = sourceId;
 		this.prtgAccount = prtgAccount;
 		this.prtgPassword = prtgPassword;
+		this.indexUrl = indexUrl;
 		this.dashboardMapUrl = dashboardMapUrl;
 		this.netFlowMapUrl = netFlowMapUrl;
 		this.remark = remark;
@@ -96,6 +100,14 @@ public class PrtgAccountMapping {
 
 	public void setPrtgPassword(String prtgPassword) {
 		this.prtgPassword = prtgPassword;
+	}
+
+	public String getIndexUrl() {
+		return indexUrl;
+	}
+
+	public void setIndexUrl(String indexUrl) {
+		this.indexUrl = indexUrl;
 	}
 
 	public String getDashboardMapUrl() {

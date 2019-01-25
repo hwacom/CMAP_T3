@@ -36,6 +36,9 @@ public class PrtgServiceImpl implements PrtgService {
 			}
 
 			switch (type) {
+				case Constants.MAP_URL_OF_INDEX:
+					return mapping.getIndexUrl();
+
 				case Constants.MAP_URL_OF_DASHBOARD:
 					return mapping.getDashboardMapUrl();
 

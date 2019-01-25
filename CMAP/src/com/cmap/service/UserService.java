@@ -13,7 +13,7 @@ public interface UserService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	boolean checkUserCanAccess(HttpServletRequest request, String account) throws ServiceLayerException;
+	boolean checkUserCanAccess(HttpServletRequest request, String account);
 
 	/**
 	 * 設定使用者可使用功能

@@ -186,7 +186,6 @@ public class VersionController extends BaseController {
 
 			List<String> versionIDs = new ArrayList<>();
 			for (JsonNode node : vIdList) {
-				log.info("view >> versionId: " + node.asText());
 				versionIDs.add(node.asText());
 			}
 

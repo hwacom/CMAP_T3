@@ -36,6 +36,10 @@ public class Constants {
 
 	public static final String FTP = "FTP";
 	public static final String TFTP = "TFTP";
+	public static final String TELNET = "TELNET";
+	public static final String SSH = "SSH";
+	public static final String WMI = "WMI";
+	public static final String SNMP = "SNMP";
 
 	public static final String QUARTZ_JOB_BACKUP_CONFIG_FILES = "backupConfigFiles";
 
@@ -85,6 +89,9 @@ public class Constants {
 	public static final String DEVICE_ENG_NAME = "DEVICE_ENG_NAME";
 	public static final String DEVICE_IP = "DEVICE_IP";
 	public static final String DEVICE_SYSTEM = "DEVICE_SYSTEM";
+	public static final String DEVICE_LOGIN_ACCOUNT = "DEVICE_LOGIN_ACCOUNT";
+	public static final String DEVICE_LOGIN_PASSWORD = "DEVICE_LOGIN_PASSWORD";
+	public static final String DEVICE_ENABLE_PASSWORD = "DEVICE_ENABLE_PASSWORD";
 
 	public static final String DIR_PATH_GROUP_ID = "[gID]";
 	public static final String DIR_PATH_GROUP_NAME = "[gName]";
@@ -103,10 +110,20 @@ public class Constants {
 	public static final String DEFAULT_FLAG_N = "N";
 
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_TFTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.TFTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_SSH_FTP = "STEP.FTP+DEVICE.SSH+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_TELNET_FTP = "STEP.FTP+DEVICE.TELNET+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP = "STEP.TFTP+DEVICE.SSH+FILE_SERVER.TFTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_TELNET_TFTP = "STEP.TFTP+DEVICE.TELNET+FILE_SERVER.TFTP";
+
+	/*
+	 * 組態還原模式:
+	 * (1) DEVICE >> 連線設備的協定 (SSH / TELNET)
+	 */
+	public static final String DEVICE_CONFIG_RESTORE_MODE_SSH_FTP = "DEVICE.SSH+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_RESTORE_MODE_SSH_TFTP = "DEVICE.SSH+FILE_SERVER.TFTP";
+	public static final String DEVICE_CONFIG_RESTORE_MODE_TELNET_FTP = "DEVICE.TELNET+FILE_SERVER.FTP";
+	public static final String DEVICE_CONFIG_RESTORE_MODE_TELNET_TFTP = "DEVICE.TELNET+FILE_SERVER.TFTP";
 
 	public static final String BACKUP_FILE_BACKUP_MODE_NULL_FTP_FTP = "STEP.NULL+DOWNLOAD.FTP+UPLOAD.FTP";
 	public static final String BACKUP_FILE_BACKUP_MODE_STEP_TFTP_FTP = "STEP.STEP+DOWNLOAD.TFTP+UPLOAD.FTP";
@@ -166,6 +183,13 @@ public class Constants {
 	public static final String SYMBOL_GREATER_OR_EQUAL = ">=";
 	public static final String SYMBOL_LESS_OR_EQUAL = "<=";
 
+	public static final String RESTORE_METHOD_BY_FILE = "RECOVER_METHOD_BY_FILE";	//組態備份還原 BY檔案方式
+	public static final String RESTORE_METHOD_BY_CLI = "RECOVER_METHOD_BY_CLI";	//組態備份還原 BY Command Line(CLI)逐行派送
+
+	public static final String RESTORE_TYPE_VM_SWITCH = "RESTORE_TYPE_VM_SWITCH";
+	public static final String RESTORE_TYPE_BACKUP_RESTORE = "RESTORE_TYPE_BACKUP_RESTORE";
+
+	public static final String MAP_URL_OF_INDEX = "INDEX";
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
 	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";
 	/*

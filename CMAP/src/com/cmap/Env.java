@@ -11,6 +11,11 @@ import com.cmap.comm.enums.Step;
 
 public class Env {
 
+	/**
+	 * 設定正常登入後要導向哪個頁面
+	 */
+	public static String HOME_PAGE;
+
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
 	public static String LOGIN_AUTH_MODE;
@@ -118,6 +123,7 @@ public class Env {
 	public static String DEFAULT_RESTORE_SCRIPT_CODE;
 	public static String DEFAULT_DEVICE_CONFIG_BACKUP_MODE;	//預設設備組態檔備份模式 (DEVICE -> TFTP SERVER1)
 	public static String DEFAULT_BACKUP_FILE_BACKUP_MODE;	//預設組態備份檔案備份模式 (TFTP SERVER1 -> FTP SERVER2)
+	public static String DEFAULT_DEVICE_CONFIG_RESTORE_MODE;
 
 	public static String CONFIG_FILE_EXTENSION_NAME;
 
@@ -158,6 +164,7 @@ public class Env {
 
 	public static String PRTG_LOGIN_URI;
 	public static String PRTG_INDEX_URI;
+	public static String PRTG_DEFAULT_INDEX_URI;
 	public static String PRTG_DEFAULT_DASHBOARD_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
 
@@ -165,6 +172,9 @@ public class Env {
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
+
+	public static ConnectionMode CONNECTION_MODE_OF_DELIVERY;
+	public static ConnectionMode CONNECTION_MODE_OF_VM_SWITCH;
 
 	// 設定資安通報下「開關PORT」的腳本SCRIPT_CODE
 	public static List<String> DELIVERY_SWITCH_PORT_SCRIPT_CODE = new ArrayList<>();
@@ -267,6 +277,48 @@ public class Env {
 			Step.LOGIN_FILE_SERVER_4_UPLOAD,
 			Step.UPLOAD_FILE_SERVER,
 			Step.CLOSE_FILE_SERVER_CONNECTION
+	};
+	public static final Step[] RESTORE_BY_CLI = new Step[] {
+			Step.FIND_DEVICE_CONNECT_INFO,
+			Step.FIND_DEVICE_LOGIN_INFO,
+			Step.GET_VERSION_INFO,
+			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+			Step.LOGIN_FILE_SERVER_4_DOWNLOAD,
+			Step.DOWNLOAD_FILE,
+			Step.PROCESS_CONFIG_CONTENT_SETTING,
+			Step.LOAD_DEFAULT_SCRIPT,
+			Step.CONNECT_DEVICE,
+			Step.LOGIN_DEVICE,
+			Step.SEND_COMMANDS,
+			Step.CLOSE_DEVICE_CONNECTION
+	};
+	public static final Step[] RESTORE_BY_FTP = new Step[] {
+			Step.FIND_DEVICE_CONNECT_INFO,
+			Step.FIND_DEVICE_LOGIN_INFO,
+			Step.GET_VERSION_INFO,
+			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+			Step.LOGIN_FILE_SERVER_4_DOWNLOAD,
+			Step.DOWNLOAD_FILE,
+			Step.PROCESS_CONFIG_CONTENT_SETTING,
+			Step.LOAD_DEFAULT_SCRIPT,
+			Step.CONNECT_DEVICE,
+			Step.LOGIN_DEVICE,
+			Step.SEND_COMMANDS,
+			Step.CLOSE_DEVICE_CONNECTION
+	};
+	public static final Step[] RESTORE_BY_TFTP = new Step[] {
+			Step.FIND_DEVICE_CONNECT_INFO,
+			Step.FIND_DEVICE_LOGIN_INFO,
+			Step.GET_VERSION_INFO,
+			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
+			Step.LOGIN_FILE_SERVER_4_DOWNLOAD,
+			Step.DOWNLOAD_FILE,
+			Step.PROCESS_CONFIG_CONTENT_SETTING,
+			Step.LOAD_DEFAULT_SCRIPT,
+			Step.CONNECT_DEVICE,
+			Step.LOGIN_DEVICE,
+			Step.SEND_COMMANDS,
+			Step.CLOSE_DEVICE_CONNECTION
 	};
 
 	public static Map<String, String> SCHED_TYPE_CLASS_MAPPING = new HashMap<>();

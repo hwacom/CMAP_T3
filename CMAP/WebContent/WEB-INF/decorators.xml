@@ -4,8 +4,12 @@
 	<decorator name="main" page="common/main.jsp">
 		<pattern>/*</pattern>
 	</decorator>
-	<decorator name="login" page="views/login_openid.jsp">
-		<pattern>/login*</pattern>
+	<decorator name="login" page="views/login.jsp">
+		<pattern>/login</pattern>
+		<pattern>/accessdenied*</pattern>
+	</decorator>
+	<decorator name="loginOIDC" page="views/login_openid.jsp">
+		<pattern>/loginOIDC</pattern>
 		<pattern>/accessdenied*</pattern>
 	</decorator>
 	<decorator name="outsite" page="common/blank.jsp">
@@ -13,6 +17,9 @@
 	</decorator>
 	<decorator name="prtg_welcome_iframe" page="views/prtg/welcome.jsp">
 		<pattern>/prtg/welcome*</pattern>
+	</decorator>
+	<decorator name="vm_switch" page="views/plugin/module_vm_switch.jsp">
+		<pattern>/plugin/module/vmswitch*</pattern>
 	</decorator>
 	
 </decorators>

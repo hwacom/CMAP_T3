@@ -7,6 +7,10 @@
   		 overflow: hidden;
   	 }
    </style>
+   
+   <iframe id="prtgFrame" class="scrollbar-macosx" width=100% height=700 frameborder="0" src="${IFRAME_URI }">
+  	 Failed to open PRTG main page.
+   </iframe>
 
    <div id="uriFrame" style="width: 100%; height: 450px;" >&nbsp;</div>
    

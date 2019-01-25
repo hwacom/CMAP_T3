@@ -193,4 +193,4 @@
 </div>
 <!-- Modal [View] end -->
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.delivery.main.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.delivery.main.min.js"></script>

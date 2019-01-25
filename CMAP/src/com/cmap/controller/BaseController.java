@@ -47,7 +47,9 @@ import com.cmap.Env;
 import com.cmap.model.User;
 import com.cmap.security.SecurityUser;
 import com.cmap.service.CommonService;
+import com.cmap.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 
@@ -63,11 +65,24 @@ public class BaseController {
 	@Autowired
 	protected CommonService commonService;
 
+	@Autowired
+	private UserService userService;
+
 	public BaseController() {
 		super();
 		sdfYearMonth.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sdfDate.setTimeZone(TimeZone.getTimeZone("GMT"));
 		sdfDateTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
+
+	protected Object transJSON2Object(String jsonStr, Class<?> mClass) {
+		ObjectMapper oMapper = new ObjectMapper();
+		try {
+			return oMapper.readValue(jsonStr, mClass);
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	protected String manualAuthenticatd4EduOIDC(Model model, Principal principal, HttpServletRequest request) {
@@ -114,7 +129,7 @@ public class BaseController {
 	        Authentication authentication =  new UsernamePasswordAuthenticationToken(securityUser, USER_NAME, authorities);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-	        return "redirect:/prtg/index";
+	        return "redirect:" + Env.HOME_PAGE;
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -122,6 +137,9 @@ public class BaseController {
 		}
 	}
 
+	protected boolean checkUserCanOrNotAccess(HttpServletRequest request, String account) {
+		return userService.checkUserCanAccess(request, account);
+	}
 
 	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {
 		if (StringUtils.isBlank(queryGroup)) {
@@ -215,7 +233,7 @@ public class BaseController {
 		return groupMap;
 	}
 
-	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt) {
+	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt, String systemVersion) {
 		//Map<String, String> reverseMenuMap = new LinkedHashMap<String, String>();
 		Map<String, String> menuMap = new LinkedHashMap<>();
 
@@ -234,8 +252,9 @@ public class BaseController {
 
 					final String deviceId = deviceMap.get(Constants.DEVICE_ID);
 					final String deviceName = deviceMap.get(Constants.DEVICE_ENG_NAME);
+					final String deviceSystemVersion = deviceMap.get(Constants.DEVICE_SYSTEM);
 
-					if (StringUtils.isBlank(searchTxt)) {
+					if (StringUtils.isBlank(searchTxt) && StringUtils.isBlank(systemVersion)) {
 						if (idx == 0) {
 							menuMap.put("GROUP_"+groupKey, groupName);
 						}
@@ -243,7 +262,13 @@ public class BaseController {
 						idx++;
 
 					} else {
-						if (StringUtils.contains(deviceName, searchTxt)) {
+						if (!StringUtils.equals(systemVersion, Constants.DATA_STAR_SYMBOL)) {
+							if (!StringUtils.contains(deviceSystemVersion, systemVersion)) {
+								continue;
+							}
+						}
+						if (StringUtils.isBlank(searchTxt) ||
+								(StringUtils.isNotBlank(searchTxt) && StringUtils.contains(deviceName, searchTxt))) {
 							if (idx == 0) {
 								menuMap.put("GROUP_"+groupKey, groupName);
 							}
@@ -277,7 +302,7 @@ public class BaseController {
 			@RequestParam(name="searchTxt", required=true) String searchTxt) {
 
 		try {
-			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, null);
 
 			AppResponse appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
 			appResponse.putData("groupDeviceMenu",  new Gson().toJson(menuMap));

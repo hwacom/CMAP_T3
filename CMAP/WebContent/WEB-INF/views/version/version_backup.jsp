@@ -134,7 +134,7 @@
                       <form:options items="${configTypeList}" />
                   </form:select>
                    -->
-                  <span>按下確認後將立即備份設備中 Running 及 Startup 組態設定<br>請確認是否執行?</span>
+                  <span>按下確認後將立即備份設備組態(Configuration)<br>請確認是否執行?</span>
                 </div>                              
             </div>
         </form>
@@ -148,4 +148,4 @@
 </div>
 <!-- Modal [Backup_dialog] end -->
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.version.backup.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.version.backup.min.js"></script>

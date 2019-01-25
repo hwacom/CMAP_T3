@@ -173,4 +173,4 @@
 </div>
 <!-- Modal [Compare] end -->
 	
-<script src="${pageContext.request.contextPath}/resources/js/cmap.delivery.record.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.delivery.record.min.js"></script>

@@ -52,7 +52,7 @@
 	<!-- cleave -->
 	<script src="${pageContext.request.contextPath}/resources/js/cleave/cleave.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/js/modernizr/modernizr-custom.min.js"></script>
-	<script src="${pageContext.request.contextPath}/resources/js/common.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/custom/min/common.min.js"></script>
 	
 	<script>
 		$(function () {
@@ -62,7 +62,7 @@
 </head>
 
 <%
-	boolean hiddenFunc = true;
+	boolean hiddenFunc = false;
 %>
 <body>
 	<div class="loader"></div>
@@ -71,9 +71,9 @@
 	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
-      	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="40" alt="icon" />
-      	<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="40"  alt="icon"/>
-      	<span class="font-weight-bold title-font" style="color:#000079"><spring:message code="cmap.title" /></span>	
+      	<img class="img" src="${pageContext.request.contextPath}/resources/images/aptg_logo_icon.png" width="auto" height="30" style="padding-top: 3px" />
+  		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/aptg_logo_word.png" width="auto" height="23" style="padding-top: 3px" />
+ 		<span class="font-weight-bold title-font" style="color:#000079"><spring:message code="cmap.title" /></span>	
       </a>
       <ul class="navbar-nav">
         <li class="nav-item text-nowrap">
@@ -93,6 +93,9 @@
         <nav class="web-menu col-md-2 d-none d-md-block sidebar sidebar-bg">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
+              <%
+              	if (hiddenFunc) {
+              %>
               <li class="nav-item">
                 <a class="nav-link toggleMenuLink" id="toggleMenu_prtg" href="#">
                   <span data-feather="layout"></span>
@@ -119,7 +122,10 @@
                     </li>
                 </ul>
 	          </li>
-	          <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+	          <%
+              	}
+              %>
+	          <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')">
 	          	<li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_cm" href="#">
 	                  <span data-feather="file-text"></span>
@@ -138,15 +144,15 @@
 			                  	<span>版本備份</span>
 			                </a>
 			            </li>
-			            <%
-			            	if (!hiddenFunc) {
-			            %>
 			            <li class="subMenu-item">
 			                <a id="cm_restore" href="${pageContext.request.contextPath}/version/restore">
 			                  <span data-feather="upload"></span>
 			                  	<span>版本還原</span>
 			                </a>
 			            </li>
+			            <%
+			            	if (hiddenFunc) {
+			            %>
 			            <li class="subMenu-item">
 			                <a id="cm_script" href="${pageContext.request.contextPath}/script">
 			                  <span data-feather="code"></span>
@@ -172,38 +178,38 @@
 	              </li>
 	          </sec:authorize>
               
-              <li class="nav-item">
-                <a class="nav-link toggleMenuLink" id="toggleMenu_plugin" href="#">
-                  <span data-feather="alert-triangle"></span>
-                  	<span>資安通報&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
-                </a>
-                <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
-                	<%
-		            	if (!hiddenFunc) {
-		            %>
-                    <li class="subMenu-item">
-                    	<a id="cm_wifi" href="${pageContext.request.contextPath}/plugin/module/wifiPoller">
-                    	  <span data-feather="wifi"></span>
-                    		<span>WIFI 管理</span>
-                    	</a>
-                    </li>
-                    <%
-		            	}
-                    %>
-                    <li class="subMenu-item">
-                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
-                    	  <span data-feather="shuffle"></span>
-                    	  	<span>Net Flow 查詢</span>
-                    	</a>
-                    </li>
-                    <li class="subMenu-item">
-                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/switchPort">
-                    	  <span data-feather="shield-off"></span>
-                    	  	<span>開關 Port</span>
-                    	</a>
-                    </li>
-                </ul>
-	          </li>
+              <%
+              	if (hiddenFunc) {
+              %>
+	              <li class="nav-item">
+	                <a class="nav-link toggleMenuLink" id="toggleMenu_plugin" href="#">
+	                  <span data-feather="alert-triangle"></span>
+	                  	<span>資安通報&nbsp;<span id="toggleMenu_plugin_icon" data-feather="chevron-down"></span></span>
+	                </a>
+	                <ul aria-expanded="false" id="toggleMenu_plugin_items" class="collapse">
+	                    <li class="subMenu-item">
+	                    	<a id="cm_wifi" href="${pageContext.request.contextPath}/plugin/module/wifiPoller">
+	                    	  <span data-feather="wifi"></span>
+	                    		<span>WIFI 管理</span>
+	                    	</a>
+	                    </li>
+	                    <li class="subMenu-item">
+	                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
+	                    	  <span data-feather="shuffle"></span>
+	                    	  	<span>Net Flow 查詢</span>
+	                    	</a>
+	                    </li>
+	                    <li class="subMenu-item">
+	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/switchPort">
+	                    	  <span data-feather="shield-off"></span>
+	                    	  	<span>開關 Port</span>
+	                    	</a>
+	                    </li>
+	                </ul>
+		          </li>
+	          <%
+              	}
+              %>
               <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
               	  <li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_admin" href="#">
@@ -322,7 +328,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-	<script src="${pageContext.request.contextPath}/resources/js/cmap.main.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.main.min.js"></script>
 	
 </body>
 </html>

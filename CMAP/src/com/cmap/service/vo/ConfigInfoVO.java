@@ -15,7 +15,7 @@ public class ConfigInfoVO implements Cloneable {
 	private String configFileDirPath;	//設定本地備份落地檔路徑
 	private String remoteFileDirPath;	//設定異地備份路徑
 	private String configContent;
-	private List<String> configContentList = new ArrayList<String>();
+	private List<String> configContentList = new ArrayList<>();
 	private String configFileName;
 	private String fileFullName;
 	private String systemVersion;

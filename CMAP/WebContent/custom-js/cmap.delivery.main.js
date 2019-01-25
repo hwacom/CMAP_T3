@@ -1,7 +1,7 @@
 /**
  * 
  */
-const scriptShowLength = 20;	//設定欄位顯示內容最大長度
+var scriptShowLength = 20;	//設定欄位顯示內容最大長度
 var STEP_NUM = 1;
 
 $(document).ready(function() {
@@ -365,11 +365,11 @@ function drawStep2Panel(deviceVarMap, symbol) {
 		
 		for (var i=0; i<count; i++) {
 			var seq = parseInt(i) + 1;
-			const groupName = (i < groupArray.length) ? groupArray[i] : "N/A";
-			const deviceName = (i < deviceArray.length) ? deviceArray[i] : "N/A";
-			const groupId = (i < groupIdArray.length) ? groupIdArray[i] : 0;
-			const deviceId = (i < deviceIdArray.length) ? deviceIdArray[i] : 0;
-			const mapKey = groupId + symbol + deviceId;
+			var groupName = (i < groupArray.length) ? groupArray[i] : "N/A";
+			var deviceName = (i < deviceArray.length) ? deviceArray[i] : "N/A";
+			var groupId = (i < groupIdArray.length) ? groupIdArray[i] : 0;
+			var deviceId = (i < deviceIdArray.length) ? deviceIdArray[i] : 0;
+			var mapKey = groupId + symbol + deviceId;
 			
 			/* [Example]:
 			 * <div class="row-group-dash">
@@ -502,14 +502,14 @@ function drawStep2Panel(deviceVarMap, symbol) {
 function initStep3Panel() {
 	$("#stepModal_preview").empty();
 	
-	const scriptName = window.sessionStorage.getItem(_DELIVERY_SCRIPT_NAME_);
-	const groupName = window.sessionStorage.getItem(_DELIVERY_DEVICE_GROUP_NAME_);
-	const deviceName = window.sessionStorage.getItem(_DELIVERY_DEVICE_NAME_);
-	const varKey = window.sessionStorage.getItem(_DELIVERY_VAR_KEY_);
-	const varValue = window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_);
+	var scriptName = window.sessionStorage.getItem(_DELIVERY_SCRIPT_NAME_);
+	var groupName = window.sessionStorage.getItem(_DELIVERY_DEVICE_GROUP_NAME_);
+	var deviceName = window.sessionStorage.getItem(_DELIVERY_DEVICE_NAME_);
+	var varKey = window.sessionStorage.getItem(_DELIVERY_VAR_KEY_);
+	var varValue = window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_);
 	
 	var keyArray = $.parseJSON(varKey);
-	const keyCount = keyArray.length;
+	var keyCount = keyArray.length;
 	
 	var itemTopic = $("<span></span>").attr("class", "preview-topic");
 	var br = $("<br>");
@@ -690,11 +690,11 @@ function checkVariable() {
 
 function checkDeliveryParameters() {
 	//先做初步基本檢核
-	const scriptInfoId = window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_);
-	const scriptCode = window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_);
-	const deviceId = window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_);
-	const varKey = window.sessionStorage.getItem(_DELIVERY_VAR_KEY_);
-	const varValue = window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_);
+	var scriptInfoId = window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_);
+	var scriptCode = window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_);
+	var deviceId = window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_);
+	var varKey = window.sessionStorage.getItem(_DELIVERY_VAR_KEY_);
+	var varValue = window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_);
 
 	if ((scriptInfoId == null || (scriptInfoId != null && scriptInfoId.trim().length == 0))
 		|| (scriptCode == null || (scriptCode != null && scriptCode.trim().length == 0))
@@ -709,13 +709,13 @@ function checkDeliveryParameters() {
 }
 
 function doDelivery() {
-	const scriptInfoId = window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_);
-	const scriptCode = window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_);
-	const groupId = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
-	const deviceId = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_));
-	const varKey = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
-	const varValue = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_));
-	const reason = window.sessionStorage.getItem(_DELIVERY_REASON_);
+	var scriptInfoId = window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_);
+	var scriptCode = window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_);
+	var groupId = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
+	var deviceId = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_DEVICE_ID_));
+	var varKey = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_KEY_));
+	var varValue = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_VAR_VALUE_));
+	var reason = window.sessionStorage.getItem(_DELIVERY_REASON_);
 	
 	var ps = {
 		"scriptInfoId" : scriptInfoId,

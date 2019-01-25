@@ -108,4 +108,4 @@
 
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/cmap.version.restore.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.version.restore.min.js"></script>

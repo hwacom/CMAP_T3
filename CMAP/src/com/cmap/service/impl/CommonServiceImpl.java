@@ -1,7 +1,9 @@
 package com.cmap.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -295,5 +297,16 @@ public class CommonServiceImpl implements CommonService {
 			log.error(e.toString(), e);
 		}
 		return retVO;
+	}
+
+	public String base64Decoder(String base64String) {
+		final Base64.Decoder decoder = Base64.getDecoder();
+		try {
+			return new String(decoder.decode(base64String), Constants.CHARSET_UTF8);
+
+		} catch (UnsupportedEncodingException e) {
+			log.error(e.toString(), e);
+			return base64String;
+		}
 	}
 }
