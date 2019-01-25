@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.comm.enums.ConnectionMode;
+import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
