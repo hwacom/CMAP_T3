@@ -13,5 +13,8 @@ $(document).ready(function() {
 		
 	}, 1000));
 	
+	if ($("#loginFlag").val() == "Y") {
+		getLoginUri();
+	}
 	getPrtgUri(URI_INDEX);
 });

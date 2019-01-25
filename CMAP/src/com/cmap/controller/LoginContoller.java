@@ -38,6 +38,36 @@ public class LoginContoller extends BaseController {
 	@Log
 	private static Logger log;
 
+	/**
+	 ** 判斷要導到哪種登入頁面
+	 * @param model
+	 * @param principal
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/check", method = RequestMethod.GET)
+	public String check(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			if (null == principal) {
+				if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+					return "redirect:/loginOIDC";
+
+				} else {
+					return "redirect:/login";
+				}
+			}
+
+			RequestDispatcher rd = request.getRequestDispatcher(Env.HOME_PAGE);
+			rd.forward(request,response);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+
+		return null;
+	}
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
