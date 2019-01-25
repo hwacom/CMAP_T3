@@ -267,20 +267,22 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "/index/login", method = RequestMethod.GET)
+	public String prtgIndexAndLogin(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			init(model);
+			model.addAttribute("DO_LOGIN", "Y");
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "prtg/index";
+	}
+
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String prtgIndex(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
-
-//			String html = sendLogin(request, response);
-			/*
-			final String BASE_URI = Env.PRTG_INDEX_URI;
-			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
-			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
-			final String prtgIndexUri = BASE_URI + "?a=" + PRTG_ACCOUNT + "&p=" + PRTG_PASSWORD;
-
-			model.addAttribute("IFRAME_URI", prtgIndexUri);
-			*/
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
