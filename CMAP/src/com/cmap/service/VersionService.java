@@ -2,6 +2,7 @@ package com.cmap.service;
 
 import java.util.List;
 
+import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.service.vo.VersionServiceVO;
 
@@ -105,5 +106,5 @@ public interface VersionService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	public VersionServiceVO recoverConfig(String recoverMethod, VersionServiceVO vsVO, String triggerBy, String reason) throws ServiceLayerException;
+	public VersionServiceVO restoreConfig(RestoreMethod restoreMethod, String restoreType, VersionServiceVO vsVO, String triggerBy, String reason) throws ServiceLayerException;
 }

@@ -14,8 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.comm.enums.ScriptType;
-import com.cmap.dao.ConfigVersionInfoDAO;
+import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.exception.ServiceLayerException;
@@ -43,7 +44,7 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 	private DeviceListDAO deviceListDAO;
 
 	@Autowired
-	private ConfigVersionInfoDAO configVersionInfoDAO;
+	private ConfigDAO configVersionInfoDAO;
 
 	@Autowired
 	private VersionService versionService;
@@ -99,6 +100,8 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 
 			final String groupId = deviceList.getGroupId();
 			final String deviceId = deviceList.getDeviceId();
+			final String systemVersion = deviceList.getSystemVersion();
+			final String deviceEngName = deviceList.getDeviceEngName();
 
 			ConfigVersionInfoDAOVO cviDAOVO = new ConfigVersionInfoDAOVO();
 			cviDAOVO.setQueryGroup1(groupId);
@@ -110,14 +113,15 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 			}
 
 			final ConfigVersionInfo configVersionInfo = (ConfigVersionInfo)versionList.get(0)[0];
+			final String restoreVersionId = configVersionInfo.getVersionId();
 
 			/*
-			 * Step 2-1. 取得最新備份版本內容 for 後續切換使用
+			 * Step 2-1. 取得最新備份版本內容
 			 */
 			List<String> configContent = null;
 
 			List<String> versionIDs = new ArrayList<>();
-			versionIDs.add(configVersionInfo.getVersionId());
+			versionIDs.add(restoreVersionId);
 
 			List<VersionServiceVO> vsVOList = versionService.findConfigFilesInfo(versionIDs);
 
@@ -236,7 +240,11 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 			 * Step 5. 登入備援機，進入 Conf 模式將指定的 VM 要切換的組態內容逐行貼上，最後執行 Exit 離開 Conf 模式並立即生效
 			 */
 			VersionServiceVO vsVO = new VersionServiceVO();
-			versionService.recoverConfig(Constants.RECOVER_METHOD_BY_CLI, vsVO, "PRTG", "【VM備援切換】3/3.寫入備份組態設定至還原機");
+			vsVO.setDeviceListId(deviceListId);
+			vsVO.setRestoreVersionId(restoreVersionId);
+			vsVO.setRestoreContentList(configContent);
+			versionService.restoreConfig(
+					RestoreMethod.CLI, Constants.RESTORE_TYPE_VM_SWITCH, vsVO, "PRTG", "【VM備援切換】3/3.寫入備份組態設定至還原機");
 
 			/*
 			 * Step 6. 將切換紀錄寫入 DB

@@ -31,6 +31,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			sb.append(" and si.scriptType.scriptTypeCode = :scriptTypeCode ");
+		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
@@ -46,6 +49,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			q.setParameter("scriptTypeCode", daovo.getQueryScriptTypeCode());
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
@@ -70,6 +76,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			sb.append(" and si.scriptType.scriptTypeId = :scriptTypeId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			sb.append(" and si.scriptType.scriptTypeCode = :scriptTypeCode ");
+		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
@@ -85,6 +94,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 
 		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeId())) {
 			q.setParameter("scriptTypeId", daovo.getQueryScriptTypeId());
+		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptTypeCode())) {
+			q.setParameter("scriptTypeCode", daovo.getQueryScriptTypeCode());
 		}
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());

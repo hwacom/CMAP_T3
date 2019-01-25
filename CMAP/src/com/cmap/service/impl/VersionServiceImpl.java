@@ -21,7 +21,8 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ConnectionMode;
-import com.cmap.dao.ConfigVersionInfoDAO;
+import com.cmap.comm.enums.RestoreMethod;
+import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.DeviceListDAO;
 import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
@@ -60,7 +61,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	private StepService stepService;
 
 	@Autowired
-	private ConfigVersionInfoDAO configVersionInfoDAO;
+	private ConfigDAO configVersionInfoDAO;
 
 	@Autowired
 	private DeviceListDAO deviceListDAO;
@@ -758,7 +759,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	}
 
 	@Override
-	public VersionServiceVO recoverConfig(String recoverMethod, VersionServiceVO vsVO, String triggerBy, String reason) throws ServiceLayerException {
+	public VersionServiceVO restoreConfig(RestoreMethod restoreMethod, String restoreType, VersionServiceVO vsVO, String triggerBy, String reason) throws ServiceLayerException {
 		ProvisionServiceVO masterVO = new ProvisionServiceVO();
 		VersionServiceVO retVO = new VersionServiceVO();
 		final int totalCount = 1;
@@ -774,7 +775,11 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			masterVO.setUserName(triggerBy);
 
 			StepServiceVO stepServiceVO = new StepServiceVO();
-			StepServiceVO ssVO = stepService.doRecoverStep(recoverMethod, stepServiceVO, triggerBy, reason);
+			stepServiceVO.setDeviceListId(vsVO.getDeviceListId());
+			stepServiceVO.setRestoreVersionId(vsVO.getRestoreVersionId());
+			stepServiceVO.setRestoreContentList(vsVO.getRestoreContentList());
+
+			StepServiceVO ssVO = stepService.doRestoreStep(restoreMethod, restoreType, stepServiceVO, triggerBy, reason);
 
 			masterVO.getDetailVO().addAll(ssVO.getPsVO().getDetailVO());
 

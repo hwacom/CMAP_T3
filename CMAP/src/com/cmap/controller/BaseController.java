@@ -233,7 +233,7 @@ public class BaseController {
 		return groupMap;
 	}
 
-	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt) {
+	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt, String systemVersion) {
 		//Map<String, String> reverseMenuMap = new LinkedHashMap<String, String>();
 		Map<String, String> menuMap = new LinkedHashMap<>();
 
@@ -252,8 +252,9 @@ public class BaseController {
 
 					final String deviceId = deviceMap.get(Constants.DEVICE_ID);
 					final String deviceName = deviceMap.get(Constants.DEVICE_ENG_NAME);
+					final String deviceSystemVersion = deviceMap.get(Constants.DEVICE_SYSTEM);
 
-					if (StringUtils.isBlank(searchTxt)) {
+					if (StringUtils.isBlank(searchTxt) && StringUtils.isBlank(systemVersion)) {
 						if (idx == 0) {
 							menuMap.put("GROUP_"+groupKey, groupName);
 						}
@@ -261,7 +262,13 @@ public class BaseController {
 						idx++;
 
 					} else {
-						if (StringUtils.contains(deviceName, searchTxt)) {
+						if (!StringUtils.equals(systemVersion, Constants.DATA_STAR_SYMBOL)) {
+							if (!StringUtils.contains(deviceSystemVersion, systemVersion)) {
+								continue;
+							}
+						}
+						if (StringUtils.isBlank(searchTxt) ||
+								(StringUtils.isNotBlank(searchTxt) && StringUtils.contains(deviceName, searchTxt))) {
 							if (idx == 0) {
 								menuMap.put("GROUP_"+groupKey, groupName);
 							}
@@ -295,7 +302,7 @@ public class BaseController {
 			@RequestParam(name="searchTxt", required=true) String searchTxt) {
 
 		try {
-			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, null);
 
 			AppResponse appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
 			appResponse.putData("groupDeviceMenu",  new Gson().toJson(menuMap));

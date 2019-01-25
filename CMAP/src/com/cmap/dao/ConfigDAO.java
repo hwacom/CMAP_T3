@@ -3,9 +3,10 @@ package com.cmap.dao;
 import java.util.List;
 
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
+import com.cmap.model.ConfigContentSetting;
 import com.cmap.model.ConfigVersionInfo;
 
-public interface ConfigVersionInfoDAO {
+public interface ConfigDAO {
 
 	public long countConfigVersionInfoByDAOVO(ConfigVersionInfoDAOVO cviDAOVO);
 
@@ -27,4 +28,6 @@ public interface ConfigVersionInfoDAO {
 	public List<ConfigVersionInfo> findConfigVersionInfoByVersionIDs(List<String> versionIDs);
 
 	public void insertConfigVersionInfo(ConfigVersionInfo configVersionInfo);
+
+	public List<ConfigContentSetting> findConfigContentSetting(String settingType, String systemVersion, String deviceNameLike, String deviceListId);
 }

@@ -22,6 +22,10 @@ public class StepServiceVO extends CommonServiceVO {
 	private Integer retryTimes;
 	private List<String> cmdOutputList;
 
+	private String deviceListId;
+	private String restoreVersionId;				//要還原的版本號
+	private List<String> restoreContentList;	//要還原的組態內容
+
 	private ProvisionServiceVO psVO;
 
 	ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
@@ -177,5 +181,29 @@ public class StepServiceVO extends CommonServiceVO {
 
 	public void setCmdOutputList(List<String> cmdOutputList) {
 		this.cmdOutputList = cmdOutputList;
+	}
+
+	public String getRestoreVersionId() {
+		return restoreVersionId;
+	}
+
+	public void setRestoreVersionId(String restoreVersionId) {
+		this.restoreVersionId = restoreVersionId;
+	}
+
+	public List<String> getRestoreContentList() {
+		return restoreContentList;
+	}
+
+	public void setRestoreContentList(List<String> restoreContentList) {
+		this.restoreContentList = restoreContentList;
+	}
+
+	public String getDeviceListId() {
+		return deviceListId;
+	}
+
+	public void setDeviceListId(String deviceListId) {
+		this.deviceListId = deviceListId;
 	}
 }

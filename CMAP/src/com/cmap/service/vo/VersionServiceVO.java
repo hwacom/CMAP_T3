@@ -8,6 +8,8 @@ import com.cmap.Constants;
 
 public class VersionServiceVO extends CommonServiceVO {
 
+	private String queryVersionId;
+
 	private String queryGroup;
 	private String queryGroup1;
 	private String queryGroup2;
@@ -74,9 +76,9 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String retMsg;
 	private String errMsg;
 
-	//--------- Recover ----------//
-	private String recover2Version;
-	private List<String> recoverCliList = new ArrayList<>();
+	//--------- Restore ----------//
+	private String restoreVersionId;
+	private List<String> restoreContentList = new ArrayList<>();
 
 	public String getQueryGroup() {
 		return queryGroup;
@@ -408,16 +410,22 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setErrMsg(String errMsg) {
 		this.errMsg = errMsg;
 	}
-	public String getRecover2Version() {
-		return recover2Version;
+	public String getRestoreVersionId() {
+		return restoreVersionId;
 	}
-	public void setRecover2Version(String recover2Version) {
-		this.recover2Version = recover2Version;
+	public void setRestoreVersionId(String restoreVersionId) {
+		this.restoreVersionId = restoreVersionId;
 	}
-	public List<String> getRecoverCliList() {
-		return recoverCliList;
+	public List<String> getRestoreContentList() {
+		return restoreContentList;
 	}
-	public void setRecoverCliList(List<String> recoverCliList) {
-		this.recoverCliList = recoverCliList;
+	public void setRestoreContentList(List<String> restoreContentList) {
+		this.restoreContentList = restoreContentList;
+	}
+	public String getQueryVersionId() {
+		return queryVersionId;
+	}
+	public void setQueryVersionId(String queryVersionId) {
+		this.queryVersionId = queryVersionId;
 	}
 }

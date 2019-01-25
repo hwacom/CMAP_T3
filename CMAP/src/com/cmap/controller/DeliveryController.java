@@ -206,9 +206,10 @@ public class DeliveryController extends BaseController {
 		DeliveryServiceVO dsVO;
 		try {
 			dsVO = deliveryService.getScriptInfoById(scriptInfoId);
+			final String systemVersion = dsVO.getSystemVersion();
 
 			//取得Group & Device選單內容
-			Map<String, String> menuMap = getGroupDeviceMenu(request, null);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, null, systemVersion);
 			dsVO.setGroupDeviceMenuJsonStr(new Gson().toJson(menuMap));
 
 			ObjectMapper oMapper = new ObjectMapper();
@@ -259,11 +260,11 @@ public class DeliveryController extends BaseController {
 	public @ResponseBody AppResponse doDelivery(Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="ps", required=true) String ps) {
 
-		DeliveryServiceVO dsVO;
+		DeliveryServiceVO retVO;
 		try {
 			DeliveryParameterVO pVO = (DeliveryParameterVO)transJSON2Object(ps, DeliveryParameterVO.class);
 
-			DeliveryServiceVO retVO = deliveryService.doDelivery(Env.CONNECTION_MODE_OF_DELIVERY, pVO, false, null, null, true);
+			retVO = deliveryService.doDelivery(Env.CONNECTION_MODE_OF_DELIVERY, pVO, false, null, null, true);
 			String retVal = retVO.getRetMsg();
 
 			return new AppResponse(HttpServletResponse.SC_OK, retVal);

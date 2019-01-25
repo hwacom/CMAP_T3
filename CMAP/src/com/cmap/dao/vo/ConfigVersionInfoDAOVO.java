@@ -4,6 +4,7 @@ import java.util.List;
 
 public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 
+	private String queryVersionId;
 	private String queryGroup1;
 	private String queryGroup2;
 	private String queryDevice1;
@@ -13,15 +14,15 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	private String queryDateBegin2;
 	private String queryDateEnd2;
 	private String queryConfigType;
-	
+
 	private boolean jobTrigger = false;
-	
+
 	private List<String> queryGroup1List;
 	private List<String> queryGroup2List;
-	
+
 	private List<String> queryDevice1List;
 	private List<String> queryDevice2List;
-	
+
 	public String getQueryGroup1() {
 		return queryGroup1;
 	}
@@ -105,5 +106,11 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	}
 	public void setJobTrigger(boolean jobTrigger) {
 		this.jobTrigger = jobTrigger;
+	}
+	public String getQueryVersionId() {
+		return queryVersionId;
+	}
+	public void setQueryVersionId(String queryVersionId) {
+		this.queryVersionId = queryVersionId;
 	}
 }

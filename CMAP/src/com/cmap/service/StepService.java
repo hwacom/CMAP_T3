@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cmap.comm.enums.ConnectionMode;
+import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.model.ScriptInfo;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.StepServiceVO;
@@ -44,7 +45,7 @@ public interface StepService {
 	 * @param reason
 	 * @return
 	 */
-	public StepServiceVO doRecoverStep(String recoverMethod, StepServiceVO stepServiceVO, String triggerBy, String reason);
+	public StepServiceVO doRestoreStep(RestoreMethod restoreMethod, String restoreType, StepServiceVO stepServiceVO, String triggerBy, String reason);
 
 	/**
 	 * 供裝派送流程
