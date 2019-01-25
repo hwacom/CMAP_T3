@@ -1,6 +1,10 @@
 package com.cmap.service.vo;
 
+import java.util.List;
+
 public class ConfigVO {
+
+	private boolean hasPositiveSetting = false;
 
 	private String settingType;
 	private String systemVersion;
@@ -12,6 +16,8 @@ public class ConfigVO {
 	private String action;
 	private String remark;
 	private String description;
+
+	private List<ConfigVO> configVOList = null;
 
 	public String getSettingType() {
 		return settingType;
@@ -72,5 +78,17 @@ public class ConfigVO {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public boolean isHasPositiveSetting() {
+		return hasPositiveSetting;
+	}
+	public void setHasPositiveSetting(boolean hasPositiveSetting) {
+		this.hasPositiveSetting = hasPositiveSetting;
+	}
+	public List<ConfigVO> getConfigVOList() {
+		return configVOList;
+	}
+	public void setConfigVOList(List<ConfigVO> configVOList) {
+		this.configVOList = configVOList;
 	}
 }

@@ -28,8 +28,10 @@ public class ConfigServiceImpl extends CommonServiceImpl implements ConfigServic
 	private ConfigDAO configDAO;
 
 	@Override
-	public List<ConfigVO> findConfigContentSetting(List<ConfigVO> configVOList, String settingType, String systemVersion, String deviceNameLike, String deviceListId) throws ServiceLayerException {
-		List<ConfigVO> retList = configVOList == null ? new ArrayList<>() : configVOList;
+	public ConfigVO findConfigContentSetting(ConfigVO configVO, String settingType, String systemVersion, String deviceNameLike, String deviceListId) throws ServiceLayerException {
+		configVO = configVO == null ? new ConfigVO() : configVO;
+		List<ConfigVO> retList = configVO.getConfigVOList() == null ? new ArrayList<>() : configVO.getConfigVOList();
+
 		try {
 			if (StringUtils.isBlank(settingType)) {
 				throw new ServiceLayerException("[查詢Config_Content_Setting] >> settingType 不可為空!");
@@ -42,6 +44,7 @@ public class ConfigServiceImpl extends CommonServiceImpl implements ConfigServic
 
 			if (entities != null && !entities.isEmpty()) {
 				retList.addAll(transConfigContentSetting2ConfigVO(entities));
+				configVO.setConfigVOList(retList);
 			}
 
 			/*
@@ -52,7 +55,7 @@ public class ConfigServiceImpl extends CommonServiceImpl implements ConfigServic
 					&& StringUtils.equals(deviceNameLike, Constants.DATA_STAR_SYMBOL)
 						&& StringUtils.equals(systemVersion, Constants.DATA_STAR_SYMBOL)) {
 
-				return retList;
+				return configVO;
 
 			} else {
 				if (!StringUtils.equals(deviceListId, Constants.DATA_STAR_SYMBOL)) {
@@ -65,7 +68,7 @@ public class ConfigServiceImpl extends CommonServiceImpl implements ConfigServic
 					systemVersion = Constants.DATA_STAR_SYMBOL;
 				}
 
-				return findConfigContentSetting(retList, settingType, systemVersion, deviceNameLike, deviceListId);
+				return findConfigContentSetting(configVO, settingType, systemVersion, deviceNameLike, deviceListId);
 			}
 
 		} catch (ServiceLayerException sle) {

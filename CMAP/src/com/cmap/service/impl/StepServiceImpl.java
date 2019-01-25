@@ -1525,10 +1525,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		return processVO;
 	}
 
+	/**
+	 * 組態還原流程
+	 */
 	@Override
 	public StepServiceVO doRestoreStep(RestoreMethod restoreMethod, String restoreType, StepServiceVO stepServiceVO, String triggerBy, String reason) {
 		StepServiceVO retVO = new StepServiceVO();
 
+		/*
+		 * for 供裝紀錄使用
+		 */
 		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
 		ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
 		ProvisionServiceVO psStepVO = new ProvisionServiceVO();
@@ -1589,6 +1595,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						break;
 				}
 
+				/*
+				 * 還原方式:
+				 * (1) CLI >> by 命令逐行派送
+				 * (2) FTP >> 在設備上下命令透過FTP上抓組態檔還原到設備
+				 * (3) TFTP >> 在設備上下命令透過TFTP上抓組態檔還原到設備
+				 */
 				switch (restoreMethod) {
 					case CLI:
 						steps = Env.RESTORE_BY_CLI;
@@ -1614,44 +1626,91 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				for (Step _step : steps) {
 
 					switch (_step) {
+						// 取得要還原的版本號相關資訊
 						case GET_VERSION_INFO:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								vsVOs = getVersionInfo(
+											new String[]{restoreVersionId}
+										);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得要還原的組態版本資訊時失敗 [ 錯誤代碼: GET_VERSION_INFO ]");
 							}
 
-							vsVOs = getVersionInfo(
-										new String[]{restoreVersionId}
-									);
-							break;
-
+						// 連線至組態檔放置的 FTP / TFTP
 						case CONNECT_FILE_SERVER_4_DOWNLOAD:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("連線至 File Server 時失敗 [ 錯誤代碼: CONNECT_FILE_SERVER_4_DOWNLOAD ]");
 							}
 
-							fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
-							break;
-
+						// 登入 FTP
 						case LOGIN_FILE_SERVER_4_DOWNLOAD:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								login2FileServer(fileUtils, ciVO);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("登入 File Server 時失敗 [ 錯誤代碼: LOGIN_FILE_SERVER_4_DOWNLOAD ]");
 							}
 
-							login2FileServer(fileUtils, ciVO);
-							break;
-
+						// 從 FTP / TFTP 上下載要還原的版本檔案內容
 						case DOWNLOAD_FILE:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								configInfoList = downloadFile(fileUtils, vsVOs, ciVO, false);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("從 File Server 下載檔案時失敗 [ 錯誤代碼: DOWNLOAD_FILE ]");
 							}
 
-							configInfoList = downloadFile(fileUtils, vsVOs, ciVO, false);
-							break;
+						// 關閉與 FTP / TFTP 連線
+						case CLOSE_FILE_SERVER_CONNECTION:
+							try {
+								closeFileServerConnection(fileUtils);
+								break;
 
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("關閉與 File Server 間連線時失敗 [ 錯誤代碼: CLOSE_FILE_SERVER_CONNECTION ]");
+							}
+
+						// 依組態內容設定(Config_Content_Setting)處理要還原的版本內容
 						case PROCESS_CONFIG_CONTENT_SETTING:
-							restoreContentList = processConfigContentSetting(restoreType, ciVO);
-							break;
+							try {
+								restoreContentList = processConfigContentSetting(restoreType, ciVO);
+								break;
 
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("處理要還原的組態檔內容時失敗 [ 錯誤代碼: PROCESS_CONFIG_CONTENT_SETTING ]");
+							}
+
+						// 取得組態還原預設腳本
 						case LOAD_DEFAULT_SCRIPT:
 							try {
 								scripts = loadDefaultScript(deviceListId, scripts, ScriptType.RESTORE);
@@ -1674,6 +1733,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("讀取腳本資料時失敗 [ 錯誤代碼: LOAD_DEFAULT_SCRIPT ]");
 							}
 
+						// 取得要還原的目標設備相關連線資訊
 						case FIND_DEVICE_CONNECT_INFO:
 							try {
 								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null);
@@ -1699,6 +1759,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
 							}
 
+						// 取得要還原的目標設備登入資訊
 						case FIND_DEVICE_LOGIN_INFO:
 							try {
 								findDeviceLoginInfo(deviceListId);
@@ -1709,6 +1770,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("取得設備登入帳密設定時失敗 [ 錯誤代碼: FIND_DEVICE_LOGIN_INFO ]");
 							}
 
+						// 連線至要還原的目標設備
 						case CONNECT_DEVICE:
 							try {
 								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
@@ -1719,6 +1781,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("設備連線失敗 [ 錯誤代碼: CONNECT_DEVICE ]");
 							}
 
+						// 登入要還原的目標設備
 						case LOGIN_DEVICE:
 							try {
 								login2Device(connectUtils, ciVO);
@@ -1729,6 +1792,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("登入設備失敗 [ 錯誤代碼: LOGIN_DEVICE ]");
 							}
 
+						// 依腳本內容進行命令派送
 						case SEND_COMMANDS:
 							try {
 								outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
@@ -1739,6 +1803,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
 							}
 
+						// 關閉與設備的連線
 						case CLOSE_DEVICE_CONNECTION:
 							try {
 								closeDeviceConnection(connectUtils);
@@ -1785,6 +1850,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		return retVO;
 	}
 
+	/**
+	 * 取得組態檔版本相關資訊
+	 * @param versionIds
+	 * @return
+	 * @throws ServiceLayerException
+	 */
 	private List<VersionServiceVO> getVersionInfo(String[] versionIds) throws ServiceLayerException {
 		List<VersionServiceVO> retList = new ArrayList<>();
 
@@ -1826,7 +1897,11 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 		List<ConfigVO> settings = null;
 		try {
-			settings = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+			// Step 1. 取得設定
+			ConfigVO configVO = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+			settings = configVO.getConfigVOList();
+
+			// Step 2. 依設定逐行處理組態檔內容，取得最終實際要還原的
 
 			if (settings != null && !settings.isEmpty()) {
 
@@ -1838,6 +1913,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 		} catch (ServiceLayerException e) {
 			log.error(e.toString(), e);
+		}
+
+		return null;
+	}
+
+	private List<String> runConfigAndSettingCheck(List<String> configContentList, List<ConfigVO> settings) {
+		try {
+
+		} catch (Exception e) {
+
 		}
 
 		return null;
