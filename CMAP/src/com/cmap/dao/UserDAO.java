@@ -4,5 +4,5 @@ import com.cmap.model.UserRightSetting;
 
 public interface UserDAO extends BaseDAO {
 
-	UserRightSetting findUserRightSetting(String account);
+	UserRightSetting findUserRightSetting(String belongGroup, String account);
 }

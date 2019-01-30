@@ -138,8 +138,8 @@ public class BaseController {
 		}
 	}
 
-	protected boolean checkUserCanOrNotAccess(HttpServletRequest request, String account) {
-		return userService.checkUserCanAccess(request, account);
+	protected boolean checkUserCanOrNotAccess(HttpServletRequest request, String belongGroup, String account) {
+		return userService.checkUserCanAccess(request, belongGroup, account);
 	}
 
 	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {

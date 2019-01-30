@@ -100,7 +100,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	private boolean chkCanAccessOrNot(HttpServletRequest request, String account) {
-        return userService.checkUserCanAccess(request, account);
+        return userService.checkUserCanAccess(request, Constants.DATA_STAR_SYMBOL, account);
 	}
 
 	public ArrayList<GrantedAuthority> getAuthorities(String... roles) {

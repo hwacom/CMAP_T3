@@ -26,20 +26,27 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Override
-	public boolean checkUserCanAccess(HttpServletRequest request, String account) {
+	public boolean checkUserCanAccess(HttpServletRequest request, String belongGroup, String account) {
 		boolean canAccess = false;
 		try {
-			UserRightSetting entity = userDAO.findUserRightSetting(account);
+			UserRightSetting entity = userDAO.findUserRightSetting(belongGroup, account);
 
 			if (entity == null) {
 
-				if (!StringUtils.equals(account, "*")) {
-					return checkUserCanAccess(request, "*");
+				if (StringUtils.equals(belongGroup, Constants.DATA_STAR_SYMBOL)
+						&& StringUtils.equals(account, Constants.DATA_STAR_SYMBOL)) {
+					canAccess = false;
 
 				} else {
-					canAccess = false;
-				}
+					if (!StringUtils.equals(account, Constants.DATA_STAR_SYMBOL)) {
+						account = Constants.DATA_STAR_SYMBOL;
 
+					} else if (!StringUtils.equals(belongGroup, Constants.DATA_STAR_SYMBOL)) {
+						belongGroup = Constants.DATA_STAR_SYMBOL;
+					}
+
+					return checkUserCanAccess(request, belongGroup, account);
+				}
 			} else {
 				final boolean access =
 						StringUtils.equals(entity.getDenyAccess(), Constants.DATA_Y) ? false : true;

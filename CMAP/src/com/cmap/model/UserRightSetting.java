@@ -27,6 +27,9 @@ public class UserRightSetting implements java.io.Serializable {
 	@Column(name = "ID", unique = true)
 	private String id;
 
+	@Column(name = "BELONG_GROUP", nullable = false)
+	private String belongGroup;
+
 	@Column(name = "ACCOUNT", nullable = false)
 	private String account;
 
@@ -67,11 +70,12 @@ public class UserRightSetting implements java.io.Serializable {
 		super();
 	}
 
-	public UserRightSetting(String id, String account, String isAdmin, String denyAccess, String sourceIpAddr,
-			String userGroup, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
-			String createBy, Timestamp updateTime, String updateBy) {
+	public UserRightSetting(String id, String belongGroup, String account, String isAdmin, String denyAccess,
+			String sourceIpAddr, String userGroup, String deleteFlag, Timestamp deleteTime, String deleteBy,
+			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.id = id;
+		this.belongGroup = belongGroup;
 		this.account = account;
 		this.isAdmin = isAdmin;
 		this.denyAccess = denyAccess;
@@ -92,6 +96,14 @@ public class UserRightSetting implements java.io.Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getBelongGroup() {
+		return belongGroup;
+	}
+
+	public void setBelongGroup(String belongGroup) {
+		this.belongGroup = belongGroup;
 	}
 
 	public String getAccount() {
@@ -188,9 +200,5 @@ public class UserRightSetting implements java.io.Serializable {
 
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
-	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 }

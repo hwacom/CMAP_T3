@@ -362,14 +362,14 @@ public class OidcController extends BaseController {
         session.setAttribute(Constants.OIDC_SCHOOL_ID, schoolId);
 
         final String account = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB));
-        boolean canAccess = checkUserCanOrNotAccess(request, account);
+        boolean canAccess = checkUserCanOrNotAccess(request, schoolId, account);
 
         if (canAccess) {
         	return loginAuthByPRTG(model, principal, request, schoolId);
 
         } else {
         	session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "無網路管理系統存取權限，請與系統管理員聯繫");
-            return "redirect:/login";
+            return "redirect:/loginOIDC";
         }
 	}
 
