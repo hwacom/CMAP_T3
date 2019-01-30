@@ -317,10 +317,10 @@ function changeDeviceMenu(deviceMenuObjId, groupId) {
 /**********************************************************************************************************
  *** 查看組態檔內容
  **********************************************************************************************************/
-function viewConfig(viewConfig) {
+function viewConfig(versionId) {
 	var obj = new Object();
 	obj.name = 'versionId';
-	obj.value = viewConfig;
+	obj.value = versionId;
 	
 	$.ajax({
 		url : _ctx + '/version/view',

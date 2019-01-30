@@ -54,6 +54,9 @@ public class ScriptStepAction {
 	@Column(name = "error_symbol", nullable = true)
 	private String errorSymbol;
 
+	@Column(name = "repeat_flag", nullable = false)
+	private String repeatFlag;
+
 	@Column(name = "command_remark", nullable = true)
 	private String commandRemark;
 
@@ -87,7 +90,7 @@ public class ScriptStepAction {
 
 	public ScriptStepAction(String stepId, ScriptInfo scriptInfo, Integer stepOrder, String command,
 			String expectedTerminalSymbol, String outputFlag, Integer headCuttingLines, Integer tailCuttingLines,
-			String errorSymbol, String commandRemark, String commandDescription, String deleteFlag,
+			String errorSymbol, String repeatFlag, String commandRemark, String commandDescription, String deleteFlag,
 			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
 			String updateBy) {
 		super();
@@ -100,6 +103,7 @@ public class ScriptStepAction {
 		this.headCuttingLines = headCuttingLines;
 		this.tailCuttingLines = tailCuttingLines;
 		this.errorSymbol = errorSymbol;
+		this.repeatFlag = repeatFlag;
 		this.commandRemark = commandRemark;
 		this.commandDescription = commandDescription;
 		this.deleteFlag = deleteFlag;
@@ -181,6 +185,14 @@ public class ScriptStepAction {
 
 	public void setErrorSymbol(String errorSymbol) {
 		this.errorSymbol = errorSymbol;
+	}
+
+	public String getRepeatFlag() {
+		return repeatFlag;
+	}
+
+	public void setRepeatFlag(String repeatFlag) {
+		this.repeatFlag = repeatFlag;
 	}
 
 	public String getCommandRemark() {

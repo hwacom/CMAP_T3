@@ -9,6 +9,7 @@ import com.cmap.Constants;
 public class VersionServiceVO extends CommonServiceVO {
 
 	private String queryVersionId;
+	private String queryDeviceListId;
 
 	private String queryGroup;
 	private String queryGroup1;
@@ -51,6 +52,7 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String configFileDirPath;
 	private String remoteFileDirPath;
 	private String deviceListId;
+	private String createYyyyMMdd;
 
 	private Date createDate;
 
@@ -427,5 +429,17 @@ public class VersionServiceVO extends CommonServiceVO {
 	}
 	public void setQueryVersionId(String queryVersionId) {
 		this.queryVersionId = queryVersionId;
+	}
+	public String getCreateYyyyMMdd() {
+		return createYyyyMMdd;
+	}
+	public void setCreateYyyyMMdd(String createYyyyMMdd) {
+		this.createYyyyMMdd = createYyyyMMdd;
+	}
+	public String getQueryDeviceListId() {
+		return queryDeviceListId;
+	}
+	public void setQueryDeviceListId(String queryDeviceListId) {
+		this.queryDeviceListId = queryDeviceListId;
 	}
 }

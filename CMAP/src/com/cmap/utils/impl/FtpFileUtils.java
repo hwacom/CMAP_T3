@@ -220,6 +220,9 @@ public class FtpFileUtils implements FileUtils {
 			ftp.enterLocalPassiveMode();
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 
+			//切換工作目錄
+			ftp.changeWorkingDirectory(ciVO.getRemoteFileDirPath());
+
 			iStream = ftp.retrieveFileStream(ciVO.getFileFullName());
 
 			if (iStream == null || returnCode == FTPReply.FILE_UNAVAILABLE) {

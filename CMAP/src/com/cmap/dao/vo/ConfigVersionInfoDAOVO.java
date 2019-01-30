@@ -14,6 +14,7 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	private String queryDateBegin2;
 	private String queryDateEnd2;
 	private String queryConfigType;
+	private String queryDeviceListId;
 
 	private boolean jobTrigger = false;
 
@@ -112,5 +113,11 @@ public class ConfigVersionInfoDAOVO extends CommonDAOVO {
 	}
 	public void setQueryVersionId(String queryVersionId) {
 		this.queryVersionId = queryVersionId;
+	}
+	public String getQueryDeviceListId() {
+		return queryDeviceListId;
+	}
+	public void setQueryDeviceListId(String queryDeviceListId) {
+		this.queryDeviceListId = queryDeviceListId;
 	}
 }

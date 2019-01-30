@@ -16,12 +16,15 @@ public class Env {
 	 */
 	public static String HOME_PAGE;
 
-	public static String SHOW_MENU_TREE_PRTG;
-	public static String SHOW_MENU_ITEM_CM_SCRIPT;
-	public static String SHOW_MENU_TREE_PLUGIN;
-	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;
-	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;
-	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;
+	/**
+	 * 設定MENU TREE功能是否顯示
+	 */
+	public static String SHOW_MENU_TREE_PRTG;					// PRTG index & net_flow & dashboard
+	public static String SHOW_MENU_ITEM_CM_SCRIPT;				// 組態管理 > 腳本管理
+	public static String SHOW_MENU_TREE_PLUGIN;					// 資安通報
+	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;		// 資安通報 > Wifi查詢
+	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		// 資安通報 > Net flow查詢
+	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		// 資安通報 > 開關PORT
 
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
@@ -32,6 +35,13 @@ public class Env {
 	public static String USER_NAME_JOB;
 	public static String USER_IP_JOB;
 	public static String PROVISION_REASON_OF_JOB;
+
+	/**
+	 * 設定組態檔內容的一個層級對應幾個空白字元 FOR 組態還原使用
+	 */
+	public static Integer CONFIG_CONTENT_ONE_LAYER_EQUAL_TO_WHITE_SPACE_COUNT;
+	public static Integer CONFIG_CONTENT_TOP_LAYER_NUM;
+	public static Integer CONFIG_CONTENT_NO_LIMIT_LAYER_NUM;
 
 	/**
 	 * 組態檔異地備份上傳至FTP時，BY日期創建資料夾的名稱格式
@@ -91,6 +101,7 @@ public class Env {
 	public static String BACKUP_FILENAME_SEQ_NO_LENGTH;
 	public static SimpleDateFormat BACKUP_FILENAME_DATE_FORMAT = new SimpleDateFormat();
 	public static Boolean ENABLE_TEMP_FILE_RANDOM_CODE;
+	public static Boolean ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR;
 	public static Boolean ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR;
 
 	public static Integer HTTP_CONNECTION_TIME_OUT;
@@ -138,11 +149,12 @@ public class Env {
 
 	public static Integer QUARTZ_DEFAULT_PRIORITY;
 
-	public static String SIGN_ENABLE_PWD;
-	public static String SIGN_PWD;
-	public static String SIGN_ACT;
-	public static String SIGN_TFTP_IP;
-	public static String SIGN_TFTP_OUTPUT_FILE_PATH;
+	public static String CLI_VAR_ENABLE_PWD;
+	public static String CLI_VAR_PWD;
+	public static String CLI_VAR_ACT;
+	public static String CLI_VAR_TFTP_IP;
+	public static String CLI_VAR_TFTP_OUTPUT_FILE_PATH;
+	public static String CLI_VAR_CMD_LIST;
 
 	public static String MENU_CODE_OF_CONFIG_TYPE;
 	public static String MENU_CODE_OF_SCHED_TYPE;

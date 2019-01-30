@@ -164,7 +164,7 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 					// 送出命令
-					cmd = replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark());
+					cmd = replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark(), null);
 					write(cmd);
 					output = readUntil(expectedTerminalSymbol);
 
