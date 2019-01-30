@@ -89,6 +89,17 @@ function doRestore() {
 		alert("請先選擇要還原的版本號");
 		
 	} else {
+		confirm("按下確認後版本將立即還原且生效，請確認是否執行?", "doRestoreGo");
+	}
+}
+
+function doRestoreGo() {
+	var selectVal = $('#viewScriptModal_versionSelect').val();
+	
+	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
+		alert("請先選擇要還原的版本號");
+		
+	} else {
 		var deviceListId = selectVal.split("@~")[0];
 		var versionId = selectVal.split("@~")[1];
 		
