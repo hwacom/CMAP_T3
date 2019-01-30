@@ -17,6 +17,7 @@ public class ScriptServiceVO {
 	private String tailCuttingLines;
 	private String remark;
 	private String errorSymbol;
+	private String repeatFlag;
 	private String scriptDescription;
 	private String scriptTypeName;
 	private String systemVersion;
@@ -34,6 +35,12 @@ public class ScriptServiceVO {
 	private String updateTimeStr;
 	private String updateBy;
 
+	public String getScriptInfoId() {
+		return scriptInfoId;
+	}
+	public void setScriptInfoId(String scriptInfoId) {
+		this.scriptInfoId = scriptInfoId;
+	}
 	public String getScriptListId() {
 		return scriptListId;
 	}
@@ -45,6 +52,12 @@ public class ScriptServiceVO {
 	}
 	public void setScriptTypeId(String scriptTypeId) {
 		this.scriptTypeId = scriptTypeId;
+	}
+	public String getScriptDefault() {
+		return scriptDefault;
+	}
+	public void setScriptDefault(String scriptDefault) {
+		this.scriptDefault = scriptDefault;
 	}
 	public String getScriptCode() {
 		return scriptCode;
@@ -106,6 +119,12 @@ public class ScriptServiceVO {
 	public void setErrorSymbol(String errorSymbol) {
 		this.errorSymbol = errorSymbol;
 	}
+	public String getRepeatFlag() {
+		return repeatFlag;
+	}
+	public void setRepeatFlag(String repeatFlag) {
+		this.repeatFlag = repeatFlag;
+	}
 	public String getScriptDescription() {
 		return scriptDescription;
 	}
@@ -129,42 +148,6 @@ public class ScriptServiceVO {
 	}
 	public void setScriptMode(String scriptMode) {
 		this.scriptMode = scriptMode;
-	}
-	public String getCreateTimeStr() {
-		return createTimeStr;
-	}
-	public void setCreateTimeStr(String createTimeStr) {
-		this.createTimeStr = createTimeStr;
-	}
-	public String getCreateBy() {
-		return createBy;
-	}
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
-	public String getUpdateTimeStr() {
-		return updateTimeStr;
-	}
-	public void setUpdateTimeStr(String updateTimeStr) {
-		this.updateTimeStr = updateTimeStr;
-	}
-	public String getUpdateBy() {
-		return updateBy;
-	}
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
-	public String getScriptInfoId() {
-		return scriptInfoId;
-	}
-	public void setScriptInfoId(String scriptInfoId) {
-		this.scriptInfoId = scriptInfoId;
-	}
-	public String getScriptDefault() {
-		return scriptDefault;
-	}
-	public void setScriptDefault(String scriptDefault) {
-		this.scriptDefault = scriptDefault;
 	}
 	public String getActionScript() {
 		return actionScript;
@@ -201,5 +184,29 @@ public class ScriptServiceVO {
 	}
 	public void setCheckKeyword(String checkKeyword) {
 		this.checkKeyword = checkKeyword;
+	}
+	public String getCreateTimeStr() {
+		return createTimeStr;
+	}
+	public void setCreateTimeStr(String createTimeStr) {
+		this.createTimeStr = createTimeStr;
+	}
+	public String getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(String createBy) {
+		this.createBy = createBy;
+	}
+	public String getUpdateTimeStr() {
+		return updateTimeStr;
+	}
+	public void setUpdateTimeStr(String updateTimeStr) {
+		this.updateTimeStr = updateTimeStr;
+	}
+	public String getUpdateBy() {
+		return updateBy;
+	}
+	public void setUpdateBy(String updateBy) {
+		this.updateBy = updateBy;
 	}
 }

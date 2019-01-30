@@ -41,6 +41,9 @@ public class Constants {
 	public static final String WMI = "WMI";
 	public static final String SNMP = "SNMP";
 
+	public static final String CONTENT_SETTING_ACTION_ADD = "+";
+	public static final String CONTENT_SETTING_ACTION_SUBSTRACT = "-";
+
 	public static final String QUARTZ_JOB_BACKUP_CONFIG_FILES = "backupConfigFiles";
 
 	public static final String QUARTZ_SCHED_TYPE_BACKUP_CONFIG = "backupConfig";
@@ -186,8 +189,8 @@ public class Constants {
 	public static final String RESTORE_METHOD_BY_FILE = "RECOVER_METHOD_BY_FILE";	//組態備份還原 BY檔案方式
 	public static final String RESTORE_METHOD_BY_CLI = "RECOVER_METHOD_BY_CLI";	//組態備份還原 BY Command Line(CLI)逐行派送
 
-	public static final String RESTORE_TYPE_VM_SWITCH = "RESTORE_TYPE_VM_SWITCH";
-	public static final String RESTORE_TYPE_BACKUP_RESTORE = "RESTORE_TYPE_BACKUP_RESTORE";
+	public static final String RESTORE_TYPE_VM_SWITCH = "VM_SWITCH";
+	public static final String RESTORE_TYPE_BACKUP_RESTORE = "BACKUP_RESTORE";
 
 	public static final String MAP_URL_OF_INDEX = "INDEX";
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";

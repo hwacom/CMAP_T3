@@ -249,6 +249,9 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 			if (cvi.getCreateTime() != null) {
 				vsVO.setBackupTimeStr(Constants.FORMAT_YYYYMMDD_HH24MI.format(cvi.getCreateTime()));
+
+				SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+				vsVO.setCreateYyyyMMdd(sdf.format(cvi.getCreateTime()));
 			}
 
 			vsVO.setDeviceListId(dl.getDeviceListId());
@@ -767,7 +770,6 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 		int successCount = 0;
 		int errorCount = 0;
-		int noDiffCount = 0;
 
 		try {
 			masterVO.setLogMasterId(UUID.randomUUID().toString());
@@ -785,7 +787,6 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 			successCount += ssVO.isSuccess() && (ssVO.getResult() != Result.NO_DIFFERENT) ? 1 : 0;
 			errorCount += !ssVO.isSuccess() ? 1 : 0;
-			noDiffCount += ssVO.getResult() == Result.NO_DIFFERENT ? 1 : 0;
 
 			log.info(ssVO.toString());
 
@@ -796,25 +797,13 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 		String msg = "";
 		String[] args = null;
-		if (totalCount == 1) {
-			if (successCount == 1) {
-				msg = "備份成功";
 
-			} else if (errorCount == 1) {
-				msg = "備份失敗";
+		if (successCount == 1) {
+			msg = "還原成功";
 
-			} else if (noDiffCount == 1) {
-				msg = "版本無差異";
-			}
+		} else if (errorCount == 1) {
+			msg = "還原失敗";
 
-		} else {
-			msg = "選定備份 {0} 筆設備: 備份成功 {1} 筆；失敗 {2} 筆；版本無差異 {3} 筆";
-			args = new String[] {
-					String.valueOf(totalCount),
-					String.valueOf(successCount),
-					String.valueOf(errorCount),
-					String.valueOf(noDiffCount)
-			};
 		}
 
 		masterVO.setEndTime(new Date());

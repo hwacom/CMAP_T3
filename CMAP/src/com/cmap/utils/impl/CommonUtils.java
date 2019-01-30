@@ -160,20 +160,20 @@ public class CommonUtils {
 		return spendTime;
 	}
 
-	protected String replaceContentSign(String cmd, ConfigInfoVO configInfoVO, String remark) {
-		if (cmd.contains(Env.SIGN_ACT)) {
-			cmd = StringUtils.replace(cmd, Env.SIGN_ACT, configInfoVO.getAccount());
+	protected String replaceContentSign(String cmd, ConfigInfoVO configInfoVO, String remark, String cli) {
+		if (cmd.contains(Env.CLI_VAR_ACT)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_ACT, configInfoVO.getAccount());
 		}
-		if (cmd.contains(Env.SIGN_PWD)) {
-			cmd = StringUtils.replace(cmd, Env.SIGN_PWD, configInfoVO.getPassword());
+		if (cmd.contains(Env.CLI_VAR_PWD)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_PWD, configInfoVO.getPassword());
 		}
-		if (cmd.contains(Env.SIGN_ENABLE_PWD)) {
-			cmd = StringUtils.replace(cmd, Env.SIGN_ENABLE_PWD, configInfoVO.getEnablePassword());
+		if (cmd.contains(Env.CLI_VAR_ENABLE_PWD)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_ENABLE_PWD, configInfoVO.getEnablePassword());
 		}
-		if (cmd.contains(Env.SIGN_TFTP_IP)) {
-			cmd = StringUtils.replace(cmd, Env.SIGN_TFTP_IP, configInfoVO.gettFtpIP());
+		if (cmd.contains(Env.CLI_VAR_TFTP_IP)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_TFTP_IP, configInfoVO.gettFtpIP());
 		}
-		if (cmd.contains(Env.SIGN_TFTP_OUTPUT_FILE_PATH)) {
+		if (cmd.contains(Env.CLI_VAR_TFTP_OUTPUT_FILE_PATH)) {
 			String tFtpFilePath = configInfoVO.gettFtpFilePath();
 
 			if (!Env.TFTP_SERVER_AT_LOCAL) {
@@ -190,7 +190,10 @@ public class CommonUtils {
 				tFtpFilePath = StringUtils.replace(tFtpFilePath, Env.COMM_SEPARATE_SYMBOL, remark);
 			}
 
-			cmd = StringUtils.replace(cmd, Env.SIGN_TFTP_OUTPUT_FILE_PATH, tFtpFilePath);
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_TFTP_OUTPUT_FILE_PATH, tFtpFilePath);
+		}
+		if (cmd.contains(Env.CLI_VAR_CMD_LIST)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_CMD_LIST, cli);
 		}
 
 		return cmd;

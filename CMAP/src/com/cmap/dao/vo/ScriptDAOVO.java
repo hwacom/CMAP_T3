@@ -15,6 +15,7 @@ public class ScriptDAOVO extends CommonDAOVO {
 	private String tailCuttingLines;
 	private String remark;
 	private String errorSymbol;
+	private String repeatFlag;
 	private String scriptDescription;
 	private String scriptTypeName;
 	private String systemVersion;
@@ -85,12 +86,6 @@ public class ScriptDAOVO extends CommonDAOVO {
 	public void setTailCuttingLines(String tailCuttingLines) {
 		this.tailCuttingLines = tailCuttingLines;
 	}
-	public String getScriptDescription() {
-		return scriptDescription;
-	}
-	public void setScriptDescription(String scriptDescription) {
-		this.scriptDescription = scriptDescription;
-	}
 	public String getRemark() {
 		return remark;
 	}
@@ -102,6 +97,36 @@ public class ScriptDAOVO extends CommonDAOVO {
 	}
 	public void setErrorSymbol(String errorSymbol) {
 		this.errorSymbol = errorSymbol;
+	}
+	public String getRepeatFlag() {
+		return repeatFlag;
+	}
+	public void setRepeatFlag(String repeatFlag) {
+		this.repeatFlag = repeatFlag;
+	}
+	public String getScriptDescription() {
+		return scriptDescription;
+	}
+	public void setScriptDescription(String scriptDescription) {
+		this.scriptDescription = scriptDescription;
+	}
+	public String getScriptTypeName() {
+		return scriptTypeName;
+	}
+	public void setScriptTypeName(String scriptTypeName) {
+		this.scriptTypeName = scriptTypeName;
+	}
+	public String getSystemVersion() {
+		return systemVersion;
+	}
+	public void setSystemVersion(String systemVersion) {
+		this.systemVersion = systemVersion;
+	}
+	public String getScriptMode() {
+		return scriptMode;
+	}
+	public void setScriptMode(String scriptMode) {
+		this.scriptMode = scriptMode;
 	}
 	public String getCreateTimeStr() {
 		return createTimeStr;
@@ -126,23 +151,5 @@ public class ScriptDAOVO extends CommonDAOVO {
 	}
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
-	}
-	public String getScriptTypeName() {
-		return scriptTypeName;
-	}
-	public void setScriptTypeName(String scriptTypeName) {
-		this.scriptTypeName = scriptTypeName;
-	}
-	public String getSystemVersion() {
-		return systemVersion;
-	}
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
-	}
-	public String getScriptMode() {
-		return scriptMode;
-	}
-	public void setScriptMode(String scriptMode) {
-		this.scriptMode = scriptMode;
 	}
 }

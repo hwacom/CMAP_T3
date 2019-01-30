@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmap.AppResponse;
+import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.VersionService;
@@ -414,6 +416,15 @@ public class VersionController extends BaseController {
 		return "version/version_backup";
 	}
 
+	/**
+	 * [版本備份] >> 執行備份動作
+	 * @param model
+	 * @param principal
+	 * @param request
+	 * @param response
+	 * @param jsonData
+	 * @return
+	 */
 	@RequestMapping(value = "/backup/execute", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse doBackup(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
 			@RequestBody JsonNode jsonData) {
@@ -441,7 +452,7 @@ public class VersionController extends BaseController {
 	}
 
 	/**
-	 * [版本還原] >> 執行還原動作
+	 * [版本還原] >> 主頁面
 	 * @param model
 	 * @param principal
 	 * @param request
@@ -462,5 +473,70 @@ public class VersionController extends BaseController {
 		}
 
 		return "version/version_restore";
+	}
+
+	@RequestMapping(value = "getVersionRecords.json", method = RequestMethod.POST, produces="application/json;odata=verbose")
+	public @ResponseBody AppResponse getVersionRecords(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="deviceListId", required=true) String deviceListId) {
+
+		List<VersionServiceVO> retList;
+		try {
+			VersionServiceVO vsVO = new VersionServiceVO();
+			vsVO.setQueryDeviceListId(deviceListId);
+
+			retList = versionService.findVersionInfo(vsVO, null, null);
+
+			AppResponse resp = new AppResponse(HttpServletResponse.SC_OK, "取得歷史版本紀錄成功");
+			resp.putData("versionList", retList);
+			return resp;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+
+			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "備份失敗，請重新操作");
+
+		} finally {
+			initMenu(model, request);
+		}
+	}
+
+	/**
+	 * [版本還原] >> 執行還原動作
+	 * @param model
+	 * @param principal
+	 * @param request
+	 * @param response
+	 * @param jsonData
+	 * @return
+	 */
+	@RequestMapping(value = "/restore/execute", method = RequestMethod.POST)
+	public @ResponseBody AppResponse doRestore(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(name="deviceListId", required=true) String deviceListId,
+			@RequestParam(name="versionId", required=true) String versionId) {
+
+		VersionServiceVO retVO;
+		try {
+			VersionServiceVO vsVO = new VersionServiceVO();
+			//vsVO.setDeviceListId("2c9e98c46850c32d016850c60c310003");		// NK-ePDG-HeNBGW-01
+			//vsVO.setRestoreVersionId("40283a816893791101689380d893001c");	// 2019-01-29 16:08
+
+			vsVO.setDeviceListId(deviceListId);
+			vsVO.setRestoreVersionId(versionId);
+
+			String userName = SecurityUtil.getSecurityUser().getUsername();
+			String reason = "組態設定還原(設備ID:" + deviceListId + ",版本ID:" + versionId + ")";
+			retVO = versionService.restoreConfig(
+					RestoreMethod.CLI, Constants.RESTORE_TYPE_BACKUP_RESTORE, vsVO, userName, reason);
+
+			return new AppResponse(HttpServletResponse.SC_OK, retVO.getRetMsg());
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+
+			return new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "還原失敗，請重新操作");
+
+		} finally {
+			initMenu(model, request);
+		}
 	}
 }

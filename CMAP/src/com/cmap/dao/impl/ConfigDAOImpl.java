@@ -293,28 +293,28 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 		if (!cviDAOVO.isJobTrigger()) {
 			if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1())) {
 				sb.append(" and cvi_1.group_Id = :groupId_1 ");
-			} else {
+			} else if (cviDAOVO.getQueryGroup1List() != null && !cviDAOVO.getQueryGroup1List().isEmpty()) {
 				sb.append(" and cvi_1.group_Id in (:groupId_1) ");
 			}
 
 			if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1())) {
 				sb.append(" and cvi_1.device_Id = :deviceId_1 ");
-			} else {
+			} else if (cviDAOVO.getQueryDevice1List() != null && !cviDAOVO.getQueryDevice1List().isEmpty()) {
 				sb.append(" and cvi_1.device_Id in (:deviceId_1) ");
 			}
 		}
-
+		if (StringUtils.isNotBlank(cviDAOVO.getQueryVersionId())) {
+			sb.append(" and cvi_1.version_id = :versionId ");
+		}
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
 			sb.append(" and cvi_1.config_Type = :configType ");
 		}
-
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryDateBegin1())) {
 			sb.append(" and cvi_1.create_Time >= DATE_FORMAT(:beginDate_1, '%Y-%m-%d') ");
 		}
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryDateEnd1())) {
 			sb.append(" and cvi_1.create_Time < DATE_ADD(:endDate_1, INTERVAL 1 DAY) ");
 		}
-
 		if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup2())) {
 			sb.append(" union ( ")
 			  .append("   select cvi_2.* ")
@@ -325,7 +325,7 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 
 			if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice2())) {
 				sb.append(" and cvi_2.device_Id = :deviceId_2 ");
-			} else {
+			} else if (cviDAOVO.getQueryDevice2List() != null && !cviDAOVO.getQueryDevice2List().isEmpty()) {
 				sb.append(" and cvi_2.device_Id in (:deviceId_2) ");
 			}
 
@@ -348,6 +348,9 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 		  .append("  and cvi.device_id = dl.device_id ")
 		  .append("  and dl.delete_flag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ");
 
+		if (StringUtils.isNotBlank(cviDAOVO.getQueryDeviceListId())) {
+			sb.append(" and dl.device_list_id = :deviceListId ");
+		}
 		if (StringUtils.isNotBlank(cviDAOVO.getSearchValue())) {
 			sb.append(" and ( ")
 			  .append("       cvi.group_name like :searchValue ")
@@ -361,7 +364,6 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 			  .append("       cvi.config_type like :searchValue ")
 			  .append("     ) ");
 		}
-
 		if (StringUtils.isNotBlank(cviDAOVO.getOrderColumn())) {
 			sb.append(" order by cvi.").append(cviDAOVO.getOrderColumn()).append(" ").append(cviDAOVO.getOrderDirection());
 
@@ -376,25 +378,33 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 	     * 每日排程異地備份所有組態檔，不帶以下條件
 	     */
 	    if (!cviDAOVO.isJobTrigger()) {
-	    	q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
-		    q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+	    	if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) || (cviDAOVO.getQueryGroup1List() != null && !cviDAOVO.getQueryGroup1List().isEmpty())) {
+	    		q.setParameter("groupId_1", StringUtils.isNotBlank(cviDAOVO.getQueryGroup1()) ? cviDAOVO.getQueryGroup1() : cviDAOVO.getQueryGroup1List());
+	    	}
+	    	if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) || (cviDAOVO.getQueryDevice1List() != null && !cviDAOVO.getQueryDevice1List().isEmpty())) {
+	    		q.setParameter("deviceId_1", StringUtils.isNotBlank(cviDAOVO.getQueryDevice1()) ? cviDAOVO.getQueryDevice1() : cviDAOVO.getQueryDevice1List());
+	    	}
 	    }
-
+	    if (StringUtils.isNotBlank(cviDAOVO.getQueryVersionId())) {
+			q.setParameter("versionId", cviDAOVO.getQueryVersionId());
+		}
+	    if (StringUtils.isNotBlank(cviDAOVO.getQueryDeviceListId())) {
+	    	q.setParameter("deviceListId", cviDAOVO.getQueryDeviceListId());
+		}
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryConfigType())) {
 	    	q.setParameter("configType", cviDAOVO.getQueryConfigType());
 		}
-
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryDateBegin1())) {
 	    	q.setParameter("beginDate_1", cviDAOVO.getQueryDateBegin1());
 	    }
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryDateEnd1())) {
 	    	q.setParameter("endDate_1", cviDAOVO.getQueryDateEnd1());
 	    }
-
 	    if (StringUtils.isNotBlank(cviDAOVO.getQueryGroup2())) {
 	    	q.setParameter("groupId_2", cviDAOVO.getQueryGroup2());
-	    	q.setParameter("deviceId_2", StringUtils.isNotBlank(cviDAOVO.getQueryDevice2()) ? cviDAOVO.getQueryDevice2() : cviDAOVO.getQueryDevice2List());
-
+	    	if (StringUtils.isNotBlank(cviDAOVO.getQueryDevice2()) || (cviDAOVO.getQueryDevice2List() != null && !cviDAOVO.getQueryDevice2List().isEmpty())) {
+	    		q.setParameter("deviceId_2", StringUtils.isNotBlank(cviDAOVO.getQueryDevice2()) ? cviDAOVO.getQueryDevice2() : cviDAOVO.getQueryDevice2List());
+	    	}
 		    if (StringUtils.isNotBlank(cviDAOVO.getQueryDateBegin2())) {
 		    	q.setParameter("beginDate_2", cviDAOVO.getQueryDateBegin2());
 		    }
@@ -402,11 +412,9 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 		    	q.setParameter("endDate_2", cviDAOVO.getQueryDateEnd2());
 		    }
 	    }
-
 	    if (StringUtils.isNotBlank(cviDAOVO.getSearchValue())) {
 	    	q.setParameter("searchValue", "%".concat(cviDAOVO.getSearchValue()).concat("%"));
 	    }
-
 	    if (startRow != null && pageLength != null) {
 	    	q.setFirstResult(startRow);
 		    q.setMaxResults(pageLength);

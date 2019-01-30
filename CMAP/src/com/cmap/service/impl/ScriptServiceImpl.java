@@ -50,6 +50,9 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 	public List<ScriptServiceVO> loadDefaultScript(String deviceListId, List<ScriptServiceVO> script, ScriptType type) throws ServiceLayerException {
 		if (script != null && !script.isEmpty()) {
 			return script;
+
+		} else if (script == null) {
+			script = new ArrayList<>();
 		}
 
 		DeviceList device = null;

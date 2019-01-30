@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -51,6 +53,7 @@ import com.cmap.service.StepService;
 import com.cmap.service.VersionService;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.ConfigVO;
+import com.cmap.service.vo.MatchVO;
 import com.cmap.service.vo.ProvisionServiceVO;
 import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
@@ -883,7 +886,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			// Step3. 移動作業目錄至指定的裝置
 			String fileDir = configInfoVO.getConfigFileDirPath();
 
-			if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+			if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
 				SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
 				fileDir = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
 			}
@@ -1247,7 +1250,21 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		for (VersionServiceVO vsVO : vsVOs) {
 			tmpVO = (ConfigInfoVO)ciVO.clone();
 			tmpVO.setConfigFileDirPath(vsVO.getConfigFileDirPath());
-			tmpVO.setRemoteFileDirPath(vsVO.getRemoteFileDirPath());
+
+			String remoteFileDirPath = vsVO.getRemoteFileDirPath();
+
+			if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
+				String yyyyMMdd = vsVO.getCreateYyyyMMdd();
+
+				if (StringUtils.isBlank(yyyyMMdd)) {
+					SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+					yyyyMMdd = sdf.format(new Date());
+				}
+
+				remoteFileDirPath = yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+			}
+
+			tmpVO.setRemoteFileDirPath(remoteFileDirPath);
 			tmpVO.setFileFullName(vsVO.getFileFullName());
 
 			if (returnFileString) {
@@ -1255,7 +1272,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				tmpVO.setConfigContent(fileContent);
 
 			} else {
-				final List<String> fileContentList = fileUtils.downloadFiles(ciVO);
+				final List<String> fileContentList = fileUtils.downloadFiles(tmpVO);
 				tmpVO.setConfigContentList(fileContentList);
 			}
 
@@ -1525,10 +1542,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		return processVO;
 	}
 
+	/**
+	 * 組態還原流程
+	 */
 	@Override
 	public StepServiceVO doRestoreStep(RestoreMethod restoreMethod, String restoreType, StepServiceVO stepServiceVO, String triggerBy, String reason) {
 		StepServiceVO retVO = new StepServiceVO();
 
+		/*
+		 * for 供裝紀錄使用
+		 */
 		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
 		ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
 		ProvisionServiceVO psStepVO = new ProvisionServiceVO();
@@ -1589,6 +1612,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						break;
 				}
 
+				/*
+				 * 還原方式:
+				 * (1) CLI >> by 命令逐行派送
+				 * (2) FTP >> 在設備上下命令透過FTP上抓組態檔還原到設備
+				 * (3) TFTP >> 在設備上下命令透過TFTP上抓組態檔還原到設備
+				 */
 				switch (restoreMethod) {
 					case CLI:
 						steps = Env.RESTORE_BY_CLI;
@@ -1614,44 +1643,103 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				for (Step _step : steps) {
 
 					switch (_step) {
+						// 取得要還原的版本號相關資訊
 						case GET_VERSION_INFO:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								vsVOs = getVersionInfo(
+											new String[]{restoreVersionId}
+										);
 								break;
+
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("取得要還原的組態版本資訊時失敗 [ 錯誤代碼: GET_VERSION_INFO ]");
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("取得要還原的組態版本資訊時失敗 [ 錯誤代碼: GET_VERSION_INFO ]");
 							}
 
-							vsVOs = getVersionInfo(
-										new String[]{restoreVersionId}
-									);
-							break;
-
+						// 連線至組態檔放置的 FTP / TFTP
 						case CONNECT_FILE_SERVER_4_DOWNLOAD:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("連線至 File Server 時失敗 [ 錯誤代碼: CONNECT_FILE_SERVER_4_DOWNLOAD ]");
 							}
 
-							fileUtils = connect2FileServer(fileUtils, fileServerMode, ciVO);
-							break;
-
+						// 登入 FTP
 						case LOGIN_FILE_SERVER_4_DOWNLOAD:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								login2FileServer(fileUtils, ciVO);
 								break;
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("登入 File Server 時失敗 [ 錯誤代碼: LOGIN_FILE_SERVER_4_DOWNLOAD ]");
 							}
 
-							login2FileServer(fileUtils, ciVO);
-							break;
-
+						// 從 FTP / TFTP 上下載要還原的版本檔案內容
 						case DOWNLOAD_FILE:
-							if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+							try {
+								if (!__NEED_DOWNLOAD_RESTORE_FILE__) {
+									break;
+								}
+
+								configInfoList = downloadFile(fileUtils, vsVOs, ciVO, false);
+								ciVO.setConfigContentList(
+										configInfoList.get(0).getConfigContentList());
 								break;
+
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("從 File Server 下載檔案時失敗 [ 錯誤代碼: DOWNLOAD_FILE ]");
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("從 File Server 下載檔案時失敗 [ 錯誤代碼: DOWNLOAD_FILE ]");
 							}
 
-							configInfoList = downloadFile(fileUtils, vsVOs, ciVO, false);
-							break;
+						// 關閉與 FTP / TFTP 連線
+						case CLOSE_FILE_SERVER_CONNECTION:
+							try {
+								closeFileServerConnection(fileUtils);
+								break;
 
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("關閉與 File Server 間連線時失敗 [ 錯誤代碼: CLOSE_FILE_SERVER_CONNECTION ]");
+							}
+
+						// 依組態內容設定(Config_Content_Setting)處理要還原的版本內容
 						case PROCESS_CONFIG_CONTENT_SETTING:
-							restoreContentList = processConfigContentSetting(restoreType, ciVO);
-							break;
+							try {
+								restoreContentList = processConfigContentSetting(restoreType, ciVO);
+								ciVO.setConfigContentList(restoreContentList);
+								break;
 
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("處理要還原的組態檔內容時失敗 [ 錯誤代碼: PROCESS_CONFIG_CONTENT_SETTING ]");
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+								throw new ServiceLayerException("處理要還原的組態檔內容時失敗 [ 錯誤代碼: PROCESS_CONFIG_CONTENT_SETTING ]");
+							}
+
+						// 取得組態還原預設腳本
 						case LOAD_DEFAULT_SCRIPT:
 							try {
 								scripts = loadDefaultScript(deviceListId, scripts, ScriptType.RESTORE);
@@ -1669,11 +1757,15 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 								break;
 
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("讀取腳本資料時失敗 [ 錯誤代碼: LOAD_DEFAULT_SCRIPT ]");
+
 							} catch (Exception e) {
 								log.error(e.toString(), e);
 								throw new ServiceLayerException("讀取腳本資料時失敗 [ 錯誤代碼: LOAD_DEFAULT_SCRIPT ]");
 							}
 
+						// 取得要還原的目標設備相關連線資訊
 						case FIND_DEVICE_CONNECT_INFO:
 							try {
 								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null);
@@ -1694,11 +1786,15 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 								break;
 
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
+
 							} catch (Exception e) {
 								log.error(e.toString(), e);
 								throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
 							}
 
+						// 取得要還原的目標設備登入資訊
 						case FIND_DEVICE_LOGIN_INFO:
 							try {
 								findDeviceLoginInfo(deviceListId);
@@ -1709,6 +1805,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("取得設備登入帳密設定時失敗 [ 錯誤代碼: FIND_DEVICE_LOGIN_INFO ]");
 							}
 
+						// 連線至要還原的目標設備
 						case CONNECT_DEVICE:
 							try {
 								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
@@ -1719,6 +1816,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("設備連線失敗 [ 錯誤代碼: CONNECT_DEVICE ]");
 							}
 
+						// 登入要還原的目標設備
 						case LOGIN_DEVICE:
 							try {
 								login2Device(connectUtils, ciVO);
@@ -1729,16 +1827,21 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("登入設備失敗 [ 錯誤代碼: LOGIN_DEVICE ]");
 							}
 
+						// 依腳本內容進行命令派送
 						case SEND_COMMANDS:
 							try {
 								outputList = sendCmds(connectUtils, scripts, ciVO, retVO);
 								break;
+
+							} catch (ServiceLayerException sle) {
+								throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
 
 							} catch (Exception e) {
 								log.error(e.toString(), e);
 								throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
 							}
 
+						// 關閉與設備的連線
 						case CLOSE_DEVICE_CONNECTION:
 							try {
 								closeDeviceConnection(connectUtils);
@@ -1754,8 +1857,14 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					}
 				}
 
+
+				retVO.setSuccess(true);
+				retVO.setResult(Result.SUCCESS);
+				break;
+
 			} catch (Exception e) {
 				log.error(e.toString(), e);
+				round++;
 			}
 		}
 
@@ -1785,6 +1894,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		return retVO;
 	}
 
+	/**
+	 * 取得組態檔版本相關資訊
+	 * @param versionIds
+	 * @return
+	 * @throws ServiceLayerException
+	 */
 	private List<VersionServiceVO> getVersionInfo(String[] versionIds) throws ServiceLayerException {
 		List<VersionServiceVO> retList = new ArrayList<>();
 
@@ -1817,29 +1932,242 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @param configInfoVO
 	 * @return
 	 */
-	private List<String> processConfigContentSetting(String settingType, ConfigInfoVO configInfoVO) {
+	private List<String> processConfigContentSetting(String settingType, ConfigInfoVO configInfoVO) throws ServiceLayerException {
 		final String systemVersion = configInfoVO.getSystemVersion();
 		final String deviceName = configInfoVO.getDeviceEngName();
 		final String deviceListId = configInfoVO.getDeviceListId();
 
 		final List<String> configContentList = configInfoVO.getConfigContentList();
 
+		boolean hasPositiveSetting = false;
 		List<ConfigVO> settings = null;
 		try {
-			settings = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+			// Step 1. 取得設定
+			ConfigVO configVO = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+			settings = configVO.getConfigVOList();
+
+			// 確認有無正向設定
+			if (settings != null && !settings.isEmpty()) {
+				for (ConfigVO cVO : settings) {
+					if (StringUtils.equals(cVO.getAction(), Constants.CONTENT_SETTING_ACTION_ADD)) {
+						configVO.setHasPositiveSetting(true);
+						break;
+					}
+				}
+			}
+			hasPositiveSetting = configVO.isHasPositiveSetting();
+
+			// Step 2. 依設定逐行處理組態檔內容，取得最終實際要還原的
 
 			if (settings != null && !settings.isEmpty()) {
-
-				return null;
+				return runConfigAndSettingCheck(configContentList, settings, hasPositiveSetting);
 
 			} else {
 				return configContentList;
 			}
 
-		} catch (ServiceLayerException e) {
+		} catch (ServiceLayerException sle) {
+			throw sle;
+
+		} catch (Exception e) {
 			log.error(e.toString(), e);
+			throw new ServiceLayerException("processConfigContentSetting EXCEPTION!!!");
+		}
+	}
+
+	private List<String> runConfigAndSettingCheck(List<String> configContentList, List<ConfigVO> settings, boolean hasPositiveSetting) throws ServiceLayerException {
+		List<String> retList = new ArrayList<>();
+
+		try {
+			Pattern pattern = null;
+			Matcher matcher = null;
+
+			Map<Integer, MatchVO> layerMatchMap = new HashMap<>();
+
+			boolean doLayerCheck = false;
+			for (String content : configContentList) {
+			//------------------- Config內容逐行比對迴圈 START -------------------//
+
+				content = new String(content.getBytes("UTF-8"));
+				int currentLayer = chkCurrentContentLineLayer(content);	// 當前行的層級
+
+				/*
+				 * Step 1. 判斷此行層級，確認是否為同一區塊內容&是否納入 OR 是新的區塊開始
+				 */
+				if (layerMatchMap.containsKey(currentLayer)) {
+					/*
+					 * 如果MAP內已存在相同層級紀錄:
+					 * (1) 若當前行內容為 exit，表示是區塊結束 >> 判斷該區塊是否要納入(skip)，不納入則直接跳至下一行
+					 * (2) 若當前行內容不是 exit，表示是新的內容 >> 需做後續比對
+					 */
+					String trimContent = content.trim();
+					if (trimContent.equalsIgnoreCase("#exit") || trimContent.equalsIgnoreCase("exit")) {
+						MatchVO currentLayerMatchVO = layerMatchMap.get(currentLayer);
+
+						if (currentLayerMatchVO.isSkip()) {
+							continue;
+
+						} else {
+							retList.add("exit"); // 區塊結束需下exit指令
+							layerMatchMap.remove(currentLayer);	// 區塊已結束，將MAP紀錄清除
+							continue;
+						}
+
+					} else {
+						layerMatchMap.remove(currentLayer);	// 區塊已結束，將MAP紀錄清除
+						doLayerCheck = true;
+					}
+
+				} else {
+					/*
+					 * MAP不存在相同層級紀錄，表示是第一次跑到此層級的行數 >> 需做後續比對
+					 */
+					doLayerCheck = true;
+				}
+
+				boolean needDoMatch = true;
+
+				/*
+				 * Step 2. 確認此行內容是否需要做設定比對
+				 */
+				if (doLayerCheck) {
+					/*
+					 * 如果當前層級不是第一層，則往前看上一層的比對結果: (preLayerMatchVO)
+					 * (1) 若前一層已標記要跳過 (skip)，則同區塊內的內層都一律跳過，並且標記當前階層也需跳過 for後續內層判斷
+					 */
+					MatchVO preLayerMatchVO = null;
+					if (currentLayer > Env.CONFIG_CONTENT_TOP_LAYER_NUM) {
+						preLayerMatchVO = layerMatchMap.get(currentLayer - 1);
+
+						if (preLayerMatchVO.isSkip()) {
+							needDoMatch = false;
+
+							MatchVO mVO = new MatchVO();
+							mVO.setSkip(true);	// 標記當前層需跳過
+							layerMatchMap.put(currentLayer, mVO);
+
+							continue;
+						}
+					}
+
+					System.out.println(content);
+					/*
+					 * Step 3. 針對此行內容進行設定比對，確認是否納入或跳過
+					 */
+					if (needDoMatch) {
+						boolean match = false;	//是否有符合的設定
+
+						String sAction = "";
+						String remark = "";
+						for (ConfigVO setting : settings) {
+						//------------------- 內容篩選設定迴圈 START -------------------//
+
+							int sLayer = setting.getContentLayer();
+							String sStartRegex = setting.getContentStartRegex();
+							sAction = setting.getAction();
+							remark = setting.getRemark();
+
+							/*
+							 * Step 1. 先比對此行的階層(layer)是否符合設定
+							 * Step 2. 階層符合後再比對內容表示式是否吻合(regex) >> 符合設定後則跳至下一行，符合的設定只跑一次 (前面查詢設定時已從範圍小到大排序)
+							 */
+							Integer noLimit = Env.CONFIG_CONTENT_NO_LIMIT_LAYER_NUM;
+							if (sLayer == noLimit || (sLayer != noLimit && sLayer == currentLayer)) {
+								pattern = Pattern.compile(sStartRegex);
+						        matcher = pattern.matcher(content);
+
+								matcher.reset();
+								match = matcher.find();
+
+						        if (match) {
+						        	break;
+
+						        } else {
+						        	continue;
+						        }
+
+							} else {
+								// 階層不符則跳至下一筆設定比對
+								continue;
+							}
+
+						//------------------- 內容篩選設定迴圈 END -------------------//
+						}
+
+						MatchVO mVO = new MatchVO();
+						if (match) {
+							if (sAction.equals(Constants.CONTENT_SETTING_ACTION_ADD)) {
+								/*
+								 * 判斷有無設定特殊處理(remark):
+								 * (1)若有設定「no」，表示在執行這一行命令前須先下「no ....」將先前的設定刪除 (目前 for "content"使用)
+								 */
+								if (StringUtils.isNotBlank(remark)) {
+									switch (remark) {
+										case "no":
+											retList.add("no " + content);
+											break;
+									}
+								}
+
+								retList.add(content);
+
+							} else if (sAction.equals(Constants.CONTENT_SETTING_ACTION_SUBSTRACT)) {
+								mVO.setSkip(true);	// 如果此行比對成功的設定是「-」(去除)，則將此階層標記為跳過(skip)
+							}
+
+						} else {
+							if (preLayerMatchVO != null && !preLayerMatchVO.isSkip()) {
+								// 如果有上一階層且上一層沒有標記要跳過，則底層的內容除非有比對到設定且是設定要跳過之外，其他則應納入
+								retList.add(content);
+
+							} else {
+								if (!hasPositiveSetting) {
+									// 如果設定皆比對不成功 且 沒有正向設定，則納入此行
+									retList.add(content);
+
+								} else {
+									// 如果設定皆比對不成功 但 有正向設定，則將此階層標記為跳過(skip)
+									mVO.setSkip(true);
+								}
+							}
+						}
+
+						mVO.setMatch(match);
+						mVO.setAction(sAction);
+
+						layerMatchMap.put(currentLayer, mVO);
+					}
+				}
+
+			//------------------- Config內容逐行比對迴圈 END -------------------//
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("runConfigAndSettingCheck EXCEPTION!!!");
 		}
 
-		return null;
+		return retList;
+	}
+
+	private int chkCurrentContentLineLayer(String content) {
+		int whiteSpaceCount = 0;
+		for (int i=0; i<content.length(); i++) {
+			char ch = content.charAt(i);
+
+			if (Character.isWhitespace(ch)) {
+				whiteSpaceCount++;
+
+			} else {
+				break;
+			}
+		}
+
+		int oneLayerWhiteSpaceCount =
+				Env.CONFIG_CONTENT_ONE_LAYER_EQUAL_TO_WHITE_SPACE_COUNT != null
+						? Env.CONFIG_CONTENT_ONE_LAYER_EQUAL_TO_WHITE_SPACE_COUNT
+						: 1;
+		int layer = whiteSpaceCount / oneLayerWhiteSpaceCount;
+		return layer;
 	}
 }

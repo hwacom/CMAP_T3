@@ -17,10 +17,134 @@ $(document).ready(function() {
     $('#btnSearch_mobile').click(function (e) {
     	findData('MOBILE');
     });
+    
+    $('#btnRestore').click(function (e) {
+    	showRestorePanel();
+    });
+    
+    $('#btnRestoreCancel').click(function (e) {
+    	$('#viewVersionModal').modal('hide');
+    });
+    
+    $('#btnRestoreConfirm').click(function (e) {
+    	doRestore();
+    });
 });
 
 function resetTrBgColor() {
 	$('tbody > tr').removeClass('mySelected');
+}
+
+function showRestorePanel() {
+	var deviceListId = $('[type=radio]:checked').val();
+	
+	if (deviceListId == null || (deviceListId != null && deviceListId.trim().length == 0)) {
+		alert("請先選擇要還原的設備");
+		
+	} else {
+		// 查找要還原的設備備份歷史紀錄
+		$.ajax({
+			url : _ctx + '/version/getVersionRecords.json',
+			data : {
+				"deviceListId" : deviceListId
+			},
+			type : "POST",
+			dataType : 'json',
+			async: true,
+			beforeSend : function() {
+			},
+			complete : function() {
+			},
+			success : function(resp) {
+				if (resp.code == '200') {
+					$("#viewScriptModal_versionSelect option").remove();
+					
+					var obj = resp.data.versionList;
+					var idx = 1;
+					$.each(obj, function(key, vo) {
+						$("#viewScriptModal_versionSelect")
+							.append($("<option></option>")
+											.attr("value", vo.deviceListId+"@~"+vo.versionId)
+											.text("(" + idx + ") " + vo.configVersion));
+						idx++;
+					});
+					
+					$('#viewVersionModal').modal('show');
+					
+				} else {
+					alert(resp.message);
+				}
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				ajaxErrorHandler();
+			}
+		});
+	}
+}
+
+function doRestore() {
+	var selectVal = $('#viewScriptModal_versionSelect').val();
+	
+	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
+		alert("請先選擇要還原的版本號");
+		
+	} else {
+		confirm("按下確認後版本將立即還原且生效，請確認是否執行?", "doRestoreGo");
+	}
+}
+
+function doRestoreGo() {
+	var selectVal = $('#viewScriptModal_versionSelect').val();
+	
+	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
+		alert("請先選擇要還原的版本號");
+		
+	} else {
+		var deviceListId = selectVal.split("@~")[0];
+		var versionId = selectVal.split("@~")[1];
+		
+		// 查找要還原的設備備份歷史紀錄
+		$.ajax({
+			url : _ctx + '/version/restore/execute',
+			data : {
+				"deviceListId" : deviceListId,
+				"versionId" : versionId
+			},
+			type : "POST",
+			dataType : 'json',
+			async: true,
+			beforeSend : function() {
+				showProcessing();
+			},
+			complete : function() {
+				hideProcessing();
+			},
+			success : function(resp) {
+				if (resp.code == '200') {
+					alert(resp.message);
+					$('#viewVersionModal').modal('hide');
+					
+				} else {
+					alert(resp.message);
+				}
+			},
+			error : function(xhr, ajaxOptions, thrownError) {
+				ajaxErrorHandler();
+			}
+		});
+	}
+}
+
+function pressViewConfig() {
+	var selectVal = $('#viewScriptModal_versionSelect').val();
+	
+	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
+		alert("請先選擇要預覽的版本號");
+		
+	} else {
+		var versionId = selectVal.split("@~")[1];
+		viewConfig(versionId);
+	}
 }
 
 //查詢按鈕動作
@@ -78,7 +202,7 @@ function findData(from) {
 					ajaxErrorHandler();
 				}
 			},
-			"order": [[2 , 'asc' ]],
+			"order": [[3 , 'asc' ]],
 			/*
 			"initComplete": function(settings, json){
             },
@@ -111,7 +235,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.versionId+'>';
+								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.deviceListId+'>';
 								 return html;
 							 }
 				},

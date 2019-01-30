@@ -99,6 +99,73 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		return true;
 	}
 
+	private void sendCommand(Expect expect, ConfigInfoVO configInfoVO, ScriptServiceVO scriptVO, StringBuilder processLog, List<String> cmdOutputs) throws Exception {
+		String output = "";
+		String[] errorSymbols = StringUtils.isNotBlank(scriptVO.getErrorSymbol()) ? scriptVO.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
+
+		/*
+		 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
+		 * e.g. 「#」 > 「NK-HeNBGW-04#」
+		 */
+		String expectedTerminalSymbol = scriptVO.getExpectedTerminalSymbol();
+		if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
+			expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
+		}
+
+		int runTime = 1;	// 迴圈執行次數
+
+		List<String> cmdsList = configInfoVO.getConfigContentList();
+
+		if (StringUtils.equals(scriptVO.getRepeatFlag(), Constants.DATA_Y)) {
+			runTime = cmdsList.size();
+		}
+
+		for (int i=0; i<runTime; i++) {
+			String cli = (cmdsList != null && !cmdsList.isEmpty()) ? cmdsList.get(i) : null;
+
+			/*
+			 * 替換腳本參數(replaceContentSign)後送出命令，並等候至預期的結束符號(expectedTerminalSymbol)，將output結果取出
+			 */
+			output = expect.sendLine(replaceContentSign(scriptVO.getScriptContent(), configInfoVO, scriptVO.getRemark(), cli))
+						   .expect(contains(expectedTerminalSymbol))
+						   .getBefore();
+
+			processLog.append(output + expectedTerminalSymbol);
+
+			boolean success = true;
+
+			if (errorSymbols != null) {
+				/*
+				 * 判斷當前命令執行結果是否有錯
+				 */
+				for (String errSymbol : errorSymbols) {
+					success = output.toUpperCase().contains(errSymbol) ? false : true;
+
+					if (!success) {
+						throw new CommandExecuteException("[Command execute failed!] >> output: " + output);
+					}
+				}
+			}
+
+			if (success) {
+				if (scriptVO.getOutput() != null && scriptVO.getOutput().equals(Constants.DATA_Y)) {
+					cmdOutputs.add(
+							scriptVO.getRemark()
+									.concat(Env.COMM_SEPARATE_SYMBOL)
+									.concat(
+										cutContent(
+											output,
+											StringUtils.isNotBlank(scriptVO.getHeadCuttingLines()) ? Integer.valueOf(scriptVO.getHeadCuttingLines()) : 0,
+												StringUtils.isNotBlank(scriptVO.getTailCuttingLines()) ? Integer.valueOf(scriptVO.getTailCuttingLines()) : 0,
+													System.lineSeparator()
+											)
+										)
+									);
+				}
+			}
+		}
+	}
+
 	@Override
 	public List<String> sendCommands(List<ScriptServiceVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
 		List<String> cmdOutputs = new ArrayList<String>();
@@ -123,56 +190,9 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 
 			StringBuilder processLog = new StringBuilder();
 			try {
-				String output;
-				for (ScriptServiceVO vo : scriptList) {
-					output = "";
-
-					/*
-					 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
-					 * e.g. 「#」 > 「NK-HeNBGW-04#」
-					 */
-					String expectedTerminalSymbol = vo.getExpectedTerminalSymbol();
-					if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
-						expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
-					}
-
-					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
-
+				for (ScriptServiceVO scriptVO : scriptList) {
 					// 送出命令
-					output = expect.sendLine(replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark()))
-							.expect(contains(expectedTerminalSymbol))
-							.getBefore();
-
-					processLog.append(output + expectedTerminalSymbol);
-
-					boolean success = true;
-
-					if (errorSymbols != null) {
-						for (String errSymbol : errorSymbols) {
-							success = output.toUpperCase().contains(errSymbol) ? false : true;
-
-							if (!success) {
-								throw new CommandExecuteException("[Command execute failed!] >> output: " + output);
-							}
-						}
-					}
-
-					if (success) {
-						if (vo.getOutput() != null && vo.getOutput().equals(Constants.DATA_Y)) {
-							cmdOutputs.add(
-									vo.getRemark()
-									.concat(Env.COMM_SEPARATE_SYMBOL)
-									.concat(
-											cutContent(
-													output,
-													StringUtils.isNotBlank(vo.getHeadCuttingLines()) ? Integer.valueOf(vo.getHeadCuttingLines()) : 0,
-															StringUtils.isNotBlank(vo.getTailCuttingLines()) ? Integer.valueOf(vo.getTailCuttingLines()) : 0,
-																	System.lineSeparator()
-													)
-											)
-									);
-						}
-					}
+					sendCommand(expect, configInfoVO, scriptVO, processLog, cmdOutputs);
 				}
 
 				/*

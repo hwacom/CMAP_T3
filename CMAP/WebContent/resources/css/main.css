@@ -42,7 +42,8 @@ img {
   height: 300px;
   overflow: auto;
   background-color: #000;
-  color: #fff !important;
+  color: #f5deb3 !important;
+  white-space: pre !important;
 }
 
 span {

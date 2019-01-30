@@ -38,7 +38,7 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnCompare">還原</button>
+		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnRestore">還原</button>
 		  	    </div>
         	</div>
         </div>
@@ -107,5 +107,43 @@
   </div>
 
 </section>
+
+<!-- Modal [Restore_Panel] start -->
+<div class="modal fade" id="viewVersionModal" tabindex="-1" role="dialog" aria-labelledby="viewVersionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-mid" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewVersionModalLabel"><span id="msgModal_title">版本還原</span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<div class="form-group row">
+      		<label for="viewVersionModal_viewContent" class="col-md-10 col-sm-12 col-form-label">請選擇要還原的版本號 :</label>
+      		<div class="col-md-2 col-sm-12" id="viewVersionModal_viewContent">
+      			<a href="#" onclick="pressViewConfig()"><span data-feather="zoom-in"></span>[預覽]</a>
+      		</div>
+      	</div>
+     	<div class="form-group row">
+    		<select class="form-control form-control-sm col-12" id="viewScriptModal_versionSelect" size="10">
+    		</select>
+        </div>
+      </div>
+      <div class="modal-footer">
+      	<div class="col-12 row center">
+      		<div class="col-2">
+	      		<button type="button" class="btn btn-success" id="btnRestoreConfirm" style="width: 100%;">確認</button>
+	      	</div>
+	      	<div class="col-1"></div>
+	      	<div class="col-2">
+	      		<button type="submit" class="btn btn-secondary" id="btnRestoreCancel" style="width: 100%;">取消</button>
+	      	</div>
+      	</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal [Restore_Panel] end -->
 
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.version.restore.min.js"></script>
