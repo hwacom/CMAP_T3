@@ -73,8 +73,12 @@
 	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
+      	<!--
       	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="30" style="padding-top: 3px" />
   		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="23" style="padding-top: 3px" />
+ 		-->
+ 		<img class="img" src="${pageContext.request.contextPath}/resources/images/aptg_logo_icon.png" width="auto" height="30" style="padding-top: 3px" />
+		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/aptg_logo_word.png" width="auto" height="23" style="padding-top: 3px" />
  		<span class="font-weight-bold title-font" style="color:#000079"><spring:message code="cmap.title" /></span>	
       </a>
       <ul class="navbar-nav">

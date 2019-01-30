@@ -228,18 +228,28 @@ public class BaseController {
 				groupMap = new HashMap<>();
 			}
 
-			Map<Integer, String> sortedMap = new TreeMap<>();
-			for (Map.Entry<String, String> entry : groupMap.entrySet()) {
-				Integer groupSeq = Integer.parseInt(entry.getValue().split("\\.")[0]);
-				String sourceMapKey = entry.getKey();
+			/*
+			 * 排序設定處理
+			 */
+			if (Env.SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO) {
+				Map<Integer, String> sortedMap = new TreeMap<>();
+				for (Map.Entry<String, String> entry : groupMap.entrySet()) {
+					Integer groupSeq =
+							Integer.parseInt(entry.getValue().split(Env.GROUP_NAME_SPLIT_SEQ_NO_SYMBOL)[Env.GROUP_NAME_SPLITTED_SEQ_NO_INDEX]);
+					String sourceMapKey = entry.getKey();
 
-				sortedMap.put(groupSeq, sourceMapKey);
+					sortedMap.put(groupSeq, sourceMapKey);
+				}
+
+				for (String sourceKey : sortedMap.values()) {
+					retMap.put(sourceKey, groupMap.get(sourceKey));
+				}
+
+			} else {
+				for (Map.Entry<String, String> entry : groupMap.entrySet()) {
+					retMap.put(entry.getKey(), entry.getValue());
+				}
 			}
-
-			for (String sourceKey : sortedMap.values()) {
-				retMap.put(sourceKey, groupMap.get(sourceKey));
-			}
-
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);

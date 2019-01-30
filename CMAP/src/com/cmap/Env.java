@@ -26,6 +26,13 @@ public class Env {
 	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		// 資安通報 > Net flow查詢
 	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		// 資安通報 > 開關PORT
 
+	/**
+	 * GROUP_NAME下拉選單排序相關設定
+	 */
+	public static Boolean SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO;	// 以GROUP_NAME內含的序碼做排序 (e.g. 030.XX國小)，目前for苗栗縣教網使用
+	public static String GROUP_NAME_SPLIT_SEQ_NO_SYMBOL;		// 設定GROUP_NAME用來切割序碼的符號 (搭配SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO使用)
+	public static Integer GROUP_NAME_SPLITTED_SEQ_NO_INDEX;		// 設定GROUP_NAME切割後序碼所在陣列的INDEX (搭配GROUP_NAME_SPLIT_SEQ_NO_SYMBOL使用)
+
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
 	public static String LOGIN_AUTH_MODE;
