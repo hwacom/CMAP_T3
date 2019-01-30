@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.comm.enums.ScriptType;
-import com.cmap.dao.ScriptListDAO;
+import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.model.ScriptDefaultMapping;
 import com.cmap.model.ScriptListDefault;
 
 @Repository("scriptListDefaultDAOImpl")
 @Transactional
-public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements ScriptListDAO {
+public class ScriptDefaultMappingDAOImpl extends BaseDaoHibernate implements ScriptDefaultMappingDAO {
 
 	private List<ScriptDAOVO> transModel2DAOVO(List<ScriptListDefault> modelList) {
 		List<ScriptDAOVO> voList = new ArrayList<>();
@@ -35,22 +35,6 @@ public class ScriptListDefaultDAOImpl extends BaseDaoHibernate implements Script
 		}
 
 		return voList;
-	}
-
-	@Override
-	public List<ScriptDAOVO> findScriptListByScriptCode(String scriptCode) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(" select sld ")
-		.append(" from ScriptListDefault sld ")
-		.append(" where 1=1 ")
-		.append(" and sld.scriptCode = :scriptCode ")
-		.append(" order by scriptStepOrder asc ");
-
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-		Query<?> q = session.createQuery(sb.toString());
-		q.setParameter("scriptCode", scriptCode);
-
-		return transModel2DAOVO((List<ScriptListDefault>)q.list());
 	}
 
 	@Override

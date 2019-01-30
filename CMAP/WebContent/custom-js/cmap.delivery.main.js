@@ -871,7 +871,7 @@ function findData(from) {
 				}
 			},
 			"order" : [[2 , 'asc' ]],
-			"pageLength" : 25,
+			"pageLength" : 100,
 			/*
 			"initComplete": function(settings, json){
             },

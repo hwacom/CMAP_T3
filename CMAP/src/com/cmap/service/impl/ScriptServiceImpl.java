@@ -16,8 +16,8 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ScriptType;
+import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.ScriptInfoDAO;
-import com.cmap.dao.ScriptListDAO;
 import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ScriptDAOVO;
 import com.cmap.exception.ServiceLayerException;
@@ -36,7 +36,7 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 	private ScriptInfoDAO scriptInfoDAO;
 
 	@Autowired
-	private ScriptListDAO scriptListDefaultDAO;
+	private ScriptDefaultMappingDAO scriptListDefaultDAO;
 
 	@Autowired
 	@Qualifier("scriptStepActionDAOImpl")
@@ -62,20 +62,25 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 
 		List<ScriptDAOVO> daovoList = scriptStepActionDAO.findScriptStepByScriptInfoIdOrScriptCode(null, scriptCode);
 
-		ScriptServiceVO ssVO;
-		for (ScriptDAOVO daovo : daovoList) {
-			ssVO = new ScriptServiceVO();
-			BeanUtils.copyProperties(daovo, ssVO);
-
-			script.add(ssVO);
-		}
-
-		if (script == null || (script != null && script.isEmpty())) {
+		if (daovoList == null || (daovoList != null && daovoList.isEmpty())) {
 			if (!StringUtils.equals(systemVersion, Env.MEANS_ALL_SYMBOL)) {
 				script = loadDefaultScript("*", script, type);	//帶入機器系統版本號查不到腳本時，將版本調整為*號後再查找一次預設腳本
 
 			} else {
 				throw new ServiceLayerException("未設定[" + type + "]預設腳本");
+			}
+
+		} else {
+			if (script == null) {
+				script = new ArrayList<>();
+			}
+
+			ScriptServiceVO ssVO;
+			for (ScriptDAOVO daovo : daovoList) {
+				ssVO = new ScriptServiceVO();
+				BeanUtils.copyProperties(daovo, ssVO);
+
+				script.add(ssVO);
 			}
 		}
 

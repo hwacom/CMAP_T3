@@ -24,7 +24,7 @@ import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.DeviceListDAO;
-import com.cmap.dao.ScriptListDAO;
+import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.DeviceListDAOVO;
 import com.cmap.exception.ServiceLayerException;
@@ -68,7 +68,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 	@Autowired
 	@Qualifier("scriptListDefaultDAOImpl")
-	private ScriptListDAO scriptListDefaultDAO;
+	private ScriptDefaultMappingDAO scriptListDefaultDAO;
 
 	@Autowired
 	private ProvisionService provisionService;

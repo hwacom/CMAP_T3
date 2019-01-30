@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -218,6 +219,7 @@ public class BaseController {
 	}
 
 	protected Map<String, String> getGroupList(HttpServletRequest request) {
+		Map<String, String> retMap = new LinkedHashMap<>();
 		Map<String, String> groupMap = null;
 		try {
 			groupMap = commonService.getGroupAndDeviceMenu(request);
@@ -226,11 +228,24 @@ public class BaseController {
 				groupMap = new HashMap<>();
 			}
 
+			Map<Integer, String> sortedMap = new TreeMap<>();
+			for (Map.Entry<String, String> entry : groupMap.entrySet()) {
+				Integer groupSeq = Integer.parseInt(entry.getValue().split("\\.")[0]);
+				String sourceMapKey = entry.getKey();
+
+				sortedMap.put(groupSeq, sourceMapKey);
+			}
+
+			for (String sourceKey : sortedMap.values()) {
+				retMap.put(sourceKey, groupMap.get(sourceKey));
+			}
+
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 		}
 
-		return groupMap;
+		return retMap;
 	}
 
 	public Map<String, String> getGroupDeviceMenu(HttpServletRequest request, String searchTxt, String systemVersion) {
@@ -262,19 +277,20 @@ public class BaseController {
 						idx++;
 
 					} else {
-						if (!StringUtils.equals(systemVersion, Constants.DATA_STAR_SYMBOL)) {
-							if (!StringUtils.contains(deviceSystemVersion, systemVersion)) {
+						if (!StringUtils.equalsIgnoreCase(systemVersion, Constants.DATA_STAR_SYMBOL)) {
+							if (!StringUtils.containsIgnoreCase(deviceSystemVersion, systemVersion)) {
 								continue;
 							}
 						}
-						if (StringUtils.isBlank(searchTxt) ||
-								(StringUtils.isNotBlank(searchTxt) && StringUtils.contains(deviceName, searchTxt))) {
-							if (idx == 0) {
-								menuMap.put("GROUP_"+groupKey, groupName);
-							}
+						if (StringUtils.isBlank(searchTxt)
+							|| (StringUtils.isNotBlank(searchTxt) && StringUtils.containsIgnoreCase(groupName, searchTxt))
+							|| (StringUtils.isNotBlank(searchTxt) && StringUtils.containsIgnoreCase(deviceName, searchTxt))) {
+								if (idx == 0) {
+									menuMap.put("GROUP_"+groupKey, groupName);
+								}
 
-							menuMap.put("DEVICE_"+deviceId, deviceName);
-							idx++;
+								menuMap.put("DEVICE_"+deviceId, deviceName);
+								idx++;
 						}
 					}
 				}
@@ -302,7 +318,7 @@ public class BaseController {
 			@RequestParam(name="searchTxt", required=true) String searchTxt) {
 
 		try {
-			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, null);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, Constants.DATA_STAR_SYMBOL);
 
 			AppResponse appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
 			appResponse.putData("groupDeviceMenu",  new Gson().toJson(menuMap));

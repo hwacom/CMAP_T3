@@ -1,7 +1,7 @@
 /**
  * 
  */
-var remarkShowLength = 20;	//設定欄位顯示內容最大長度
+var remarkShowLength = 80;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_backup");
@@ -122,6 +122,7 @@ function findData(from) {
 			"scrollX"		: true,
 			"scrollY"		: dataTableHeight,
 			"scrollCollapse": true,
+			"pageLength"	: 100,
 			"language" : {
 	    		"url" : _ctx + "/resources/js/dataTable/i18n/Chinese-traditional.json"
 	        },

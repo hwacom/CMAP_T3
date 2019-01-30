@@ -128,7 +128,13 @@ public class LoginContoller extends BaseController {
 		if (StringUtils.isNotBlank(loginError)) {
 			model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, loginError);
 			session.removeAttribute(Constants.MODEL_ATTR_LOGIN_ERROR);
-			return "login";
+
+			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+				return "redirect:/loginOIDC";
+
+			} else {
+				return "login";
+			}
 
 		} else {
 			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
@@ -148,7 +154,7 @@ public class LoginContoller extends BaseController {
 				}
 				request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
 
-				return "login_openid";
+				return "redirect:/loginOIDC";
 
 			} else {
 		        return "login";
@@ -172,26 +178,36 @@ public class LoginContoller extends BaseController {
 		if (StringUtils.isNotBlank(loginError)) {
 			model.addAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, loginError);
 			session.removeAttribute(Constants.MODEL_ATTR_LOGIN_ERROR);
-			return "login_openid";
+
+			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+				return "login_openid";
+			} else {
+				return "redirect:/login";
+			}
 
 		} else {
-			URI configurationEndpoint = null;
-			try {
-				configurationEndpoint = new URI(Env.OIDC_CONFIGURATION_ENDPOINT);
-
-			} catch (URISyntaxException e) {
-				log.error(e.toString(), e);
-
+			if (Env.LOGIN_AUTH_MODE.equals(Constants.LOGIN_AUTH_MODE_OIDC)) {
+				URI configurationEndpoint = null;
 				try {
-					configurationEndpoint = new URI(Constants.OIDC_MLC_CONFIGURATION_ENDPOINT);
+					configurationEndpoint = new URI(Env.OIDC_CONFIGURATION_ENDPOINT);
 
-				} catch (URISyntaxException e1) {
-					log.error(e1.toString(), e1);
+				} catch (URISyntaxException e) {
+					log.error(e.toString(), e);
+
+					try {
+						configurationEndpoint = new URI(Constants.OIDC_MLC_CONFIGURATION_ENDPOINT);
+
+					} catch (URISyntaxException e1) {
+						log.error(e1.toString(), e1);
+					}
 				}
-			}
-			request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
+				request.getSession().setAttribute(Constants.OIDC_CONFIGURATION_ENDPOINT, configurationEndpoint.toString());
 
-			return "login_openid";
+				return "login_openid";
+
+			} else {
+				return "redirect:/login";
+			}
 		}
 	}
 

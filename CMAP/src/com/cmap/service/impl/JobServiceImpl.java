@@ -437,7 +437,16 @@ public class JobServiceImpl implements JobService {
 					.withSchedule(scheduleBuilder)
 					.withPriority(jsVO.getInputPriority() != null ? jsVO.getInputPriority() : Env.QUARTZ_DEFAULT_PRIORITY)
 					.withDescription(jsVO.getInputDescription())
+					.forJob(jsVO.getInputJobName(), jsVO.getInputJobGroup())
 					.build();
+
+			System.out.println("JobKey exists: " + scheduler.checkExists(jobDetail.getKey()));
+
+			if (scheduler.checkExists(jobDetail.getKey())) {
+				scheduler.deleteJob(jobDetail.getKey());
+			}
+
+			System.out.println("Trigger exists: " + scheduler.checkExists(trigger.getKey()));
 
 			scheduler.scheduleJob(jobDetail, trigger);
 

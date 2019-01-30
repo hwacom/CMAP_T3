@@ -68,7 +68,7 @@ function findData(from) {
 				}
 			},
 			"order" : [[1 , 'desc' ]],
-			"pageLength" : 25,
+			"pageLength" : 100,
 			/*
 			"initComplete": function(settings, json){
             },

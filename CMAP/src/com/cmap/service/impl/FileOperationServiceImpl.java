@@ -185,7 +185,7 @@ public class FileOperationServiceImpl implements FileOperationService {
 			}
 
 		} catch (FileSystemException jse) {
-			log.error(jse.toString());
+			//log.error(jse.toString());
 			throw jse;
 
 		} catch (Exception e) {

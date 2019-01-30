@@ -34,7 +34,7 @@ import com.cmap.comm.enums.ScriptType;
 import com.cmap.comm.enums.Step;
 import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.DeviceListDAO;
-import com.cmap.dao.ScriptListDAO;
+import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.exception.FileOperationException;
@@ -77,7 +77,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 	@Autowired
 	@Qualifier("scriptListDefaultDAOImpl")
-	private ScriptListDAO scriptListDefaultDAO;
+	private ScriptDefaultMappingDAO scriptListDefaultDAO;
 
 	@Autowired
 	@Qualifier("scriptStepActionDAOImpl")
