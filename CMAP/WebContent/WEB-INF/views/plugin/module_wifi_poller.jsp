@@ -30,7 +30,7 @@
 	    	    	<input type="date" id="queryExcuteDateEnd" style="width: 35%">
 	    	    </div>
 	    	    <div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -75,7 +75,7 @@
 		    	  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>
@@ -90,12 +90,12 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap">執行時間</th>
 		      <th scope="col" nowrap="nowrap">使用者</th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
-		      <th scope="col" nowrap="nowrap">系統版本</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 		      <th scope="col" nowrap="nowrap">執行腳本</th>
 		      <th scope="col" nowrap="nowrap">供裝原因</th>
 		      <th scope="col" nowrap="nowrap">執行結果</th>
@@ -136,11 +136,11 @@
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_deviceName" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_systemVersion" class="col-md-2 col-sm-12 col-form-label">系統版本 :</label>
+        	<label for="viewModal_systemVersion" class="col-md-2 col-sm-12 col-form-label"><spring:message code="system.version" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_systemVersion" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱 :</label>
+        	<label for="viewModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_scriptName" readonly>
         </div>
         <div class="form-group row">

@@ -209,7 +209,7 @@
 	                    <li class="subMenu-item">
 	                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/plugin/module/netFlow">
 	                    	  <span data-feather="shuffle"></span>
-	                    	  	<span>Net Flow 查詢</span>
+	                    	  	<span>Net Flow <spring:message code="inquiry" /></span>
 	                    	</a>
 	                    </li>
 	                    <%
@@ -258,7 +258,7 @@
 	                    <li class="subMenu-item">
 	                    	<a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main">
 	                    	  <span data-feather="alert-triangle"></span> 
-	                    	  	<span>系統LOG查詢</span>
+	                    	  	<span>系統LOG<spring:message code="inquiry" /></span>
 	                    	</a>
 	                    </li>
 	                </ul>

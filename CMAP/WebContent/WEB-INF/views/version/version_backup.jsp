@@ -26,7 +26,7 @@
                     </form:select>
 				</div>
 				<div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -78,7 +78,7 @@
 				  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>
@@ -93,11 +93,11 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
-		      <th scope="col" nowrap="nowrap">系統版本</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 		      <th scope="col" nowrap="nowrap">最新備份版本號</th>
 		      <th scope="col" nowrap="nowrap">備份類型</th>
 		      <th scope="col" nowrap="nowrap">最新備份時間</th>
@@ -117,7 +117,7 @@
     <div class="modal-content">
       <div class="modal-header">
       
-        <h5 class="modal-title" id="backupDialogModalLabel"><span id="msgModal_title">操作確認</span></h5>
+        <h5 class="modal-title" id="backupDialogModalLabel"><span id="msgModal_title"><spring:message code="action" />確認</span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

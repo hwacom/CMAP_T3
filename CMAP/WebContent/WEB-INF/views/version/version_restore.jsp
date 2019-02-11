@@ -26,7 +26,7 @@
                     </form:select>
 				</div>
 				<div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -78,7 +78,7 @@
 				  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>
@@ -93,11 +93,11 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">操作</th>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
-		      <th scope="col" nowrap="nowrap">系統版本</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 		    </tr>
 		  </thead>
 		</table>

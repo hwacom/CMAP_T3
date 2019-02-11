@@ -12,14 +12,14 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row">
 	    	    <div class="col-lg-3 group-field-other">
-					<span class="font-weight-bold" style="width: 30%">腳本類別</span>
+					<span class="font-weight-bold" style="width: 30%"><spring:message code="script" /><spring:message code="type" /></span>
 	    	    	<form:select path="scriptType" id="queryScriptTypeCode" style="width: 65%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${scriptTypeList}" />
                     </form:select>
 				</div>
 				<div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -38,7 +38,7 @@
 	    	    	</select>
 	    	    </div>
 	    	    <div id="searchBy_script" class="col-lg-3 group-field-full" style="display: none;">
-					<span class="font-weight-bold" style="width: 30%">腳本類別</span>
+					<span class="font-weight-bold" style="width: 30%"><spring:message code="script" /><spring:message code="type" /></span>
 	    	    	<select id="device_1" style="width: 65%">
 	    	    		<option value="">=== ALL ===</option>
 	    	    	</select>
@@ -58,7 +58,7 @@
                     </form:select>
 				</div>
 				<div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -92,7 +92,7 @@
 		  	<div class="col-12">
 		  		<form>
 		      	  <div class="form-group row">
-		      	  	<label for="group_1" class="col-sm-2 col-form-label">腳本類別</label>
+		      	  	<label for="group_1" class="col-sm-2 col-form-label"><spring:message code="script" /><spring:message code="type" /></label>
 				    <div class="col-sm-10">
 				      <form:select path="scriptType" id="queryScriptTypeCode_mobile" class="form-control form-control-sm">
 	                  	<form:option value="" label="=== ALL ===" />
@@ -102,7 +102,7 @@
 		    	  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>
@@ -117,11 +117,11 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">操作</th>
-		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">腳本名稱</th>
-		      <th scope="col" nowrap="nowrap">類別</th>
-		      <th scope="col" nowrap="nowrap">系統版本</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="script.name" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="type" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 		      <th scope="col" nowrap="nowrap">執行腳本內容</th>
 		      <th scope="col" nowrap="nowrap">執行腳本備註</th>
 		      <th scope="col" nowrap="nowrap">檢核腳本內容</th>
@@ -148,7 +148,7 @@
       </div>
       <div class="modal-body">
      	<div class="form-group row">
-        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱 :</label>
+        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
         </div>
         <div class="form-group row">
@@ -232,7 +232,7 @@
 		      	<table id="step2_target_table" class="myTable">
 		      	  <thead class="center bold">
 		      	  	<tr>
-			      	  	<th rowspan="3" width="3%">序</th>
+			      	  	<th rowspan="3" width="3%"><spring:message code="seq" /></th>
 			      	  	<th rowspan="3" width="12%"><spring:message code="group.name" /></th>
 			      	  	<th rowspan="3" width="25%"><spring:message code="device.name" /></th>
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>

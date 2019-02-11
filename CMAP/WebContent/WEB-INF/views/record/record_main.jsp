@@ -32,7 +32,7 @@
 	    	    	<input type="date" id="queryExcuteDateEnd" style="width: 35%">
 	    	    </div>
 				<div class="col-lg-2" style="padding-top: 5px;">
-	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch">查詢</button>
+	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch"><spring:message code="inquiry" /></button>
 	    	    </div>
 	      	  </div>
 	      	</div>
@@ -83,7 +83,7 @@
 		    	  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>

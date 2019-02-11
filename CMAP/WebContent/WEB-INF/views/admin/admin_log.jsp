@@ -64,7 +64,7 @@
 		<table id="resutTable_errorLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap">異常時間</th>
 		      <th scope="col" nowrap="nowrap">Logger</th>
 		      <th scope="col" nowrap="nowrap">異常等級</th>
@@ -79,7 +79,7 @@
 		<table id="resutTable_jobLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap">啟動時間</th>
 		      <th scope="col" nowrap="nowrap">JOB群組</th>
 		      <th scope="col" nowrap="nowrap">JOB名稱</th>

@@ -1,6 +1,8 @@
 package com.cmap.service.vo;
 
-public class ScriptServiceVO {
+public class ScriptServiceVO extends CommonServiceVO {
+
+	private String queryScriptTypeCode;
 
 	private String scriptInfoId;
 	private String scriptListId;
@@ -208,5 +210,11 @@ public class ScriptServiceVO {
 	}
 	public void setUpdateBy(String updateBy) {
 		this.updateBy = updateBy;
+	}
+	public String getQueryScriptTypeCode() {
+		return queryScriptTypeCode;
+	}
+	public void setQueryScriptTypeCode(String queryScriptTypeCode) {
+		this.queryScriptTypeCode = queryScriptTypeCode;
 	}
 }

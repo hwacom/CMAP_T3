@@ -44,6 +44,24 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 			sb.append(" and si.scriptCode in (:scriptCode) ");
 		}
 
+		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
+			sb.append(" and ( ")
+			  .append("       si.scriptName like :searchValue ")
+			  .append("       or ")
+			  .append("       si.scriptType.scriptTypeName like :searchValue ")
+			  .append("       or ")
+			  .append("       si.systemVersion like :searchValue ")
+			  .append("       or ")
+			  .append("       si.actionScript like :searchValue ")
+			  .append("       or ")
+			  .append("       si.actionScriptRemark like :searchValue ")
+			  .append("       or ")
+			  .append("       si.checkScript like :searchValue ")
+			  .append("       or ")
+			  .append("       si.checkScriptRemark like :searchValue ")
+			  .append("     ) ");
+		}
+
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 
@@ -62,6 +80,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (daovo.isOnlySwitchPort()) {
 			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
 		}
+		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
+	    	q.setParameter("searchValue", "%".concat(daovo.getSearchValue()).concat("%"));
+	    }
 
 		return DataAccessUtils.longResult(q.list());
 	}
@@ -89,6 +110,30 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 			sb.append(" and si.scriptCode in (:scriptCode) ");
 		}
 
+		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
+			sb.append(" and ( ")
+			  .append("       si.scriptName like :searchValue ")
+			  .append("       or ")
+			  .append("       si.scriptType.scriptTypeName like :searchValue ")
+			  .append("       or ")
+			  .append("       si.systemVersion like :searchValue ")
+			  .append("       or ")
+			  .append("       si.actionScript like :searchValue ")
+			  .append("       or ")
+			  .append("       si.actionScriptRemark like :searchValue ")
+			  .append("       or ")
+			  .append("       si.checkScript like :searchValue ")
+			  .append("       or ")
+			  .append("       si.checkScriptRemark like :searchValue ")
+			  .append("     ) ");
+		}
+		if (StringUtils.isNotBlank(daovo.getOrderColumn())) {
+			sb.append(" order by ").append(daovo.getOrderColumn()).append(" ").append(daovo.getOrderDirection());
+
+		} else {
+			sb.append(" order by si.updateTime desc, si.scriptType.scriptTypeName asc ");
+		}
+
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 
@@ -107,6 +152,13 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (daovo.isOnlySwitchPort()) {
 			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
 		}
+		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
+	    	q.setParameter("searchValue", "%".concat(daovo.getSearchValue()).concat("%"));
+	    }
+	    if (startRow != null && pageLength != null) {
+	    	q.setFirstResult(startRow);
+		    q.setMaxResults(pageLength);
+	    }
 
 		return (List<ScriptInfo>)q.list();
 	}

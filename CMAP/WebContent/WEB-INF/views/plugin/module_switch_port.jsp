@@ -26,11 +26,11 @@
 			<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  	<thead class="center">
 		    	<tr>
-			      <th scope="col" nowrap="nowrap">操作</th>
-			      <th scope="col" nowrap="nowrap">序</th>
-			      <th scope="col" nowrap="nowrap">腳本名稱</th>
-			      <th scope="col" nowrap="nowrap">類別</th>
-			      <th scope="col" nowrap="nowrap">系統版本</th>
+			      <th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
+			      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
+			      <th scope="col" nowrap="nowrap"><spring:message code="script.name" /></th>
+			      <th scope="col" nowrap="nowrap"><spring:message code="type" /></th>
+			      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 			      <th scope="col" nowrap="nowrap">執行腳本內容</th>
 			      <th scope="col" nowrap="nowrap">執行腳本備註</th>
 			      <th scope="col" nowrap="nowrap">檢核腳本內容</th>
@@ -58,7 +58,7 @@
       </div>
       <div class="modal-body">
      	<div class="form-group row">
-        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱 :</label>
+        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
         </div>
         <div class="form-group row">
@@ -142,7 +142,7 @@
 		      	<table id="step2_target_table" class="myTable">
 		      	  <thead class="center bold">
 		      	  	<tr>
-			      	  	<th rowspan="3" width="3%">序</th>
+			      	  	<th rowspan="3" width="3%"><spring:message code="seq" /></th>
 			      	  	<th rowspan="3" width="12%"><spring:message code="group.name" /></th>
 			      	  	<th rowspan="3" width="25%"><spring:message code="device.name" /></th>
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>

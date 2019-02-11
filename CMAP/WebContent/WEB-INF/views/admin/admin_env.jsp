@@ -11,7 +11,7 @@
 		<div class="container-fluid">
       	  <div class="form-group row">
 			<div class="col-lg-2" style="padding-top: 5px;">
-    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
     	    </div>
     	    <div class="col-lg-4" style="padding-top: 5px;">
     	    	<span id="diffMsg" style="color: red; font-weight: bold; background-color: yellow;"></span>
@@ -64,7 +64,7 @@
 		  	<div class="col-12">
 			  <div class="form-group row">
 	    	    <div class="col-sm-12">
-			      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+			      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 			    </div>
 			  </div>
 		  	</div>
@@ -79,8 +79,8 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap">備註</th>
 		      <th scope="col" nowrap="nowrap">參數名稱</th>
 		      <th scope="col" nowrap="nowrap">是否同步?</th>

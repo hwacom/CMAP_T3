@@ -21,4 +21,22 @@ public interface ScriptService {
 	 * @throws ServiceLayerException
 	 */
 	public ScriptServiceVO findDefaultScriptInfoByScriptTypeAndSystemVersion(String scriptType, String systemVersion) throws ServiceLayerException;
+
+	/**
+	 * 依查詢條件查詢符合的資料筆數
+	 * @param ssVO
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	public long countScriptInfo(ScriptServiceVO ssVO) throws ServiceLayerException;
+
+	/**
+	 * 依查詢條件查詢符合的資料
+	 * @param ssVO
+	 * @param startRow
+	 * @param pageLength
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	public List<ScriptServiceVO> findScriptInfo(ScriptServiceVO ssVO, Integer startRow, Integer pageLength) throws ServiceLayerException;
 }

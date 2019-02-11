@@ -11,7 +11,7 @@
 		<div class="container-fluid">
       	  <div class="form-group row">
 			<div class="col-lg-2" style="padding-top: 5px;">
-    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">查詢</button>
+    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web"><spring:message code="inquiry" /></button>
     	    </div>
       	  </div>
       	</div>
@@ -59,7 +59,7 @@
 		  	<div class="col-12">
 			  <div class="form-group row">
 	    	    <div class="col-sm-12">
-			      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+			      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 			    </div>
 			  </div>
 		  	</div>
@@ -74,9 +74,9 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">操作&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
-		      <th scope="col" nowrap="nowrap">序</th>
-		      <th scope="col" nowrap="nowrap">排程類別</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="schedule" /><spring:message code="type" /></th>
 		      <th scope="col" nowrap="nowrap">Job群組</th>
 		      <th scope="col" nowrap="nowrap">Job名稱</th>
 		      <th scope="col" nowrap="nowrap">優先度</th>
@@ -121,7 +121,7 @@
         	<div class="card card-body">
         	  <div class="col-12">
             	<div class="form-group row">
-                	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label">排程類別<span class="pull-right" style="color: red;">＊ </span></label>
+                	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label"><spring:message code="schedule" /><spring:message code="type" /><span class="pull-right" style="color: red;">＊ </span></label>
                   	<div class="col-md-10 col-sm-9">
                   		<form:select path="inputSchedType" id="inputSchedType" name="inputSchedType" class="form-control form-control-sm">
 		                  	<form:option value="" label="=== 請選擇  ===" />

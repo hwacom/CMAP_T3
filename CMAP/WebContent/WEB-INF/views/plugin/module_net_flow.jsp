@@ -40,15 +40,15 @@
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
 	    	    <div class="col-lg-3 group-field-other">
 					<label for="query_SourceIp" class="font-weight-bold" style="width: 35%">Source_IP</label>
-					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(後模糊查詢)">
+					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(後模糊<spring:message code="inquiry" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="query_DestinationIp" class="font-weight-bold" style="width: 45%">Destination_IP</label>
-					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(後模糊查詢)">
+					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(後模糊<spring:message code="inquiry" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="query_SenderIp" class="font-weight-bold" style="width: 35%">Sender_IP</label>
-					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(後模糊查詢)">
+					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(後模糊<spring:message code="inquiry" />)">
 				</div>
 			  </div>
 			  <div class="form-group row" style="margin-bottom: -.2rem;">
@@ -65,7 +65,7 @@
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
 	    	    <div class="col-lg-3 group-field-other">
 					<label for="queryIp" class="font-weight-bold must" style="width: 25%">IP</label>
-					<input type="text" id="queryIp" class="input-ip" style="width: 70%" placeholder="(後模糊查詢)">
+					<input type="text" id="queryIp" class="input-ip" style="width: 70%" placeholder="(後模糊<spring:message code="inquiry" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="queryPort" class="font-weight-bold must" style="width: 25%">Port</label>
@@ -73,7 +73,7 @@
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="queryMac" class="font-weight-bold must" style="width: 25%">MAC</label>
-					<input type="text" id="queryMac" class="input-mac" style="width: 70%" placeholder="(後模糊查詢)">
+					<input type="text" id="queryMac" class="input-mac" style="width: 70%" placeholder="(後模糊<spring:message code="inquiry" />)">
 				</div>
 	    	    <div class="col-lg-2" style="padding-top: 5px;">
 	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">
@@ -145,7 +145,7 @@
 		    	  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
-				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile">查詢</button>
+				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
 				    </div>
 				  </div>
 				</form>
@@ -160,7 +160,7 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap">序</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <c:forEach var="fName" items="${TABLE_FIELD}">
 		        <th scope="col" nowrap="nowrap">${fName }</th>
@@ -202,11 +202,11 @@
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_deviceName" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_systemVersion" class="col-md-2 col-sm-12 col-form-label">系統版本 :</label>
+        	<label for="viewModal_systemVersion" class="col-md-2 col-sm-12 col-form-label"><spring:message code="system.version" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_systemVersion" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_scriptName" class="col-md-2 col-sm-12 col-form-label">腳本名稱 :</label>
+        	<label for="viewModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_scriptName" readonly>
         </div>
         <div class="form-group row">

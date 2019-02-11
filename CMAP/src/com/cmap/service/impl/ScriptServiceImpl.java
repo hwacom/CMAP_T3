@@ -20,6 +20,7 @@ import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ScriptDAOVO;
+import com.cmap.dao.vo.ScriptInfoDAOVO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.ScriptInfo;
@@ -167,4 +168,56 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 		return retVO;
 	}
 
+	private ScriptInfoDAOVO transServiceVO2ScriptInfoDAOVO(ScriptServiceVO ssVO) {
+		ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
+		BeanUtils.copyProperties(ssVO, siDAOVO);
+		return siDAOVO;
+	}
+
+	@Override
+	public long countScriptInfo(ScriptServiceVO ssVO) throws ServiceLayerException {
+		long retCount = 0;
+		ScriptInfoDAOVO siDAOVO;
+		try {
+			siDAOVO = transServiceVO2ScriptInfoDAOVO(ssVO);
+
+			retCount = scriptInfoDAO.countScriptInfo(siDAOVO);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("查詢異常，請重新操作");
+		}
+
+		return retCount;
+	}
+
+	@Override
+	public List<ScriptServiceVO> findScriptInfo(ScriptServiceVO ssVO, Integer startRow, Integer pageLength) throws ServiceLayerException {
+		List<ScriptServiceVO> retList = new ArrayList<>();
+		ScriptInfoDAOVO siDAOVO;
+		try {
+			siDAOVO = transServiceVO2ScriptInfoDAOVO(ssVO);
+
+			List<ScriptInfo> entities = scriptInfoDAO.findScriptInfo(siDAOVO, startRow, pageLength);
+
+			if (entities != null && !entities.isEmpty()) {
+				ScriptServiceVO vo;
+				for (ScriptInfo entity : entities) {
+					vo = new ScriptServiceVO();
+					BeanUtils.copyProperties(entity, vo);
+					vo.setScriptTypeName(entity.getScriptType().getScriptTypeName());
+					vo.setCreateTimeStr(Constants.FORMAT_YYYYMMDD_HH24MISS.format(entity.getCreateTime()));
+					vo.setUpdateTimeStr(Constants.FORMAT_YYYYMMDD_HH24MISS.format(entity.getUpdateTime()));
+
+					retList.add(vo);
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("查詢異常，請重新操作");
+		}
+
+		return retList;
+	}
 }
