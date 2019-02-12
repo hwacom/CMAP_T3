@@ -38,6 +38,10 @@ img {
   cursor: zoom-out;
 }
 
+.hide {
+  display: none;
+}
+
 .script {
   height: 300px;
   overflow: auto;

@@ -73,12 +73,12 @@
 	
     <nav class="navbar navbar-dark fixed-top flex-md-nowrap p-0 shadow navbar-bg">
       <a href="${pageContext.request.contextPath}/index">
+      	<!--
       	<img class="img" src="${pageContext.request.contextPath}/resources/images/Logo_icon.png" width="auto" height="30" style="padding-top: 3px" />
   		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/Logo_word.png" width="auto" height="23" style="padding-top: 3px" />
- 		<!--
+ 		-->
  		<img class="img" src="${pageContext.request.contextPath}/resources/images/aptg_logo_icon.png" width="auto" height="30" style="padding-top: 3px" />
 		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/aptg_logo_word.png" width="auto" height="23" style="padding-top: 3px" />
- 		-->
  		<span class="font-weight-bold title-font" style="color:#000079"><spring:message code="cmap.title" /></span>	
       </a>
       <ul class="navbar-nav">
@@ -301,7 +301,7 @@
         
         <input type="hidden" id="queryFrom" name="queryFrom" />
         
-        <!-- Modal [View] start -->
+        <!-- Modal [View 組態內容] start -->
 		<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-mid" role="document">
 		    <div class="modal-content">
@@ -336,7 +336,34 @@
 		    </div>
 		  </div>
 		</div>
-		<!-- Modal [View] end -->
+		<!-- Modal [View 組態內容] end -->
+		
+		<!-- Modal [View 腳本內容] start -->
+		<div class="modal fade" id="viewScriptModal" tabindex="-1" role="dialog" aria-labelledby="viewScriptModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-mid" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="viewScriptModalLabel"><span id="msgModal_title">腳本內容預覽</span></h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		     	<div class="form-group row">
+		        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
+		    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
+		        </div>
+		        <div class="form-group row">
+		        	<label for="viewScriptModal_scriptContent" class="col-md-2 col-sm-12 col-form-label">腳本內容 :</label>
+		        	<div class="form-control form-control-sm col-md-10 col-sm-12 font script" id="viewScriptModal_scriptContent"></div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal [View 腳本內容] end -->
         
         <footer role="footer" class="ml-sm-auto col-md-10 footer">
         	<span class="copyright">聯絡我們 | Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	

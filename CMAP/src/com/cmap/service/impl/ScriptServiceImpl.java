@@ -205,9 +205,11 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 				for (ScriptInfo entity : entities) {
 					vo = new ScriptServiceVO();
 					BeanUtils.copyProperties(entity, vo);
+					vo.setActionScript(StringUtils.replace(entity.getActionScript(), "\r\n", "<br>"));
 					vo.setScriptTypeName(entity.getScriptType().getScriptTypeName());
 					vo.setCreateTimeStr(Constants.FORMAT_YYYYMMDD_HH24MISS.format(entity.getCreateTime()));
 					vo.setUpdateTimeStr(Constants.FORMAT_YYYYMMDD_HH24MISS.format(entity.getUpdateTime()));
+					vo.setEnableModify(Env.ENABLE_CM_SCRIPT_MODIFY);
 
 					retList.add(vo);
 				}
@@ -219,5 +221,27 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 		}
 
 		return retList;
+	}
+
+	@Override
+	public ScriptServiceVO getScriptInfoByScriptInfoId(String scriptInfoId) throws ServiceLayerException {
+		ScriptServiceVO retVO = new ScriptServiceVO();
+		try {
+			ScriptInfo entity = scriptInfoDAO.findScriptInfoById(scriptInfoId);
+
+			if (entity != null) {
+				retVO.setScriptName(entity.getScriptName());
+				retVO.setActionScript(entity.getActionScript());
+				retVO.setCheckScript(entity.getCheckScript());
+
+			} else {
+				throw new ServiceLayerException("查無此腳本內容，請重新操作");
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("查詢腳本內容異常，請重新操作");
+		}
+		return retVO;
 	}
 }

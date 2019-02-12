@@ -39,4 +39,12 @@ public interface ScriptService {
 	 * @throws ServiceLayerException
 	 */
 	public List<ScriptServiceVO> findScriptInfo(ScriptServiceVO ssVO, Integer startRow, Integer pageLength) throws ServiceLayerException;
+
+	/**
+	 * 以 Script_Info_Id 查找資料
+	 * @param scriptInfoId
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	public ScriptServiceVO getScriptInfoByScriptInfoId(String scriptInfoId) throws ServiceLayerException;
 }

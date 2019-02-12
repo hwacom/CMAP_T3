@@ -37,6 +37,8 @@ public class ScriptServiceVO extends CommonServiceVO {
 	private String updateTimeStr;
 	private String updateBy;
 
+	private Boolean enableModify;
+
 	public String getScriptInfoId() {
 		return scriptInfoId;
 	}
@@ -216,5 +218,11 @@ public class ScriptServiceVO extends CommonServiceVO {
 	}
 	public void setQueryScriptTypeCode(String queryScriptTypeCode) {
 		this.queryScriptTypeCode = queryScriptTypeCode;
+	}
+	public Boolean getEnableModify() {
+		return enableModify;
+	}
+	public void setEnableModify(Boolean enableModify) {
+		this.enableModify = enableModify;
 	}
 }

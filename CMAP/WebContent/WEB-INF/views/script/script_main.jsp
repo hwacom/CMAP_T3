@@ -63,7 +63,13 @@
 		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
-		      <th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
+		      <c:if test="${enableModify}">
+		      	<!-- 有開放可以修改時才顯示操作欄位 -->
+		      	<th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
+		      </c:if>
+		      <c:if test="${not enableModify}">
+		      	<th scope="col" nowrap="nowrap" style="display: none"><spring:message code="action" /></th>
+		      </c:if>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="script.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="type" /></th>

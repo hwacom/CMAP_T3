@@ -398,7 +398,7 @@ function changeShowContent(obj, maxLength){						//obj是td
       }
    }
    
-   $.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust(); //調整dataTable欄位寬度
+   adjustDataTableWidth();
 }
 
 /**********************************************************************************************************
@@ -406,6 +406,10 @@ function changeShowContent(obj, maxLength){						//obj是td
  **********************************************************************************************************/
 function getPartialContentHtml(content, maxLength) {
 	return content.substr(0, maxLength) + '&nbsp;&nbsp;<a href="javascript:void(0);" >...(顯示)</a>';
+}
+
+function adjustDataTableWidth() {
+	$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust(); //調整dataTable欄位寬度
 }
 
 /**********************************************************************************************************

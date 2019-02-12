@@ -136,33 +136,6 @@
 
 </section>
 
-<!-- Modal [View] start -->
-<div class="modal fade" id="viewScriptModal" tabindex="-1" role="dialog" aria-labelledby="viewScriptModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-mid" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="viewScriptModalLabel"><span id="msgModal_title">腳本內容預覽</span></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-     	<div class="form-group row">
-        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
-        </div>
-        <div class="form-group row">
-        	<label for="viewScriptModal_scriptContent" class="col-md-2 col-sm-12 col-form-label">腳本內容 :</label>
-        	<div class="form-control form-control-sm col-md-10 col-sm-12 font script" id="viewScriptModal_scriptContent"></div>
-        </div>
-      </div>
-      <div class="modal-footer">
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal [View] end -->
-
 <!-- Modal [Step] start -->
 <div class="modal fade" id="stepModal" tabindex="-1" role="dialog" aria-labelledby="stepModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">

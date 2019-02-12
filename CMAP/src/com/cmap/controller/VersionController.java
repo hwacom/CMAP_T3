@@ -124,7 +124,6 @@ public class VersionController extends BaseController {
 			}
 
 			String versionId = vIdList.get(0).asText();
-			log.info("view >> versionId: " + versionId);
 
 			List<String> versionIDs = new ArrayList<>();
 			versionIDs.add(versionId);

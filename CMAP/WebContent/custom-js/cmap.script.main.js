@@ -1,12 +1,76 @@
 /**
  * 
  */
-var scriptShowLength = 30;
+var scriptShowMaxLine = 2;
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_script");
 			
 });
+
+//查看腳本內容
+function showScriptContent(scriptInfoId, type) {
+	var obj = new Object();
+	obj.scriptInfoId = scriptInfoId;
+	obj.type = type;
+	
+	$.ajax({
+		url : _ctx + '/script/view',
+		data : JSON.stringify(obj),
+		headers: {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json'
+		},
+		type : "POST",
+		async: true,
+		/*
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
+		*/
+		success : function(resp) {
+			if (resp.code == '200') {
+				$('#viewScriptModal_scriptName').val(resp.data.script);
+				$('#viewScriptModal_scriptContent').html(resp.data.content);
+				
+				$('#viewScriptModal').modal('show');
+				
+			} else {
+				alert(resp.message);
+			}
+		},
+		error : function(xhr, ajaxOptions, thrownError) {
+			ajaxErrorHandler();
+		}
+	});
+}
+
+function getPartialContent(content) {
+	var retVal = '';
+	if (content != null && content != '') {
+		var line = content.split('<br>');
+		
+		if (line.length > scriptShowMaxLine) {
+			for (var i=0; i<scriptShowMaxLine; i++) {
+				retVal += line[i];
+				
+				if (i != scriptShowMaxLine - 1) {
+					retVal += '<br>';
+				}
+			}
+			
+			retVal += '&nbsp;&nbsp;<a href="javascript:void(0);" >...(顯示)</a>';
+			
+		} else {
+			retVal = content;
+		}
+	}
+	
+	return retVal;
+}
 
 //查詢按鈕動作
 function findData(from) {
@@ -80,18 +144,20 @@ function findData(from) {
 				initCheckedItems();
 			},
 			"createdRow": function( row, data, dataIndex ) {
-	        	   if(data.actionScript != null && data.actionScript.length > scriptShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(5).attr('onclick','javascript:showScriptContent('+data.scriptInfoId+', \'A\');');
-	        	      $(row).children('td').eq(5).addClass('cursor_zoom_in');
-	        	   }
-	        	   $(row).children('td').eq(5).attr('content', data.actionScript);
-	        	   
-	        	   if(data.checkScript != null && data.checkScript.length > scriptShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(7).attr('onclick','javascript:showScriptContent('+data.scriptInfoId+', \'C\');');
-	        	      $(row).children('td').eq(7).addClass('cursor_zoom_in');
-	        	   }
-	        	   $(row).children('td').eq(7).attr('content', data.checkScript);
-	        	},
+				if (data.enableModify == false) {
+					$(row).children('td').eq(0).addClass('hide');
+				}
+				
+				if(data.actionScript != null) { //加上onclick事件(查看script完整內容)
+					$(row).children('td').eq(5).attr('onclick','javascript:showScriptContent(\''+data.scriptInfoId+'\', \'A\');');
+					$(row).children('td').eq(5).addClass('cursor_zoom_in');
+				}
+        	   
+				if(data.checkScript != null) { //加上onclick事件(查看script完整內容)
+					$(row).children('td').eq(7).attr('onclick','javascript:showScriptContent(\''+data.scriptInfoId+'\', \'C\');');
+					$(row).children('td').eq(7).addClass('cursor_zoom_in');
+				}
+        	},
 			"columns" : [
 				{},{},
 				{ "data" : "scriptName" },
@@ -130,11 +196,7 @@ function findData(from) {
 					"searchable": true,
 					"orderable": true,
 					"render": function (data, type, row, meta) {
-								if (row.actionScript != null && row.actionScript.length > scriptShowLength) {
-									return getPartialContentHtml(row.actionScript, scriptShowLength); //內容長度超出設定，僅顯示部分內容
-								} else {
-									return row.actionScript; 						//未超出設定則全部顯示
-								}
+								return getPartialContent(row.actionScript); //當內容行數超出設定，僅顯示部分內容
 						   	}
 				},
 				{
@@ -143,11 +205,7 @@ function findData(from) {
 					"searchable": true,
 					"orderable": true,
 					"render": function (data, type, row, meta) {
-								if (row.checkScript != null && row.checkScript.length > scriptShowLength) {
-									return getPartialContentHtml(row.checkScript, scriptShowLength); //內容長度超出設定，僅顯示部分內容
-								} else {
-									return row.checkScript; 						//未超出設定則全部顯示
-								}
+								return getPartialContent(row.checkScript); //當內容行數超出設定，僅顯示部分內容
 						   	}
 				}
 			],
