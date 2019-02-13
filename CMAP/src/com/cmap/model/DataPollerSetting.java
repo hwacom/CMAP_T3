@@ -101,6 +101,9 @@ public class DataPollerSetting {
 
 	@Column(name = "record_by_day_refer_field", nullable = true)
 	private String recordByDayReferField;
+	
+	@Column(name = "record_by_mapping", nullable = false)
+	private String recordByMapping;
 
 	@Column(name = "delete_source_file", nullable = false)
 	private String deleteSourceFile;
@@ -142,9 +145,9 @@ public class DataPollerSetting {
 			String sourceIp, String sourcePort, String loginAccount, String loginPassword, String splitSymbol,
 			String insertDbMethod, String insertFileDir, String storeFileDir, String storeFileNameFormat,
 			String recordByDay, String recordByDayInterval, String recordByDayClean, String recordByDayReferField,
-			String deleteSourceFile, String backupSourceFile, String backupFilePath, String deleteFlag,
-			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
-			String updateBy) {
+			String recordByMapping, String deleteSourceFile, String backupSourceFile, String backupFilePath,
+			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
+			Timestamp updateTime, String updateBy) {
 		super();
 		this.settingId = settingId;
 		this.mappingCode = mappingCode;
@@ -173,6 +176,7 @@ public class DataPollerSetting {
 		this.recordByDayInterval = recordByDayInterval;
 		this.recordByDayClean = recordByDayClean;
 		this.recordByDayReferField = recordByDayReferField;
+		this.recordByMapping = recordByMapping;
 		this.deleteSourceFile = deleteSourceFile;
 		this.backupSourceFile = backupSourceFile;
 		this.backupFilePath = backupFilePath;
@@ -399,6 +403,14 @@ public class DataPollerSetting {
 
 	public void setRecordByDayReferField(String recordByDayReferField) {
 		this.recordByDayReferField = recordByDayReferField;
+	}
+
+	public String getRecordByMapping() {
+		return recordByMapping;
+	}
+
+	public void setRecordByMapping(String recordByMapping) {
+		this.recordByMapping = recordByMapping;
 	}
 
 	public String getDeleteSourceFile() {

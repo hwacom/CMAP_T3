@@ -11,15 +11,13 @@
       	<form>
       		<div class="container-fluid">
 	      	  <div class="form-group row" style="margin-bottom: -.5rem;">
-	      	  	<!-- 
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<label for="queryGroup" class="font-weight-bold" style="width: 25%"><spring:message code="group.name" /></label>
-	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 70%">
+	    	    	<label for="queryGroup" class="font-weight-bold must" style="width: 35%"><spring:message code="group.name" /></label>
+	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 60%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${groupList}" />
                     </form:select>
 	    	    </div>
-	    	     -->
 	    	    <div class="col-lg-3 group-field-other">
 	    	    	<label for="queryDateBegin" class="font-weight-bold must" style="width: 35%"><spring:message code="date" /></label>
 	    	    	<input type="date" id="queryDateBegin" style="width: 60%">
@@ -231,4 +229,10 @@
 </div>
 <!-- Modal [Compare] end -->
 	
+<c:set var="val"><spring:message code="group.name"/></c:set>
+
+<script>
+	var msg_chooseGroup = "請選擇<spring:message code='group.name' />";
+	var msg_chooseDate = "請選擇<spring:message code='date' />";
+</script>
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.module.net.flow.min.js"></script>

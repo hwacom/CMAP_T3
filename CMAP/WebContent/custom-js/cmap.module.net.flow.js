@@ -70,8 +70,13 @@ function countDown(status) {
 function findData(from) {
 	$('#queryFrom').val(from);
 	
+	if ($("#queryGroup").val().trim().length == 0) {
+		alert(msg_chooseGroup);
+		return;
+	}
+	
 	if ($("#queryDateBegin").val().trim().length == 0) {
-		alert("請選擇日期");
+		alert(msg_chooseDate);
 		return;
 	}
 	

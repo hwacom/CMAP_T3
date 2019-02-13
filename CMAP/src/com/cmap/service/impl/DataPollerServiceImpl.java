@@ -40,6 +40,7 @@ import com.cmap.dao.DataPollerDAO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DataPollerMapping;
 import com.cmap.model.DataPollerSetting;
+import com.cmap.plugin.module.netflow.NetFlowDAO;
 import com.cmap.service.DataPollerService;
 import com.cmap.service.impl.jobs.BaseJobImpl.Result;
 import com.cmap.service.vo.DataPollerServiceVO;
@@ -52,6 +53,9 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	@Autowired
 	private DataPollerDAO dataPollerDAO;
+	
+	@Autowired
+	private NetFlowDAO netFlowDAO;
 
 	private String getTodayTableName(String interval, String tableBaseName) {
 		String tableName = tableBaseName;
@@ -493,6 +497,20 @@ public class DataPollerServiceImpl implements DataPollerService {
 							} catch (ServiceLayerException e) {
 								throw e;
 							}
+						}
+						
+					} else if (StringUtils.equals(setting.getRecordByMapping(), Constants.DATA_Y)) {
+						if (StringUtils.equals(setting.getDataType(), Constants.DATA_TYPE_OF_NET_FLOW)) {
+							/*
+							 * 若是 NET_FLOW plugin，以GROUP_ID查找Mapping檔取得要寫入的TABLE名稱
+							 */
+							String groupId = specialFieldMap.get(Constants.GROUP_ID);
+							String retTableName = netFlowDAO.findTargetTableNameByGroupId(groupId);
+							
+							if (StringUtils.isBlank(retTableName)) {
+								throw new ServiceLayerException("群組ID(GROUP_ID)查無對照表目標寫入TABLE_NAME設定");
+							}
+							recordDateTableName = retTableName;
 						}
 					}
 
