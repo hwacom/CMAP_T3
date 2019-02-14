@@ -149,6 +149,9 @@ public class Constants {
 
 	public static final String STORE_METHOD_OF_FILE = "FILE";
 	public static final String STORE_METHOD_OF_DB = "DB";
+	
+	public static final String RECORD_BY_DAY = "DAY";
+	public static final String RECORD_BY_MAPPING = "MAPPING";
 
 	public static final ConnectionMode DEFAULT_DEVICE_CONNECTION_MODE = ConnectionMode.TELNET;
 

@@ -26,7 +26,7 @@
                     </form:select>
 				</div>
 				<div class="col-lg-4 group-field-other">
-	    	    	<span class="font-weight-bold" style="width: 20%">執行日期</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="execute.date" /></span>
 	    	    	<input type="date" id="queryExcuteDateBegin" style="width: 35%">
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
 	    	    	<input type="date" id="queryExcuteDateEnd" style="width: 35%">
@@ -45,7 +45,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -72,7 +72,7 @@
 				    </div>
 				  </div>
 				  <div class="form-group row">
-				  	<label for="bkdate_begin_1" class="col-sm-2 col-form-label">執行日期</label>
+				  	<label for="bkdate_begin_1" class="col-sm-2 col-form-label"><spring:message code="execute.date" /></label>
 				  	<div class="col-sm-4">
 				      <input type="date" class="form-control form-control-sm" id="queryExcuteDateBegin_mobile">
 				    </div>
@@ -97,12 +97,4 @@
 
 </section>
 
-
-<script>
-	var resutTable;
-
-	$(document).ready(function() {
-		changeDeviceMenu("queryDevice", $("#queryGroup").val());
-	});
-	
-</script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.record.main.min.js"></script>

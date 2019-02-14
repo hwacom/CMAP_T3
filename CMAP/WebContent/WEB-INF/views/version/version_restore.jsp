@@ -38,7 +38,7 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnRestore">還原</button>
+		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnRestore"><spring:message code="btn.restore" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -50,7 +50,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -113,16 +113,16 @@
   <div class="modal-dialog modal-mid" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="viewVersionModalLabel"><span id="msgModal_title">版本還原</span></h5>
+        <h5 class="modal-title" id="viewVersionModalLabel"><span id="msgModal_title"><spring:message code="version.restore" /></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
       	<div class="form-group row">
-      		<label for="viewVersionModal_viewContent" class="col-md-10 col-sm-12 col-form-label">請選擇要還原的版本號 :</label>
+      		<label for="viewVersionModal_viewContent" class="col-md-10 col-sm-12 col-form-label"><spring:message code="please.choose.restore.version" /> :</label>
       		<div class="col-md-2 col-sm-12" id="viewVersionModal_viewContent">
-      			<a href="#" onclick="pressViewConfig()"><span data-feather="zoom-in"></span>[預覽]</a>
+      			<a href="#" onclick="pressViewConfig()"><span data-feather="zoom-in"></span>[<spring:message code="preview" />]</a>
       		</div>
       	</div>
      	<div class="form-group row">
@@ -133,11 +133,11 @@
       <div class="modal-footer">
       	<div class="col-12 row center">
       		<div class="col-2">
-	      		<button type="button" class="btn btn-success" id="btnRestoreConfirm" style="width: 100%;">確認</button>
+	      		<button type="button" class="btn btn-success" id="btnRestoreConfirm" style="width: 100%;"><spring:message code="btn.confirm" /></button>
 	      	</div>
 	      	<div class="col-1"></div>
 	      	<div class="col-2">
-	      		<button type="submit" class="btn btn-secondary" id="btnRestoreCancel" style="width: 100%;">取消</button>
+	      		<button type="submit" class="btn btn-secondary" id="btnRestoreCancel" style="width: 100%;"><spring:message code="btn.cancel" /></button>
 	      	</div>
       	</div>
       </div>

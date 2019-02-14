@@ -82,12 +82,51 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 		return tableName;
 	}
+	
+	private String getGroupIdMapping2TableName(String groupId) throws ServiceLayerException {
+		String tableName = null;
+		try {
+			tableName = netFlowDAO.findTargetTableNameByGroupId(groupId);
+			
+			if (StringUtils.isBlank(tableName)) {
+				throw new ServiceLayerException("查詢groupId對應TableName為空，groupId >> " + groupId);
+			}
+			
+		} catch (ServiceLayerException sle) {
+			log.error(sle.toString(), sle);
+			
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("取得groupId對應TableName失敗，groupId >> " + groupId);
+		}
+
+		return tableName;
+	}
+	
+	private String getQueryTableName(NetFlowVO nfVO) throws ServiceLayerException {
+		final String groupId = nfVO.getQueryGroupId();
+		String recordBy = dataPollerService.getRecordBySetting(Constants.DATA_TYPE_OF_NET_FLOW);
+		
+		String queryTableName = null;
+		
+		switch (recordBy) {
+			case Constants.RECORD_BY_DAY:
+				queryTableName = getSpecifyDayTableName(nfVO.getQueryDateBegin());
+				break;
+				
+			case Constants.RECORD_BY_MAPPING:
+				queryTableName = getGroupIdMapping2TableName(groupId);
+				break;
+		}
+		
+		return queryTableName;
+	}
 
 	@Override
 	public long countNetFlowRecordFromDB(NetFlowVO nfVO, List<String> searchLikeField) throws ServiceLayerException {
 		long retCount = 0;
 		try {
-			retCount = netFlowDAO.countNetFlowDataFromDB(nfVO, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
+			retCount = netFlowDAO.countNetFlowDataFromDB(nfVO, searchLikeField, getQueryTableName(nfVO));
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -100,7 +139,8 @@ public class NetFlowServiceImpl implements NetFlowService {
 	public List<NetFlowVO> findNetFlowRecordFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException {
 		List<NetFlowVO> retList = new ArrayList<>();
 		try {
-			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, getSpecifyDayTableName(nfVO.getQueryDateBegin()));
+			
+			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, getQueryTableName(nfVO));
 
 			if (dataList != null && !dataList.isEmpty()) {
 				List<String> fieldList = dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_SOURCE);

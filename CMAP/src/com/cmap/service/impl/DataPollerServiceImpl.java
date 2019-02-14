@@ -1161,4 +1161,33 @@ public class DataPollerServiceImpl implements DataPollerService {
 		}
 		return retVal;
 	}
+
+	@Override
+	public String getRecordBySetting(String dataType) throws ServiceLayerException {
+		String retVal = "";
+		try {
+			List<DataPollerSetting> settings = dataPollerDAO.findDataPollerSettingByDataType(dataType);
+
+			if (settings == null || (settings != null && settings.isEmpty())) {
+				if (!StringUtils.equals(dataType, Constants.DATA_STAR_SYMBOL)) {
+					return getRecordBySetting(Constants.DATA_STAR_SYMBOL);
+				}
+
+			} else {
+				DataPollerSetting setting = settings.get(0);
+				
+				if (StringUtils.equals(setting.getRecordByDay(), Constants.DATA_Y)) {
+					retVal = Constants.RECORD_BY_DAY;
+					
+				} else  if (StringUtils.equals(setting.getRecordByMapping(), Constants.DATA_Y)) {
+					retVal = Constants.RECORD_BY_MAPPING;
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			throw new ServiceLayerException("取得 RECORD_BY 異常");
+		}
+		return retVal;
+	}
 }

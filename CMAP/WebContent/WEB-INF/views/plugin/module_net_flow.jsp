@@ -37,26 +37,26 @@
 	    	  </div>
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
 	    	    <div class="col-lg-3 group-field-other">
-					<label for="query_SourceIp" class="font-weight-bold" style="width: 35%">Source_IP</label>
-					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(後模糊<spring:message code="inquiry" />)">
+					<label for="query_SourceIp" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.source.ip" /></label>
+					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
-					<label for="query_DestinationIp" class="font-weight-bold" style="width: 45%">Destination_IP</label>
-					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(後模糊<spring:message code="inquiry" />)">
+					<label for="query_DestinationIp" class="font-weight-bold" style="width: 45%"><spring:message code="net.flow.destination.ip" /></label>
+					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
-					<label for="query_SenderIp" class="font-weight-bold" style="width: 35%">Sender_IP</label>
-					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(後模糊<spring:message code="inquiry" />)">
+					<label for="query_SenderIp" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.sender.ip" /></label>
+					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
 				</div>
 			  </div>
 			  <div class="form-group row" style="margin-bottom: -.2rem;">
 			  	<div class="col-lg-3 group-field-other">
-					<label for="query_SourcePort" class="font-weight-bold" style="width: 35%">Source_Port</label>
-					<input type="text" id="query_SourcePort" class="input-port" style="width: 60%" placeholder="(完全比對)">
+					<label for="query_SourcePort" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.source.port" /></label>
+					<input type="text" id="query_SourcePort" class="input-port" style="width: 60%" placeholder="(<spring:message code="complete.comparsion" />)">
 				</div>
 				<div class="col-lg-3 group-field-other">
-					<label for="query_DestinationPort" class="font-weight-bold" style="width: 45%">Destination_Port</label>
-					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%" placeholder="(完全比對)">
+					<label for="query_DestinationPort" class="font-weight-bold" style="width: 45%"><spring:message code="net.flow.destination.port" /></label>
+					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%" placeholder="(<spring:message code="complete.comparsion" />)">
 				</div>
 			  </div>
 			  <!-- 
@@ -90,7 +90,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -108,31 +108,31 @@
 		    	  </div>
 		    	   -->
 		    	  <div class="form-group row">
-		    	  	<label for="query_SourceIp_mobile" class="col-sm-2 col-form-label">Source_IP</label>
+		    	  	<label for="query_SourceIp_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.source.ip" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_SourceIp_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="query_SourcePort_mobile" class="col-sm-2 col-form-label">Source_Port</label>
+		    	  	<label for="query_SourcePort_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.source.port" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm input-port" id="query_SourcePort_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="query_DestinationIp_mobile" class="col-sm-2 col-form-label">Destination_IP</label>
+		    	  	<label for="query_DestinationIp_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.destination.ip" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_DestinationIp_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="query_DestinationPort_mobile" class="col-sm-2 col-form-label">Destination_Port</label>
+		    	  	<label for="query_DestinationPort_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.destination.port" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm input-port" id="query_DestinationPort_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="query_SenderIp_mobile" class="col-sm-2 col-form-label">Sender_IP</label>
+		    	  	<label for="query_SenderIp_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.sender.ip" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="query_SenderIp_mobile">
 				  </div>
 				  <div class="form-group row">
-		    	  	<label for="queryMac_mobile" class="col-sm-2 col-form-label">MAC</label>
+		    	  	<label for="queryMac_mobile" class="col-sm-2 col-form-label"><spring:message code="net.flow.mac" /></label>
 		    	  	<input type="text" class="col-sm-10 form-control form-control-sm" id="queryMac_mobile">
 				  </div>
 				  <div class="form-group row">
-				  	<label for="queryDateBegin_mobile" class="col-sm-2 col-form-label">執行日期</label>
+				  	<label for="queryDateBegin_mobile" class="col-sm-2 col-form-label"><spring:message code="execute.date" /></label>
 				  	<div class="col-sm-4">
 				      <input type="date" class="form-control form-control-sm" id="queryDateBegin_mobile">
 				    </div>
@@ -177,18 +177,18 @@
   <div class="modal-dialog modal-mid" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="viewProvisionLogModalLabel"><span id="msgModal_title">供裝紀錄執行結果明細</span></h5>
+        <h5 class="modal-title" id="viewProvisionLogModalLabel"><span id="msgModal_title"><spring:message code="provision.execute.result.detail" /></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
      	<div class="form-group row">
-        	<label for="viewModal_beginTime" class="col-md-2 col-sm-12 col-form-label">執行時間 :</label>
+        	<label for="viewModal_beginTime" class="col-md-2 col-sm-12 col-form-label"><spring:message code="execute.time" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_beginTime" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_userName" class="col-md-2 col-sm-12 col-form-label">使用者 :</label>
+        	<label for="viewModal_userName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="user" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_userName" readonly>
         </div>
         <div class="form-group row">
@@ -208,11 +208,11 @@
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_scriptName" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_reason" class="col-md-2 col-sm-12 col-form-label">供裝原因 :</label>
+        	<label for="viewModal_reason" class="col-md-2 col-sm-12 col-form-label"><spring:message code="provision.reason" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_reason" readonly>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_result" class="col-md-2 col-sm-12 col-form-label">執行結果 :</label>
+        	<label for="viewModal_result" class="col-md-2 col-sm-12 col-form-label"><spring:message code="execute.result" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_result" readonly>
         </div>
         <div>
@@ -232,7 +232,7 @@
 <c:set var="val"><spring:message code="group.name"/></c:set>
 
 <script>
-	var msg_chooseGroup = "請選擇<spring:message code='group.name' />";
-	var msg_chooseDate = "請選擇<spring:message code='date' />";
+	var msg_chooseGroup = '<spring:message code="please.choose" /><spring:message code="group.name" />';
+	var msg_chooseDate = '<spring:message code="please.choose" /><spring:message code="date" />';
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.module.net.flow.min.js"></script>

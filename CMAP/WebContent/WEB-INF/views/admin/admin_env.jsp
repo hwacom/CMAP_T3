@@ -26,24 +26,24 @@
         <div class="container-fluid">
         	<div id="defaultActionBar" class="row">
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd">新增</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd"><spring:message code="btn.add" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify">修改</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify"><spring:message code="btn.modify" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete">刪除</button>
+		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete"><spring:message code="btn.delete" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-        			<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnRefreshAll">refreshAll</button>
+        			<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnRefreshAll"><spring:message code="btn.refresh.all" /></button>
 		  	    </div>
         	</div>
         	<div id="modifyActionBar" class="row" style="display: none">
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModifySubmit">送出</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModifySubmit"><spring:message code="btn.submit" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnModifyCancel">取消</button>
+		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnModifyCancel"><spring:message code="btn.cancel" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -55,7 +55,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -81,11 +81,11 @@
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
-		      <th scope="col" nowrap="nowrap">備註</th>
-		      <th scope="col" nowrap="nowrap">參數名稱</th>
-		      <th scope="col" nowrap="nowrap">是否同步?</th>
-		      <th scope="col" nowrap="nowrap">參數值(DB)</th>
-		      <th scope="col" nowrap="nowrap">參數值(Env)</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="remark" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="variable.name" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="synchronize.or.not" />?</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="variable.value" />(DB)</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="variable.value" />(Env)</th>
 		      <th scope="col" nowrap="nowrap">CREATE_TIME</th>
 		      <th scope="col" nowrap="nowrap">CREATE_BY</th>
 		      <th scope="col" nowrap="nowrap">UPDATE_TIME</th>

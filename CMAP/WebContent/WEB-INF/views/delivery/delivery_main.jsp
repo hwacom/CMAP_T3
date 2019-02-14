@@ -71,7 +71,7 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnDelivery">派送</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnDelivery"><spring:message code="btn.delivery" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -83,7 +83,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
 	<div id="search-bar-small-btn" class="row search-bar-small-btn">
 		<button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  	</button>
 	</div>
 	<div class="row search-bar-small">
@@ -122,10 +122,10 @@
 		      <th scope="col" nowrap="nowrap"><spring:message code="script.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="type" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
-		      <th scope="col" nowrap="nowrap">執行腳本內容</th>
-		      <th scope="col" nowrap="nowrap">執行腳本備註</th>
-		      <th scope="col" nowrap="nowrap">檢核腳本內容</th>
-		      <th scope="col" nowrap="nowrap">檢核腳本備註</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="execute.script.content" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="execute.script.remark" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="check.script.content" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="check.script.remark" /></th>
 		    </tr>
 		  </thead>
 		</table>
@@ -141,7 +141,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="stepModalLabel"><span id="msgModal_title">供裝派送</span></h5>
+        <h5 class="modal-title" id="stepModalLabel"><span id="msgModal_title"><spring:message code="provision.delivery" /></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -149,19 +149,19 @@
       <div class="modal-body">
       	<div class="row center">
       		<div class="step-img col-3 step step-current">
-      			<span>Step 1.</span><br><span>選擇<spring:message code="device.name" /></span>
+      			<span>Step 1.</span><br><span><spring:message code="please.choose" /><spring:message code="device.name" /></span>
       		</div>
       		<div class="col-1 step-arrow">
       			<i class="fas fa-angle-double-right step-arrow-img"></i>
       		</div>
       		<div class="step-img col-3 step">
-      			<span>Step 2.</span><br><span>輸入變數值</span>
+      			<span>Step 2.</span><br><span><spring:message code="variable.enter" /></span>
       		</div>
       		<div class="col-1 step-arrow">
       			<i class="fas fa-angle-double-right step-arrow-img"></i>
       		</div>
       		<div class="step-img col-3 step">
-      			<span>Step 3.</span><br><span>確認派送</span>
+      			<span>Step 3.</span><br><span><spring:message code="delivery.confirm" /></span>
       		</div>
       	</div>
       	<div class="row center">
@@ -174,8 +174,10 @@
       	<div id="stepModal_scroll">
 	      	<div id="step1_section" style="display: inline;">
 	      	  	<div class="form-group row">
-		        	<label for="stepModal_chooseDevice" class="col-md-4 col-sm-6 col-form-label bold">請選擇<spring:message code="device.name" />(按住Ctrl可複選) :</label>
-		        	<label for="stepModal_searchDevice" class="col-md-1 col-sm-1 col-form-label bold right">搜尋</label>
+		        	<label for="stepModal_chooseDevice" class="col-md-4 col-sm-6 col-form-label bold">
+		        		<spring:message code="please.choose" /><spring:message code="device.name" />(<spring:message code="provision.press.ctrl.to.multiple.select" />) :
+		        	</label>
+		        	<label for="stepModal_searchDevice" class="col-md-1 col-sm-1 col-form-label bold right"><spring:message code="search" /></label>
 		    		<input type="text" class="form-control form-control-sm col-md-5 col-sm-" id="stepModal_searchDevice">
 		    		<img src="${pageContext.request.contextPath}/resources/images/loading.gif" id="stepModal_searchWaiting" alt="loading...">
 		        </div>
@@ -190,7 +192,7 @@
 		        	</label>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="stepModal_reason" class="col-md-2 col-sm-12 col-form-label bold">供裝原因 :</label>
+		        	<label for="stepModal_reason" class="col-md-2 col-sm-12 col-form-label bold"><spring:message code="provision.reason" /> :</label>
 		        	<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="stepModal_reason" name="stepModal_reason">
 		        </div>
 	      	</div>
@@ -199,7 +201,7 @@
 	      	<!-- [START] Step.2 -->
 	      	<div id="step2_section" style="display: none;">
 	      	  <div class="form-group row">
-		      	<label for="stepModal_enterVarRemark" class="col-md-12 col-sm-2 col-form-label bold">請確認派送對象並輸入變數值 :</label>
+		      	<label for="stepModal_enterVarRemark" class="col-md-12 col-sm-2 col-form-label bold"><spring:message code="please.confirm.target.and.enter.variable.value" /> :</label>
 		      </div>
 		      <div id="step2_target_section">
 		      	<table id="step2_target_table" class="myTable">
@@ -208,7 +210,7 @@
 			      	  	<th rowspan="3" width="3%"><spring:message code="seq" /></th>
 			      	  	<th rowspan="3" width="12%"><spring:message code="group.name" /></th>
 			      	  	<th rowspan="3" width="25%"><spring:message code="device.name" /></th>
-			      	  	<th colspan="1" width="60%" id="step2_varKey_td">變數值</th>
+			      	  	<th colspan="1" width="60%" id="step2_varKey_td"><spring:message code="variable.value" /></th>
 		      	  	</tr>
 		      	  	<tr>
 		      	  		<td>interface_id</td>
@@ -242,12 +244,12 @@
       <div class="modal-footer">
       	<div class="col-12 row center">
       		<div class="col-2">
-	      		<button type="button" class="btn btn-secondary" id="btnStepGoPrev" style="width: 100%;">上一步</button>
+	      		<button type="button" class="btn btn-secondary" id="btnStepGoPrev" style="width: 100%;"><spring:message code="btn.step.back" /></button>
 	      	</div>
 	      	<div class="col-1"></div>
 	      	<div class="col-2">
-	      		<button type="submit" class="btn btn-success" id="btnStepGoNext" style="width: 100%;">下一步</button>
-	      		<button type="button" class="btn btn-success" id="btnStepGoFire" style="width: 100%;">確認派送</button>
+	      		<button type="button" class="btn btn-success" id="btnStepGoNext" style="width: 100%;"><spring:message code="btn.step.next" /></button>
+	      		<button type="button" class="btn btn-success" id="btnStepGoFire" style="width: 100%;"><spring:message code="btn.delivery.confirm" /></button>
 	      	</div>
       	</div>
       </div>
@@ -255,59 +257,5 @@
   </div>
 </div>
 <!-- Modal [View] end -->
-
-<!-- 
-<script>
-	$(document).ready(function() {
-		changeSearchBy();	
-	});
-	
-	function changeSearchBy() {
-		var selectVal = $('#searchBySelect').val();
-		if (selectVal == "script") {
-			$('#searchBy_script').show();
-			$('#searchBy_device_1').hide();
-			$('#searchBy_device_2').hide();
-		} else {
-			$('#searchBy_script').hide();
-			$('#searchBy_device_1').show();
-			$('#searchBy_device_2').show();
-		}
-	}
-	
-	function changeDeviceMenu(groupId) {
-		$("#device option").remove();
-		$("#device").append("<option value=''>=== ALL ===</option>");
-		
-		$.ajax({
-			url : '${pageContext.request.contextPath}/base/getDeviceMenu',
-			data : {
-				groupId: groupId
-			},
-			type : "POST",
-			dataType : 'json',
-			async: false,
-			success : function(resp) {
-
-				if (resp.code == '200') {
-					var obj = $.parseJSON(resp.data.device);
-					$.each(obj, function(key, value){
-						$("#device").append("<option value='"+key+"'>"+value+"</option>");
-					});
-					
-				} else {
-					alert(resp);
-				}
-			},
-
-			error : function(xhr, ajaxOptions, thrownError) {
-				alert("error");
-				alert(xhr.status);
-				alert(thrownError);
-			}
-		});
-	}
-</script>
- -->
 
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.delivery.main.min.js"></script>

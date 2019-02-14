@@ -3,6 +3,7 @@ package com.cmap.plugin.module.netflow;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.controller.BaseController;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.i18n.DatabaseMessageSourceBase;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.DataPollerService;
 
@@ -38,6 +40,9 @@ public class NetFlowController extends BaseController {
 
 	@Autowired
 	private NetFlowService netFlowService;
+	
+	@Autowired
+	private DatabaseMessageSourceBase messageSource;
 
 	/**
 	 * 初始化選單
@@ -114,14 +119,14 @@ public class NetFlowController extends BaseController {
 	@RequestMapping(value = "getNetFlowData.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse getNetFlowData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(name="queryGroup", required=false, defaultValue="") String queryGroup,
+			@RequestParam(name="queryGroup", required=true, defaultValue="") String queryGroup,
 			@RequestParam(name="querySourceIp", required=false, defaultValue="") String querySourceIp,
 			@RequestParam(name="queryDestinationIp", required=false, defaultValue="") String queryDestinationIp,
 			@RequestParam(name="querySenderIp", required=false, defaultValue="") String querySenderIp,
 			@RequestParam(name="querySourcePort", required=false, defaultValue="") String querySourcePort,
 			@RequestParam(name="queryDestinationPort", required=false, defaultValue="") String queryDestinationPort,
 			@RequestParam(name="queryMac", required=false, defaultValue="") String queryMac,
-			@RequestParam(name="queryDateBegin", required=false, defaultValue="") String queryDateBegin,
+			@RequestParam(name="queryDateBegin", required=true, defaultValue="") String queryDateBegin,
 			@RequestParam(name="queryDateEnd", required=false, defaultValue="") String queryDateEnd,
 			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
 			@RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
@@ -134,8 +139,14 @@ public class NetFlowController extends BaseController {
 		List<NetFlowVO> dataList = new ArrayList<>();
 		NetFlowVO nfVO;
 		try {
+			if (StringUtils.isBlank(queryGroup)) {
+				String msg = messageSource.getMessage("please.choose", Locale.TAIWAN, null) + messageSource.getMessage("group.name", Locale.TAIWAN, null);
+				return new DatatableResponse(
+						new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
+			}
 			if (StringUtils.isBlank(queryDateBegin)) {
-				return new DatatableResponse(new Long(0), new ArrayList<NetFlowVO>(), new Long(0), "請選擇日期");
+				String msg = messageSource.getMessage("please.choose", Locale.TAIWAN, null) + messageSource.getMessage("date", Locale.TAIWAN, null);
+				return new DatatableResponse(new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
 			}
 
 			List<String> targetFieldList = new ArrayList<>();
@@ -179,6 +190,7 @@ public class NetFlowController extends BaseController {
 				}
 
 				NetFlowVO newVO = new NetFlowVO();
+				newVO.setQueryGroupId(queryGroup);
 				newVO.setQueryDateBegin(queryDateBegin);
 				total = netFlowService.countNetFlowRecordFromDB(newVO, targetFieldList);
 			}

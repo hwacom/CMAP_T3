@@ -23,22 +23,22 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd">新增</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd"><spring:message code="btn.add" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify">修改</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnModify"><spring:message code="btn.modify" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnExcute">立即執行</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnExcute"><spring:message code="btn.execute.immediately" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnPause">暫停</button>
+		  	    	<button type="button" class="btn btn-dark btn-sm" style="width: 100%" id="btnPause"><spring:message code="btn.pause" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnResume">重啟</button>
+		  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnResume"><spring:message code="btn.restart" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete">刪除</button>
+		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete"><spring:message code="btn.delete" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -50,7 +50,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -124,7 +124,7 @@
                 	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label"><spring:message code="schedule" /><spring:message code="type" /><span class="pull-right" style="color: red;">＊ </span></label>
                   	<div class="col-md-10 col-sm-9">
                   		<form:select path="inputSchedType" id="inputSchedType" name="inputSchedType" class="form-control form-control-sm">
-		                  	<form:option value="" label="=== 請選擇  ===" />
+		                  	<form:option value="" label="=== <spring:message code="please.choose" />  ===" />
 		                  	<form:options items="${inputSchedType}" />
 		                </form:select>
                   	</div>
@@ -163,7 +163,7 @@
 	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
 	            	<div class="col-md-10 col-sm-9">
 	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" name="inputMisFirePolicy" class="form-control form-control-sm">
-		                  	<form:option value="" label="=== 請選擇  ===" />
+		                  	<form:option value="" label="=== <spring:message code="please.choose" />  ===" />
 		                  	<form:options items="${inputMisFirePolicy}" />
 		                </form:select>
 	                </div>
@@ -284,8 +284,8 @@
               </div>
 			</div>
 			<div class="modal-footer">
-        		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
-        		<button type="button" class="btn btn-success" id="btnSave">保存</button>
+        		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal"><spring:message code="btn.close" /></button>
+        		<button type="button" class="btn btn-success" id="btnSave"><spring:message code="btn.save" /></button>
 			</div>
         </form>
       </div>
@@ -419,7 +419,7 @@
           </div>
 		</div>
 		<div class="modal-footer">
-       		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
+       		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal"><spring:message code="btn.close" /></button>
 		</div>
       </div>
     </div>

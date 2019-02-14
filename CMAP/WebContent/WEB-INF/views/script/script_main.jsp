@@ -32,22 +32,22 @@
 	        <div class="container-fluid">
 	        	<div class="row">
 	        		<div class="col-lg-2 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnCompare">新增腳本</button>
+			  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.add" /></button>
 			  	    </div>
 			  	    <div class="col-lg-2 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnCompare">修改腳本</button>
+			  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.modify" /></button>
 			  	    </div>
 			  	    <div class="col-lg-2 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnCompare">刪除腳本</button>
+			  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.delete" /></button>
 			  	    </div>
 			  	    <div class="center" style="width: 3%">
 			  	    	<span style="font-size: 1.5rem">|</span>
 			  	    </div>
 			  	    <div class="col-lg-2 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare">變數檔維護</button>
+			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare"><spring:message code="variable.modify" /></button>
 			  	    </div>
 			  	    <div class="col-lg-2 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare">腳本類別維護</button>
+			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.type.modify" /></button>
 			  	    </div>
 	        	</div>
 	        </div>
