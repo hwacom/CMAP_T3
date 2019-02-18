@@ -21,10 +21,19 @@ public class Env {
 	 */
 	public static String SHOW_MENU_TREE_PRTG;					// PRTG index & net_flow & dashboard
 	public static String SHOW_MENU_ITEM_CM_SCRIPT;				// 組態管理 > 腳本管理
+	public static String SHOW_MENU_TREE_ABNORMAL_ALARM;			// 異常告警
+	public static String SHOW_MENU_ITEM_IP_CONFLICT;			// 異常告警 > IP衝突查詢
+	public static String SHOW_MENU_ITEM_UNAUTHORIZED_DHCP;		// 異常告警 > 未授權DHCP設備
+	public static String SHOW_MENU_ITEM_LOOP_LOOP;				// 異常告警 > LOOP迴圈
+	public static String SHOW_MENU_ITEM_DEVICE_FAILURE;			// 異常告警 > 設備故障
+	public static String SHOW_MENU_ITEM_ABNORMAL_TRAFFIC;		// 異常告警 > 流量異常
+	public static String SHOW_MENU_ITEM_OTHER_EXCEPTION;		// 異常告警 > 其他異常
 	public static String SHOW_MENU_TREE_PLUGIN;					// 資安通報
 	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;		// 資安通報 > Wifi查詢
 	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		// 資安通報 > Net flow查詢
 	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		// 資安通報 > 開關PORT
+	public static String SHOW_MENU_ITEM_IP_OPEN_BLOCK;			// 資安通報 > IP開通/封鎖
+	public static String SHOW_MENU_ITEM_MAC_OPEN_BLOCK;			// 資安通報 > 網卡MAC開通/封鎖
 
 	public static Boolean ENABLE_CM_SCRIPT_MODIFY;				// 設定是否啟用腳本管理編輯功能(Y:啟用;N:不啟用，僅可做查詢)
 

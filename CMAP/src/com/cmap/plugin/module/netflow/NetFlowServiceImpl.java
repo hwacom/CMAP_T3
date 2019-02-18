@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,6 @@ import com.cmap.model.DataPollerSetting;
 import com.cmap.model.DeviceList;
 import com.cmap.service.DataPollerService;
 import com.cmap.service.vo.DataPollerServiceVO;
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 @Service("netFlowService")
 @Transactional
@@ -56,7 +56,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 		 */
 		Calendar cal = Calendar.getInstance();
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);	//取得當前系統時間是星期幾 (Sunday=1、Monday=2、...)
-		tableName += "_" + dayOfWeek;
+		tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, '0'); //TABLE流水編碼部分補0成3碼(ex:1→001)
 
 		return tableName;
 	}
@@ -73,7 +73,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 			cal.setTime(queryDate);
 
 			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);	//取得當前系統時間是星期幾 (Sunday=1、Monday=2、...)
-			tableName += "_" + dayOfWeek;
+			tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, '0'); //TABLE流水編碼部分補0成3碼(ex:1→001)
 
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
