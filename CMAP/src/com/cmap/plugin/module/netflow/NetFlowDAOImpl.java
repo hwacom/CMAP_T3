@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -508,5 +509,27 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 		}
 
 		return chkResult;
+	}
+
+	@Override
+	public String findTargetTableNameByGroupId(String groupId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select table_name ")
+		  .append(" from Net_Flow_Table_Mapping ")
+		  .append(" where 1=1 ")
+		  .append(" and group_id = :groupId ");
+		
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createNativeQuery(sb.toString());
+	    q.setParameter("groupId", groupId);
+	    
+	    List<Object> retList = (List<Object>)q.list();
+	    
+	    if (retList != null && !retList.isEmpty()) {
+	    	return Objects.toString(retList.get(0), null);
+	    	
+	    } else {
+	    	return null;
+	    }
 	}
 }

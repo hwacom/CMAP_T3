@@ -70,8 +70,13 @@ function countDown(status) {
 function findData(from) {
 	$('#queryFrom').val(from);
 	
+	if ($("#queryGroup").val().trim().length == 0) {
+		alert(msg_chooseGroup);
+		return;
+	}
+	
 	if ($("#queryDateBegin").val().trim().length == 0) {
-		alert("請選擇日期");
+		alert(msg_chooseDate);
 		return;
 	}
 	
@@ -100,6 +105,7 @@ function findData(from) {
 			"scrollX"		: true,
 			"scrollY"		: dataTableHeight,
 			"scrollCollapse": true,
+			"pageLength"	: 100,
 			"language" : {
 	    		"url" : _ctx + "/resources/js/dataTable/i18n/Chinese-traditional.json"
 	        },

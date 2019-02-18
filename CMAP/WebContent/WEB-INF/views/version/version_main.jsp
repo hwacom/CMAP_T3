@@ -12,7 +12,7 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row">
 	      	  	<div class="col-lg-1 group-field-other center">
-	      	  		<span class="font-weight-bold group-title">第1組</span>
+	      	  		<span class="font-weight-bold group-title"><spring:message code="group.first" /></span>
 	      	  	</div>
 	    	    <div class="col-lg-2 group-field-left">
 	    	    	<span class="font-weight-bold" style="width: 25%"><spring:message code="group.name" /></span>
@@ -29,13 +29,13 @@
                     </form:select>
 				</div>
 	    	    <div class="col-lg-4 group-field-right">
-	    	    	<span class="font-weight-bold" style="width: 20%">備份日期</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="backup.date" /></span>
 	    	    	<input type="date" id="queryExcuteDateBegin1" style="width: 35%" placeholder="yyyy-mm-dd">
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
 	    	    	<input type="date" id="queryExcuteDateEnd1" style="width: 35%" placeholder="yyyy-mm-dd">
 	    	    </div>
 	    	    <div class="col-lg-2 group-field-other">
-	    	    	<span class="font-weight-bold" style="width: 25%">分類</span>
+	    	    	<span class="font-weight-bold" style="width: 25%"><spring:message code="category" /></span>
 					<form:select path="queryConfigType" id="queryConfigType" style="width: 70%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${configTypeList}" />
@@ -43,13 +43,13 @@
 	    	    </div>
 	    	    <div class="col-lg-1" style="padding-top: 5px;">
 	    	    	<input type="checkbox" id="queryNewChkbox" value="" style="vertical-align:middle;" checked="checked">&nbsp;
-	    	    	<label for="queryNewChkbox" class="font-weight-bold">最新版</label>
+	    	    	<label for="queryNewChkbox" class="font-weight-bold"><spring:message code="last.version" /></label>
 	    	    </div>
 	      	  </div>
 	      	  
 	      	  <div class="form-group row">
 	      	  	<div class="col-lg-1 group-field-other center">
-	      	  		<span class="font-weight-bold group-title">第2組</span>
+	      	  		<span class="font-weight-bold group-title"><spring:message code="group.second" /></span>
 	      	  	</div>
 	    	    <div class="col-lg-2 group-field-left">
 	    	    	<span class="font-weight-bold" style="width: 25%"><spring:message code="group.name" /></span>
@@ -66,7 +66,7 @@
                     </form:select>
 				</div>
 	    	    <div class="col-lg-4 group-field-right">
-	    	    	<span class="font-weight-bold" style="width: 20%">備份日期</span>
+	    	    	<span class="font-weight-bold" style="width: 20%"><spring:message code="backup.date" /></span>
 	    	    	<input type="date" id="queryExcuteDateBegin2" style="width: 35%" placeholder="yyyy-mm-dd">
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
 	    	    	<input type="date" id="queryExcuteDateEnd2" style="width: 35%" placeholder="yyyy-mm-dd">
@@ -84,10 +84,10 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnCompare">比對</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnCompare"><spring:message code="btn.compare" /></button>
 		  	    </div>
 		  	    <div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete">刪除</button>
+		  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete"><spring:message code="btn.delete" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -99,7 +99,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -109,7 +109,7 @@
 		  		<form>
 		      	  <div class="form-group row">
 		      	  	<div class="col-sm-12">
-		      	  		<span class="font-weight-bold group-title">第1組</span>
+		      	  		<span class="font-weight-bold group-title"><spring:message code="group.first" /></span>
 		      	  	</div>
 		      	  </div>
 		      	  <div class="form-group row">
@@ -131,7 +131,7 @@
 				    </div>
 				  </div>
 				  <div class="form-group row">
-				  	<label for="bkdate_begin_1" class="col-sm-2 col-form-label">備份日期</label>
+				  	<label for="bkdate_begin_1" class="col-sm-2 col-form-label"><spring:message code="backup.date" /></label>
 				  	<div class="col-sm-4">
 				      <input type="date" class="form-control form-control-sm" id="queryExcuteDateBegin1_mobile">
 				    </div>
@@ -142,7 +142,7 @@
 		    	  </div>
 		    	  <div class="form-group row">
 		      	  	<div class="col-sm-12">
-		      	  		<span class="font-weight-bold group-title">第2組</span>
+		      	  		<span class="font-weight-bold group-title"><spring:message code="group.second" /></span>
 		      	  	</div>
 		      	  </div>
 		      	  <div class="form-group row">
@@ -164,7 +164,7 @@
 				    </div>
 				  </div>
 				  <div class="form-group row">
-				  	<label for="bkdate_begin_2" class="col-sm-2 col-form-label">備份日期</label>
+				  	<label for="bkdate_begin_2" class="col-sm-2 col-form-label"><spring:message code="backup.date" /></label>
 				  	<div class="col-sm-4">
 				      <input type="date" class="form-control form-control-sm" id="queryExcuteDateBegin2_mobile">
 				    </div>
@@ -174,7 +174,7 @@
 				    </div>
 		    	  </div>
 		    	  <div class="form-group row">
-		    	    <label for="device_2" class="col-sm-2 col-form-label">分類</label>
+		    	    <label for="device_2" class="col-sm-2 col-form-label"><spring:message code="category" /></label>
 		    	    <div class="col-sm-10">
 		    	      <form:select path="queryConfigType" id="queryConfigType_mobile" class="form-control form-control-sm">
                         <form:option value="" label="=== ALL ===" />
@@ -184,7 +184,7 @@
 				  </div>
 				  <div class="form-group row">
 					<div class="col-sm-12">
-					  <input id="queryNewChkbox_mobile" type="checkbox" value="" style="vertical-align:middle;" checked="checked"> 最新版本
+					  <input id="queryNewChkbox_mobile" type="checkbox" value="" style="vertical-align:middle;" checked="checked"> <spring:message code="last.version" />
 					</div>
 				  </div>
 				  <div class="form-group row">
@@ -209,9 +209,9 @@
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
-		      <th scope="col" nowrap="nowrap">組態類型</th>
-		      <th scope="col" nowrap="nowrap">版本號</th>
-		      <th scope="col" nowrap="nowrap">備份時間</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="config.type" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="config.version" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="backup.time" /></th>
 		    </tr>
 		  </thead>
 		</table>
@@ -227,7 +227,7 @@
     <div class="modal-content">
       <div class="modal-header">
       
-        <h5 class="modal-title" id="exampleModalLabel"><span id="msgModal_title">版本比對</span></h5>
+        <h5 class="modal-title" id="exampleModalLabel"><span id="msgModal_title"><spring:message code="version.compare" /></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -236,9 +236,9 @@
       <div class="modal-body">
         <div class="form-group row">
         	<div class="col-1"></div>
-        	<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號 :</label>
+        	<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label"><spring:message code="config.version.short" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionLeft" readonly>
-    		<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label">版號 :</label>
+    		<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label"><spring:message code="config.version.short" /> :</label>
     		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionRight" readonly>
         </div>
         <div class="form-group row">

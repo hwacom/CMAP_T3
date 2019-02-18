@@ -21,4 +21,10 @@ public interface NetFlowDAO extends BaseDAO {
 			Integer startRow,
 			Integer pageLength);
 
+	/**
+	 * 以GROUP_ID查找對應表取得要寫入的目標TABLE_NAME
+	 * @param groupId
+	 * @return
+	 */
+	public String findTargetTableNameByGroupId(String groupId);
 }

@@ -38,7 +38,7 @@
         <div class="container-fluid">
         	<div class="row">
         		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnBackup">備份</button>
+		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnBackup"><spring:message code="backup" /></button>
 		  	    </div>
         	</div>
         </div>
@@ -50,7 +50,7 @@
     <!-- 查詢欄位 for 中小型解析度螢幕 -->
     <div id="search-bar-small-btn" class="row search-bar-small-btn">
   	  <button id="mobileMenuBtn" class="btn btn-success col-sm-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-	     	查詢條件 ▼
+	     	<spring:message code="query.condition" /> ▼
 	  </button>
 	</div>
 	<div class="row search-bar-small">
@@ -98,9 +98,9 @@
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
-		      <th scope="col" nowrap="nowrap">最新備份版本號</th>
-		      <th scope="col" nowrap="nowrap">備份類型</th>
-		      <th scope="col" nowrap="nowrap">最新備份時間</th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="last.backup.version" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="backup.type" /></th>
+		      <th scope="col" nowrap="nowrap"><spring:message code="last.backup.time" /></th>
 		    </tr>
 		  </thead>
 		</table>
@@ -117,7 +117,7 @@
     <div class="modal-content">
       <div class="modal-header">
       
-        <h5 class="modal-title" id="backupDialogModalLabel"><span id="msgModal_title"><spring:message code="action" />確認</span></h5>
+        <h5 class="modal-title" id="backupDialogModalLabel"><span id="msgModal_title"><spring:message code="action" /><spring:message code="confirm" /></span></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -134,14 +134,14 @@
                       <form:options items="${configTypeList}" />
                   </form:select>
                    -->
-                  <span>按下確認後將立即備份設備組態(Configuration)<br>請確認是否執行?</span>
+                  <span><spring:message code="backup.confirm.msg.1" />(Configuration)<br><spring:message code="backup.confirm.msg.2" />?</span>
                 </div>                              
             </div>
         </form>
       </div>
       <div class="modal-footer">
-      	<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal">關閉</button>
-      	<button type="button" class="btn btn-success" id="btnConfirm">確認</button>
+      	<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal"><spring:message code="close" /></button>
+      	<button type="button" class="btn btn-success" id="btnConfirm"><spring:message code="confirm" /></button>
 	  </div>
     </div>
   </div>

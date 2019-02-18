@@ -34,7 +34,7 @@ public class DatabaseMessageSourceBase extends AbstractMessageSource implements 
 	protected final String MAP_SPLIT_CODE = "|";
     protected final String DB_SPLIT_CODE = "_";
 
-	private Map<String, String> properties = new HashMap<String, String>();
+	private static Map<String, String> properties = new HashMap<String, String>();
 
 	@SuppressWarnings("unused")
 	private ResourceLoader resourceLoader;
