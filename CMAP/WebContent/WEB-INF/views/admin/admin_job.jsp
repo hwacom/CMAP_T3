@@ -117,6 +117,7 @@
         
       </div>
       <div class="modal-body">
+      	<spring:message code="please.choose" var="i18n_pleaseChoose"/>
         <form role="form" id="formEdit" name="formEdit">
         	<div class="card card-body">
         	  <div class="col-12">
@@ -124,7 +125,7 @@
                 	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label"><spring:message code="schedule" /><spring:message code="type" /><span class="pull-right" style="color: red;">＊ </span></label>
                   	<div class="col-md-10 col-sm-9">
                   		<form:select path="inputSchedType" id="inputSchedType" name="inputSchedType" class="form-control form-control-sm">
-		                  	<form:option value="" label="=== <spring:message code="please.choose" />  ===" />
+		                  	<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
 		                  	<form:options items="${inputSchedType}" />
 		                </form:select>
                   	</div>
@@ -163,7 +164,7 @@
 	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
 	            	<div class="col-md-10 col-sm-9">
 	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" name="inputMisFirePolicy" class="form-control form-control-sm">
-		                  	<form:option value="" label="=== <spring:message code="please.choose" />  ===" />
+		                  	<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
 		                  	<form:options items="${inputMisFirePolicy}" />
 		                </form:select>
 	                </div>
