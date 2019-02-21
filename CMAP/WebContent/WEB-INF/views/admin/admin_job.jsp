@@ -104,6 +104,8 @@
   
 </section>
 
+<spring:message code="please.choose" var="pleaseChoose"/>
+
 <!-- Modal [Add/Modify] start -->
 <div class="modal fade" id="addModifyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -125,7 +127,11 @@
                 	<label for="inputSchedType" class="col-md-2 col-sm-3 col-form-label"><spring:message code="schedule" /><spring:message code="type" /><span class="pull-right" style="color: red;">＊ </span></label>
                   	<div class="col-md-10 col-sm-9">
                   		<form:select path="inputSchedType" id="inputSchedType" name="inputSchedType" class="form-control form-control-sm">
+<<<<<<< HEAD
 		                  	<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
+=======
+		                  	<form:option value="" label="=== ${pleaseChoose }  ===" />
+>>>>>>> branch 'master' of https://github.com/hwacom/CMAP.git
 		                  	<form:options items="${inputSchedType}" />
 		                </form:select>
                   	</div>
@@ -164,7 +170,11 @@
 	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
 	            	<div class="col-md-10 col-sm-9">
 	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" name="inputMisFirePolicy" class="form-control form-control-sm">
+<<<<<<< HEAD
 		                  	<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
+=======
+		                  	<form:option value="" label="=== ${pleaseChoose }  ===" />
+>>>>>>> branch 'master' of https://github.com/hwacom/CMAP.git
 		                  	<form:options items="${inputMisFirePolicy}" />
 		                </form:select>
 	                </div>
