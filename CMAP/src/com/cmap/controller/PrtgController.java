@@ -310,6 +310,6 @@ public class PrtgController extends BaseController {
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 		}
-		return "prtg/netFlowSummary";
+		return "prtg/net_flow_summary";
 	}
 }
