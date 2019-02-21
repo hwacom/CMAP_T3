@@ -12,11 +12,23 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row" style="margin-bottom: -.5rem;">
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<label for="queryGroup" class="font-weight-bold must" style="width: 35%"><spring:message code="group.name" /></label>
+	    	    	<label for="queryIpAddr" class="font-weight-bold" style="width: 35%">IP Address</label>
+	    	    	<input type="text" id="queryIpAddr" style="width: 60%">
+	    	    </div>
+	    	    <div class="col-lg-3 group-field-other">
+	    	    	<label for="queryGroup" class="font-weight-bold" style="width: 35%"><spring:message code="group.name" /></label>
 	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 60%">
                         <form:option value="" label="=== ALL ===" />
                         <form:options items="${groupList}" />
                     </form:select>
+	    	    </div>
+	    	    <div class="col-lg-3 group-field-other">
+	    	    	<label for="queryDateBegin" class="font-weight-bold" style="width: 35%"><spring:message code="date" /></label>
+	    	    	<input type="date" id="queryDateBegin" style="width: 60%">
+	    	    	<!-- 
+	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
+	    	    	<input type="date" id="queryDateEnd" style="width: 35%">
+	    	    	 -->
 	    	    </div>
 	    	    <div class="col-lg-2" style="padding-top: 5px;">
 	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">
@@ -49,6 +61,16 @@
                         <form:options items="${groupList}" />
                     </form:select>
 		    	  </div>
+		    	  <div class="form-group row">
+				  	<label for="queryDateBegin_mobile" class="col-sm-2 col-form-label"><spring:message code="execute.date" /></label>
+				  	<div class="col-sm-4">
+				      <input type="date" class="form-control form-control-sm" id="queryDateBegin_mobile">
+				    </div>
+				    <div class="col-sm-1">~</div>
+				    <div class="col-sm-4">
+				      <input type="date" class="form-control form-control-sm" id="queryDateEnd_mobile">
+				    </div>
+		    	  </div>
 				  <div class="form-group row">
 		    	    <div class="col-sm-12">
 				      <button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_mobile"><spring:message code="inquiry" /></button>
@@ -67,15 +89,20 @@
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
+		      <th scope="col" nowrap="nowrap">異動描述<!-- <spring:message code="device.name" />--></th>
+		      <th scope="col" nowrap="nowrap">異動時間<!-- <spring:message code="device.name" />--></th>
+		      <th scope="col" nowrap="nowrap">IP Address<!-- <spring:message code="device.name" />--></th>
+		      <th scope="col" nowrap="nowrap">Mac Address<!-- <spring:message code="device.name" />--></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="device.name" /></th>
 		      <th scope="col" nowrap="nowrap">設備IP<!-- <spring:message code="device.name" />--></th>
 		      <th scope="col" nowrap="nowrap">Ports<!-- <spring:message code="device.name" />--></th>
+		      <th scope="col" nowrap="nowrap">Vlan<!-- <spring:message code="device.name" />--></th>
 		    </tr>
 		  </thead>
 		  <tbody>
-		  	<tr><td class="center">1</td><td class="center">047. 新港國中小</td><td class="left">SKES-C2960L-SW3.mlc.edu.tw</td><td class="center">120.104.248.172</td><td class="center">Gi0/24</td></tr>
-		  </tbody>			
+			<tr><td class="center">1</td><td class="left">D. Mac+Port異動</td><td class="left">2019/02/21 14:55</td><td class="center">120.104.236.101</td><td class="center">1c87.2cca.b334</td><td class="left">031. 田美國小</td><td class="left">TMES-C2960L-SW4.mlc.edu.tw</td><td class="center">120.104.236.88</td><td class="center">Te0/4</td><td class="center">Vlan2</td></tr>
+		  </tbody>
 		</table>
 	  </div>
 	</div>
@@ -83,4 +110,4 @@
   
 </section>
 
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.module.unauthorized.dhcp.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.module.ip.record.min.js"></script>

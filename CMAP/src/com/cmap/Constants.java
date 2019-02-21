@@ -149,7 +149,7 @@ public class Constants {
 
 	public static final String STORE_METHOD_OF_FILE = "FILE";
 	public static final String STORE_METHOD_OF_DB = "DB";
-	
+
 	public static final String RECORD_BY_DAY = "DAY";
 	public static final String RECORD_BY_MAPPING = "MAPPING";
 
@@ -198,6 +198,9 @@ public class Constants {
 	public static final String MAP_URL_OF_INDEX = "INDEX";
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
 	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";
+	public static final String MAP_URL_OF_DEVICE_FAILURE = "DEVICE_FAILURE";
+	public static final String MAP_URL_OF_ABNORMAL_TRAFFIC = "ABNORMAL_TRAFFIC";
+
 	/*
 	 * OIDC
 	 */

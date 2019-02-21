@@ -235,4 +235,4 @@
 	var msg_chooseGroup = '<spring:message code="please.choose" /><spring:message code="group.name" />';
 	var msg_chooseDate = '<spring:message code="please.choose" /><spring:message code="date" />';
 </script>
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.module.net.flow.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.module.net.flow.min.js"></script>

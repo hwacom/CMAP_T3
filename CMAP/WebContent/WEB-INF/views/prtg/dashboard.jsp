@@ -14,5 +14,5 @@
   
    <div id="uriFrame" style="width: 100%; height: 450px;" >&nbsp;</div>
    
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.prtg.common.min.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.prtg.dashboard.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.common.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.dashboard.min.js"></script>

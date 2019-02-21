@@ -4,6 +4,8 @@
 var URI_INDEX = "getPrtgIndexUri";
 var URI_DASHBOARD = "getPrtgDashboardUri";
 var URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
+var URI_DEVICE_FAILURE = "getPrtgDeviceFailureUri";
+var URI_ABNORMAL_TRAFFIC = "getPrtgAbnormalTrafficUri";
 
 var prtgLoginWindow;
 
