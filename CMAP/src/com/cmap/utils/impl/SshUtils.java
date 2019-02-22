@@ -168,7 +168,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 
 	@Override
 	public List<String> sendCommands(List<ScriptServiceVO> scriptList, ConfigInfoVO configInfoVO, StepServiceVO ssVO) throws Exception {
-		List<String> cmdOutputs = new ArrayList<String>();
+		List<String> cmdOutputs = new ArrayList<>();
 		try {
 			checkSshStatus();
 
@@ -219,6 +219,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		} catch (CommandExecuteException cee) {
 			throw cee;
 		} catch (Exception e) {
+			log.error(e.toString(), e);
 			throw new Exception("[SSH send command failed] >> " + e.getMessage());
 		}
 

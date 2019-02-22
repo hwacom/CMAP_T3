@@ -233,15 +233,26 @@ public class BaseController {
 			 */
 			if (Env.SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO) {
 				Map<Integer, String> sortedMap = new TreeMap<>();
+				Map<String, String> sortedNonNumberMap = new TreeMap<>();
 				for (Map.Entry<String, String> entry : groupMap.entrySet()) {
-					Integer groupSeq =
-							Integer.parseInt(entry.getValue().split(Env.GROUP_NAME_SPLIT_SEQ_NO_SYMBOL)[Env.GROUP_NAME_SPLITTED_SEQ_NO_INDEX]);
-					String sourceMapKey = entry.getKey();
+					final String sourceMapKey = entry.getKey();
+					final String sourceMapValue = entry.getValue();
 
-					sortedMap.put(groupSeq, sourceMapKey);
+					String splitSymbolWithoutRegex = Env.GROUP_NAME_SPLIT_SEQ_NO_SYMBOL.replace("\\", "");
+					if (sourceMapValue.indexOf(splitSymbolWithoutRegex) != -1) {
+						Integer groupSeq =
+								Integer.parseInt(sourceMapValue.split(Env.GROUP_NAME_SPLIT_SEQ_NO_SYMBOL)[Env.GROUP_NAME_SPLITTED_SEQ_NO_INDEX]);
+						sortedMap.put(groupSeq, sourceMapKey);
+
+					} else {
+						sortedNonNumberMap.put(sourceMapKey, sourceMapKey);
+					}
 				}
 
 				for (String sourceKey : sortedMap.values()) {
+					retMap.put(sourceKey, groupMap.get(sourceKey));
+				}
+				for (String sourceKey : sortedNonNumberMap.values()) {
 					retMap.put(sourceKey, groupMap.get(sourceKey));
 				}
 
