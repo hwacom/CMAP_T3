@@ -204,6 +204,8 @@ public class Env {
 	public static String PRTG_DEFAULT_INDEX_URI;
 	public static String PRTG_DEFAULT_DASHBOARD_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
+	public static String PRTG_DEFAULT_DEVICE_FAILURE_URI;
+	public static String PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;
 
 	public static String DEFAULT_INSERT_DB_FILE_DIR;
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
@@ -215,6 +217,10 @@ public class Env {
 
 	// 設定資安通報下「開關PORT」的腳本SCRIPT_CODE
 	public static List<String> DELIVERY_SWITCH_PORT_SCRIPT_CODE = new ArrayList<>();
+	// 設定資安通報下「IP封鎖/開通」的腳本SCRIPT_CODE
+	public static List<String> DELIVERY_IP_OPEN_BLOCK_SCRIPT_CODE = new ArrayList<>();
+	// 設定資安通報下「MAC封鎖/開通」的腳本SCRIPT_CODE
+	public static List<String> DELIVERY_MAC_OPEN_BLOCK_SCRIPT_CODE = new ArrayList<>();
 	/*
 	 * OpenID
 	 */

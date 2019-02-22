@@ -42,6 +42,12 @@ public class PrtgAccountMapping {
 	@Column(name = "net_flow_map_url", nullable = true)
 	private String netFlowMapUrl;
 
+	@Column(name = "device_failure_map_url", nullable = true)
+	private String deviceFailureMapUrl;
+
+	@Column(name = "abnormal_traffic_map_url", nullable = true)
+	private String abnormalTrafficMapUrl;
+
 	@Column(name = "remark", nullable = true)
 	private String remark;
 
@@ -56,7 +62,8 @@ public class PrtgAccountMapping {
 	}
 
 	public PrtgAccountMapping(String id, String sourceId, String prtgAccount, String prtgPassword, String indexUrl,
-			String dashboardMapUrl, String netFlowMapUrl, String remark, Timestamp createTime, String createBy) {
+			String dashboardMapUrl, String netFlowMapUrl, String deviceFailureMapUrl, String abnormalTrafficMapUrl,
+			String remark, Timestamp createTime, String createBy) {
 		super();
 		this.id = id;
 		this.sourceId = sourceId;
@@ -65,6 +72,8 @@ public class PrtgAccountMapping {
 		this.indexUrl = indexUrl;
 		this.dashboardMapUrl = dashboardMapUrl;
 		this.netFlowMapUrl = netFlowMapUrl;
+		this.deviceFailureMapUrl = deviceFailureMapUrl;
+		this.abnormalTrafficMapUrl = abnormalTrafficMapUrl;
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
@@ -124,6 +133,22 @@ public class PrtgAccountMapping {
 
 	public void setNetFlowMapUrl(String netFlowMapUrl) {
 		this.netFlowMapUrl = netFlowMapUrl;
+	}
+
+	public String getDeviceFailureMapUrl() {
+		return deviceFailureMapUrl;
+	}
+
+	public void setDeviceFailureMapUrl(String deviceFailureMapUrl) {
+		this.deviceFailureMapUrl = deviceFailureMapUrl;
+	}
+
+	public String getAbnormalTrafficMapUrl() {
+		return abnormalTrafficMapUrl;
+	}
+
+	public void setAbnormalTrafficMapUrl(String abnormalTrafficMapUrl) {
+		this.abnormalTrafficMapUrl = abnormalTrafficMapUrl;
 	}
 
 	public String getRemark() {

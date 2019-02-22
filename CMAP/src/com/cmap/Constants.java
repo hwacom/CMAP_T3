@@ -27,6 +27,10 @@ public class Constants {
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
 
+	public static final String DELIVERY_ONLY_SCRIPT_OF_SWITCH_PORT = "SWITCH_PORT";
+	public static final String DELIVERY_ONLY_SCRIPT_OF_IP_OPEN_BLOCK = "IP_OPEN_BLOCK";
+	public static final String DELIVERY_ONLY_SCRIPT_OF_MAC_OPEN_BLOCK = "MAC_OPEN_BLOCK";
+
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS_NOSYMBOL = new SimpleDateFormat("yyyyMMddHHmmss");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD_NOSYMBOL = new SimpleDateFormat("yyyyMMdd");
 
@@ -149,7 +153,7 @@ public class Constants {
 
 	public static final String STORE_METHOD_OF_FILE = "FILE";
 	public static final String STORE_METHOD_OF_DB = "DB";
-	
+
 	public static final String RECORD_BY_DAY = "DAY";
 	public static final String RECORD_BY_MAPPING = "MAPPING";
 
@@ -198,6 +202,9 @@ public class Constants {
 	public static final String MAP_URL_OF_INDEX = "INDEX";
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
 	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";
+	public static final String MAP_URL_OF_DEVICE_FAILURE = "DEVICE_FAILURE";
+	public static final String MAP_URL_OF_ABNORMAL_TRAFFIC = "ABNORMAL_TRAFFIC";
+
 	/*
 	 * OIDC
 	 */

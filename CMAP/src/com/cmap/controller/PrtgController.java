@@ -267,6 +267,60 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "getPrtgDeviceFailureUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgDeviceFailureUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		try {
+			//final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+			final String schoolId = "054649";
+
+			String deviceFailureMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_DEVICE_FAILURE);
+
+			if (StringUtils.isBlank(deviceFailureMapUrl)) {
+				deviceFailureMapUrl = Env.PRTG_DEFAULT_DEVICE_FAILURE_URI;	//如果沒設定則取得預設MAP
+			}
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", deviceFailureMapUrl);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
+	@RequestMapping(value = "getPrtgAbnormalTrafficUri", method = RequestMethod.POST)
+	public @ResponseBody AppResponse getPrtgAbnormalTrafficUri(
+			Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		HttpSession session = request.getSession();
+		try {
+			//final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+			final String schoolId = "054649";
+
+			String abnormalTrafficMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_ABNORMAL_TRAFFIC);
+
+			if (StringUtils.isBlank(abnormalTrafficMapUrl)) {
+				abnormalTrafficMapUrl = Env.PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;	//如果沒設定則取得預設MAP
+			}
+
+			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+			app.putData("uri", abnormalTrafficMapUrl);
+			return app;
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+			return new AppResponse(super.getLineNumber(), e.getMessage());
+
+		} finally {
+		}
+	}
+
 	@RequestMapping(value = "/index/login", method = RequestMethod.GET)
 	public String prtgIndexAndLogin(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -301,7 +355,6 @@ public class PrtgController extends BaseController {
 		return "prtg/dashboard";
 	}
 
-
 	@RequestMapping(value = "/netFlowSummary", method = RequestMethod.GET)
 	public String netFlowSummary(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -311,5 +364,27 @@ public class PrtgController extends BaseController {
 			log.error(e.toString(), e);
 		}
 		return "prtg/net_flow_summary";
+	}
+
+	@RequestMapping(value = "/deviceFailure", method = RequestMethod.GET)
+	public String deviceFailure(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			init(model);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "prtg/device_failure";
+	}
+
+	@RequestMapping(value = "/abnormalTraffic", method = RequestMethod.GET)
+	public String abnormalTraffic(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			init(model);
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return "prtg/abnormal_traffic";
 	}
 }

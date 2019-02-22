@@ -198,9 +198,9 @@
 			            	if (Env.SHOW_MENU_ITEM_IP_CONFLICT.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_wifi" href="${pageContext.request.contextPath}/prtg/ipConflict">
+	                    	<a id="ip_record" href="${pageContext.request.contextPath}/plugin/module/ipRecord">
 	                    	  <span data-feather="minimize-2"></span>
-	                    		<span><spring:message code="func.prtg.ip.conflict" /></span>
+	                    		<span><spring:message code="func.plugin.ip.record" /></span>
 	                    	</a>
 	                    </li>
 	                    <%
@@ -208,9 +208,9 @@
 			            	if (Env.SHOW_MENU_ITEM_UNAUTHORIZED_DHCP.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_netflow" href="${pageContext.request.contextPath}/prtg/unauthorizedDHCP">
+	                    	<a id="unauthroized_dhcp" href="${pageContext.request.contextPath}/plugin/module/unauthorizedDHCP">
 	                    	  <span data-feather="user-x"></span>
-	                    	  	<span><spring:message code="func.prtg.unauthorized.dhcp.device" /></span>
+	                    	  	<span><spring:message code="func.plugin.unauthorized.dhcp.device" /></span>
 	                    	</a>
 	                    </li>
 	                    <%
@@ -218,9 +218,9 @@
 			            	if (Env.SHOW_MENU_ITEM_LOOP_LOOP.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/prtg/loopLoop">
+	                    	<a id="loop_loop" href="${pageContext.request.contextPath}/plugin/module/loopLoop">
 	                    	  <span data-feather="refresh-cw"></span>
-	                    	  	<span><spring:message code="func.prtg.loop.loop" /></span>
+	                    	  	<span><spring:message code="func.plugin.loop.loop" /></span>
 	                    	</a>
 	                    </li>
 	                    <%
@@ -228,7 +228,7 @@
 			            	if (Env.SHOW_MENU_ITEM_DEVICE_FAILURE.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/prtg/deviceFailure">
+	                    	<a id="device_failure" href="${pageContext.request.contextPath}/prtg/deviceFailure">
 	                    	  <span data-feather="help-circle"></span>
 	                    	  	<span><spring:message code="func.prtg.device.failure" /></span>
 	                    	</a>
@@ -238,7 +238,7 @@
 			            	if (Env.SHOW_MENU_ITEM_ABNORMAL_TRAFFIC.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/prtg/abnormalTraffic">
+	                    	<a id="abnormal_traffic" href="${pageContext.request.contextPath}/prtg/abnormalTraffic">
 	                    	  <span data-feather="trending-up"></span>
 	                    	  	<span><spring:message code="func.prtg.abnormal.traffic" /></span>
 	                    	</a>
@@ -248,7 +248,7 @@
 			            	if (Env.SHOW_MENU_ITEM_OTHER_EXCEPTION.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/prtg/otherException">
+	                    	<a id="other_exception" href="${pageContext.request.contextPath}/prtg/otherException">
 	                    	  <span data-feather="zap-off"></span>
 	                    	  	<span><spring:message code="func.prtg.other.exception" /></span>
 	                    	</a>
@@ -306,7 +306,7 @@
 			            	if (Env.SHOW_MENU_ITEM_IP_OPEN_BLOCK.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/ipOpenBlock">
+	                    	<a id="cm_ipOpenBlock" href="${pageContext.request.contextPath}/delivery/ipOpenBlock">
 	                    	  <span data-feather="check-square"></span>
 	                    	  	<span><spring:message code="func.ip.open.block" /></span>
 	                    	</a>
@@ -316,7 +316,7 @@
 			            	if (Env.SHOW_MENU_ITEM_MAC_OPEN_BLOCK.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/macOpenBlock">
+	                    	<a id="cm_macOpenBlock" href="${pageContext.request.contextPath}/delivery/macOpenBlock">
 	                    	  <span data-feather="at-sign"></span>
 	                    	  	<span><spring:message code="func.mac.open.block" /></span>
 	                    	</a>
