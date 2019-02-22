@@ -19,6 +19,8 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	private String queryTimeEnd;
 	private String queryLogStepId;
 	private boolean onlySwitchPort = false;
+	private boolean onlyIpOpenBlock = false;
+	private boolean onlyMacOpenBlock = false;
 
 	private String retMsg;
 	private List<String> cmdOutputList = new ArrayList<>();
@@ -377,5 +379,17 @@ public class DeliveryServiceVO extends CommonServiceVO {
 	}
 	public void setCmdOutputList(List<String> cmdOutputList) {
 		this.cmdOutputList = cmdOutputList;
+	}
+	public boolean isOnlyIpOpenBlock() {
+		return onlyIpOpenBlock;
+	}
+	public void setOnlyIpOpenBlock(boolean onlyIpOpenBlock) {
+		this.onlyIpOpenBlock = onlyIpOpenBlock;
+	}
+	public boolean isOnlyMacOpenBlock() {
+		return onlyMacOpenBlock;
+	}
+	public void setOnlyMacOpenBlock(boolean onlyMacOpenBlock) {
+		this.onlyMacOpenBlock = onlyMacOpenBlock;
 	}
 }

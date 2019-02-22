@@ -5,11 +5,21 @@ var scriptShowLength = 20;	//設定欄位顯示內容最大長度
 var STEP_NUM = 1;
 
 $(document).ready(function() {
-	if ($("#onlySwitchPort").val() == "Y") {
+	var onlyOneScript = $("#onlyOneScript").val();
+	
+	if (onlyOneScript == "SWITCH_PORT") {
 		initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_switchPort");
 		findData('WEB');
 		
-	} else {
+	} else if (onlyOneScript == "IP_OPEN_BLOCK") {
+		initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_ipOpenBlock");
+		findData('WEB');
+		
+    } else if (onlyOneScript == "MAC_OPEN_BLOCK") {
+    	initMenuStatus("toggleMenu_plugin", "toggleMenu_plugin_items", "cm_macOpenBlock");
+		findData('WEB');
+    	
+    } else {
 		initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_delivery");
 	}
 	
@@ -862,7 +872,7 @@ function findData(from) {
 						d.queryScriptTypeCode = $("#queryScriptTypeCode_mobile").val();
 					}
 					
-					d.onlySwitchPort = $("#onlySwitchPort").val();
+					d.onlyOneScript = $("#onlyOneScript").val();
 					
 					return d;
 				},

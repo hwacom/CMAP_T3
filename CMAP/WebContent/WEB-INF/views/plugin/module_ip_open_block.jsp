@@ -18,7 +18,7 @@
     </div>
     <!-- [END]查詢欄位&操作按鈕 for 大型解析度螢幕 -->
     
-  	<input type="hidden" id="onlyOneScript" value="SWITCH_PORT" />
+  	<input type="hidden" id="onlyOneScript" value="IP_OPEN_BLOCK" />
   	<div class="container-fluid">
 		<!-- 查詢結果TABLE區塊 -->
 		<div class="row">
@@ -150,7 +150,7 @@
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td"><spring:message code="variable.value" /></th>
 		      	  	</tr>
 		      	  	<tr>
-		      	  		<td>interface_id</td>
+		      	  		<td>ip_address</td>
 		      	  	</tr>
 		      	  </thead>
 		      	  <tbody>

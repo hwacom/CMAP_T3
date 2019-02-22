@@ -40,7 +40,7 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			sb.append(" and si.systemDefault = :systemDefault ");
 		}
-		if (daovo.isOnlySwitchPort()) {
+		if (daovo.isOnlySwitchPort() || daovo.isOnlyIpOpenBlock() || daovo.isOnlyMacOpenBlock()) {
 			sb.append(" and si.scriptCode in (:scriptCode) ");
 		}
 
@@ -79,6 +79,10 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (daovo.isOnlySwitchPort()) {
 			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
+		} else if (daovo.isOnlyIpOpenBlock()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_IP_OPEN_BLOCK_SCRIPT_CODE);
+		} else if (daovo.isOnlyMacOpenBlock()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_MAC_OPEN_BLOCK_SCRIPT_CODE);
 		}
 		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
 	    	q.setParameter("searchValue", "%".concat(daovo.getSearchValue()).concat("%"));
@@ -106,7 +110,7 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			sb.append(" and si.systemDefault = :systemDefault ");
 		}
-		if (daovo.isOnlySwitchPort()) {
+		if (daovo.isOnlySwitchPort() || daovo.isOnlyIpOpenBlock() || daovo.isOnlyMacOpenBlock()) {
 			sb.append(" and si.scriptCode in (:scriptCode) ");
 		}
 
@@ -151,6 +155,10 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		}
 		if (daovo.isOnlySwitchPort()) {
 			q.setParameterList("scriptCode", Env.DELIVERY_SWITCH_PORT_SCRIPT_CODE);
+		} else if (daovo.isOnlyIpOpenBlock()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_IP_OPEN_BLOCK_SCRIPT_CODE);
+		} else if (daovo.isOnlyMacOpenBlock()) {
+			q.setParameterList("scriptCode", Env.DELIVERY_MAC_OPEN_BLOCK_SCRIPT_CODE);
 		}
 		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
 	    	q.setParameter("searchValue", "%".concat(daovo.getSearchValue()).concat("%"));

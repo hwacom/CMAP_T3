@@ -27,6 +27,10 @@ public class Constants {
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
 
+	public static final String DELIVERY_ONLY_SCRIPT_OF_SWITCH_PORT = "SWITCH_PORT";
+	public static final String DELIVERY_ONLY_SCRIPT_OF_IP_OPEN_BLOCK = "IP_OPEN_BLOCK";
+	public static final String DELIVERY_ONLY_SCRIPT_OF_MAC_OPEN_BLOCK = "MAC_OPEN_BLOCK";
+
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS_NOSYMBOL = new SimpleDateFormat("yyyyMMddHHmmss");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD_NOSYMBOL = new SimpleDateFormat("yyyyMMdd");
 

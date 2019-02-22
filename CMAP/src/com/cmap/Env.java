@@ -217,6 +217,10 @@ public class Env {
 
 	// 設定資安通報下「開關PORT」的腳本SCRIPT_CODE
 	public static List<String> DELIVERY_SWITCH_PORT_SCRIPT_CODE = new ArrayList<>();
+	// 設定資安通報下「IP封鎖/開通」的腳本SCRIPT_CODE
+	public static List<String> DELIVERY_IP_OPEN_BLOCK_SCRIPT_CODE = new ArrayList<>();
+	// 設定資安通報下「MAC封鎖/開通」的腳本SCRIPT_CODE
+	public static List<String> DELIVERY_MAC_OPEN_BLOCK_SCRIPT_CODE = new ArrayList<>();
 	/*
 	 * OpenID
 	 */

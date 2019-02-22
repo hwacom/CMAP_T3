@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -98,6 +97,34 @@ public class DeliveryController extends BaseController {
 		return "plugin/module_switch_port";
 	}
 
+	@RequestMapping(value = "ipOpenBlock", method = RequestMethod.GET)
+	public String ipOpenBlock(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+
+		} finally {
+		}
+
+		return "plugin/module_ip_open_block";
+	}
+
+	@RequestMapping(value = "macOpenBlock", method = RequestMethod.GET)
+	public String macOpenBlock(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+		try {
+
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+
+		} finally {
+		}
+
+		return "plugin/module_mac_open_block";
+	}
+
 	@RequestMapping(value = "record", method = RequestMethod.GET)
 	public String record(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -142,7 +169,7 @@ public class DeliveryController extends BaseController {
 	public @ResponseBody DatatableResponse queryByScript(
 			Model model, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(name="queryScriptTypeCode", required=false, defaultValue="") String queryScriptTypeCode,
-			@RequestParam(name="onlySwitchPort", required=false, defaultValue="") String onlySwitchPort,
+			@RequestParam(name="onlyOneScript", required=false, defaultValue="") String onlyOneScript,
 			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
 			@RequestParam(name="length", required=false, defaultValue="25") Integer pageLength,
 			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
@@ -162,8 +189,18 @@ public class DeliveryController extends BaseController {
 			dsVO.setOrderColumn(UI_SEARCH_BY_SCRIPT_COLUMNS[orderColIdx]);
 			dsVO.setOrderDirection(orderDirection);
 
-			if (StringUtils.equals(onlySwitchPort, "Y")) {
-				dsVO.setOnlySwitchPort(true);
+			switch (onlyOneScript) {
+				case Constants.DELIVERY_ONLY_SCRIPT_OF_SWITCH_PORT:
+					dsVO.setOnlySwitchPort(true);
+					break;
+
+				case Constants.DELIVERY_ONLY_SCRIPT_OF_IP_OPEN_BLOCK:
+					dsVO.setOnlyIpOpenBlock(true);
+					break;
+
+				case Constants.DELIVERY_ONLY_SCRIPT_OF_MAC_OPEN_BLOCK:
+					dsVO.setOnlyMacOpenBlock(true);
+					break;
 			}
 
 			filterdTotal = deliveryService.countScriptList(dsVO);

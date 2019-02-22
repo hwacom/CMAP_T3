@@ -306,7 +306,7 @@
 			            	if (Env.SHOW_MENU_ITEM_IP_OPEN_BLOCK.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/ipOpenBlock">
+	                    	<a id="cm_ipOpenBlock" href="${pageContext.request.contextPath}/delivery/ipOpenBlock">
 	                    	  <span data-feather="check-square"></span>
 	                    	  	<span><spring:message code="func.ip.open.block" /></span>
 	                    	</a>
@@ -316,7 +316,7 @@
 			            	if (Env.SHOW_MENU_ITEM_MAC_OPEN_BLOCK.equals(__SHOW__)) {
 			            %>
 	                    <li class="subMenu-item">
-	                    	<a id="cm_switchPort" href="${pageContext.request.contextPath}/delivery/macOpenBlock">
+	                    	<a id="cm_macOpenBlock" href="${pageContext.request.contextPath}/delivery/macOpenBlock">
 	                    	  <span data-feather="at-sign"></span>
 	                    	  	<span><spring:message code="func.mac.open.block" /></span>
 	                    	</a>
