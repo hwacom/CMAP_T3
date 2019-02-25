@@ -25,7 +25,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 	@Override
 	public long countProvisionLogByDAOVO(ProvisionLogDAOVO daovo) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(" select count(distinct plm.log_master_id) ")
+		sb.append(" select count(distinct pld.log_detail_id) ")
 		  .append(" from Provision_Log_Master plm ")
 		  .append("     ,Provision_Log_Detail pld ")
 		  .append("     ,Provision_Log_Step pls ")
@@ -92,7 +92,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 	}
 
 	@Override
-	public List<Object[]> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo) {
+	public List<Object[]> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo, Integer startRow, Integer pageLength) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select distinct")
 		  .append("   plm.log_master_id, pld.log_detail_id, pls.log_step_id, pldc.log_device_id, ") //index: 0~3
@@ -172,6 +172,10 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 		}
 		if (StringUtils.isNotBlank(daovo.getSearchValue())) {
 	    	q.setParameter("searchValue", "%".concat(daovo.getSearchValue()).concat("%"));
+	    }
+		if (startRow != null && pageLength != null) {
+	    	q.setFirstResult(startRow);
+		    q.setMaxResults(pageLength);
 	    }
 
 		return (List<Object[]>)q.list();

@@ -336,10 +336,11 @@ public class BaseController {
 
 	@RequestMapping(value = "getGroupDeviceMenu.json", method = RequestMethod.POST, produces="application/json;odata=verbose")
 	public @ResponseBody AppResponse getGroupDeviceMenu(Model model, HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(name="searchTxt", required=true) String searchTxt) {
+			@RequestParam(name="searchTxt", required=true) String searchTxt,
+			@RequestParam(name="systemVersion", required=true) String systemVersion) {
 
 		try {
-			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, Constants.DATA_STAR_SYMBOL);
+			Map<String, String> menuMap = getGroupDeviceMenu(request, searchTxt, systemVersion);
 
 			AppResponse appResponse = new AppResponse(HttpServletResponse.SC_OK, "取得設備清單成功");
 			appResponse.putData("groupDeviceMenu",  new Gson().toJson(menuMap));

@@ -251,6 +251,7 @@ public class DeliveryController extends BaseController {
 
 			ObjectMapper oMapper = new ObjectMapper();
 			Map<String, Object> retMap = oMapper.convertValue(dsVO, Map.class);
+			retMap.put("systemVersion", systemVersion);
 
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);
 

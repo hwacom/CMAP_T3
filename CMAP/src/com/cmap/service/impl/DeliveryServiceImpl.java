@@ -169,7 +169,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			 * 第二層Key: 變數名稱
 			 * 第二層Value: 該設備變數值選單
 			 */
-			Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<String, Map<String, List<DeviceDetailInfo>>>();
+			Map<String, Map<String, List<DeviceDetailInfo>>> deviceVarMap = new HashMap<>();
 			/*
 			 * 查詢此腳本的變數是否有系統客製函式
 			 */
@@ -193,7 +193,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 							varMap = deviceVarMap.get(mapKey);
 
 						} else {
-							varMap = new HashMap<String, List<DeviceDetailInfo>>();
+							varMap = new HashMap<>();
 						}
 
 						varMap.put(key, infos);
@@ -400,7 +400,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 				if (varKeyList != null && !varKeyList.isEmpty()) {
 					final List<String> vValueList = deviceVarValueList.get(idx);
 
-					varMap = new HashMap<String, String>();
+					varMap = new HashMap<>();
 
 					for (int i=0; i<varKeyList.size(); i++) {
 						final String vKey = Env.SCRIPT_VAR_KEY_SYMBOL + varKeyList.get(i) + Env.SCRIPT_VAR_KEY_SYMBOL;
@@ -542,7 +542,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			daovo.setQueryBeginTimeStart(dsVO.getQueryTimeBegin());
 			daovo.setQueryBeginTimeEnd(dsVO.getQueryTimeEnd());
 
-			List<Object[]> entities = provisionLogDAO.findProvisionLogByDAOVO(daovo);
+			List<Object[]> entities = provisionLogDAO.findProvisionLogByDAOVO(daovo, startRow, pageLength);
 
 			if (entities != null && !entities.isEmpty()) {
 				DeliveryServiceVO vo;

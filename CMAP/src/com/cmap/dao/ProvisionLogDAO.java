@@ -24,7 +24,7 @@ public interface ProvisionLogDAO extends BaseDAO {
 	 * @param daovo
 	 * @return
 	 */
-	public List<Object[]> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo);
+	public List<Object[]> findProvisionLogByDAOVO(ProvisionLogDAOVO daovo, Integer startRow, Integer pageLength);
 
 
 	/**
