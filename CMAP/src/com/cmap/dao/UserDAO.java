@@ -1,8 +1,10 @@
 package com.cmap.dao;
 
+import java.util.List;
+
 import com.cmap.model.UserRightSetting;
 
 public interface UserDAO extends BaseDAO {
 
-	UserRightSetting findUserRightSetting(String belongGroup, String account);
+	List<UserRightSetting> findUserRightSetting(String belongGroup, String[] roles, String account);
 }

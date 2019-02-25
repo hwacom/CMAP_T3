@@ -1,6 +1,7 @@
 package com.cmap.utils.impl;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -165,6 +166,7 @@ public class FtpFileUtils implements FileUtils {
 		try {
 			checkFtpStatus();
 
+			ftp.enterLocalPassiveMode();
 			retVal = ftp.listFiles();
 			for (FTPFile ff : retVal) {
 				log.info("[Name]: "+ff.getName()+", [Type]: "+ff.getType()+", [Size]: "+ff.getSize());
@@ -174,7 +176,7 @@ public class FtpFileUtils implements FileUtils {
 			throw new Exception("[FTP list files failed] >> " + e.toString());
 		}
 
-		return null;
+		return retVal;
 	}
 
 	@Override
@@ -298,14 +300,20 @@ public class FtpFileUtils implements FileUtils {
 	}
 
 	@Override
-	public boolean deleteFiles(String targetDirPath, String fileName) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean deleteFile(String filePath) throws Exception {
+		ftp.enterLocalPassiveMode();
+		return ftp.deleteFile(filePath);
 	}
 
 	@Override
 	public boolean moveFiles(ConfigInfoVO ciVO, String sourceDirPath, String targetDirPath) throws Exception {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean retrieveFile(String fileName, FileOutputStream fos) throws Exception {
+		ftp.enterLocalPassiveMode();
+		return ftp.retrieveFile(fileName, fos);
 	}
 }

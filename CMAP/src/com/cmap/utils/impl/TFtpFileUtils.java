@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -235,7 +236,7 @@ public class TFtpFileUtils implements FileUtils {
 	}
 
 	@Override
-	public boolean deleteFiles(String targetDirPath, String fileName) throws Exception {
+	public boolean deleteFile(String filePath) throws Exception {
 		try {
 
 
@@ -266,5 +267,11 @@ public class TFtpFileUtils implements FileUtils {
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean retrieveFile(String fileName, FileOutputStream fos) throws Exception {
+		// TODO 自動產生的方法 Stub
+		return false;
 	}
 }

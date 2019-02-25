@@ -1,6 +1,7 @@
 package com.cmap.service.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.ftp.FTPFile;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import com.cmap.model.JobFileOperationSetting;
 import com.cmap.service.FileOperationService;
 import com.cmap.service.impl.jobs.BaseJobImpl.Result;
 import com.cmap.service.vo.FileOperationServiceVO;
+import com.cmap.utils.impl.FtpFileUtils;
 
 @Service("fileOperationService")
 @Transactional
@@ -38,6 +41,181 @@ public class FileOperationServiceImpl implements FileOperationService {
 
 	@Autowired
 	private JobFileOperationSettingDAO jobFileOperationSettingDAO;
+
+	private boolean checkFile(String fileName, long fileSizeInByte, String fileNameRegex, String fileSizeRegex) {
+		boolean matched = false;
+
+		// Step 1. 先篩選檔案名稱格式
+		if (fileName.matches(fileNameRegex)) {
+
+			// Step 2. 若有設定篩選檔案大小，則進行比對
+			if (StringUtils.isNotBlank(fileSizeRegex)) {
+				String[] regex = fileSizeRegex.split(" ");
+				String operator = regex[0];
+				String size = regex[1];
+				String unit = regex[2];
+
+				long sizeInByte = 0;
+
+				//轉換SIZE單位成BYTE
+				switch (unit) {
+					case "GB":
+						sizeInByte = Integer.valueOf(size)*1024*1024*1024;
+						break;
+
+					case "MB":
+						sizeInByte = Integer.valueOf(size)*1024*1024;
+						break;
+
+					case "KB":
+						sizeInByte = Integer.valueOf(size)*1024;
+						break;
+				}
+
+				boolean isMatched = false;
+				switch (operator) {
+					case ">=":
+						isMatched = fileSizeInByte >= sizeInByte;
+						break;
+
+					case ">":
+						isMatched = fileSizeInByte > sizeInByte;
+						break;
+
+					case "=":
+						isMatched = fileSizeInByte == sizeInByte;
+						break;
+
+					case "<":
+						isMatched = fileSizeInByte < sizeInByte;
+						break;
+
+					case "<=":
+						isMatched = fileSizeInByte <= sizeInByte;
+						break;
+				}
+
+				if (isMatched) {
+					matched = true;
+				}
+
+			} else {
+				//沒有設定檔案大小篩選情況
+				matched = true;
+			}
+		}
+
+		return matched;
+	}
+
+	private FileOperationServiceVO executeLocalFile(FileOperationServiceVO retVO, JobFileOperationSetting setting) throws IOException {
+		Stream<Path> filePaths = Files.list(Paths.get(setting.getSourceDir()));
+		final String fileNameRegex = setting.getSourceFileNameRegex();
+		final String fileSizeRegex = setting.getSourceFileSizeRegex();
+
+		List<Path> matchedFile = new ArrayList<>();
+		for (Iterator<Path> it = filePaths.iterator(); it.hasNext();) {
+			Path path = it.next();
+
+			if (path.toFile().isDirectory()) {
+				//如果是資料夾的話直接跳過
+				continue;
+			}
+
+			String fileName = path.getFileName().toString();
+			long fileSizeInByte = FileUtils.sizeOf(path.toFile());
+
+			boolean matched = checkFile(fileName, fileSizeInByte, fileNameRegex, fileSizeRegex);
+
+			if (matched) {
+				matchedFile.add(path);
+			}
+		}
+
+		if (matchedFile != null && !matchedFile.isEmpty()) {
+			final String action = setting.getDoAction();
+
+			switch (action) {
+				case Constants.JOB_FILE_OPERATE_ACTION_CUT:
+					retVO = doFileCut(matchedFile, setting);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_COPY:
+					retVO = doFileCopy(matchedFile, setting);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_DELETE:
+					retVO = doFileDelete(matchedFile, setting);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_RENAME:
+					break;
+			}
+
+		} else {
+			retVO.setJobExcuteResult(Result.SUCCESS);
+			retVO.setJobExcuteResultRecords("0");
+			retVO.setJobExcuteRemark("無符合檔案需搬移");
+		}
+
+		return retVO;
+	}
+
+	private FileOperationServiceVO executeFtpFile(FileOperationServiceVO retVO, JobFileOperationSetting setting) throws Exception {
+		final String remoteHostIp = setting.getRemoteHostIp();
+		final Integer remoteHostPort = setting.getRemoteHostPort();
+		final String remoteLoginAccount = setting.getRemoteLoginAccount();
+		final String remoteLoginPassword = setting.getRemoteLoginPassword();
+		final String fileNameRegex = setting.getSourceFileNameRegex();
+		final String fileSizeRegex = setting.getSourceFileSizeRegex();
+		final String sourceDir = setting.getSourceDir();
+
+		FtpFileUtils ftp = new FtpFileUtils();
+		ftp.connect(remoteHostIp, remoteHostPort);
+		ftp.login(remoteLoginAccount, remoteLoginPassword);
+		ftp.changeDir(sourceDir, false);
+
+		List<String> matchedFile = new ArrayList<>();
+		FTPFile[] files = ftp.listFiles();
+		for (FTPFile file : files) {
+			final String fileName = file.getName();
+			long fileSizeInByte = file.getSize();
+
+			boolean matched = checkFile(fileName, fileSizeInByte, fileNameRegex, fileSizeRegex);
+
+			if (matched) {
+				matchedFile.add(fileName);
+			}
+		}
+
+		if (matchedFile != null && !matchedFile.isEmpty()) {
+			final String action = setting.getDoAction();
+
+			switch (action) {
+				case Constants.JOB_FILE_OPERATE_ACTION_CUT:
+					retVO = doFtpFileCut(matchedFile, setting, ftp);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_COPY:
+					retVO = doFtpFileCopy(matchedFile, setting, ftp);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_DELETE:
+					retVO = doFtpFileDelete(matchedFile, setting, ftp);
+					break;
+
+				case Constants.JOB_FILE_OPERATE_ACTION_RENAME:
+					break;
+			}
+
+		} else {
+			retVO.setJobExcuteResult(Result.SUCCESS);
+			retVO.setJobExcuteResultRecords("0");
+			retVO.setJobExcuteRemark("無符合檔案需搬移");
+		}
+
+		return retVO;
+	}
 
 	@Override
 	public FileOperationServiceVO executeFileOperation(String settingId) throws ServiceLayerException {
@@ -51,110 +229,16 @@ public class FileOperationServiceImpl implements FileOperationService {
 				retVO.setJobExcuteRemark("查無 JobFileOperationSetting 設定 >>> settingId: " + settingId);
 
 			} else {
-				Stream<Path> filePaths = Files.list(Paths.get(setting.getSourceDir()));
-				String fileNameRegex = setting.getSourceFileNameRegex();
-				String fileSizeRegex = setting.getSourceFileSizeRegex();
+				final String getSourceMethod = setting.getGetSourceMethod();
 
-				List<Path> matchedFile = new ArrayList<>();
-				for (Iterator<Path> it = filePaths.iterator(); it.hasNext();) {
-					Path path = it.next();
+				switch (getSourceMethod) {
+					case Constants.DATA_POLLER_FILE_BY_LOCAL_DIR:
+						retVO = executeLocalFile(retVO, setting);
+						break;
 
-					if (path.toFile().isDirectory()) {
-						//如果是資料夾的話直接跳過
-						continue;
-					}
-
-					String fileName = path.getFileName().toString();
-
-					// Step 1. 先篩選檔案名稱格式
-					if (fileName.matches(fileNameRegex)) {
-
-						// Step 2. 若有設定篩選檔案大小，則進行比對
-						if (StringUtils.isNotBlank(fileSizeRegex)) {
-							String[] regex = fileSizeRegex.split(" ");
-							String operator = regex[0];
-							String size = regex[1];
-							String unit = regex[2];
-
-							long sizeInByte = 0;
-
-							//轉換SIZE單位成BYTE
-							switch (unit) {
-								case "GB":
-									sizeInByte = Integer.valueOf(size)*1024*1024*1024;
-									break;
-
-								case "MB":
-									sizeInByte = Integer.valueOf(size)*1024*1024;
-									break;
-
-								case "KB":
-									sizeInByte = Integer.valueOf(size)*1024;
-									break;
-							}
-
-							long fileSizeInByte = FileUtils.sizeOf(path.toFile());
-
-							boolean isMatched = false;
-							switch (operator) {
-								case ">=":
-									isMatched = fileSizeInByte >= sizeInByte;
-									break;
-
-								case ">":
-									isMatched = fileSizeInByte > sizeInByte;
-									break;
-
-								case "=":
-									isMatched = fileSizeInByte == sizeInByte;
-									break;
-
-								case "<":
-									isMatched = fileSizeInByte < sizeInByte;
-									break;
-
-								case "<=":
-									isMatched = fileSizeInByte <= sizeInByte;
-									break;
-							}
-
-							if (isMatched) {
-								matchedFile.add(path);
-							}
-
-						} else {
-							//沒有設定檔案大小篩選情況
-							matchedFile.add(path);
-						}
-					}
-				}
-
-				matchedFile.forEach(p -> System.out.println(p));
-
-				if (matchedFile != null && !matchedFile.isEmpty()) {
-					final String action = setting.getDoAction();
-
-					switch (action) {
-						case Constants.JOB_FILE_OPERATE_ACTION_CUT:
-							retVO = doFileCut(matchedFile, setting);
-							break;
-
-						case Constants.JOB_FILE_OPERATE_ACTION_COPY:
-							retVO = doFileCopy(matchedFile, setting);
-							break;
-
-						case Constants.JOB_FILE_OPERATE_ACTION_DELETE:
-							retVO = doFileDelete(matchedFile, setting);
-							break;
-
-						case Constants.JOB_FILE_OPERATE_ACTION_RENAME:
-							break;
-					}
-
-				} else {
-					retVO.setJobExcuteResult(Result.SUCCESS);
-					retVO.setJobExcuteResultRecords("0");
-					retVO.setJobExcuteRemark("無符合檔案需搬移");
+					case Constants.DATA_POLLER_FILE_BY_FTP:
+						retVO = executeFtpFile(retVO, setting);
+						break;
 				}
 			}
 
@@ -336,5 +420,103 @@ public class FileOperationServiceImpl implements FileOperationService {
 		};
 
 		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, 0);
+	}
+
+	private FileOperationServiceVO doFtpFileCut(List<String> matchedFile, JobFileOperationSetting setting, FtpFileUtils ftp) {
+		int totalCount = matchedFile.size();
+		int successCount = 0;
+		int lockCount = 0;
+
+		final String targetFileNameFormat = setting.getTargetFileNameFormat();
+		final String targetDir = setting.getTargetDir();
+		boolean targetDirByDay = StringUtils.equals(setting.getTargetDirByDay(), Constants.DATA_Y)
+										? true : false;
+		String targetDayDirName = targetDirByDay ? Constants.FORMAT_YYYY_MM_DD.format(new Date()) : "";
+
+		String targetFileName = null;
+		String targetFilePath = null;
+		FileOutputStream fos = null;
+		for (String sourceFileName : matchedFile) {
+			try {
+				targetFileName = composeTargetFileName(sourceFileName, targetFileNameFormat);
+				targetFilePath = targetDir +
+										File.separator +
+										(targetDirByDay ? (targetDayDirName + File.separator) : "") +
+										targetFileName;
+				fos = new FileOutputStream(targetFilePath, false);
+				boolean success = ftp.retrieveFile(sourceFileName, fos);
+
+				if (success) {
+					//下載成功後將FTP上檔案刪除
+					success = ftp.deleteFile(sourceFileName);
+
+					if (!success) {
+						//若刪除失敗(可能檔案被lock中)，則將先前下載的檔案刪除，避免重複處理
+						Path localFilePath = Paths.get(targetFilePath);
+
+						if (Files.exists(localFilePath)) {
+							Files.delete(localFilePath);
+						}
+					}
+				}
+
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				continue;
+			}
+		};
+
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, lockCount);
+	}
+
+	private FileOperationServiceVO doFtpFileCopy(List<String> matchedFile, JobFileOperationSetting setting, FtpFileUtils ftp) {
+		int totalCount = matchedFile.size();
+		int successCount = 0;
+		int lockCount = 0;
+
+		final String targetFileNameFormat = setting.getTargetFileNameFormat();
+		final String targetDir = setting.getTargetDir();
+		boolean targetDirByDay = StringUtils.equals(setting.getTargetDirByDay(), Constants.DATA_Y)
+										? true : false;
+		String targetDayDirName = targetDirByDay ? Constants.FORMAT_YYYY_MM_DD.format(new Date()) : "";
+
+		String targetFileName = null;
+		String targetFilePath = null;
+		FileOutputStream fos = null;
+		for (String sourceFileName : matchedFile) {
+			try {
+				targetFileName = composeTargetFileName(sourceFileName, targetFileNameFormat);
+				targetFilePath = targetDir +
+										File.separator +
+										(targetDirByDay ? (targetDayDirName + File.separator) : "") +
+										targetFileName;
+				fos = new FileOutputStream(targetFilePath, false);
+				ftp.retrieveFile(sourceFileName, fos);
+
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				continue;
+			}
+		};
+
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, lockCount);
+	}
+
+	private FileOperationServiceVO doFtpFileDelete(List<String> matchedFile, JobFileOperationSetting setting, FtpFileUtils ftp) {
+		int totalCount = matchedFile.size();
+		int successCount = 0;
+		int lockCount = 0;
+
+		for (String sourceFileName : matchedFile) {
+			try {
+				ftp.deleteFile(sourceFileName);
+
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				continue;
+			}
+		};
+
+		return composeResultVO(Constants.JOB_FILE_OPERATE_ACTION_CUT, totalCount, successCount, lockCount);
 	}
 }

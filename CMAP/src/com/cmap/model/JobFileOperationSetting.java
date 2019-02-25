@@ -24,6 +24,21 @@ public class JobFileOperationSetting {
 	@Column(name = "setting_id", unique = true)
 	private String settingId;
 
+	@Column(name = "get_source_method", nullable = false)
+	private String getSourceMethod;
+
+	@Column(name = "remote_host_ip", nullable = true)
+	private String remoteHostIp;
+
+	@Column(name = "remote_host_port", nullable = true)
+	private Integer remoteHostPort;
+
+	@Column(name = "remote_login_account", nullable = true)
+	private String remoteLoginAccount;
+
+	@Column(name = "remote_login_password", nullable = true)
+	private String remoteLoginPassword;
+
 	@Column(name = "source_dir", nullable = false)
 	private String sourceDir;
 
@@ -61,11 +76,17 @@ public class JobFileOperationSetting {
 		super();
 	}
 
-	public JobFileOperationSetting(String settingId, String sourceDir, String sourceFileNameRegex,
+	public JobFileOperationSetting(String settingId, String getSourceMethod, String remoteHostIp, Integer remoteHostPort,
+			String remoteLoginAccount, String remoteLoginPassword, String sourceDir, String sourceFileNameRegex,
 			String sourceFileSizeRegex, String doAction, String targetDir, String targetFileNameFormat,
 			String targetDirByDay, Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.settingId = settingId;
+		this.getSourceMethod = getSourceMethod;
+		this.remoteHostIp = remoteHostIp;
+		this.remoteHostPort = remoteHostPort;
+		this.remoteLoginAccount = remoteLoginAccount;
+		this.remoteLoginPassword = remoteLoginPassword;
 		this.sourceDir = sourceDir;
 		this.sourceFileNameRegex = sourceFileNameRegex;
 		this.sourceFileSizeRegex = sourceFileSizeRegex;
@@ -85,6 +106,46 @@ public class JobFileOperationSetting {
 
 	public void setSettingId(String settingId) {
 		this.settingId = settingId;
+	}
+
+	public String getGetSourceMethod() {
+		return getSourceMethod;
+	}
+
+	public void setGetSourceMethod(String getSourceMethod) {
+		this.getSourceMethod = getSourceMethod;
+	}
+
+	public String getRemoteHostIp() {
+		return remoteHostIp;
+	}
+
+	public void setRemoteHostIp(String remoteHostIp) {
+		this.remoteHostIp = remoteHostIp;
+	}
+
+	public Integer getRemoteHostPort() {
+		return remoteHostPort;
+	}
+
+	public void setRemoteHostPort(Integer remoteHostPort) {
+		this.remoteHostPort = remoteHostPort;
+	}
+
+	public String getRemoteLoginAccount() {
+		return remoteLoginAccount;
+	}
+
+	public void setRemoteLoginAccount(String remoteLoginAccount) {
+		this.remoteLoginAccount = remoteLoginAccount;
+	}
+
+	public String getRemoteLoginPassword() {
+		return remoteLoginPassword;
+	}
+
+	public void setRemoteLoginPassword(String remoteLoginPassword) {
+		this.remoteLoginPassword = remoteLoginPassword;
 	}
 
 	public String getSourceDir() {

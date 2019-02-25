@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.Principal;
+import java.util.List;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
@@ -349,10 +351,14 @@ public class OidcController extends BaseController {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(eduInfo);
 
-        /*
         JsonNode titles = root.get("titles");
-        List<JsonNode> schoolIDs = titles.findValues("schoolid");
-        */
+        List<JsonNode> roleList = titles.findValues("titles");
+        ArrayNode roleNode = (ArrayNode)roleList.get(0);
+        String[] roles = new String[roleNode.size()];
+
+        for (int i=0; i<roleNode.size(); i++) {
+        	roles[i] = roleNode.get(i).textValue();
+        }
 
         String schoolId = root.get(Env.OIDC_EDUINFO_ENDPOINT_JSON_SCHOOLID_NODE).toString().replace("\"", "");
         log.info("jsonnode:" + root.toString());
@@ -362,7 +368,8 @@ public class OidcController extends BaseController {
         session.setAttribute(Constants.OIDC_SCHOOL_ID, schoolId);
 
         final String account = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB));
-        boolean canAccess = checkUserCanOrNotAccess(request, schoolId, account);
+
+        boolean canAccess = checkUserCanOrNotAccess(request, schoolId, roles, account);
 
         if (canAccess) {
         	return loginAuthByPRTG(model, principal, request, schoolId);

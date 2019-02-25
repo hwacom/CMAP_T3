@@ -131,7 +131,7 @@
 	          <%
               	}
               %>
-	          <sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')">
+	          <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
 	          	<li class="nav-item">
 	                <a class="nav-link toggleMenuLink" id="toggleMenu_cm" href="#">
 	                  <span data-feather="file-text"></span>

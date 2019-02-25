@@ -15,24 +15,28 @@ import com.cmap.model.UserRightSetting;
 public class UserDAOImpl extends BaseDaoHibernate implements UserDAO {
 
 	@Override
-	public UserRightSetting findUserRightSetting(String belongGroup, String account) {
+	public List<UserRightSetting> findUserRightSetting(String belongGroup, String[] roles, String account) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from UserRightSetting urs ")
 		  .append(" where 1=1 ")
-		  .append(" and urs.belongGroup = :belongGroup ")
-		  .append(" and urs.account = :account ");
+		  .append(" and urs.belongGroup = :belongGroup ");
+
+		if (roles != null) {
+			sb.append(" and urs.role in (:roles) ");
+		}
+
+		sb.append(" and urs.account = :account ")
+		  .append(" order by urs.isAdmin desc, urs.denyAccess asc ");
 
 	    Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createQuery(sb.toString());
 	    q.setParameter("belongGroup", belongGroup);
+	    if (roles != null) {
+	    	q.setParameterList("roles", roles);
+	    }
 	    q.setParameter("account", account);
 
-	    List<UserRightSetting> entities = (List<UserRightSetting>)q.list();
-	    if (entities == null || (entities != null && entities.isEmpty())) {
-	    	return null;
-	    } else {
-	    	return entities.get(0);
-	    }
+	    return (List<UserRightSetting>)q.list();
 	}
 
 }

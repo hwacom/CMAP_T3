@@ -1,5 +1,6 @@
 package com.cmap.utils;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
@@ -64,13 +65,15 @@ public interface FileUtils {
 	 */
 	public String downloadFilesString(ConfigInfoVO ciVO) throws Exception;
 
+	public boolean retrieveFile(String fileName, FileOutputStream fos) throws Exception;
+
 	/**
 	 * 刪除檔案
 	 * @param targetDirPath
 	 * @param fileName
 	 * @return
 	 */
-	public boolean deleteFiles(String targetDirPath, String fileName) throws Exception;
+	public boolean deleteFile(String filePath) throws Exception;
 
 	/**
 	 * 移動檔案

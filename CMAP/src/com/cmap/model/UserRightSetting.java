@@ -30,6 +30,9 @@ public class UserRightSetting implements java.io.Serializable {
 	@Column(name = "BELONG_GROUP", nullable = false)
 	private String belongGroup;
 
+	@Column(name = "ROLE", nullable = false)
+	private String role;
+
 	@Column(name = "ACCOUNT", nullable = false)
 	private String account;
 
@@ -70,12 +73,13 @@ public class UserRightSetting implements java.io.Serializable {
 		super();
 	}
 
-	public UserRightSetting(String id, String belongGroup, String account, String isAdmin, String denyAccess,
-			String sourceIpAddr, String userGroup, String deleteFlag, Timestamp deleteTime, String deleteBy,
-			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+	public UserRightSetting(String id, String belongGroup, String role, String account, String isAdmin,
+			String denyAccess, String sourceIpAddr, String userGroup, String deleteFlag, Timestamp deleteTime,
+			String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.id = id;
 		this.belongGroup = belongGroup;
+		this.role = role;
 		this.account = account;
 		this.isAdmin = isAdmin;
 		this.denyAccess = denyAccess;
@@ -104,6 +108,14 @@ public class UserRightSetting implements java.io.Serializable {
 
 	public void setBelongGroup(String belongGroup) {
 		this.belongGroup = belongGroup;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public String getAccount() {

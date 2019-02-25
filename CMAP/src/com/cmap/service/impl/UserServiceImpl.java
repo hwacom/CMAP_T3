@@ -1,5 +1,7 @@
 package com.cmap.service.impl;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,12 +28,12 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Override
-	public boolean checkUserCanAccess(HttpServletRequest request, String belongGroup, String account) {
+	public boolean checkUserCanAccess(HttpServletRequest request, String belongGroup, String[] roles, String account) {
 		boolean canAccess = false;
 		try {
-			UserRightSetting entity = userDAO.findUserRightSetting(belongGroup, account);
+			List<UserRightSetting> entities = userDAO.findUserRightSetting(belongGroup, roles, account);
 
-			if (entity == null) {
+			if (entities == null || (entities != null && entities.isEmpty())) {
 
 				if (StringUtils.equals(belongGroup, Constants.DATA_STAR_SYMBOL)
 						&& StringUtils.equals(account, Constants.DATA_STAR_SYMBOL)) {
@@ -45,23 +47,23 @@ public class UserServiceImpl implements UserService {
 						belongGroup = Constants.DATA_STAR_SYMBOL;
 					}
 
-					return checkUserCanAccess(request, belongGroup, account);
+					return checkUserCanAccess(request, belongGroup, roles, account);
 				}
 			} else {
-				final boolean access =
-						StringUtils.equals(entity.getDenyAccess(), Constants.DATA_Y) ? false : true;
+				// 可能符合多個腳色權限設定，逐筆掃描
+				for (UserRightSetting setting : entities) {
+					String denyAccess = setting.getDenyAccess();
 
-				if (!access) {
-					canAccess = false;
-
-				} else {
-					canAccess = true;
-
-					final boolean isAdmin =
-							StringUtils.equals(entity.getIsAdmin(), Constants.DATA_Y) ? true : false;
-
-					if (isAdmin) {
+					if (StringUtils.equals(setting.getIsAdmin(), Constants.DATA_Y)) {
+						// ADMIN
+						canAccess = StringUtils.equals(denyAccess, Constants.DATA_Y) ? false : true;
 						BaseAuthentication.setAdminRole2Session(request);
+						break;
+					}
+					if (StringUtils.equals(denyAccess, Constants.DATA_N)) {
+						// USER
+						canAccess = true;
+						break;
 					}
 				}
 			}
