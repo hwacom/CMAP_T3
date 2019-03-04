@@ -145,6 +145,57 @@ $(document).ready(function() {
     $(".dataTable thead td").click(function() {
     	bindTrEvent();
     });
+    
+    $('.cron-info').on('mouseover', function(e) {
+		var dpane      = $('#details-pane');
+	    var dpanetitle = $('#details-pane .title');
+	    var dpanecontent = $('#details-pane .content');
+	    var type = $(this).attr('data-type');
+	    var title   = $(this).attr('data-title');
+	    var text   = $(this).attr('data-text');
+	    
+	    var position = $(this).offset();
+	    var imgwidth = $(this).width();
+	    var ycoord   = position.top;
+	    
+	    if(position.left / $(window).width() >= 0.5) {
+	      var xcoord = position.left - 820;
+	      // details pane is 530px fixed width
+	      // if the img position is beyond 50% of the page, we move the pane to the left side
+	    } else {
+	      var xcoord = position.left + imgwidth;
+	    }
+	    
+	    dpanetitle.html(title);
+	    
+	    if (type == 'JOB_CRON') {
+	    	dpanecontent.html('<img src="' + _ctx + '/resources/images/CronExpression.png" width="800px" height="auto" />');
+	    	ycoord -= 200;
+	    	
+	    } else if (type == 'TEXT') {
+	    	dpanecontent.html('<span>' + text + '</span>');
+	    }
+	    
+	    dpane.css({ 'left': xcoord, 'top': ycoord, 'display': 'block'});
+	    
+	}).on('mouseout', function(e) {
+	    $('#details-pane').css('display','none');
+	});
+	  
+	// when hovering the details pane keep displayed, otherwise hide
+	$('#details-pane').on('mouseover', function(e) {
+	    $(this).css('display','block');
+	});
+	
+	$('#details-pane').on('mouseout', function(e) {
+	    //this is the original element the event handler was assigned to
+	    var e = e.toElement || e.relatedTarget;
+	    if (e.parentNode == this || e.parentNode.parentNode == this || e.parentNode.parentNode.parentNode == this || e == this) {
+	      return;
+	    }
+	    $(this).css('display','none');
+	    //console.log(e.nodeName)
+	});
 });
 
 function initMenuStatus(mainItemId, toggleMenuId, funcId) {

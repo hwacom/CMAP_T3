@@ -11,10 +11,10 @@
 		<div class="container-fluid">
       	  <div class="form-group row">
 			<div class="col-lg-2" style="padding-top: 5px;">
-    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearchErrorLog_web">SYS_ERROR_LOG</button>
+    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearchErrorLog_web"><spring:message code="btn.sys.error.log" /></button>
     	    </div>
     	    <div class="col-lg-2" style="padding-top: 5px;">
-    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearchJobLog_web">SYS_JOB_LOG</button>
+    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearchJobLog_web"><spring:message code="btn.sys.job.log" /></button>
     	    </div>
       	  </div>
       	</div>

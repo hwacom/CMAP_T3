@@ -463,6 +463,12 @@
 		  </div>
 		</div>
 		<!-- Modal [View 腳本內容] end -->
+		
+		<!-- setup details pane template -->
+		<div id="details-pane" style="display: none;">
+			<h3 class="title"></h3>
+		  	<div class="content"></div>
+		</div>
         
         <footer role="footer" class="ml-sm-auto col-md-10 footer">
         	<span class="copyright"><spring:message code="contact.us" /> | Copyright &copy; 2018-2019 HwaCom Systems Inc. All Rights Reserved.</span>	

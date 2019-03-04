@@ -150,26 +150,25 @@
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	            	<label for="inputCronExpression" class="col-md-2 col-sm-3 col-form-label">週期表示式<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<label for="inputCronExpression" class="col-md-2 col-sm-3 col-form-label">週期表示式<span class="pull-right" style="color: red;">＊ </span> <span data-feather="info" class="cron-info" data-type="JOB_CRON" data-title="週期表示式說明"></span></label>
 	            	<div class="col-md-10 col-sm-9">
 	                	<input type="text" class="form-control form-control-sm" id="inputCronExpression" name="inputCronExpression" placeholder="example: 0 0/30 * * * ?">
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	            	<label for="inputPriority" class="col-md-2 col-sm-3 col-form-label">優先度<span class="pull-right" style="color: red;">＊ </span></label>
+	            	<label for="inputPriority" class="col-md-2 col-sm-3 col-form-label">優先度<span class="pull-right" style="color: red;">＊ </span> <span data-feather="info" class="cron-info" data-type="TEXT" data-title="優先度說明" data-text="當多個觸發器在一個相同的時間內觸發，並且調度引擎中的資源有限的情況下，那麼具有較高優先順序的觸發器先觸發。"></span></label>
 	            	<div class="col-md-10 col-sm-9">
-	                	<input type="text" class="form-control form-control-sm" id="inputPriority" name="inputPriority" placeholder="優先度" value="5">
+	                	<form:select path="inputPriority" id="inputPriority" name="inputPriority" class="form-control form-control-sm">
+	                		<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
+	                		<form:options items="${inputPriority}" />
+	                	</form:select>
 	                </div>
 	            </div>
 	            <div class="form-group row">
 	            	<label for="inputMisFirePolicy" class="col-md-2 col-sm-3 col-form-label">排程策略<span class="pull-right" style="color: red;">＊ </span></label>
 	            	<div class="col-md-10 col-sm-9">
 	                	<form:select path="inputMisFirePolicy" id="inputMisFirePolicy" name="inputMisFirePolicy" class="form-control form-control-sm">
-<<<<<<< HEAD
 		                  	<form:option value="" label="=== ${i18n_pleaseChoose }  ===" />
-=======
-		                  	<form:option value="" label="=== ${pleaseChoose }  ===" />
->>>>>>> branch 'master' of https://github.com/hwacom/CMAP.git
 		                  	<form:options items="${inputMisFirePolicy}" />
 		                </form:select>
 	                </div>

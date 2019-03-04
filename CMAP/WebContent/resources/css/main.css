@@ -1000,3 +1000,37 @@ button {
   margin-bottom: -1rem;
   padding: 10px 1rem 25px 1rem !important;
 }
+
+/*##########################################################################################################################################*/
+/** detail panel **/
+#details-pane {
+  display: block;
+  color: #414141;
+  background: #f1f1f1;
+  border: 1px solid #a9a9a9;
+  position: absolute;
+  z-index: 99999;
+  width: 820px;
+  padding: 6px 8px;
+  -webkit-box-shadow: 1px 3px 3px rgba(0,0,0,0.4);
+  -moz-box-shadow: 1px 3px 3px rgba(0,0,0,0.4);
+  box-shadow: 1px 3px 3px rgba(0,0,0,0.4);
+}
+
+#details-pane h3 {
+  font-size: 2.0em;
+  line-height: 1.1em;
+  margin-bottom: 4px;
+}
+
+#details-pane h3 span {
+  font-size: 0.75em;
+  font-style: italic;
+  color: #555;
+  padding-left: 15px;
+}
+
+#details-pane .desc {
+  font-size: 1.2em;
+  margin-bottom: 6px;
+}

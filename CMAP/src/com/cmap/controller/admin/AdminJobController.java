@@ -60,6 +60,12 @@ public class AdminJobController extends BaseController {
 			model.addAttribute("inputConfigType", getMenuItem(Env.MENU_CODE_OF_CONFIG_TYPE, true));
 			model.addAttribute("inputMisFirePolicy", getMenuItem(Env.MENU_CODE_OF_MISS_FIRE_POLICY, true));
 
+			Map<Integer, Integer> executeOrderMap = new HashMap<>();
+			for (int i=1; i<=9; i++) {
+				executeOrderMap.put(i, i);
+			}
+			model.addAttribute("inputPriority", executeOrderMap);
+
 			init(model, request);
 		}
 

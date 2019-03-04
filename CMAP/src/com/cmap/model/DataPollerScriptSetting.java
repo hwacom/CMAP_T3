@@ -10,12 +10,12 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(
-		name = "device_data_poller_script_setting",
+		name = "data_poller_script_setting",
 		uniqueConstraints = {
 				@UniqueConstraint(columnNames = {"script_setting_id"})
 		}
 		)
-public class DeviceDataPollerScriptSetting {
+public class DataPollerScriptSetting {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,21 +31,17 @@ public class DeviceDataPollerScriptSetting {
 	@Column(name = "execute_script_code", nullable = false)
 	private String executeScriptCode;
 
-	@Column(name = "target_setting_code", nullable = false)
-	private String targetSettingCode;
-
-	public DeviceDataPollerScriptSetting() {
+	public DataPollerScriptSetting() {
 		super();
 	}
 
-	public DeviceDataPollerScriptSetting(Integer scriptSettingId, String scriptSettingCode, Integer executeOrder,
-			String executeScriptCode, String targetSettingCode) {
+	public DataPollerScriptSetting(Integer scriptSettingId, String scriptSettingCode, Integer executeOrder,
+			String executeScriptCode) {
 		super();
 		this.scriptSettingId = scriptSettingId;
 		this.scriptSettingCode = scriptSettingCode;
 		this.executeOrder = executeOrder;
 		this.executeScriptCode = executeScriptCode;
-		this.targetSettingCode = targetSettingCode;
 	}
 
 	public Integer getScriptSettingId() {
@@ -78,13 +74,5 @@ public class DeviceDataPollerScriptSetting {
 
 	public void setExecuteScriptCode(String executeScriptCode) {
 		this.executeScriptCode = executeScriptCode;
-	}
-
-	public String getTargetSettingCode() {
-		return targetSettingCode;
-	}
-
-	public void setTargetSettingCode(String targetSettingCode) {
-		this.targetSettingCode = targetSettingCode;
 	}
 }
