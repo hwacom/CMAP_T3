@@ -77,9 +77,11 @@ function openPrtgWindow(_uri) {
   	//openWindow.focus();
 	prtgLoginWindow.blur();
 	
+	/*
 	setTimeout(function() {
 		closePrtgWindow()
-	}, 3000);
+	}, 6000);
+	*/
 }
 
 function closePrtgWindow() {

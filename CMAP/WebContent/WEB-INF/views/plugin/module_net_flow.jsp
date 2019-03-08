@@ -38,25 +38,25 @@
 	    	  <div class="form-group row" style="margin-bottom: -.2rem;">
 	    	    <div class="col-lg-3 group-field-other">
 					<label for="query_SourceIp" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.source.ip" /></label>
-					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
+					<input type="text" id="query_SourceIp" class="input-ip" style="width: 60%">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="query_DestinationIp" class="font-weight-bold" style="width: 45%"><spring:message code="net.flow.destination.ip" /></label>
-					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
+					<input type="text" id="query_DestinationIp" class="input-ip" style="width: 50%">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="query_SenderIp" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.sender.ip" /></label>
-					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%" placeholder="(<spring:message code="post.blur" /><spring:message code="inquiry" />)">
+					<input type="text" id="query_SenderIp" class="input-ip" style="width: 60%">
 				</div>
 			  </div>
 			  <div class="form-group row" style="margin-bottom: -.2rem;">
 			  	<div class="col-lg-3 group-field-other">
 					<label for="query_SourcePort" class="font-weight-bold" style="width: 35%"><spring:message code="net.flow.source.port" /></label>
-					<input type="text" id="query_SourcePort" class="input-port" style="width: 60%" placeholder="(<spring:message code="complete.comparsion" />)">
+					<input type="text" id="query_SourcePort" class="input-port" style="width: 60%">
 				</div>
 				<div class="col-lg-3 group-field-other">
 					<label for="query_DestinationPort" class="font-weight-bold" style="width: 45%"><spring:message code="net.flow.destination.port" /></label>
-					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%" placeholder="(<spring:message code="complete.comparsion" />)">
+					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%">
 				</div>
 			  </div>
 			  <!-- 

@@ -40,7 +40,7 @@ public class NetFlowController extends BaseController {
 
 	@Autowired
 	private NetFlowService netFlowService;
-	
+
 	@Autowired
 	private DatabaseMessageSourceBase messageSource;
 
@@ -189,6 +189,10 @@ public class NetFlowController extends BaseController {
 					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
 				}
 
+				if (filterdTotal != 0) {
+					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
+				}
+				
 				NetFlowVO newVO = new NetFlowVO();
 				newVO.setQueryGroupId(queryGroup);
 				newVO.setQueryDateBegin(queryDateBegin);

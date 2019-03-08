@@ -50,28 +50,28 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			sb.append(" and nfrd.group_id = :groupId ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			sb.append(" and nfrd.source_ip like :querySourceIp ");
+			sb.append(" and nfrd.source_ip = :querySourceIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
 			sb.append(" and nfrd.source_port = :querySourcePort ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			sb.append(" and nfrd.destination_ip like :queryDestinationIp ");
+			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
 			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			sb.append(" and nfrd.sender_ip like :querySenderIp ");
+			sb.append(" and nfrd.sender_ip = :querySenderIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			sb.append(" and ( nfrd.source_MAC like :queryMac ")
-			  .append("       or nfrd.destination_MAC like :queryMac ) ");
+			sb.append(" and ( nfrd.source_MAC = :queryMac ")
+			  .append("       or nfrd.destination_MAC = :queryMac ) ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			sb.append(" and ( (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  .append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  .append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
+			sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+			  //.append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
+			  //.append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
 		}
 		/*
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
@@ -107,22 +107,22 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	    	q.setParameter("groupId", nfVO.getQueryGroupId());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			q.setParameter("querySourceIp", nfVO.getQuerySourceIp().concat("%"));
+			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
 			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp().concat("%"));
+			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
 			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			q.setParameter("querySenderIp", nfVO.getQuerySenderIp().concat("%"));
+			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			q.setParameter("queryMac", nfVO.getQueryMac().concat("%"));
+			q.setParameter("queryMac", nfVO.getQueryMac());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
 			q.setParameter("beginDate", nfVO.getQueryDateBegin());
@@ -148,28 +148,28 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			sb.append(" and nfrd.group_id = :groupId ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			sb.append(" and nfrd.source_ip like :querySourceIp ");
+			sb.append(" and nfrd.source_ip = :querySourceIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
 			sb.append(" and nfrd.source_port = :querySourcePort ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			sb.append(" and nfrd.destination_ip like :queryDestinationIp ");
+			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
 			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			sb.append(" and nfrd.sender_ip like :querySenderIp ");
+			sb.append(" and nfrd.sender_ip = :querySenderIp ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			sb.append(" and ( nfrd.source_MAC like :queryMac ")
-			  .append("       or nfrd.destination_MAC like :queryMac ) ");
+			sb.append(" and ( nfrd.source_MAC = :queryMac ")
+			  .append("       or nfrd.destination_MAC = :queryMac ) ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			sb.append(" and ( (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  .append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  .append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
+			sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+			  //.append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
+			  //.append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
 		}
 		/*
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
@@ -202,7 +202,7 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			sb.append(" order by nfrd.").append(nfVO.getOrderColumn()).append(" ").append(nfVO.getOrderDirection());
 
 		} else {
-			sb.append(" order by nfrd.to_date_time desc ");
+			sb.append(" order by nfrd.now desc ");
 		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
@@ -212,22 +212,22 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	    	q.setParameter("groupId", nfVO.getQueryGroupId());
 		}
 	    if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			q.setParameter("querySourceIp", nfVO.getQuerySourceIp().concat("%"));
+			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
 			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp().concat("%"));
+			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
 			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			q.setParameter("querySenderIp", nfVO.getQuerySenderIp().concat("%"));
+			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			q.setParameter("queryMac", nfVO.getQueryMac().concat("%"));
+			q.setParameter("queryMac", nfVO.getQueryMac());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
 			q.setParameter("beginDate", nfVO.getQueryDateBegin());
@@ -518,16 +518,16 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 		  .append(" from Net_Flow_Table_Mapping ")
 		  .append(" where 1=1 ")
 		  .append(" and group_id = :groupId ");
-		
+
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createNativeQuery(sb.toString());
 	    q.setParameter("groupId", groupId);
-	    
+
 	    List<Object> retList = (List<Object>)q.list();
-	    
+
 	    if (retList != null && !retList.isEmpty()) {
 	    	return Objects.toString(retList.get(0), null);
-	    	
+
 	    } else {
 	    	return null;
 	    }
