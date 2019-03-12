@@ -385,8 +385,11 @@ public class DataPollerServiceImpl implements DataPollerService {
 				sb = new StringBuffer();
 				String[] tmp = voKey.split(",");
 				String voField = tmp[0];
+
+				// 變數值VO參數名稱使用[]包夾
 				String voFieldName = voField.substring(voField.indexOf("[") + 1, voField.indexOf("]"));
 
+				// 判斷變數值前後是否有額外固定字詞組成最終指令結果
 				String frontStr = "";
 				String endStr = "";
 				if (StringUtils.isNotBlank(voField.split("\\[")[0])) {
@@ -396,8 +399,8 @@ public class DataPollerServiceImpl implements DataPollerService {
 					endStr = voField.substring(voField.indexOf("]") + 1);
 				}
 
-				String _entrySymbol = tmp[1];
-				String _entrySeperator = tmp[2];
+				String _entrySymbol = tmp[1];	// 一組Entry包夾符號 (e.g.: "1.1.1.1/32" 使用「"」包夾)
+				String _entrySeperator = tmp[2];	// 多組Entry組成一長串時中間的分隔符號 (e.g.: "1.1.1.1/32" "2.2.2.2/32" 使用「<空格>」區隔)
 
 				for (Map<String, String> sourceEntry : sourceEntryMapList) {
 					if (sourceEntry.containsKey(voFieldName)) {
