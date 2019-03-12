@@ -395,7 +395,8 @@ public class DataPollerServiceImpl implements DataPollerService {
 				if (StringUtils.isNotBlank(voField.split("\\[")[0])) {
 					frontStr = voField.substring(0, voField.indexOf("["));
 
-				} else if (StringUtils.isNotBlank(voField.split("\\]")[1])) {
+				}
+				if (StringUtils.isNotBlank(voField.split("\\]")[1])) {
 					endStr = voField.substring(voField.indexOf("]") + 1);
 				}
 
