@@ -7,6 +7,13 @@ var STEP_NUM = 1;
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_record");
 	
+	$("#viewProvisionLogModal").on("shown.bs.modal", function () {
+    	currentDiffPos = -1;
+    	
+    	setTimeout(function() {
+    		$('#viewModal_provisionLog').scrollTop(0);
+    	}, 300);
+    });
 });
 
 //查詢按鈕動作

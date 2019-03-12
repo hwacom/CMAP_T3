@@ -58,7 +58,7 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 
 		DeviceList device = null;
 		if (!StringUtils.equals(deviceListId, "*")) {
-			device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+			device = deviceDAO.findDeviceListByDeviceListId(deviceListId);
 		}
 
 		String systemVersion = device != null ? device.getSystemVersion() : Env.MEANS_ALL_SYMBOL;
@@ -92,7 +92,9 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 	}
 
 	@Override
-	public List<ScriptServiceVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, Map<String, String> varMap, List<ScriptServiceVO> scripts) throws ServiceLayerException {
+	public List<ScriptServiceVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, List<Map<String, String>> varMapList, List<ScriptServiceVO> scripts) throws ServiceLayerException {
+		List<ScriptServiceVO> retScriptList = new ArrayList<>();
+
 		if (scripts != null && !scripts.isEmpty()) {
 			return scripts;
 
@@ -116,34 +118,42 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 		}
 
 		// 有傳入參數MAP才需跑替換參數值流程
-		if (varMap != null && !varMap.isEmpty()) {
-			for (ScriptServiceVO script : scripts) {
-				String cmd = script.getScriptContent();
+		if (varMapList != null && !varMapList.isEmpty()) {
 
-				if (cmd.indexOf("%") != -1) {
-					String[] strSlice = cmd.split("%");
+			for (Map<String, String> varMap : varMapList) {
+				for (ScriptServiceVO script : scripts) {
+					ScriptServiceVO newVO = new ScriptServiceVO();
+					BeanUtils.copyProperties(script, newVO);
 
-					for (int i=0; i<strSlice.length; i++) {
-						if (i % 2 == 0) {
-							continue;
+					String cmd = newVO.getScriptContent();
 
-						} else {
-							String varKey = Env.SCRIPT_VAR_KEY_SYMBOL + strSlice[i] + Env.SCRIPT_VAR_KEY_SYMBOL;
+					if (cmd.indexOf("%") != -1) {
+						String[] strSlice = cmd.split("%");
 
-							if (!varMap.containsKey(varKey)) {
-								throw new ServiceLayerException("錯誤的腳本變數");
+						for (int i=0; i<strSlice.length; i++) {
+							if (i % 2 == 0) {
+								continue;
 
 							} else {
-								cmd = cmd.replace(varKey, varMap.get(varKey));
-								script.setScriptContent(cmd);
+								String varKey = Env.SCRIPT_VAR_KEY_SYMBOL + strSlice[i] + Env.SCRIPT_VAR_KEY_SYMBOL;
+
+								if (!varMap.containsKey(varKey)) {
+									throw new ServiceLayerException("錯誤的腳本變數");
+
+								} else {
+									cmd = cmd.replace(varKey, varMap.get(varKey));
+									newVO.setScriptContent(cmd);
+								}
 							}
 						}
 					}
+
+					retScriptList.add(newVO);
 				}
 			}
 		}
 
-		return scripts;
+		return retScriptList;
 	}
 
 	@Override
@@ -227,7 +237,7 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 	public ScriptServiceVO getScriptInfoByScriptInfoId(String scriptInfoId) throws ServiceLayerException {
 		ScriptServiceVO retVO = new ScriptServiceVO();
 		try {
-			ScriptInfo entity = scriptInfoDAO.findScriptInfoById(scriptInfoId);
+			ScriptInfo entity = scriptInfoDAO.findScriptInfoByIdOrCode(scriptInfoId, null);
 
 			if (entity != null) {
 				retVO.setScriptName(entity.getScriptName());

@@ -22,7 +22,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.DataPollerDAO;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DataPollerMapping;
 import com.cmap.model.DataPollerSetting;
@@ -46,7 +46,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 	private DataPollerDAO dataPollerDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	private String getTodayTableName() {
 		String tableName = Env.DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
@@ -82,19 +82,19 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 		return tableName;
 	}
-	
+
 	private String getGroupIdMapping2TableName(String groupId) throws ServiceLayerException {
 		String tableName = null;
 		try {
 			tableName = netFlowDAO.findTargetTableNameByGroupId(groupId);
-			
+
 			if (StringUtils.isBlank(tableName)) {
 				throw new ServiceLayerException("查詢groupId對應TableName為空，groupId >> " + groupId);
 			}
-			
+
 		} catch (ServiceLayerException sle) {
 			log.error(sle.toString(), sle);
-			
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			throw new ServiceLayerException("取得groupId對應TableName失敗，groupId >> " + groupId);
@@ -102,23 +102,23 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 		return tableName;
 	}
-	
+
 	private String getQueryTableName(NetFlowVO nfVO) throws ServiceLayerException {
 		final String groupId = nfVO.getQueryGroupId();
 		String recordBy = dataPollerService.getRecordBySetting(Constants.DATA_TYPE_OF_NET_FLOW);
-		
+
 		String queryTableName = null;
-		
+
 		switch (recordBy) {
 			case Constants.RECORD_BY_DAY:
 				queryTableName = getSpecifyDayTableName(nfVO.getQueryDateBegin());
 				break;
-				
+
 			case Constants.RECORD_BY_MAPPING:
 				queryTableName = getGroupIdMapping2TableName(groupId);
 				break;
 		}
-		
+
 		return queryTableName;
 	}
 
@@ -139,7 +139,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 	public List<NetFlowVO> findNetFlowRecordFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException {
 		List<NetFlowVO> retList = new ArrayList<>();
 		try {
-			
+
 			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, getQueryTableName(nfVO));
 
 			if (dataList != null && !dataList.isEmpty()) {
@@ -193,7 +193,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 							} else if (oriName.equals("GroupId")) {
 								String groupId = Objects.toString(data[dataIdx]);
-								DeviceList device = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, null);
+								DeviceList device = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, null);
 
 								if (device == null) {
 									fValue = groupId;

@@ -20,7 +20,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ConnectionMode;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.vo.ProvisionLogDAOVO;
@@ -55,7 +55,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 	private ProvisionLogDAO provisionLogDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Autowired
 	private StepService stepService;
@@ -174,7 +174,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			 * 查詢此腳本的變數是否有系統客製函式
 			 */
 			for (String key : variables) {
-				List<DeviceDetailMapping> mapping = deviceListDAO.findDeviceDetailMapping(key);
+				List<DeviceDetailMapping> mapping = deviceDAO.findDeviceDetailMapping(key);
 
 				if (mapping == null || (mapping != null && mapping.isEmpty())) {
 					continue;
@@ -187,7 +187,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 						final String deviceId = devices.get(i);
 						final String mapKey = groupId + Env.COMM_SEPARATE_SYMBOL + deviceId;
 
-						List<DeviceDetailInfo> infos = deviceListDAO.findDeviceDetailInfo(null, groupId, deviceId, key);
+						List<DeviceDetailInfo> infos = deviceDAO.findDeviceDetailInfo(null, groupId, deviceId, key);
 
 						if (deviceVarMap.containsKey(mapKey)) {
 							varMap = deviceVarMap.get(mapKey);
@@ -221,6 +221,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			//Step 1.檢核腳本是否存在
 			ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
 			siDAOVO.setQueryScriptInfoId(pVO.getScriptInfoId());
+			siDAOVO.setQueryScriptCode(pVO.getScriptCode());
 
 			List<ScriptInfo> scriptList = scriptInfoDAO.findScriptInfo(siDAOVO, null, null);
 
@@ -286,7 +287,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 				String groupId = jsonGroupIdList.get(i);
 
 				final String jsonDeviceId = jsonDeviceIdList.get(i);
-				DeviceList deviceEntity = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+				DeviceList deviceEntity = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
 
 				if (deviceEntity == null || (deviceEntity != null && !deviceEntity.getDeviceId().equals(jsonDeviceId))) {
 					return false;
@@ -343,7 +344,8 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 		//Step 1.取得腳本資料
 		final String scriptInfoId = psVO.getScriptInfoId();
-		ScriptInfo scriptInfo = scriptInfoDAO.findScriptInfoById(scriptInfoId);
+		final String scriptCode = psVO.getScriptCode();
+		ScriptInfo scriptInfo = scriptInfoDAO.findScriptInfoByIdOrCode(scriptInfoId, scriptCode);
 
 		if (scriptInfo == null) {
 			throw new ServiceLayerException("無法取得腳本資料，請重新操作");
@@ -378,7 +380,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 				String deviceListId;
 
 				if (deviceInfo == null || (deviceInfo != null && deviceInfo.isEmpty())) {
-					DeviceList deviceList = deviceListDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+					DeviceList deviceList = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
 
 					if (deviceList == null) {
 						throw new ServiceLayerException("查無設備資料 >> groupId: " + groupId + " , deviceId: " + deviceId);
@@ -396,28 +398,37 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 				String script = actionScript;
 
-				Map<String, String> varMap = null;
+				List<Map<String, String>> varMapList = null;
 				if (varKeyList != null && !varKeyList.isEmpty()) {
-					final List<String> vValueList = deviceVarValueList.get(idx);
+					varMapList = new ArrayList<>();
 
-					varMap = new HashMap<>();
+					/*
+					 * Case 1. deviceCount == 1 但 deviceVarValueList.size > 1
+					 * ==>> 表示同1腳本要做多組設定對同1台設備 (e.g.: 防火牆黑名單設定，一次要設定多筆IP)
+					 *      << 1對多 >>
+					 *
+					 * Case 2. deviceCount > 1
+					 * ==>> 預設為1腳本做1組設定對1台設備 (e.g.: 一次對多台設備做供裝)
+					 *      << 1對1 >>
+					 *
+					 * (目前不支援一次針對多台設備且每1台設備都做多組設定，須調整作法為一次針對1台設備做多組設定)
+					 * << 多對多>>
+					 */
+					if (deviceCount > 1) {
+						final List<String> valueList = deviceVarValueList.get(idx);
+						varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
 
-					for (int i=0; i<varKeyList.size(); i++) {
-						final String vKey = Env.SCRIPT_VAR_KEY_SYMBOL + varKeyList.get(i) + Env.SCRIPT_VAR_KEY_SYMBOL;
-						final String vValue = vValueList.get(i);
-
-						if (script.indexOf(vKey) != -1) {
-							script = StringUtils.replace(script, vKey, vValue);
+					} else if (deviceCount == 1) {
+						for (List<String> valueList : deviceVarValueList) {
+							varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
 						}
-
-						varMap.put(vKey, vValue);
 					}
 				}
 
 				//Step 3.呼叫共用執行腳本
 				StepServiceVO processVO = null;
 				try {
-					processVO = stepService.doScript(connectionMode, deviceListId, deviceInfo, scriptInfo, varMap, sysTrigger, triggerBy, triggerRemark);
+					processVO = stepService.doScript(connectionMode, deviceListId, deviceInfo, scriptInfo, varMapList, sysTrigger, triggerBy, triggerRemark);
 
 					masterVO.getDetailVO().addAll(processVO.getPsVO().getDetailVO());
 
@@ -480,6 +491,22 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		retVO.setRetMsg(retMsg);
 
 		return retVO;
+	}
+
+	private Map<String, String> composeScriptVarMap(String script, List<String> varKeyList, List<String> valueList) {
+		Map<String, String> varMap = new HashMap<>();
+		for (int i=0; i<varKeyList.size(); i++) {
+			final String vKey = Env.SCRIPT_VAR_KEY_SYMBOL + varKeyList.get(i) + Env.SCRIPT_VAR_KEY_SYMBOL;
+			final String vValue = valueList.get(i);
+
+			if (script.indexOf(vKey) != -1) {
+				script = StringUtils.replace(script, vKey, vValue);
+			}
+
+			varMap.put(vKey, vValue);
+		}
+
+		return varMap;
 	}
 
 	@Override

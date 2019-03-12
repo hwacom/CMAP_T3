@@ -215,7 +215,7 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 				throw e;
 
 			} finally {
-				log.info(processLog.toString());
+				//log.info(processLog.toString());
 				ssVO.setCmdProcessLog(processLog.toString());
 			}
 

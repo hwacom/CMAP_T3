@@ -2,7 +2,7 @@ package com.cmap.dao.vo;
 
 import java.util.List;
 
-public class DeviceListDAOVO extends CommonDAOVO {
+public class DeviceDAOVO extends CommonDAOVO {
 
 	private String queryGroup;
 	private String queryDevice;

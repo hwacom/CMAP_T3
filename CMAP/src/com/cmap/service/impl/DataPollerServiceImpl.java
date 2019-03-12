@@ -39,11 +39,15 @@ import com.cmap.annotation.Log;
 import com.cmap.dao.DataPollerDAO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DataPollerMapping;
+import com.cmap.model.DataPollerScriptSetting;
 import com.cmap.model.DataPollerSetting;
+import com.cmap.model.DataPollerTargetSetting;
 import com.cmap.plugin.module.netflow.NetFlowDAO;
 import com.cmap.service.DataPollerService;
+import com.cmap.service.DeliveryService;
 import com.cmap.service.impl.jobs.BaseJobImpl.Result;
 import com.cmap.service.vo.DataPollerServiceVO;
+import com.cmap.service.vo.DeliveryParameterVO;
 
 @Service("dataPollerService")
 @Transactional
@@ -53,9 +57,12 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	@Autowired
 	private DataPollerDAO dataPollerDAO;
-	
+
 	@Autowired
 	private NetFlowDAO netFlowDAO;
+
+	@Autowired
+	private DeliveryService deliveryService;
 
 	private String getTodayTableName(String interval, String tableBaseName) {
 		String tableName = tableBaseName;
@@ -124,6 +131,9 @@ public class DataPollerServiceImpl implements DataPollerService {
 				final String cleanNotTodayData = setting.getRecordByDayClean();
 				final String insertDBMethod = setting.getInsertDbMethod();
 
+				final String targetSettingCode = setting.getTargetSettingCode();
+				final String targetExceptionPolicy = setting.getTargetExceptionPolicy();
+
 				if (StringUtils.equals(storeMethod, Constants.DATA_POLLER_STORE_METHOD_DB)) {
 					if (StringUtils.equals(recordByDay, Constants.DATA_Y)) {
 						if (StringUtils.isNotBlank(cleanNotTodayData) && StringUtils.equals(cleanNotTodayData, Constants.DATA_Y)) {
@@ -180,9 +190,99 @@ public class DataPollerServiceImpl implements DataPollerService {
 							break;
 					}
 
-				} else {
+				} else if (StringUtils.equals(storeMethod, Constants.DATA_POLLER_STORE_METHOD_FILE)) {
 					// Mode 3. 採 CSV 格式落地檔模式儲存資料，不入 DB (效能佳，彈性高)
 					writeOutput2File(setting, recordListMap, specialSetFieldMap);
+
+				} else {
+					if (recordListMap == null || (recordListMap != null && recordListMap.isEmpty())) {
+						dpsVO.setJobExcuteResult(Result.SUCCESS);
+						dpsVO.setJobExcuteResultRecords("0");
+						dpsVO.setJobExcuteRemark("無資料須解析");
+
+						success = false;
+					}
+				}
+
+				// Step 6. 若有設定要執行腳本
+				if (recordListMap != null && !recordListMap.isEmpty() && StringUtils.isNotBlank(targetSettingCode)) {
+					// Step 6-1. 取得執行目標設備
+					List<DataPollerTargetSetting> targetList = dataPollerDAO.findDataPollerTargetSettingByTargetSettingCode(targetSettingCode);
+
+					if (targetList != null && !targetList.isEmpty()) {
+						for (DataPollerTargetSetting target : targetList) {
+							try {
+								final String groupId = target.getGroupId();
+								final String deviceId = target.getDeviceId();
+								final String deviceIp = target.getDeviceIp();
+								final Integer devicePort = target.getDevicePort();
+								final String deviceProtocol = target.getDeviceProtocol();
+								final String scriptSettingCode = target.getScriptSettingCode();
+
+								if (StringUtils.isNotBlank(scriptSettingCode)) {
+									// Step 6-2. 取得要執行的腳本
+									List<DataPollerScriptSetting> scriptList = dataPollerDAO.findDataPollerScriptSettingByScriptSettingCode(scriptSettingCode);
+
+									if (scriptList != null && !scriptList.isEmpty()) {
+
+										DeliveryParameterVO dpVO = null;
+										for (DataPollerScriptSetting script : scriptList) {
+											try {
+												final String executeKeySetting = script.getExecuteKeySetting();
+												final List<Map<String, String>> sourceEntryMapList = retVO.getSourceEntryMapList();
+												final String scriptCode = script.getExecuteScriptCode();
+												final String reason = script.getExecuteReason();
+
+												List<String> varKey = transSourceEntryMap2KeyList(executeKeySetting);
+												List<List<String>> varValue = transSourceEntryMap2ValueList(executeKeySetting, sourceEntryMapList);
+
+												List<String> groupIds = new ArrayList<>();
+												groupIds.add(groupId);
+
+												List<String> deviceIds = new ArrayList<>();
+												deviceIds.add(deviceId);
+
+												dpVO = new DeliveryParameterVO();
+												dpVO.setScriptCode(scriptCode);
+												dpVO.setGroupId(groupIds);
+												dpVO.setDeviceId(deviceIds);
+												dpVO.setVarKey(varKey);
+												dpVO.setVarValue(varValue);
+												dpVO.setReason(reason);
+
+												deliveryService.doDelivery(Env.CONNECTION_MODE_OF_DELIVERY, dpVO, true, Constants.SYS, reason, false);
+
+											} catch (Exception e) {
+												log.error(e.toString(), e);
+
+												// 設備執行腳本失敗則跳過此設備
+												break;
+											}
+										}
+									}
+								}
+
+							} catch (Exception e) {
+								log.error(e.toString(), e);
+
+								// 發生錯誤時依照設定的POLICY決定處理方式
+								if (StringUtils.isNotBlank(targetExceptionPolicy)) {
+									if (StringUtils.equals(targetExceptionPolicy, Constants.EXCEPTION_POLICY_BREAK)) {
+										break;
+
+									} else if (StringUtils.equals(targetExceptionPolicy, Constants.EXCEPTION_POLICY_CONTINUE)) {
+										continue;
+
+									} else {
+										break;
+									}
+
+								} else {
+									break;
+								}
+							}
+						}
+					}
 				}
 
 				if (success) {
@@ -219,6 +319,54 @@ public class DataPollerServiceImpl implements DataPollerService {
 		return dpsVO;
 	}
 
+	private Map<String, String> transKeySetting2Map(String executeKeySetting) {
+		Map<String, String> retMap = new HashMap<>();
+		String[] keyMappings = executeKeySetting.split(Env.COMM_SEPARATE_SYMBOL);
+
+		for (String keyM : keyMappings) {
+			String[] key = keyM.split("=");
+			String scriptKey = key[0];
+			String voKey = key[1];
+
+			retMap.put(scriptKey, voKey);
+		}
+
+		return retMap;
+	}
+
+	private List<String> transSourceEntryMap2KeyList(String executeKeySetting) {
+		List<String> retList = new ArrayList<>();
+
+		Map<String, String> keyMapping = transKeySetting2Map(executeKeySetting);
+		for (String scriptKey : keyMapping.keySet()) {
+			retList.add(scriptKey);
+		}
+
+		return retList;
+	}
+
+	private List<List<String>> transSourceEntryMap2ValueList(String executeKeySetting, List<Map<String, String>> sourceEntryMapList) throws ServiceLayerException {
+		List<List<String>> retList = new ArrayList<>();
+
+		Map<String, String> keyMapping = transKeySetting2Map(executeKeySetting);
+
+		List<String> entryList = null;
+		for (Map<String, String> sourceEntry : sourceEntryMapList) {
+
+			entryList = new ArrayList<>();
+			for (String voKey : keyMapping.values()) {
+
+				if (sourceEntry.containsKey(voKey)) {
+					entryList.add(sourceEntry.get(voKey));
+				}
+			}
+
+			retList.add(entryList);
+		}
+
+		return retList;
+	}
+
 	/**
 	 * 將Data_Poller_Mapping設定的內容轉換成以Index為Key的Map
 	 * @param setting
@@ -248,6 +396,9 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 				} else if (StringUtils.equals(insertDbMethod, Constants.DATA_POLLER_INSERT_DB_BY_CSV_FILE)) {
 					mappingMap.put(mapping.getTargetFieldIdx(), vo);
+
+				} else {
+					mappingMap.put(mapping.getSourceColumnIdx(), vo);
 				}
 			}
 
@@ -359,7 +510,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 				if (StringUtils.equals(storeMethod, Constants.DATA_POLLER_STORE_METHOD_DB)) {
 					switch (insertDbMethod) {
 						case Constants.DATA_POLLER_INSERT_DB_BY_SQL:
-							readFileContents2SQLFormat4DB(recordListMap, targetFile, setting, mappingMap);
+							retVO = readFileContents2SQLFormat4DB(recordListMap, targetFile, setting, mappingMap);
 							break;
 
 						case Constants.DATA_POLLER_INSERT_DB_BY_CSV_FILE:
@@ -430,6 +581,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	private DataPollerServiceVO readFileContents2CSVFormat4DB(Map<String, List<String>> retRecordListMap, File file, DataPollerSetting setting, Map<Integer, DataPollerServiceVO> mappingMap, Map<String, String> specialSetFieldMap) throws ServiceLayerException {
 		DataPollerServiceVO retVO = new DataPollerServiceVO();
+		List<Map<String, String>> sourceEntryMapList = new ArrayList<Map<String, String>>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
 
 		Map<String, String> tmpSpecialFieldMap = null;
 		final String dataType = setting.getDataType();
@@ -446,10 +598,15 @@ public class DataPollerServiceImpl implements DataPollerService {
 		final String charset = StringUtils.isNotBlank(setting.getFileCharset()) ? setting.getFileCharset() : Env.DEFAULT_DATA_POLLER_FILE_CHARSET;
 
 		try {
+			final String fileName = file.getName();
+
 			List<String> fileContent = Files.readAllLines(Paths.get(file.getPath()), Charset.forName(charset));
 
+			Map<String, String> sourceEntryMap = null;	//紀錄來源資料key(欄位名稱)-value(來源資料數值)
 			// 逐行讀取檔案內容
 			for (String line : fileContent) {
+				sourceEntryMap = new HashMap<>();
+
 				String[] lineData = line.split(splitBy);
 				String[] targetStr = new String[mappingMap.size()];
 
@@ -498,7 +655,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 								throw e;
 							}
 						}
-						
+
 					} else if (StringUtils.equals(setting.getRecordByMapping(), Constants.DATA_Y)) {
 						if (StringUtils.equals(setting.getDataType(), Constants.DATA_TYPE_OF_NET_FLOW)) {
 							/*
@@ -506,11 +663,15 @@ public class DataPollerServiceImpl implements DataPollerService {
 							 */
 							String groupId = specialFieldMap.get(Constants.GROUP_ID);
 							String retTableName = netFlowDAO.findTargetTableNameByGroupId(groupId);
-							
+
 							if (StringUtils.isBlank(retTableName)) {
 								throw new ServiceLayerException("群組ID(GROUP_ID)查無對照表目標寫入TABLE_NAME設定");
 							}
 							recordDateTableName = retTableName;
+
+						} else if (StringUtils.equals(setting.getDataType(), Constants.DATA_TYPE_OF_FIREWALL_BLACK_LIST)) {
+							// 防火牆黑名單記錄預設寫入table名稱
+							recordDateTableName = Env.TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;
 						}
 					}
 
@@ -526,8 +687,10 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 						targetStr[targetFieldIdx] = targetValue;
 
+						sourceEntryMap.put(sourceColumnName, targetValue);
+
 					} else {
-						if (specialFieldMap.containsKey(targetFieldName)) {
+						if (specialFieldMap != null && specialFieldMap.containsKey(targetFieldName)) {
 							/*
 							 * 當前欄位非來源CSV內欄位(for 目標TABLE另增加的欄位)
 							 * >> 塞值來源 = 判斷是否為特殊欄位(specialFieldMap)並取值
@@ -570,8 +733,14 @@ public class DataPollerServiceImpl implements DataPollerService {
 					} else if (StringUtils.equals(sourceColumnType, Constants.DATA_POLLER_SETTING_TYPE_OF_USER)) {
 						String userName = "'" + Env.USER_NAME_JOB + "'";
 						specialSetFieldMap.put(targetFieldName, userName);
+
+					} else if (StringUtils.equals(sourceColumnType, Constants.DATA_POLLER_SETTING_TYPE_OF_FILE_NAME)) {
+						String sqlFileName = "'" + fileName + "'";
+						specialSetFieldMap.put(targetFieldName, sqlFileName);
 					}
 				}
+
+				sourceEntryMapList.add(sourceEntryMap);
 
 				StringBuffer sb = new StringBuffer();
 				for (int i=0; i<targetStr.length; i++) {
@@ -597,6 +766,8 @@ public class DataPollerServiceImpl implements DataPollerService {
 				lineData = null;	// for GC
 			}
 
+			retVO.setSourceEntryMapList(sourceEntryMapList);
+
 		} catch (Exception e) {
 			log.error(e.toString(), e);
 			throw new ServiceLayerException("Data polling 失敗");
@@ -615,7 +786,10 @@ public class DataPollerServiceImpl implements DataPollerService {
 	 * @param mappingMap
 	 * @return
 	 */
-	private void readFileContents2SQLFormat4DB(Map<String, List<String>> retRecordListMap, File file, DataPollerSetting setting, Map<Integer, DataPollerServiceVO> mappingMap) throws ServiceLayerException {
+	private DataPollerServiceVO readFileContents2SQLFormat4DB(Map<String, List<String>> retRecordListMap, File file, DataPollerSetting setting, Map<Integer, DataPollerServiceVO> mappingMap) throws ServiceLayerException {
+		DataPollerServiceVO retVO = new DataPollerServiceVO();
+		List<Map<String, String>> sourceEntryMapList = new ArrayList<Map<String, String>>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
+
 		Map<String, String> tmpSpecialFieldMap = null;
 		final String dataType = setting.getDataType();
 
@@ -632,9 +806,12 @@ public class DataPollerServiceImpl implements DataPollerService {
 		final String charset = StringUtils.isNotBlank(setting.getFileCharset()) ? setting.getFileCharset() : Env.DEFAULT_DATA_POLLER_FILE_CHARSET;
 
 		final String recordByDayReferField = setting.getRecordByDayReferField();
+		final String fileName = file.getName();
 
 		try (Stream<String> stream = Files.lines(Paths.get(file.getPath()), Charset.forName(charset))) {
 			stream.forEach(line -> {
+				Map<String, String> sourceEntryMap = new HashMap<>();	//紀錄來源資料key(欄位名稱)-value(來源資料數值)
+
 				String[] lineData = line.split(splitBy);
 				Map<String, Map<String, String>> tableFieldMap = new HashMap<>();
 
@@ -669,6 +846,14 @@ public class DataPollerServiceImpl implements DataPollerService {
 									fieldValue = "STR_TO_DATE('" + fieldValue + "', '" + fieldSqlFormat + "')";
 									break;
 
+								case Constants.DATA_POLLER_SETTING_TYPE_OF_USER:
+									fieldValue = "'" + Env.USER_NAME_JOB + "'";
+									break;
+
+								case Constants.DATA_POLLER_SETTING_TYPE_OF_FILE_NAME:
+									fieldValue = "'" + fileName + "'";
+									break;
+
 								default:
 									break;
 							}
@@ -686,6 +871,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 							}
 
 							fieldValueMap.put(fieldName, fieldValue);
+							sourceEntryMap.put(fieldName, fieldValue);
 
 							if (fieldName.equals(recordByDayReferField)) {
 								fieldValueMap.put(Constants.RECORD_BY_DAY_REFER_FIELD, recordByDayReferFieldValue);
@@ -694,6 +880,8 @@ public class DataPollerServiceImpl implements DataPollerService {
 							tableFieldMap.put(tableName, fieldValueMap);
 						}
 					}
+
+					sourceEntryMapList.add(sourceEntryMap);
 
 					try {
 						transTableFieldMap2Sql(retRecordListMap, tableFieldMap, setting);
@@ -709,6 +897,9 @@ public class DataPollerServiceImpl implements DataPollerService {
 			throw new ServiceLayerException("Data polling 失敗");
 
 		}
+
+		retVO.setSourceEntryMapList(sourceEntryMapList);
+		return retVO;
 	}
 
 	private String getTargetFieldTitle(Map<Integer, DataPollerServiceVO> mappingMap) {
@@ -830,6 +1021,10 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	        					case Constants.DATA_POLLER_TARGET_VALUE_FORMAT_OF_SPECIAL_VAR:
 		        					targetValue = specialSetFieldMap.containsKey(targetFieldName) ? specialSetFieldMap.get(targetFieldName) : targetValue;
+	        						break;
+
+	        					case Constants.DATA_POLLER_TARGET_VALUE_FORMAT_OF_FILE_NAME:
+	        						targetValue = retOriFileName;
 	        						break;
 	        				}
 	        			}
@@ -1175,10 +1370,10 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 			} else {
 				DataPollerSetting setting = settings.get(0);
-				
+
 				if (StringUtils.equals(setting.getRecordByDay(), Constants.DATA_Y)) {
 					retVal = Constants.RECORD_BY_DAY;
-					
+
 				} else  if (StringUtils.equals(setting.getRecordByMapping(), Constants.DATA_Y)) {
 					retVal = Constants.RECORD_BY_MAPPING;
 				}

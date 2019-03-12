@@ -17,7 +17,7 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ConfigDAO;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
@@ -41,7 +41,7 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 	private VmSwitchDAO vmSwitchDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Autowired
 	private ConfigDAO configVersionInfoDAO;
@@ -92,7 +92,7 @@ public class VmSwitchServiceImpl extends CommonServiceImpl implements VmSwitchSe
 			/*
 			 * Step 2. 查詢指定的 VM name 系統組態備份紀錄，確認有無備份紀錄，有的話才有辦法執行後續動作
 			 */
-			DeviceList deviceList = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+			DeviceList deviceList = deviceDAO.findDeviceListByDeviceListId(deviceListId);
 
 			if (deviceList == null) {
 				throw new ServiceLayerException("API傳入的VM name查詢不到CMAP DeviceList 資料 >> apiVmName: " + apiVmName);

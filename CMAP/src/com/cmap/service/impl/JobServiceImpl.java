@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.QuartzDAO;
 import com.cmap.dao.vo.QuartzDAOVO;
 import com.cmap.exception.ConnectionException;
@@ -61,7 +61,7 @@ public class JobServiceImpl implements JobService {
 	private QuartzDAO quartzDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Autowired
 	private CommonService commonService;
@@ -246,7 +246,7 @@ public class JobServiceImpl implements JobService {
 						List<Object[]> objList = null;
 						StringBuffer groupIdsStr = new StringBuffer();
 						if (groupIds != null && !groupIds.isEmpty()) {
-							objList = deviceListDAO.getGroupIdAndNameByGroupIds(groupIds);
+							objList = deviceDAO.getGroupIdAndNameByGroupIds(groupIds);
 
 							if (objList == null || (objList != null && objList.isEmpty())) {
 								objList = new ArrayList<>();
@@ -265,7 +265,7 @@ public class JobServiceImpl implements JobService {
 
 						StringBuffer deviceIdsStr = new StringBuffer();
 						if (deviceIds != null && !deviceIds.isEmpty()) {
-							objList = deviceListDAO.getDeviceIdAndNameByDeviceIds(deviceIds);
+							objList = deviceDAO.getDeviceIdAndNameByDeviceIds(deviceIds);
 
 							if (objList == null || (objList != null && objList.isEmpty())) {
 								objList = new ArrayList<>();

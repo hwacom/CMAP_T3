@@ -27,6 +27,12 @@ public class DataPollerTargetSetting {
 	@Column(name = "target_setting_code", nullable = false)
 	private String targetSettingCode;
 
+	@Column(name = "order_no", nullable = false)
+	private Integer orderNo;
+
+	@Column(name = "remark", nullable = true)
+	private String remark;
+
 	@Column(name = "group_id", nullable = true)
 	private String groupId;
 
@@ -70,13 +76,15 @@ public class DataPollerTargetSetting {
 		super();
 	}
 
-	public DataPollerTargetSetting(Integer targetSettingId, String targetSettingCode, String groupId, String deviceId,
-			String deviceIp, Integer devicePort, String deviceProtocol, String scriptSettingCode, String deleteFlag,
-			Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
-			String updateBy) {
+	public DataPollerTargetSetting(Integer targetSettingId, String targetSettingCode, Integer orderNo, String remark,
+			String groupId, String deviceId, String deviceIp, Integer devicePort, String deviceProtocol,
+			String scriptSettingCode, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
+			String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.targetSettingId = targetSettingId;
 		this.targetSettingCode = targetSettingCode;
+		this.orderNo = orderNo;
+		this.remark = remark;
 		this.groupId = groupId;
 		this.deviceId = deviceId;
 		this.deviceIp = deviceIp;
@@ -106,6 +114,22 @@ public class DataPollerTargetSetting {
 
 	public void setTargetSettingCode(String targetSettingCode) {
 		this.targetSettingCode = targetSettingCode;
+	}
+
+	public Integer getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(Integer orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public String getGroupId() {

@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.MenuItemDAO;
 import com.cmap.dao.PrtgDAO;
 import com.cmap.dao.ScriptTypeDAO;
@@ -43,7 +43,7 @@ public class CommonServiceImpl implements CommonService {
 	private static Logger log;
 
 	@Autowired
-	DeviceListDAO deviceListDAO;
+	DeviceDAO deviceDAO;
 
 	@Autowired
 	MenuItemDAO menuItemDAO;
@@ -124,7 +124,7 @@ public class CommonServiceImpl implements CommonService {
 
 								// 先撈取查看此群組+設備ID資料是否已存在
 								// Y181203, 改成只看設備ID, 否則若從PRTG內將設備移動到別的群組下會更新不到
-								dl = deviceListDAO.findDeviceListByGroupAndDeviceId(null, deviceId);
+								dl = deviceDAO.findDeviceListByGroupAndDeviceId(null, deviceId);
 
 								final String localFileDirPath = composeFilePath(deviceInfoMap, true);
 								final String remoteFileDirPath = composeFilePath(deviceInfoMap, false);
@@ -222,7 +222,7 @@ public class CommonServiceImpl implements CommonService {
 	@Override
 	public void updateDeviceList(List<DeviceList> deviceList) {
 		// 更新 or 寫入 DEVICE_LIST 資料
-		deviceListDAO.saveOrUpdateDeviceListByModel(deviceList);
+		deviceDAO.saveOrUpdateDeviceListByModel(deviceList);
 	}
 
 	@Override

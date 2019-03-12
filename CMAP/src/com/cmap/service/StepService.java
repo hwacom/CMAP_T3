@@ -64,7 +64,7 @@ public interface StepService {
 			String deviceListId,
 			Map<String, String> deviceInfo,
 			ScriptInfo scriptInfo,
-			Map<String, String> varMap,
+			List<Map<String, String>> varMapList,
 			boolean sysTrigger,
 			String triggerBy,
 			String triggerRemark);

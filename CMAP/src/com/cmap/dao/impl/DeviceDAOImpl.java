@@ -11,15 +11,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.Constants;
-import com.cmap.dao.DeviceListDAO;
-import com.cmap.dao.vo.DeviceListDAOVO;
+import com.cmap.dao.DeviceDAO;
+import com.cmap.dao.vo.DeviceDAOVO;
 import com.cmap.model.DeviceDetailInfo;
 import com.cmap.model.DeviceDetailMapping;
 import com.cmap.model.DeviceList;
+import com.cmap.model.DeviceLoginInfo;
 
-@Repository("deviceListDAO")
+@Repository("deviceDAO")
 @Transactional
-public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO {
+public class DeviceDAOImpl extends BaseDaoHibernate implements DeviceDAO {
 
 	@Override
 	public DeviceList findDeviceListByDeviceListId(String deviceListId) {
@@ -66,7 +67,7 @@ public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO
 	}
 
 	@Override
-	public long countDeviceListAndLastestVersionByDAOVO(DeviceListDAOVO dlDAOVO) {
+	public long countDeviceListAndLastestVersionByDAOVO(DeviceDAOVO dlDAOVO) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select count(distinct dl.DEVICE_LIST_ID) ")
 		  .append("   from Device_List dl ")
@@ -148,7 +149,7 @@ public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO
 	}
 
 	@Override
-	public List<Object[]> findDeviceListAndLastestVersionByDAOVO(DeviceListDAOVO dlDAOVO, Integer startRow, Integer pageLength) {
+	public List<Object[]> findDeviceListAndLastestVersionByDAOVO(DeviceDAOVO dlDAOVO, Integer startRow, Integer pageLength) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select distinct ")
 		  .append(composeSelectStr(Constants.NATIVE_FIELD_NAME_FOR_DEVICE_2, "dl"))
@@ -457,5 +458,38 @@ public class DeviceListDAOImpl extends BaseDaoHibernate implements DeviceListDAO
 	    q.executeUpdate();
 
 		return true;
+	}
+
+	@Override
+	public DeviceLoginInfo findDeviceLoginInfo(String deviceListId, String groupId, String deviceId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from DeviceLoginInfo dli ")
+		  .append(" where 1=1 ");
+
+		if (StringUtils.isNotBlank(deviceListId)) {
+			sb.append(" and dli.deviceListId = :deviceListId ");
+		}
+		if (StringUtils.isNotBlank(groupId)) {
+			sb.append(" and dli.groupId = :groupId ");
+		}
+		if (StringUtils.isNotBlank(deviceId)) {
+			sb.append(" and dli.deviceId = :deviceId ");
+		}
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+
+	    if (StringUtils.isNotBlank(deviceListId)) {
+	    	q.setParameter("deviceListId", deviceListId);
+		}
+	    if (StringUtils.isNotBlank(groupId)) {
+	    	q.setParameter("groupId", groupId);
+		}
+	    if (StringUtils.isNotBlank(deviceId)) {
+	    	q.setParameter("deviceId", deviceId);
+		}
+
+		List<DeviceLoginInfo> returnList = (List<DeviceLoginInfo>)q.list();
+		return returnList.isEmpty() ? null : returnList.get(0);
 	}
 }

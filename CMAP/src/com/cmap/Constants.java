@@ -22,6 +22,9 @@ public class Constants {
 	public static final String FIELD_NAME_UPDATE_BY = "updateBy";
 	public static final String UNKNOWN = "unknown";
 
+	public static final String EXCEPTION_POLICY_CONTINUE = "CONTINUE";
+	public static final String EXCEPTION_POLICY_BREAK = "BREAK";
+
 	public static final String LOGIN_AUTH_MODE_OIDC = "OIDC";
 	public static final String LOGIN_AUTH_MODE_PRTG = "PRTG";
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
@@ -150,6 +153,7 @@ public class Constants {
 	public static final String FIELD_TYPE_OF_TIMESTAMP = "TIMESTAMP";
 
 	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
+	public static final String DATA_TYPE_OF_FIREWALL_BLACK_LIST = "FW_BLACK_LIST";
 
 	public static final String STORE_METHOD_OF_FILE = "FILE";
 	public static final String STORE_METHOD_OF_DB = "DB";
@@ -177,10 +181,12 @@ public class Constants {
 
 	public static final String DATA_POLLER_SETTING_TYPE_OF_TIMESTAMP = "TIMESTAMP";
 	public static final String DATA_POLLER_SETTING_TYPE_OF_USER = "@USER@";
+	public static final String DATA_POLLER_SETTING_TYPE_OF_FILE_NAME = "@FILE_NAME@";
 
 	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_NOW = "@NOW@";
 	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_USER = "@USER@";
 	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_SPECIAL_VAR = "@SPECIAL_VAR@";
+	public static final String DATA_POLLER_TARGET_VALUE_FORMAT_OF_FILE_NAME = "@FILE_NAME@";
 
 	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_SCHOOL_ID = "[SCHOOL_ID]";
 	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_YYYYMMDD = "[YYYYMMDD]";

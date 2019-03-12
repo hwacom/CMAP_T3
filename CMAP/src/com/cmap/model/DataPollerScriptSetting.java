@@ -31,17 +31,25 @@ public class DataPollerScriptSetting {
 	@Column(name = "execute_script_code", nullable = false)
 	private String executeScriptCode;
 
+	@Column(name = "execute_key_setting", nullable = true)
+	private String executeKeySetting;
+
+	@Column(name = "execute_reason", nullable = true)
+	private String executeReason;
+
 	public DataPollerScriptSetting() {
 		super();
 	}
 
 	public DataPollerScriptSetting(Integer scriptSettingId, String scriptSettingCode, Integer executeOrder,
-			String executeScriptCode) {
+			String executeScriptCode, String executeKeySetting, String executeReason) {
 		super();
 		this.scriptSettingId = scriptSettingId;
 		this.scriptSettingCode = scriptSettingCode;
 		this.executeOrder = executeOrder;
 		this.executeScriptCode = executeScriptCode;
+		this.executeKeySetting = executeKeySetting;
+		this.executeReason = executeReason;
 	}
 
 	public Integer getScriptSettingId() {
@@ -74,5 +82,21 @@ public class DataPollerScriptSetting {
 
 	public void setExecuteScriptCode(String executeScriptCode) {
 		this.executeScriptCode = executeScriptCode;
+	}
+
+	public String getExecuteKeySetting() {
+		return executeKeySetting;
+	}
+
+	public void setExecuteKeySetting(String executeKeySetting) {
+		this.executeKeySetting = executeKeySetting;
+	}
+
+	public String getExecuteReason() {
+		return executeReason;
+	}
+
+	public void setExecuteReason(String executeReason) {
+		this.executeReason = executeReason;
 	}
 }

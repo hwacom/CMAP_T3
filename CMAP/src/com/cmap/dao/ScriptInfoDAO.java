@@ -12,7 +12,7 @@ public interface ScriptInfoDAO {
 
 	public List<ScriptInfo> findScriptInfo(ScriptInfoDAOVO daovo, Integer startRow, Integer pageLength);
 
-	public ScriptInfo findScriptInfoById(String scriptInfoId);
+	public ScriptInfo findScriptInfoByIdOrCode(String scriptInfoId, String scriptCode);
 
 	/**
 	 * 查找[腳本類別 + 設備系統版本]對應的預設腳本資訊

@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cmap.Constants;
 import com.cmap.dao.DataPollerDAO;
 import com.cmap.model.DataPollerMapping;
+import com.cmap.model.DataPollerScriptSetting;
 import com.cmap.model.DataPollerSetting;
+import com.cmap.model.DataPollerTargetSetting;
 
 @Repository("dataPollerDAO")
 @Transactional
@@ -109,5 +111,38 @@ public class DataPollerDAOImpl extends BaseDaoHibernate implements DataPollerDAO
 	    } else {
 	    	return null;
 	    }
+	}
+
+	@Override
+	public List<DataPollerTargetSetting> findDataPollerTargetSettingByTargetSettingCode(String targetSettingCode) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from DataPollerTargetSetting dpts ")
+		  .append(" where 1=1 ")
+		  .append(" and dpts.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+		  .append(" and dpts.targetSettingCode = :targetSettingCode ")
+		  .append(" order by dpts.orderNo ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    q.setParameter("targetSettingCode", targetSettingCode);
+
+	    List<DataPollerTargetSetting> retList = (List<DataPollerTargetSetting>)q.list();
+	    return retList;
+	}
+
+	@Override
+	public List<DataPollerScriptSetting> findDataPollerScriptSettingByScriptSettingCode(String scriptSettingCode) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" from DataPollerScriptSetting dpss ")
+		  .append(" where 1=1 ")
+		  .append(" and dpss.scriptSettingCode = :scriptSettingCode ")
+		  .append(" order by dpss.executeOrder ");
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createQuery(sb.toString());
+	    q.setParameter("scriptSettingCode", scriptSettingCode);
+
+	    List<DataPollerScriptSetting> retList = (List<DataPollerScriptSetting>)q.list();
+	    return retList;
 	}
 }

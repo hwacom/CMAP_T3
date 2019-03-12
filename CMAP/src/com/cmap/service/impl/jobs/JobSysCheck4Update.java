@@ -33,7 +33,7 @@ public class JobSysCheck4Update extends BaseJobImpl implements BaseJobService {
 
 		try {
 			JobDataMap jMap = context.getJobDetail().getJobDataMap();
-			log.info("JobDataMap: "+jMap.toString());
+			//log.info("JobDataMap: "+jMap.toString());
 
 			final List<String> sqls = (List<String>)jMap.get(Constants.QUARTZ_PARA_SYS_CHECK_SQLS);
 

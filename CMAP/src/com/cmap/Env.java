@@ -37,6 +37,8 @@ public class Env {
 
 	public static Boolean ENABLE_CM_SCRIPT_MODIFY;				// 設定是否啟用腳本管理編輯功能(Y:啟用;N:不啟用，僅可做查詢)
 
+	public static String TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;	// 設定防火牆黑名單紀錄TABLE名稱
+
 	/**
 	 * GROUP_NAME下拉選單排序相關設定
 	 */

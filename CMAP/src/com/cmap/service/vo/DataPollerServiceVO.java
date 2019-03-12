@@ -1,5 +1,8 @@
 package com.cmap.service.vo;
 
+import java.util.List;
+import java.util.Map;
+
 public class DataPollerServiceVO extends CommonServiceVO {
 
 	private String isSourceColumn;
@@ -17,6 +20,8 @@ public class DataPollerServiceVO extends CommonServiceVO {
 
 	private String retTableName;
 	private String retOriFileName;
+
+	private List<Map<String, String>> sourceEntryMapList;
 
 	public Integer getSourceColumnIdx() {
 		return sourceColumnIdx;
@@ -101,5 +106,11 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	}
 	public void setVoFieldName(String voFieldName) {
 		this.voFieldName = voFieldName;
+	}
+	public List<Map<String, String>> getSourceEntryMapList() {
+		return sourceEntryMapList;
+	}
+	public void setSourceEntryMapList(List<Map<String, String>> sourceEntryMapList) {
+		this.sourceEntryMapList = sourceEntryMapList;
 	}
 }

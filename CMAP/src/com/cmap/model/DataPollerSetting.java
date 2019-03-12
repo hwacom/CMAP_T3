@@ -27,6 +27,12 @@ public class DataPollerSetting {
 	@Column(name = "mapping_code", nullable = false)
 	private String mappingCode;
 
+	@Column(name = "target_setting_code", nullable = true)
+	private String targetSettingCode;
+
+	@Column(name = "target_exception_policy", nullable = true)
+	private String targetExceptionPolicy;
+
 	@Column(name = "data_type", nullable = false)
 	private String dataType;
 
@@ -101,7 +107,7 @@ public class DataPollerSetting {
 
 	@Column(name = "record_by_day_refer_field", nullable = true)
 	private String recordByDayReferField;
-	
+
 	@Column(name = "record_by_mapping", nullable = false)
 	private String recordByMapping;
 
@@ -139,18 +145,20 @@ public class DataPollerSetting {
 		super();
 	}
 
-	public DataPollerSetting(String settingId, String mappingCode, String dataType, String queryId, String remark,
-			String getSourceMethod, String storeMethod, String specialVarSetting, String filePath, String fileNameRegex,
-			String fileNameFormat, String fileCharset, String fieldsTerminatedBy, String linesTerminatedBy,
-			String sourceIp, String sourcePort, String loginAccount, String loginPassword, String splitSymbol,
-			String insertDbMethod, String insertFileDir, String storeFileDir, String storeFileNameFormat,
-			String recordByDay, String recordByDayInterval, String recordByDayClean, String recordByDayReferField,
-			String recordByMapping, String deleteSourceFile, String backupSourceFile, String backupFilePath,
-			String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy) {
+	public DataPollerSetting(String settingId, String mappingCode, String targetSettingCode,
+			String targetExceptionPolicy, String dataType, String queryId, String remark, String getSourceMethod,
+			String storeMethod, String specialVarSetting, String filePath, String fileNameRegex, String fileNameFormat,
+			String fileCharset, String fieldsTerminatedBy, String linesTerminatedBy, String sourceIp, String sourcePort,
+			String loginAccount, String loginPassword, String splitSymbol, String insertDbMethod, String insertFileDir,
+			String storeFileDir, String storeFileNameFormat, String recordByDay, String recordByDayInterval,
+			String recordByDayClean, String recordByDayReferField, String recordByMapping, String deleteSourceFile,
+			String backupSourceFile, String backupFilePath, String deleteFlag, Timestamp deleteTime, String deleteBy,
+			Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.settingId = settingId;
 		this.mappingCode = mappingCode;
+		this.targetSettingCode = targetSettingCode;
+		this.targetExceptionPolicy = targetExceptionPolicy;
 		this.dataType = dataType;
 		this.queryId = queryId;
 		this.remark = remark;
@@ -203,6 +211,22 @@ public class DataPollerSetting {
 
 	public void setMappingCode(String mappingCode) {
 		this.mappingCode = mappingCode;
+	}
+
+	public String getTargetSettingCode() {
+		return targetSettingCode;
+	}
+
+	public void setTargetSettingCode(String targetSettingCode) {
+		this.targetSettingCode = targetSettingCode;
+	}
+
+	public String getTargetExceptionPolicy() {
+		return targetExceptionPolicy;
+	}
+
+	public void setTargetExceptionPolicy(String targetExceptionPolicy) {
+		this.targetExceptionPolicy = targetExceptionPolicy;
 	}
 
 	public String getDataType() {

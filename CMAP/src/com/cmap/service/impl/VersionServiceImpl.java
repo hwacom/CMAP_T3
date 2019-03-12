@@ -23,10 +23,10 @@ import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.dao.ConfigDAO;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
-import com.cmap.dao.vo.DeviceListDAOVO;
+import com.cmap.dao.vo.DeviceDAOVO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
@@ -64,7 +64,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	private ConfigDAO configVersionInfoDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Autowired
 	@Qualifier("scriptListDefaultDAOImpl")
@@ -126,11 +126,11 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	@Override
 	public long countDeviceList(VersionServiceVO vsVO) throws ServiceLayerException {
 		long retCount = 0;
-		DeviceListDAOVO dlDAOVO;
+		DeviceDAOVO dlDAOVO;
 		try {
-			dlDAOVO = transServiceVO2DeviceListDAOVO(vsVO);
+			dlDAOVO = transServiceVO2DeviceDAOVO(vsVO);
 
-			retCount = deviceListDAO.countDeviceListAndLastestVersionByDAOVO(dlDAOVO);
+			retCount = deviceDAO.countDeviceListAndLastestVersionByDAOVO(dlDAOVO);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -172,11 +172,11 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	public List<VersionServiceVO> findDeviceList(VersionServiceVO vsVO, Integer startRow, Integer pageLength) throws ServiceLayerException {
 		List<VersionServiceVO> retList = new ArrayList<>();
 		List<Object[]> modelList;
-		DeviceListDAOVO dlDAOVO;
+		DeviceDAOVO dlDAOVO;
 		try {
-			dlDAOVO = transServiceVO2DeviceListDAOVO(vsVO);
+			dlDAOVO = transServiceVO2DeviceDAOVO(vsVO);
 
-			modelList = deviceListDAO.findDeviceListAndLastestVersionByDAOVO(dlDAOVO, startRow, pageLength);
+			modelList = deviceDAO.findDeviceListAndLastestVersionByDAOVO(dlDAOVO, startRow, pageLength);
 
 			if (modelList != null && !modelList.isEmpty()) {
 				retList = transModel2ServiceVO4Device(modelList);
@@ -218,13 +218,13 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	}
 
 	/**
-	 * 轉換Service VO為DeviceListDAOVO
+	 * 轉換Service VO為DeviceDAOVO
 	 * @param vsVO
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	private DeviceListDAOVO transServiceVO2DeviceListDAOVO(VersionServiceVO vsVO) throws ServiceLayerException {
-		DeviceListDAOVO dlVO = new DeviceListDAOVO();
+	private DeviceDAOVO transServiceVO2DeviceDAOVO(VersionServiceVO vsVO) throws ServiceLayerException {
+		DeviceDAOVO dlVO = new DeviceDAOVO();
 		BeanUtils.copyProperties(vsVO, dlVO);
 		return dlVO;
 	}
@@ -304,7 +304,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 					VersionServiceVO vo = new VersionServiceVO();
 					BeanUtils.copyProperties(cvi, vo);
 
-					DeviceList dl = deviceListDAO.findDeviceListByGroupAndDeviceId(cvi.getGroupId(), cvi.getDeviceId());
+					DeviceList dl = deviceDAO.findDeviceListByGroupAndDeviceId(cvi.getGroupId(), cvi.getDeviceId());
 
 					if (dl != null) {
 						BeanUtils.copyProperties(dl, vo);
@@ -593,7 +593,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 				retVO.setDiffPos(diffPos);
 			}
 
-			log.info("diffPos: " + retVO.getDiffPos());
+			//log.info("diffPos: " + retVO.getDiffPos());
 
 			//			log.info("**************************************************************************************");
 			//int max = retOriList.size() >= retRevList.size() ? retOriList.size() : retRevList.size();
@@ -707,7 +707,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 				errorCount += !ssVO.isSuccess() ? 1 : 0;
 				noDiffCount += ssVO.getResult() == Result.NO_DIFFERENT ? 1 : 0;
 
-				log.info(ssVO.toString());
+				//log.info(ssVO.toString());
 			}
 
 			if ((successCount == deviceListIDs.size() || noDiffCount == deviceListIDs.size()) && errorCount == 0) {
@@ -788,7 +788,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			successCount += ssVO.isSuccess() && (ssVO.getResult() != Result.NO_DIFFERENT) ? 1 : 0;
 			errorCount += !ssVO.isSuccess() ? 1 : 0;
 
-			log.info(ssVO.toString());
+			//log.info(ssVO.toString());
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
