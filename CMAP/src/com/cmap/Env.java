@@ -206,6 +206,7 @@ public class Env {
 	public static String PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
 	public static String PRTG_DEFAULT_DEVICE_FAILURE_URI;
 	public static String PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;
+	public static String PRTG_LOGOUT_URI;
 
 	public static String DEFAULT_INSERT_DB_FILE_DIR;
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;

@@ -12,6 +12,7 @@ $(document).ready(function() {
 		
 	}, 1000));
 	
-	getLoginUri();
-	getPrtgUri(URI_NET_FLOW_SUMMARY);
+	/*getLoginUri();*/
+	closeOpenWindow();
+	getPrtgUri(URI_NET_FLOW_SUMMARY, OPEN_METHOD_IFRAME);
 });

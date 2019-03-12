@@ -12,6 +12,7 @@ $(document).ready(function() {
 		
 	}, 1000));
 	
-	getLoginUri();
-	getPrtgUri(URI_DASHBOARD);
+	/*getLoginUri();*/
+	closeOpenWindow();
+	getPrtgUri(URI_DASHBOARD, OPEN_METHOD_IFRAME);
 });

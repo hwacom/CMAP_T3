@@ -12,6 +12,7 @@ $(document).ready(function() {
 		
 	}, 1000));
 	
-	getLoginUri();
-	getPrtgUri(URI_DEVICE_FAILURE);
+	/*getLoginUri();*/
+	closeOpenWindow();
+	getPrtgUri(URI_DEVICE_FAILURE, OPEN_METHOD_IFRAME);
 });

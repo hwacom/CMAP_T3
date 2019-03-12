@@ -172,7 +172,7 @@ public class PrtgController extends BaseController {
 
 		HttpSession session = request.getSession();
 		try {
-			final String BASE_URI = Env.PRTG_INDEX_URI;
+			final String BASE_URI = Env.PRTG_LOGIN_URI;
 			final String PRTG_ACCOUNT = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_ACCOUNT), "");
 			final String PRTG_PASSWORD = Objects.toString(session.getAttribute(Constants.PRTG_LOGIN_PASSWORD), "");
 			final String prtgIndexUri = BASE_URI + "?a=" + PRTG_ACCOUNT + "&p=" + PRTG_PASSWORD;

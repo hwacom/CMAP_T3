@@ -17,6 +17,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.cmap.configuration.filter.RequestBodyReaderAuthenticationFilter;
 import com.cmap.security.AuthSuccessHandler;
 import com.cmap.security.AuthUnsuccessHandler;
+import com.cmap.security.CustomLogoutHandler;
 import com.cmap.security.UserDetailsServiceImpl;
 
 @Configuration
@@ -68,6 +69,48 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationFilter;
     }
 
+	@Bean
+	public CustomLogoutHandler customLogoutHandler() {
+	    return new CustomLogoutHandler();
+	}
+
+	/*
+	@Bean
+	public LogoutFilter logoutFilter() {
+	    // NOTE: See org.springframework.security.config.annotation.web.configurers.LogoutConfigurer
+	    // for details on setting up a LogoutFilter
+
+		/*
+		 ** 呼叫PRTG logout URI進行登出
+		CloseableHttpClient httpclient = CloseableHttpClientUtils.prepare();
+
+		HttpPost httpPost = new HttpPost(Env.PRTG_LOGOUT_URI);
+
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectTimeout(Env.HTTP_CONNECTION_TIME_OUT)			//設置連接逾時時間，單位毫秒。
+				.setConnectionRequestTimeout(Env.HTTP_CONNECTION_TIME_OUT)	//設置從connect Manager獲取Connection 超時時間，單位毫秒。這個屬性是新加的屬性，因為目前版本是可以共用連接池的。
+				.setSocketTimeout(Env.HTTP_SOCKET_TIME_OUT)					//請求獲取資料的超時時間，單位毫秒。 如果訪問一個介面，多少時間內無法返回資料，就直接放棄此次調用。
+				.build();
+		httpPost.setConfig(requestConfig);
+
+		HttpClientContext context = HttpClientContext.create();
+
+		try {
+			httpclient.execute(httpPost, context);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	    SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
+	    securityContextLogoutHandler.setInvalidateHttpSession(true);
+
+	    LogoutFilter logoutFilter = new LogoutFilter("/", securityContextLogoutHandler);
+	    logoutFilter.setLogoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+	    return logoutFilter;
+	}
+	*/
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -87,6 +130,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.failureHandler(authUnsuccessHandler())
 			.and()
 		.logout()
+		.addLogoutHandler(customLogoutHandler())
 	    .permitAll()
 	    	.and()
 	    	.headers()

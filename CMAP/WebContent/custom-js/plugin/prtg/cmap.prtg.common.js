@@ -1,17 +1,22 @@
 /**
  * 
  */
+var URI_LOGIN = "getLoginUri";
 var URI_INDEX = "getPrtgIndexUri";
 var URI_DASHBOARD = "getPrtgDashboardUri";
 var URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
 var URI_DEVICE_FAILURE = "getPrtgDeviceFailureUri";
 var URI_ABNORMAL_TRAFFIC = "getPrtgAbnormalTrafficUri";
 
+var OPEN_METHOD_IFRAME = "IFRAME";
+var OPEN_METHOD_WINDOW = "WINDOW";
+
+var openWindow;
 var prtgLoginWindow;
 
-function getPrtgUri(method) {
+function getPrtgUri(uriMethod, openMethod) {
 	$.ajax({
-		url : _ctx + '/prtg/' + method,
+		url : _ctx + '/prtg/' + uriMethod,
 		headers: {
 		    'Accept': 'application/json',
 		    'Content-Type': 'application/json'
@@ -21,7 +26,14 @@ function getPrtgUri(method) {
 		async: false,
 		success : function(resp) {
 			if (resp.code == '200') {
-				$("#prtgFrame").attr('src', resp.data.uri);
+				var uri = resp.data.uri;
+				
+				if (openMethod == OPEN_METHOD_IFRAME) {
+					$("#prtgFrame").attr('src', uri);
+					
+				} else if (openMethod == OPEN_METHOD_WINDOW) {
+					openPrtgWindow(uri);
+				}
 				
 			} else {
 				alert(resp.message);
@@ -45,7 +57,7 @@ function getLoginUri() {
 		async: false,
 		success : function(resp) {
 			if (resp.code == '200') {
-				openPrtgWindow(resp.data.uri);
+				openPrtgLoginSmallWindow(resp.data.uri);
 				
 			} else {
 				alert(resp.message);
@@ -58,20 +70,39 @@ function getLoginUri() {
 }
 
 function openPrtgWindow(_uri) {
-	/*
-	var wdw = window.open("", "_prtg");
-    wdw.close();
-    
+	//var wdw = window.open("", "_prtg");
+    //wdw.close();
   	var obj = $("#uriFrame").get(0).getBoundingClientRect();
   	var x = parseInt(obj.left) + parseInt((window.screenX != undefined ? window.screenX : window.screenLeft)) + 30;
   	var y = parseInt(obj.top) + parseInt((window.screenY != undefined ? window.screenY : window.screenTop)) + 100;
   	var width = obj.width;
   	var height = obj.height - 50;
-  	*/
-  	
-	prtgLoginWindow = window.open(
+
+  	openWindow = window.open(
   			_uri, 
   			"_prtg", 
+  			"toolbar=no,scrollbars=yes,titlebar=no,status=no,menubar=no,location=no,resizable=yes,top="+y+",left="+x+",width="+width+",height="+height+"\"");
+
+  	openWindow.focus();
+	//prtgLoginWindow.blur();
+	
+	/*
+	setTimeout(function() {
+		closePrtgLoginSmallWindow()
+	}, 6000);
+	*/
+}
+
+function closeOpenWindow() {
+	if (openWindow != null) {
+		openWindow.close();
+	}
+}
+
+function openPrtgLoginSmallWindow(_uri) {
+	prtgLoginWindow = window.open(
+  			_uri, 
+  			"_prtgLogin", 
   			"toolbar=no,scrollbars=yes,titlebar=no,status=no,menubar=no,location=no,resizable=yes,top="+10000+",left="+10000+",width="+10+",height="+10+"\"");
 
   	//openWindow.focus();
@@ -84,7 +115,7 @@ function openPrtgWindow(_uri) {
 	*/
 }
 
-function closePrtgWindow() {
+function closePrtgLoginSmallWindow() {
 	prtgLoginWindow.close();
 }
 

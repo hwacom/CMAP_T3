@@ -18,6 +18,12 @@ $(document).ready(function() {
 		getLoginUri();
 	}
 	*/
-	getLoginUri();
-	getPrtgUri(URI_INDEX);
+	/*getLoginUri();*/
+	
+	if ($("#loginFlag").val() == "Y") {
+		getPrtgUri(URI_LOGIN, OPEN_METHOD_WINDOW);
+		
+	} else {
+		getPrtgUri(URI_INDEX, OPEN_METHOD_WINDOW);
+	}
 });

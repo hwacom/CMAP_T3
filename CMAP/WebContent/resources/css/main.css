@@ -9,17 +9,17 @@ body {
   background-color: #f5f5f5;
   background-image: url("../images/bg_2.jpg");
   background-size: cover;
-  font-family: MicrosoftJhengHei !important;
+  font-family: 微軟正黑體 !important;
   /*overflow: auto;*/
 }
 
 .font, .ui-dialog-title {
-  font-family: MicrosoftJhengHei, Arial !important;
+  font-family: 微軟正黑體, Arial !important;
   font-size: 16px !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: MicrosoftJhengHei !important;
+  font-family: 微軟正黑體 !important;
 }
 
 img {
@@ -86,21 +86,23 @@ nav > ul > li {
   content: "> ";
 }
 
+/*
 @font-face {
   font-family: MicrosoftJhengHei;
   src: 	local("微軟正黑體"),
-  		local("Microsoft JhengHei UI"),
-    	url("../fonts/MSJH.TTC");
+  		local("Microsoft JhengHei UI");
+    	/*url("../fonts/MSJH.TTC");
   font-weight: normal;
 }
 
 @font-face {
-  font-family: DFKai;
+  font-family: DFKai-sb;
   src: 	local("標楷體"),
-  		local("DFKai-sb"),
-    	url("../fonts/KAIU.TTF");
+  		local("DFKai-sb");
+    	/*url("../fonts/KAIU.TTF");
   font-weight: normal;
 }
+*/
 
 .compare-line {
   height: 400px;
@@ -583,7 +585,7 @@ select:focus, input:focus {
 
 @media (min-width: 320px) {
   .title-font {
-  	font-family: DFKai;
+  	font-family: 標楷體;
   	font-size: 1.1rem
   }
   .copyright {
@@ -621,7 +623,7 @@ select:focus, input:focus {
 
 @media (min-width: 1200px) {
   .title-font {
-  	font-family: DFKai;
+  	font-family: 標楷體;
   	font-size: 1.3rem
   }
   .copyright {
@@ -647,7 +649,7 @@ select:focus, input:focus {
 /*
 @media (min-width: 992px) {
   .title-font {
-  	font-family: DFKai;
+  	font-family: 標楷體;
   	font-size: 1.5rem
   }
   .mobile-menu {
@@ -657,7 +659,7 @@ select:focus, input:focus {
 
 @media (min-width: 1200px) {
   .title-font {
-  	font-family: DFKai;
+  	font-family: 標楷體;
   	font-size: 1.5rem
   }
   .mobile-menu {

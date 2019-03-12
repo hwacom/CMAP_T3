@@ -13,11 +13,11 @@ body {
   background-color: #f5f5f5;
   background-image: url("../images/bg_2.jpg");
   background-size: cover;
-  font-family: MicrosoftJhengHei;
+  font-family: 微軟正黑體;
 }
 
 .font {
-	font-family: '微軟正黑體', Arial !important;
+	font-family: 微軟正黑體, Arial !important;
 	font-size: 16px !important;
 }
 
@@ -29,21 +29,23 @@ span {
   vertical-align: middle;
 }
 
+/*
 @font-face {
   font-family: MicrosoftJhengHei;
   src: 	local("微軟正黑體"),
-  		local("Microsoft JhengHei UI"),
-    	url("../fonts/MSJH.TTC");
+  		local("Microsoft JhengHei UI");
+    	/*url("../fonts/MSJH.TTC");
   font-weight: bold;
 }
 
 @font-face {
-  font-family: DFKai;
+  font-family: DFKai-sb;
   src: 	local("標楷體"),
-  		local("DFKai-sb"),
-    	url("../fonts/KAIU.TTF");
+  		local("DFKai-sb");
+    	/*url("../fonts/KAIU.TTF");
   font-weight: bold;
 }
+*/
 
 p {
 	margin-top: 1rem;
@@ -75,7 +77,7 @@ p {
   height: 50px;
   line-height: 50px;
   /*font-size: 5vmin;*/
-  font-family: DFKai;
+  font-family: 標楷體;
   overflow: hidden; /*超出範圍的部分隱藏*/
   white-space: nowrap; /*不自動斷行*/
   /*text-overflow: ellipsis; /*出現省略號*/

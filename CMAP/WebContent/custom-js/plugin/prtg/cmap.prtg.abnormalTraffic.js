@@ -12,6 +12,7 @@ $(document).ready(function() {
 		
 	}, 1000));
 	
-	getLoginUri();
-	getPrtgUri(URI_ABNORMAL_TRAFFIC);
+	/*getLoginUri();*/
+	closeOpenWindow();
+	getPrtgUri(URI_ABNORMAL_TRAFFIC, OPEN_METHOD_IFRAME);
 });
