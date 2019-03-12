@@ -41,7 +41,7 @@
 			  			<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="40" style="padding-top: 3px" />
       					<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short.png" width="auto" height="40" style="padding-top: 3px" />
 			  			
-			  			<span class="h3 font-weight-bold" style="color:#1C2269"><spring:message code="cmap.title" /></span>	
+			  			<span class="h3" style="color:#1C2269"><spring:message code="cmap.title" /></span>	
 			  		</div>
 			  	</div>
 			  	<div class="row">
@@ -59,7 +59,7 @@
 				  		  </div>
 				  		  <div class="form-group row" style="vertical-align: middle;">
 				  		  	<div class="col-3">
-				  		  		<span class="h5 font-weight-bold" style="color: black"><spring:message code="login.account" />:</span>
+				  		  		<span class="h5" style="color: black"><spring:message code="login.account" />:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
 				  		  		<label for="inputAccount" class="sr-only"><spring:message code="login.account" /></label>
@@ -68,7 +68,7 @@
 				  		  </div>
 					      <div class="form-group row">
 					      	<div class="col-3">
-					      		<span class="h5 font-weight-bold" style="color: black"><spring:message code="login.password" />:</span>
+					      		<span class="h5" style="color: black"><spring:message code="login.password" />:</span>
 				  		  	</div>
 				  		  	<div class="col-9">
 				  		  		<label for="inputPassword" class="sr-only"><spring:message code="login.password" /></label>
