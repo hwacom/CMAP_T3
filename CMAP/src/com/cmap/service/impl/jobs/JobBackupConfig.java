@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.model.DeviceList;
 import com.cmap.service.BaseJobService;
 import com.cmap.service.VersionService;
@@ -29,7 +29,7 @@ public class JobBackupConfig extends BaseJobImpl implements BaseJobService {
 
 	private VersionService versionService;
 
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -54,8 +54,8 @@ public class JobBackupConfig extends BaseJobImpl implements BaseJobService {
 
 			List<DeviceList> dList = null;
 			if ((groupIds != null && !groupIds.isEmpty()) || (deviceIds != null && !deviceIds.isEmpty())) {
-				deviceListDAO = (DeviceListDAO)ApplicationContextUtil.getBean("deviceListDAO");
-				dList = deviceListDAO.findDistinctDeviceListByGroupIdsOrDeviceIds(groupIds, deviceIds);
+				deviceDAO = (DeviceDAO)ApplicationContextUtil.getBean("deviceDAO");
+				dList = deviceDAO.findDistinctDeviceListByGroupIdsOrDeviceIds(groupIds, deviceIds);
 
 				if (dList != null && !dList.isEmpty()) {
 					for (DeviceList d : dList) {

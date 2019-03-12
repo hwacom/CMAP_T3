@@ -209,7 +209,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 				throw e;
 
 			} finally {
-				log.info(processLog.toString());
+				//log.info(processLog.toString());
 				ssVO.setCmdProcessLog(processLog.toString());
 
 				expect.close();

@@ -107,6 +107,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			sb.append(" and si.scriptInfoId = :scriptInfoId ");
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptCode())) {
+			sb.append(" and si.scriptCode = :scriptCode ");
+		}
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			sb.append(" and si.systemDefault = :systemDefault ");
 		}
@@ -150,6 +153,9 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		if (StringUtils.isNotBlank(daovo.getQueryScriptInfoId())) {
 			q.setParameter("scriptInfoId", daovo.getQueryScriptInfoId());
 		}
+		if (StringUtils.isNotBlank(daovo.getQueryScriptCode())) {
+			q.setParameter("scriptCode", daovo.getQueryScriptCode());
+		}
 		if (StringUtils.isNotBlank(daovo.getQuerySystemDefault())) {
 			q.setParameter("systemDefault", daovo.getQuerySystemDefault());
 		}
@@ -172,16 +178,28 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 	}
 
 	@Override
-	public ScriptInfo findScriptInfoById(String scriptInfoId) {
+	public ScriptInfo findScriptInfoByIdOrCode(String scriptInfoId, String scriptCode) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from ScriptInfo si ")
 		  .append(" where 1=1 ")
-		  .append(" and si.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
-		  .append(" and si.scriptInfoId = :scriptInfoId ");
+		  .append(" and si.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ");
+
+		if (StringUtils.isNotBlank(scriptInfoId)) {
+			sb.append(" and si.scriptInfoId = :scriptInfoId ");
+		}
+		if (StringUtils.isNotBlank(scriptCode)) {
+			sb.append(" and si.scriptCode = :scriptCode ");
+		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
-		q.setParameter("scriptInfoId", scriptInfoId);
+
+		if (StringUtils.isNotBlank(scriptInfoId)) {
+			q.setParameter("scriptInfoId", scriptInfoId);
+		}
+		if (StringUtils.isNotBlank(scriptCode)) {
+			q.setParameter("scriptCode", scriptCode);
+		}
 
 		List<ScriptInfo> retList = (List<ScriptInfo>)q.list();
 		return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;

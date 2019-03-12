@@ -35,7 +35,7 @@ import com.cmap.comm.enums.RestoreMethod;
 import com.cmap.comm.enums.ScriptType;
 import com.cmap.comm.enums.Step;
 import com.cmap.dao.ConfigDAO;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
@@ -45,6 +45,7 @@ import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceDetailInfo;
 import com.cmap.model.DeviceDetailMapping;
 import com.cmap.model.DeviceList;
+import com.cmap.model.DeviceLoginInfo;
 import com.cmap.model.ScriptInfo;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.ConfigService;
@@ -76,7 +77,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	private ConfigDAO configDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	@Autowired
 	@Qualifier("scriptListDefaultDAOImpl")
@@ -234,7 +235,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case FIND_DEVICE_LOGIN_INFO:
 							try {
-								findDeviceLoginInfo(deviceListId);
+								findDeviceLoginInfo(ciVO, deviceListId, null, null);
 								break;
 
 							} catch (Exception e) {
@@ -593,8 +594,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	private List<ScriptServiceVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, Map<String, String> varMap, List<ScriptServiceVO> scripts) throws ServiceLayerException {
-		return scriptService.loadSpecifiedScript(scriptInfoId, scriptCode, varMap, scripts);
+	private List<ScriptServiceVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, List<Map<String, String>> varMapList, List<ScriptServiceVO> scripts) throws ServiceLayerException {
+		return scriptService.loadSpecifiedScript(scriptInfoId, scriptCode, varMapList, scripts);
 	}
 
 	/**
@@ -609,7 +610,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		configInfoVO = new ConfigInfoVO();
 
 		if (deviceListId != null) {
-			DeviceList device = deviceListDAO.findDeviceListByDeviceListId(deviceListId);
+			DeviceList device = deviceDAO.findDeviceListByDeviceListId(deviceListId);
 
 			if (device == null) {
 				throw new ServiceLayerException("[device_id: " + deviceListId + "] >> 查無設備資料");
@@ -667,8 +668,17 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * [Step] 查找設備連線帳密 & 連線方式(TELNET / SSH)
 	 * @throws ServiceLayerException
 	 */
-	private void findDeviceLoginInfo(String deviceListId) throws ServiceLayerException {
+	private void findDeviceLoginInfo(ConfigInfoVO ciVO, String deviceListId, String groupId, String deviceId) throws ServiceLayerException {
+		DeviceLoginInfo loginInfo = deviceDAO.findDeviceLoginInfo(deviceListId, groupId, deviceId);
 
+		if (loginInfo != null) {
+			if (StringUtils.isNotBlank(loginInfo.getLoginAccount())) {
+				ciVO.setAccount(loginInfo.getLoginAccount());
+			}
+			if (StringUtils.isNotBlank(loginInfo.getLoginPassword())) {
+				ciVO.setPassword(loginInfo.getLoginPassword());
+			}
+		}
 	}
 
 	/**
@@ -917,7 +927,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 		} else {
 			try {
-				List<DeviceDetailMapping> entities = deviceListDAO.findDeviceDetailMapping(null);
+				List<DeviceDetailMapping> entities = deviceDAO.findDeviceDetailMapping(null);
 
 				if (entities != null && !entities.isEmpty()) {
 					final String userName = jobTrigger ? Env.USER_NAME_JOB : SecurityUtil.getSecurityUser().getUsername();
@@ -925,7 +935,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					/*
 					 * 版本有差異情況下，先刪除前一次分析取出的內容
 					 */
-					deviceListDAO.deleteDeviceDetailInfoByInfoName(null, configInfoVO.getGroupId(), configInfoVO.getDeviceId(), null, currentTimestamp(), userName);
+					deviceDAO.deleteDeviceDetailInfoByInfoName(null, configInfoVO.getGroupId(), configInfoVO.getDeviceId(), null, currentTimestamp(), userName);
 
 					List<String> configContent = getConfigContent(configInfoVO);
 
@@ -965,7 +975,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 									targetInfoOrder++;
 								}
 
-								List<DeviceDetailInfo> info = deviceListDAO.findDeviceDetailInfo(deviceListId, groupId, deviceId, targetInfoName);
+								List<DeviceDetailInfo> info = deviceDAO.findDeviceDetailInfo(deviceListId, groupId, deviceId, targetInfoName);
 
 								if (info != null && !info.isEmpty()) {
 									continue;
@@ -998,13 +1008,13 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					/*
 					//先刪除舊資料
 					for (DeviceDetailInfo ddi : analyzeInfoName.values()) {
-						deviceListDAO.deleteDeviceDetailInfoByInfoName(ddi.getDeviceListId(), ddi.getInfoName(), ddi.getUpdateTime(), ddi.getUpdateBy());
+						deviceDAO.deleteDeviceDetailInfoByInfoName(ddi.getDeviceListId(), ddi.getInfoName(), ddi.getUpdateTime(), ddi.getUpdateBy());
 					}
 					*/
 
 					//再新增新資料
 					if (insertEntities != null && !insertEntities.isEmpty()) {
-						deviceListDAO.insertEntities(insertEntities);
+						deviceDAO.insertEntities(insertEntities);
 					}
 				}
 
@@ -1284,7 +1294,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	}
 
 	@Override
-	public StepServiceVO doScript(ConnectionMode connectionMode, String deviceListId, Map<String, String> deviceInfo, ScriptInfo scriptInfo, Map<String, String> varMap, boolean sysTrigger, String triggerBy, String triggerRemark) {
+	public StepServiceVO doScript(ConnectionMode connectionMode, String deviceListId, Map<String, String> deviceInfo, ScriptInfo scriptInfo, List<Map<String, String>> varMapList, boolean sysTrigger, String triggerBy, String triggerRemark) {
 		StepServiceVO processVO = new StepServiceVO();
 
 		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
@@ -1321,7 +1331,11 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				Step[] steps = null;
 				ConnectionMode deviceMode = null;
 
-				switch (Env.DEFAULT_DEVICE_CONFIG_BACKUP_MODE) {
+				if (connectionMode != null) {
+					deviceMode = connectionMode;
+
+				} else {
+					switch (Env.DEFAULT_DEVICE_CONFIG_BACKUP_MODE) {
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP:
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP:
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_FTP_SSH_FTP:
@@ -1332,6 +1346,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_FTP_TELNET_FTP:
 						deviceMode = ConnectionMode.TELNET;
 						break;
+				}
 				}
 
 				steps = Env.SEND_SCRIPT;
@@ -1346,7 +1361,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								psStepVO.setScriptCode(scriptInfo.getScriptCode());
 								processVO.setScriptCode(scriptInfo.getScriptCode());
 
-								scripts = loadSpecifiedScript(scriptInfo.getScriptInfoId(), scriptInfo.getScriptCode(), varMap, scripts);
+								scripts = loadSpecifiedScript(scriptInfo.getScriptInfoId(), scriptInfo.getScriptCode(), varMapList, scripts);
 
 								/*
 								 * Provision_Log_Step
@@ -1394,7 +1409,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case FIND_DEVICE_LOGIN_INFO:
 							try {
-								findDeviceLoginInfo(deviceListId);
+								findDeviceLoginInfo(ciVO, deviceListId, null, null);
 								break;
 
 							} catch (Exception e) {
@@ -1797,7 +1812,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						// 取得要還原的目標設備登入資訊
 						case FIND_DEVICE_LOGIN_INFO:
 							try {
-								findDeviceLoginInfo(deviceListId);
+								findDeviceLoginInfo(ciVO, deviceListId, null, null);
 								break;
 
 							} catch (Exception e) {

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cmap.annotation.Log;
-import com.cmap.dao.DeviceListDAO;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DeviceList;
@@ -41,7 +41,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 	private ProvisionLogDAO provisionLogDAO;
 
 	@Autowired
-	private DeviceListDAO deviceListDAO;
+	private DeviceDAO deviceDAO;
 
 	private ProvisionServiceVO transMasterEntity2VO(ProvisionLogDetail entity) {
 		ProvisionServiceVO psVO = new ProvisionServiceVO();
@@ -134,7 +134,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 
 						ProvisionLogStep stepEntity = null;
 						for (ProvisionServiceVO stepVO : stepVOList) {
-							log.info(stepVO.getProcessLog());
+							//log.info(stepVO.getProcessLog());
 
 							stepEntity = new ProvisionLogStep();
 							BeanUtils.copyProperties(stepVO, stepEntity);
@@ -167,7 +167,7 @@ public class ProvisionServiceImpl extends CommonServiceImpl implements Provision
 									deviceEntity.setProvisionLogStep(stepEntity);
 
 									if (StringUtils.isNotBlank(deviceVO.getDeviceListId())) {
-										deviceListEntity = deviceListDAO.findDeviceListByDeviceListId(deviceVO.getDeviceListId());
+										deviceListEntity = deviceDAO.findDeviceListByDeviceListId(deviceVO.getDeviceListId());
 
 									} else {
 										deviceListEntity = new DeviceList();
