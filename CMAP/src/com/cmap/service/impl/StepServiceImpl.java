@@ -295,7 +295,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case DEFINE_OUTPUT_FILE_NAME:
 							try {
-								defineFileName(ciVO);
+								defineFileName(ciVO, fileServerMode);
 								break;
 
 							} catch (Exception e) {
@@ -618,8 +618,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 			BeanUtils.copyProperties(device, configInfoVO);
 
-			/**
-			 * TODO 預留裝置登入帳密BY設備設定
+			/*
+			 *  先套用預設的帳密，下一步驟會再查詢是否有by設備設定帳密並覆蓋
 			 */
 			configInfoVO.setAccount(Env.DEFAULT_DEVICE_LOGIN_ACCOUNT);
 			configInfoVO.setPassword(Env.DEFAULT_DEVICE_LOGIN_PASSWORD);
@@ -641,10 +641,6 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 			configInfoVO.setDeviceIp(deviceIp);
 			configInfoVO.setDeviceName(deviceName);
-
-			/**
-			 * TODO 預留裝置登入帳密BY設備設定
-			 */
 			configInfoVO.setAccount(loginAccount);
 			configInfoVO.setPassword(loginPassword);
 			configInfoVO.setEnablePassword(enablePassword);
@@ -657,6 +653,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		configInfoVO.setFtpPort(Env.FTP_HOST_PORT);
 		configInfoVO.setFtpAccount(Env.FTP_LOGIN_ACCOUNT);
 		configInfoVO.setFtpPassword(Env.FTP_LOGIN_PASSWORD);
+		configInfoVO.setFtpUrl(Env.FTP_HOST_IP + ":" + Env.FTP_HOST_PORT);
 
 		configInfoVO.settFtpIP(Env.TFTP_HOST_IP);
 		configInfoVO.settFtpPort(Env.TFTP_HOST_PORT);
@@ -678,6 +675,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			if (StringUtils.isNotBlank(loginInfo.getLoginPassword())) {
 				ciVO.setPassword(loginInfo.getLoginPassword());
 			}
+			if (StringUtils.isNotBlank(loginInfo.getEnablePassword())) {
+				ciVO.setEnablePassword(loginInfo.getEnablePassword());
+			}
+
 		}
 	}
 
@@ -774,7 +775,9 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			final String nowVersionFileName = StringUtils.replace(ciVO.getConfigFileName(), Env.COMM_SEPARATE_SYMBOL, type);
 
 			// 當前備份版本上傳於temp資料夾內檔名 (若TFTP Server與CMAP系統不是架設在同一台主機時)
-			final String nowVersionTempFileName = !Env.TFTP_SERVER_AT_LOCAL ? nowVersionFileName.concat(".").concat(ciVO.getTempFileRandomCode()) : null;
+			final String nowVersionTempFileName =
+					_mode == ConnectionMode.TFTP ? (!Env.TFTP_SERVER_AT_LOCAL ? nowVersionFileName.concat(".").concat(ciVO.getTempFileRandomCode()) : null)
+												 : (!Env.FTP_SERVER_AT_LOCAL ? nowVersionFileName.concat(".").concat(ciVO.getTempFileRandomCode()) : null);
 
 			List<VersionServiceVO> vsVOs;
 			if (entityList != null && !entityList.isEmpty()) {
@@ -798,10 +801,19 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				 * Config file從Device上傳時會先放置於temp資料夾內(Env.TFTP_TEMP_DIR_PATH)
 				 * 比對版本內容時抓取的檔名(FileFullName)也必須調整為temp資料夾內檔名(nowVersionTempFileName，有加上時間細數碼)
 				 */
-				nowVersionVO.setConfigFileDirPath(
-						Env.TFTP_SERVER_AT_LOCAL ? ciVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH);
-				nowVersionVO.setFileFullName(
-						!Env.TFTP_SERVER_AT_LOCAL ? nowVersionTempFileName : nowVersionFileName);
+				if (_mode == ConnectionMode.TFTP) {
+					nowVersionVO.setConfigFileDirPath(
+							Env.TFTP_SERVER_AT_LOCAL ? ciVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH);
+					nowVersionVO.setFileFullName(
+							!Env.TFTP_SERVER_AT_LOCAL ? nowVersionTempFileName : nowVersionFileName);
+
+				} else if (_mode == ConnectionMode.FTP) {
+					nowVersionVO.setConfigFileDirPath(
+							Env.FTP_SERVER_AT_LOCAL ? ciVO.getConfigFileDirPath() : Env.FTP_TEMP_DIR_PATH);
+					nowVersionVO.setFileFullName(
+							!Env.FTP_SERVER_AT_LOCAL ? nowVersionTempFileName : nowVersionFileName);
+				}
+
 				vsVOs.add(nowVersionVO);
 
 				VersionServiceVO compareRetVO = versionService.compareConfigFiles(vsVOs);
@@ -814,17 +826,29 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					 */
 					outputList.remove(output);
 
-					if (Env.TFTP_SERVER_AT_LOCAL) {
-						//TODO:刪除本機已上傳的檔案
-						deleteLocalFile(ciVO);
+					if (_mode == ConnectionMode.FTP) {
+						if (Env.FTP_SERVER_AT_LOCAL) {
+							//TODO:刪除本機已上傳的檔案
+							deleteLocalFile(ciVO);
+						}
 					}
 
 				} else {
+					// 版本內容不同
 					haveDiffVersion = true;
-					/*
-					 * 版本內容不同:
-					 * (1)若[Env.TFTP_SERVER_AT_LOCAL=false]，將檔案從TFTP temp資料夾copy到Device對應目錄;若為true則不需再作處理
-					 */
+				}
+
+			} else {
+				// 若沒有前一版本(系統首次備份)
+				haveDiffVersion = true;
+			}
+
+			if (haveDiffVersion) {
+				/*
+				 * 版本內容不同 OR 若沒有前一版本(系統首次備份):
+				 * (1)若[Env.TFTP_SERVER_AT_LOCAL=false]，將檔案從TFTP temp資料夾copy到Device對應目錄;若為true則不需再作處理
+				 */
+				if (_mode == ConnectionMode.TFTP) {
 					if (Env.TFTP_SERVER_AT_LOCAL == null || (Env.TFTP_SERVER_AT_LOCAL != null && !Env.TFTP_SERVER_AT_LOCAL)) {
 						final String sourceDirPath = Env.TFTP_TEMP_DIR_PATH;
 						final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
@@ -832,20 +856,15 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
 					}
-				}
 
-			} else {
-				haveDiffVersion = true;
-				/*
-				 * 若沒有前一版本(系統首次備份):
-				 * (1)若[Env.TFTP_SERVER_AT_LOCAL=false]，將檔案從TFTP temp資料夾copy到Device對應目錄;若為true則不需再作處理
-				 */
-				if (Env.TFTP_SERVER_AT_LOCAL == null || (Env.TFTP_SERVER_AT_LOCAL != null && !Env.TFTP_SERVER_AT_LOCAL)) {
-					final String sourceDirPath = Env.TFTP_TEMP_DIR_PATH;
-					final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
-					ciVO.setFileFullName(nowVersionTempFileName);
+				} else if (_mode == ConnectionMode.FTP) {
+					if (Env.FTP_SERVER_AT_LOCAL == null || (Env.FTP_SERVER_AT_LOCAL != null && !Env.FTP_SERVER_AT_LOCAL)) {
+						final String sourceDirPath = Env.FTP_TEMP_DIR_PATH;
+						final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
+						ciVO.setFileFullName(nowVersionTempFileName);
 
-					fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
+						fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
+					}
 				}
 			}
 		}
@@ -1029,7 +1048,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @param configInfoVO
 	 * @throws ServiceLayerException
 	 */
-	private void defineFileName(ConfigInfoVO configInfoVO) throws ServiceLayerException {
+	private void defineFileName(ConfigInfoVO configInfoVO, ConnectionMode fileServerMode) throws ServiceLayerException {
 		ConfigVersionInfoDAOVO cviDAOVO = new ConfigVersionInfoDAOVO();
 		cviDAOVO.setQueryGroup1(configInfoVO.getGroupId());
 		cviDAOVO.setQueryDevice1(configInfoVO.getDeviceId());
@@ -1050,24 +1069,29 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		String fileName = CommonUtils.composeConfigFileName(configInfoVO, seqNo);
 		String tFtpTargetFilePath =
 				(Env.TFTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH).concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(fileName);
+		String ftpTargetFilePath =
+				(Env.FTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.FTP_TEMP_DIR_PATH).concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(fileName);
+		//configInfoVO.getConfigFileDirPath().concat(File.separator).concat(fileName);
 
 		/*
 		 * 若 TFTP Server 與 CMAP系統 不是架設在同一台主機上
 		 * 因組態檔案名稱時間戳記僅有到「分」，若同一分鐘內備份多次，會因為檔名重複而命令執行失敗
 		 * 因此，若此條件下，將上傳到temp資料夾的檔案名稱加上時間細數碼
 		 */
-		String tFtpTempFileRandomCode = "";
-		String tempFilePath = tFtpTargetFilePath;
+		String tempFileRandomCode = "";
+		//TODO
+		String tempFilePath = fileServerMode == ConnectionMode.TFTP ? tFtpTargetFilePath : ftpTargetFilePath;
 		if (Env.ENABLE_TEMP_FILE_RANDOM_CODE) {
 			long miles = System.currentTimeMillis();
 			long seconds = TimeUnit.MILLISECONDS.toSeconds(miles) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(miles));
-			tFtpTempFileRandomCode = String.valueOf(seconds).concat(".").concat(configInfoVO.getTimes());
-			tempFilePath = tempFilePath.concat(".").concat(tFtpTempFileRandomCode);
+			tempFileRandomCode = String.valueOf(seconds).concat(".").concat(configInfoVO.getTimes());
+			tempFilePath = tempFilePath.concat(".").concat(tempFileRandomCode);
 		}
 
 		configInfoVO.setConfigFileName(fileName);
 		configInfoVO.settFtpFilePath(tFtpTargetFilePath);
-		configInfoVO.setTempFileRandomCode(tFtpTempFileRandomCode);
+		configInfoVO.setFtpFilePath(ftpTargetFilePath);
+		configInfoVO.setTempFileRandomCode(tempFileRandomCode);
 		configInfoVO.setTempFilePath(tempFilePath);
 	}
 

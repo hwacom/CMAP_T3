@@ -63,7 +63,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 	public boolean connect(final String ipAddress, final Integer port) throws Exception {
 		try {
 			if (ssh == null) {
-				throw new IllegalStateException("SSH connect interrupted!");
+				throw new IllegalStateException("SSH connect interrupted! >>> [ " + ipAddress + ":" + port + " ]");
 			}
 
 			ssh.addHostKeyVerifier(
@@ -77,7 +77,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			ssh.connect(
 					ipAddress,
 					port == null ? Env.SSH_DEFAULT_PORT : port);
-			log.info("SSH connect success!!");
+			log.info("SSH connect success!! >>> [ " + ipAddress + ":" + port + " ]");
 
 		} catch (Exception e) {
 			throw new ConnectionException("[SSH connect failed] " + ipAddress + ":" + port + " >> " + e.getMessage());
@@ -91,7 +91,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			checkSshStatus();
 
 			ssh.authPassword(account, password);
-			log.info("SSH login success!!");
+			log.info("SSH login success!! >>> [ account: " + account + " , password: " + password + " ]");
 
 		} catch (Exception e) {
 			throw new Exception("[SSH login failed] >> " + e.getMessage());

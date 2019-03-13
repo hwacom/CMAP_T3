@@ -33,9 +33,11 @@ public class ConfigInfoVO implements Cloneable {
 	private String tFtpFilePath;
 
 	private String ftpIP;
+	private String ftpUrl;
 	private Integer ftpPort;
 	private String ftpAccount;
 	private String ftpPassword;
+	private String ftpFilePath;
 
 	private String times;
 	private String tempFilePath;
@@ -302,5 +304,21 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setUploadFileName(String uploadFileName) {
 		this.uploadFileName = uploadFileName;
+	}
+
+	public String getFtpUrl() {
+		return ftpUrl;
+	}
+
+	public void setFtpUrl(String ftpUrl) {
+		this.ftpUrl = ftpUrl;
+	}
+
+	public String getFtpFilePath() {
+		return ftpFilePath;
+	}
+
+	public void setFtpFilePath(String ftpFilePath) {
+		this.ftpFilePath = ftpFilePath;
 	}
 }

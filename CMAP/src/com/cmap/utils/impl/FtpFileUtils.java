@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
 
@@ -307,7 +310,37 @@ public class FtpFileUtils implements FileUtils {
 
 	@Override
 	public boolean moveFiles(ConfigInfoVO ciVO, String sourceDirPath, String targetDirPath) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			//TODO
+			String sourceFilePath = sourceDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
+			String targetFilePath = targetDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
+
+			if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
+				SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+
+				targetDirPath = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetDirPath);
+				targetFilePath = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetFilePath);
+			}
+
+			boolean dirExists = ftp.changeWorkingDirectory(targetDirPath);
+
+			if (!dirExists) {
+				if (!ftp.makeDirectory(targetDirPath)) {
+					throw new ServiceLayerException("FTP建立資料夾失敗 >> targetDirPath: " + targetDirPath);
+				}
+				if (!ftp.changeWorkingDirectory(targetDirPath)) {
+					throw new ServiceLayerException("FTP移動工作目錄失敗 >> targetDirPath: " + targetDirPath);
+				}
+			}
+
+			boolean success = ftp.rename(sourceFilePath, targetFilePath);
+			if (!success) {
+				throw new ServiceLayerException("FTP移動檔案失敗 >> sourceFilePath: " + sourceFilePath + ", targetFilePath: " + targetFilePath);
+			}
+
+		} catch (Exception e) {
+			throw e;
+		}
 		return false;
 	}
 
