@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -460,6 +461,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 			return null;
 		}
 
+		Path targetFilePath = null;
 		File targetFile = null;
 		for (File file : files) {
 			if (file == null || !file.exists()) {
@@ -494,12 +496,80 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 				final String backupFileFullName = targetFolder + File.separator + fileName + "_" + backupFileAppendExt + "." + fileExtName;
 
-				targetFile = FileUtils.getFile(backupFileFullName);
+				targetFilePath = Paths.get(backupFileFullName);
 
-				boolean moveFile = file.renameTo(targetFile);
+				boolean moveFile = false;
+				boolean deleteFile = false;
+				int runTime = 0;
+				while (runTime < 3) {
+//					moveFile = file.renameTo(targetFile);
+					try {
+						Files.move(file.toPath(), targetFilePath, StandardCopyOption.REPLACE_EXISTING);
+						moveFile = true;
+						break;
+
+					} catch (Exception e) {
+						// 移動檔案失敗retry 3次 (間格等待1秒)
+						runTime++;
+
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException ie) {
+							ie.printStackTrace();
+						}
+					}
+				}
 
 				if (!moveFile) {
-					throw new ServiceLayerException("移動檔案至備份資料夾失敗");
+					throw new ServiceLayerException("移動檔案至備份資料夾失敗 >>> oriFile: " + file.getPath() + ", targetFile: " + targetFile.getPath());
+
+				} else {
+					if (file.exists()) {
+						// 判斷原始目錄下檔案是否還存在，若存在的話則嘗試做刪除
+						runTime = 0;
+						while (runTime < 3) {
+							try {
+
+								deleteFile = file.delete();
+								if (deleteFile) {
+									break;
+
+								} else {
+									// 刪除檔案失敗retry 3次 (間格等待1秒)
+									runTime++;
+
+									try {
+										Thread.sleep(1000);
+									} catch (InterruptedException ie) {
+										ie.printStackTrace();
+									}
+								}
+
+							} catch (Exception e) {
+								// 刪除檔案失敗retry 3次 (間格等待1秒)
+								runTime++;
+
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException ie) {
+									ie.printStackTrace();
+								}
+							}
+						}
+
+					} else {
+						deleteFile = true;
+					}
+				}
+
+				targetFile = targetFilePath.toFile();
+
+				if (!deleteFile) {
+					// 原始檔案刪除不掉時，則將先前複製到backup的檔案刪除並拋錯不處理，待下一次排程啟動時在處理，避免一個檔案重複處理多次
+					if (targetFile.exists()) {
+						targetFile.delete();
+					}
+					throw new ServiceLayerException("原始檔案刪除失敗，此次排程不做處理 >>> oriFile: " + file.getPath());
 				}
 
 			} else {
@@ -581,7 +651,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	private DataPollerServiceVO readFileContents2CSVFormat4DB(Map<String, List<String>> retRecordListMap, File file, DataPollerSetting setting, Map<Integer, DataPollerServiceVO> mappingMap, Map<String, String> specialSetFieldMap) throws ServiceLayerException {
 		DataPollerServiceVO retVO = new DataPollerServiceVO();
-		List<Map<String, String>> sourceEntryMapList = new ArrayList<Map<String, String>>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
+		List<Map<String, String>> sourceEntryMapList = new ArrayList<>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
 
 		Map<String, String> tmpSpecialFieldMap = null;
 		final String dataType = setting.getDataType();
@@ -624,6 +694,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 					targetTableName = data.getTargetTableName();
 					final String targetFieldName = data.getTargetFieldName();
+					final String targetFieldType = data.getTargetFieldType();
 
 					if (StringUtils.equals(setting.getRecordByDay(), Constants.DATA_Y)) {
 						if (StringUtils.equals(sourceColumnName, setting.getRecordByDayReferField())) {
@@ -728,6 +799,12 @@ public class DataPollerServiceImpl implements DataPollerService {
 							}
 						}
 
+						if (StringUtils.equals(targetFieldType, Constants.FIELD_TYPE_OF_VARCHAR)) {
+							// 時間欄位轉成字串寫入DB
+							String targetValueFormat = data.getTargetValueFormat();
+							funcStr = "DATE_FORMAT(" + funcStr + ", '" + targetValueFormat + "')";
+						}
+
 						specialSetFieldMap.put(targetFieldName, funcStr);
 
 					} else if (StringUtils.equals(sourceColumnType, Constants.DATA_POLLER_SETTING_TYPE_OF_USER)) {
@@ -788,7 +865,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 	 */
 	private DataPollerServiceVO readFileContents2SQLFormat4DB(Map<String, List<String>> retRecordListMap, File file, DataPollerSetting setting, Map<Integer, DataPollerServiceVO> mappingMap) throws ServiceLayerException {
 		DataPollerServiceVO retVO = new DataPollerServiceVO();
-		List<Map<String, String>> sourceEntryMapList = new ArrayList<Map<String, String>>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
+		List<Map<String, String>> sourceEntryMapList = new ArrayList<>();	//紀錄來源資料key-value for後續若有要執行腳本時使用
 
 		Map<String, String> tmpSpecialFieldMap = null;
 		final String dataType = setting.getDataType();
@@ -1309,7 +1386,7 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 	@Override
 	public List<String> getFieldName(String settingId, String fieldType) throws ServiceLayerException {
-		List<String> retList = new ArrayList<>();
+		List<String> retList = new LinkedList<>();
 		try {
 			DataPollerSetting setting = dataPollerDAO.findDataPollerSettingBySettingId(settingId);
 

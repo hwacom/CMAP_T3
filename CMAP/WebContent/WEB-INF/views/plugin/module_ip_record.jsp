@@ -18,7 +18,9 @@
 	    	    <div class="col-lg-3 group-field-other">
 	    	    	<label for="queryGroup" class="font-weight-bold" style="width: 35%"><spring:message code="group.name" /></label>
 	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 60%">
-                        <form:option value="" label="=== ALL ===" />
+                        <c:if test="${fn:length(groupList) gt 1}">
+                        	<form:option value="" label="=== ALL ===" />
+                        </c:if>
                         <form:options items="${groupList}" />
                     </form:select>
 	    	    </div>
@@ -57,7 +59,9 @@
 		      	  <div class="form-group row">
 		      	  	<label for="queryGroup_mobile" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 		      	  	<form:select path="queryGroup" id="queryGroup_mobile" class="col-sm-10 form-control form-control-sm">
-                        <form:option value="" label="=== ALL ===" />
+                        <c:if test="${fn:length(groupList) gt 1}">
+                        	<form:option value="" label="=== ALL ===" />
+                        </c:if>
                         <form:options items="${groupList}" />
                     </form:select>
 		    	  </div>

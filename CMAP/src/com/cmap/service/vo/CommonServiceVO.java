@@ -22,6 +22,12 @@ public class CommonServiceVO {
 	private String actionBy;
 	private Date actionTime;
 
+	private Integer protocolNo;
+	private String hexNo;
+	private String protocolName;
+	private String description;
+	private String referenceDoc;
+
 	public Integer getStartNum() {
 		return startNum;
 	}
@@ -99,5 +105,35 @@ public class CommonServiceVO {
 	}
 	public void setActionTime(Date actionTime) {
 		this.actionTime = actionTime;
+	}
+	public Integer getProtocolNo() {
+		return protocolNo;
+	}
+	public void setProtocolNo(Integer protocolNo) {
+		this.protocolNo = protocolNo;
+	}
+	public String getHexNo() {
+		return hexNo;
+	}
+	public void setHexNo(String hexNo) {
+		this.hexNo = hexNo;
+	}
+	public String getProtocolName() {
+		return protocolName;
+	}
+	public void setProtocolName(String protocolName) {
+		this.protocolName = protocolName;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getReferenceDoc() {
+		return referenceDoc;
+	}
+	public void setReferenceDoc(String referenceDoc) {
+		this.referenceDoc = referenceDoc;
 	}
 }

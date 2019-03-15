@@ -102,7 +102,7 @@ public class NetFlowController extends BaseController {
 		try {
 			List<String> tableTitleField = new ArrayList<>();
 			tableTitleField.add("");
-			tableTitleField.add("Group_Id");
+//			tableTitleField.add("Group_Id");
 			tableTitleField.addAll(dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_TARGET));
 
 			if (tableTitleField != null && !tableTitleField.isEmpty()) {
@@ -128,6 +128,8 @@ public class NetFlowController extends BaseController {
 			@RequestParam(name="queryMac", required=false, defaultValue="") String queryMac,
 			@RequestParam(name="queryDateBegin", required=true, defaultValue="") String queryDateBegin,
 			@RequestParam(name="queryDateEnd", required=false, defaultValue="") String queryDateEnd,
+			@RequestParam(name="queryTimeBegin", required=true, defaultValue="") String queryTimeBegin,
+			@RequestParam(name="queryTimeEnd", required=false, defaultValue="") String queryTimeEnd,
 			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
 			@RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
 			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
@@ -136,16 +138,20 @@ public class NetFlowController extends BaseController {
 
 		long total = 0;
 		long filterdTotal = 0;
+		String totalFlow = "";
 		List<NetFlowVO> dataList = new ArrayList<>();
 		NetFlowVO nfVO;
 		try {
 			if (StringUtils.isBlank(queryGroup)) {
 				String msg = messageSource.getMessage("please.choose", Locale.TAIWAN, null) + messageSource.getMessage("group.name", Locale.TAIWAN, null);
-				return new DatatableResponse(
-						new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
+				return new DatatableResponse(new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
 			}
 			if (StringUtils.isBlank(queryDateBegin)) {
 				String msg = messageSource.getMessage("please.choose", Locale.TAIWAN, null) + messageSource.getMessage("date", Locale.TAIWAN, null);
+				return new DatatableResponse(new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
+			}
+			if (StringUtils.isBlank(queryTimeBegin) || StringUtils.isBlank(queryTimeEnd)) {
+				String msg = messageSource.getMessage("please.choose", Locale.TAIWAN, null) + messageSource.getMessage("time", Locale.TAIWAN, null);
 				return new DatatableResponse(new Long(0), new ArrayList<NetFlowVO>(), new Long(0), msg);
 			}
 
@@ -161,6 +167,11 @@ public class NetFlowController extends BaseController {
 			nfVO.setQueryDestinationPort(queryDestinationPort);
 			nfVO.setQuerySenderIp(querySenderIp);
 			nfVO.setQueryDateBegin(queryDateBegin);
+			nfVO.setQueryTimeBegin(queryTimeBegin);
+			nfVO.setQueryTimeEnd(queryTimeEnd);
+			nfVO.setQueryDateStr(queryDateBegin.replace("-", ""));
+			nfVO.setQueryTimeBeginStr(queryTimeBegin.replace(":", ""));
+			nfVO.setQueryTimeEndStr(queryTimeEnd.replace(":", ""));
 			nfVO.setStartNum(startNum);
 			nfVO.setPageLength(pageLength);
 			nfVO.setSearchValue(searchValue);
@@ -187,15 +198,15 @@ public class NetFlowController extends BaseController {
 
 				if (filterdTotal != 0) {
 					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
+
+					totalFlow = dataList.get(0).getTotalFlow();	// 總流量記在第一筆資料VO內
 				}
 
-				if (filterdTotal != 0) {
-					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
-				}
-				
 				NetFlowVO newVO = new NetFlowVO();
 				newVO.setQueryGroupId(queryGroup);
 				newVO.setQueryDateBegin(queryDateBegin);
+				newVO.setQueryTimeBegin(queryTimeBegin);
+				newVO.setQueryTimeEnd(queryTimeEnd);
 				total = netFlowService.countNetFlowRecordFromDB(newVO, targetFieldList);
 			}
 
@@ -204,6 +215,6 @@ public class NetFlowController extends BaseController {
 			log.error(e.toString(), e);
 		}
 
-		return new DatatableResponse(total, dataList, filterdTotal);
+		return new DatatableResponse(total, dataList, filterdTotal, null, totalFlow);
 	}
 }

@@ -1,5 +1,6 @@
 package com.cmap.plugin.module.netflow;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ public interface NetFlowDAO extends BaseDAO {
 
 	public long countNetFlowDataFromDB(NetFlowVO nfVO, List<String> searchLikeField, String tableName);
 
-	public List<Object[]> findNetFlowDataFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField, String tableName);
+	public List<Object[]> findNetFlowDataFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField, String tableName, String selectSql);
+
+	public BigDecimal getTotalFlowOfQueryConditionsFromDB(NetFlowVO nfVO, List<String> searchLikeField, String tableName);
 
 	public NetFlowVO findNetFlowDataFromFile(
 			DataPollerSetting setting,

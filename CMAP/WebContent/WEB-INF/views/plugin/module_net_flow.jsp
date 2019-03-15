@@ -12,19 +12,27 @@
       		<div class="container-fluid">
 	      	  <div class="form-group row" style="margin-bottom: -.5rem;">
 	    	    <div class="col-lg-3 group-field-other">
-	    	    	<label for="queryGroup" class="font-weight-bold must" style="width: 35%"><spring:message code="group.name" /></label>
-	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 60%">
-                        <form:option value="" label="=== ALL ===" />
+	    	    	<label for="queryGroup" class="font-weight-bold must" style="width: 20%"><spring:message code="group.name" /></label>
+	    	    	<form:select path="queryGroup" id="queryGroup" style="width: 75%">
+                        <c:if test="${fn:length(groupList) gt 1}">
+                        	<form:option value="" label="=== ALL ===" />
+                        </c:if>
                         <form:options items="${groupList}" />
                     </form:select>
 	    	    </div>
-	    	    <div class="col-lg-3 group-field-other">
-	    	    	<label for="queryDateBegin" class="font-weight-bold must" style="width: 35%"><spring:message code="date" /></label>
-	    	    	<input type="date" id="queryDateBegin" style="width: 60%">
+	    	    <div class="col-lg-2 group-field-other">
+	    	    	<label for="queryDateBegin" class="font-weight-bold must" style="width: 20%"><spring:message code="date" /></label>
+	    	    	<input type="date" id="queryDateBegin" style="width: 75%">
 	    	    	<!-- 
 	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
 	    	    	<input type="date" id="queryDateEnd" style="width: 35%">
 	    	    	 -->
+	    	    </div>
+	    	    <div class="col-lg-3 group-field-other">
+	    	    	<label for="queryTimeBegin" class="font-weight-bold must" style="width: 14%"><spring:message code="time" /></label>
+	    	    	<input type="time" id="queryTimeBegin" style="width: 38%">
+	    	    	<span class="font-weight-bold center" style="width: 5%">~</span>
+	    	    	<input type="time" id="queryTimeEnd" style="width: 38%">
 	    	    </div>
 	    	    <div class="col-lg-2" style="padding-top: 5px;">
 	    	    	<button type="button" class="btn btn-primary btn-sm" style="width: 100%" id="btnSearch_web">
@@ -57,6 +65,9 @@
 				<div class="col-lg-3 group-field-other">
 					<label for="query_DestinationPort" class="font-weight-bold" style="width: 45%"><spring:message code="net.flow.destination.port" /></label>
 					<input type="text" id="query_DestinationPort" class="input-port" style="width: 50%">
+				</div>
+				<div class="col-lg-3 group-field-other" id="div_TotalFlow" style="display: none">
+					<span id="result_TotalFlow" class="warning bold"></span>
 				</div>
 			  </div>
 			  <!-- 
@@ -102,7 +113,9 @@
 		      	  <div class="form-group row">
 		      	  	<label for="queryGroup_mobile" class="col-sm-2 col-form-label"><spring:message code="group.name" /></label>
 		      	  	<form:select path="queryGroup" id="queryGroup_mobile" class="col-sm-10 form-control form-control-sm">
-                        <form:option value="" label="=== ALL ===" />
+                        <c:if test="${fn:length(groupList) gt 1}">
+                        	<form:option value="" label="=== ALL ===" />
+                        </c:if>
                         <form:options items="${groupList}" />
                     </form:select>
 		    	  </div>
@@ -159,7 +172,7 @@
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
-		      <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th>
+		      <!-- <th scope="col" nowrap="nowrap"><spring:message code="group.name" /></th> -->
 		      <c:forEach var="fName" items="${TABLE_FIELD}">
 		        <th scope="col" nowrap="nowrap">${fName }</th>
 		      </c:forEach>

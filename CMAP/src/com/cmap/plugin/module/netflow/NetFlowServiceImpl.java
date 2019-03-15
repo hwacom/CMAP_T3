@@ -27,7 +27,9 @@ import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DataPollerMapping;
 import com.cmap.model.DataPollerSetting;
 import com.cmap.model.DeviceList;
+import com.cmap.service.CommonService;
 import com.cmap.service.DataPollerService;
+import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.DataPollerServiceVO;
 
 @Service("netFlowService")
@@ -47,6 +49,9 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 	@Autowired
 	private DeviceDAO deviceDAO;
+
+	@Autowired
+	private CommonService commonService;
 
 	private String getTodayTableName() {
 		String tableName = Env.DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
@@ -139,8 +144,22 @@ public class NetFlowServiceImpl implements NetFlowService {
 	public List<NetFlowVO> findNetFlowRecordFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField) throws ServiceLayerException {
 		List<NetFlowVO> retList = new ArrayList<>();
 		try {
+			List<String> tableTitleField = dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_TARGET);
+			StringBuffer queryFieldsSQL = new StringBuffer();
 
-			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, getQueryTableName(nfVO));
+			for (int i=0; i<tableTitleField.size(); i++) {
+				String fieldName = tableTitleField.get(i);
+				queryFieldsSQL.append("`").append(fieldName).append("`");
+
+				if (i < tableTitleField.size() - 1) {
+					queryFieldsSQL.append(", ");
+				}
+			}
+
+			Map<Integer, CommonServiceVO> protocolMap = commonService.getProtoclSpecMap();
+
+			final String queryTable = getQueryTableName(nfVO);
+			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, queryTable, queryFieldsSQL.toString());
 
 			if (dataList != null && !dataList.isEmpty()) {
 				List<String> fieldList = dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_SOURCE);
@@ -149,7 +168,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 					throw new ServiceLayerException("查無欄位標題設定 >> Setting_Id: " + Env.SETTING_ID_OF_NET_FLOW);
 
 				} else {
-					fieldList.add(0, "GroupId");
+					// fieldList.add(0, "GroupId");
 
 					NetFlowVO vo;
 					for (Object[] data : dataList) {
@@ -157,7 +176,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 						for (int i=0; i<fieldList.size(); i++) {
 							int fieldIdx = i;
-							int dataIdx = i + 1;
+							int dataIdx = i;
 
 							final String oriName = fieldList.get(fieldIdx);
 							String fName = oriName.substring(0, 1).toLowerCase() + oriName.substring(1, oriName.length());
@@ -171,6 +190,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 							} else if (oriName.equals("Size")) {
 								BigDecimal sizeByte = new BigDecimal(Objects.toString(data[dataIdx], "0"));
 
+								/*
 								int scale = 1;
 								BigDecimal sizeKb = sizeByte.divide(new BigDecimal("1024"), scale, RoundingMode.HALF_UP);
 								BigDecimal sizeMb = (sizeByte.divide(new BigDecimal("1024"))).divide(new BigDecimal("1024"), scale, RoundingMode.HALF_UP);
@@ -188,8 +208,9 @@ public class NetFlowServiceImpl implements NetFlowService {
 										convertedSize = sizeByte.toString() + " B";
 									}
 								}
+								*/
 
-								fValue = convertedSize;
+								fValue = convertByteSizeUnit(sizeByte);
 
 							} else if (oriName.equals("GroupId")) {
 								String groupId = Objects.toString(data[dataIdx]);
@@ -202,8 +223,15 @@ public class NetFlowServiceImpl implements NetFlowService {
 									fName = "groupName";
 									fValue = device.getGroupName();
 								}
-							}
-							else {
+
+							} else if (oriName.equals("Protocol")) {
+								String tmpStr = Objects.toString(data[dataIdx]);
+								Integer protocolNo = tmpStr != null ? Integer.valueOf(tmpStr) : null;
+								String protocolName = protocolMap.get(protocolNo).getProtocolName();
+
+								fValue = protocolName;
+
+							} else {
 								fValue = Objects.toString(data[dataIdx]);
 							}
 
@@ -212,6 +240,10 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 						retList.add(vo);
 					}
+
+					BigDecimal flowSum = netFlowDAO.getTotalFlowOfQueryConditionsFromDB(nfVO, searchLikeField, queryTable);
+					String totalFlow = (flowSum == null) ? "N/A" : convertByteSizeUnit(flowSum);
+					retList.get(0).setTotalFlow(totalFlow);	// 塞入總流量至第一筆VO內
 				}
 			}
 
@@ -220,6 +252,35 @@ public class NetFlowServiceImpl implements NetFlowService {
 			throw new ServiceLayerException("查詢失敗，請重新操作");
 		}
 		return retList;
+	}
+
+	private String convertByteSizeUnit(BigDecimal sizeByte) {
+		int scale = 1;
+		BigDecimal unitSize = new BigDecimal("1024");
+		BigDecimal sizeKb = sizeByte.divide(unitSize, scale, RoundingMode.HALF_UP);
+		BigDecimal sizeMb = (sizeByte.divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
+		BigDecimal sizeGb = (sizeByte.divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
+		BigDecimal sizeTb = (sizeByte.divide(unitSize).divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
+		BigDecimal zeroSize = new BigDecimal("0.0");
+
+		String convertedSize = "";
+		if (sizeTb.compareTo(zeroSize) == 1) {
+			convertedSize = sizeTb.toString() + " TB";
+
+		} else if (sizeGb.compareTo(zeroSize) == 1) {
+			convertedSize = sizeGb.toString() + " GB";
+
+		} else if (sizeMb.compareTo(zeroSize) == 1) {
+			convertedSize = sizeMb.toString() + " MB";
+
+		} else if (sizeKb.compareTo(zeroSize) == 1) {
+			convertedSize = sizeKb.toString() + " KB";
+
+		} else {
+			convertedSize = sizeByte.toString() + " B";
+		}
+
+		return convertedSize;
 	}
 
 	private Map<String, NetFlowVO> composeQueryMap(NetFlowVO nfVO) {

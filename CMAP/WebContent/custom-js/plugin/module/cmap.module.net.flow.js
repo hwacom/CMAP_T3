@@ -40,7 +40,9 @@ $(document).ready(function() {
 	var today = new Date();
 	var year = today.getFullYear();
 	var month = parseInt(today.getMonth()) + 1;
+	month = (month < 10) ? ("0".concat(month)) : month;
 	var date = today.getDate();
+	date = (date < 10) ? ("0".concat(date)) : date;
 	
 	$("#queryDateBegin").val(year+"-"+month+"-"+date);
 	
@@ -123,8 +125,10 @@ function findData(from) {
 						d.querySourcePort = $("#query_SourcePort").val(),
 						d.queryDestinationPort = $("#query_DestinationPort").val(),
 						//d.queryMac = $("#queryMac").val(),
-						d.queryDateBegin = $("#queryDateBegin").val()
+						d.queryDateBegin = $("#queryDateBegin").val(),
 						//d.queryDateEnd = $("#queryDateEnd").val()
+						d.queryTimeBegin = $("#queryTimeBegin").val(),
+						d.queryTimeEnd = $("#queryTimeEnd").val()
 					
 					} else if ($('#queryFrom').val() == 'MOBILE') {
 						d.queryGroup = $("#queryGroup_mobile").val(),
@@ -134,13 +138,16 @@ function findData(from) {
 						d.querySourcePort = $("#query_SourcePort_mobile").val(),
 						d.queryDestinationPort = $("#query_DestinationPort_mobile").val(),
 						//d.queryMac = $("#queryMac_mobile").val();
-						d.queryDateBegin = $("#queryDateBegin_mobile").val()
+						d.queryDateBegin = $("#queryDateBegin_mobile").val(),
 						//d.queryDateEnd = $("#queryDateEnd_mobile").val()
+						d.queryTimeBegin = $("#queryTimeBegin").val(),
+						d.queryTimeEnd = $("#queryTimeEnd").val()
 					}
 					
 					return d;
 				},
 				beforeSend : function() {
+					$("#div_TotalFlow").hide();
 					countDown('START');
 				},
 				complete : function() {
@@ -148,6 +155,19 @@ function findData(from) {
 				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
 					ajaxErrorHandler();
+				},
+				"dataSrc" : function(json) {
+					if (json.data.length > 0) {
+						if (json.otherMsg != null && json.otherMsg != "") {
+							$("#div_TotalFlow").css("display", "contents");
+							$("#result_TotalFlow").text("總流量：" + json.otherMsg);
+						}
+						
+					} else {
+						$("#div_TotalFlow").css("display", "contents");
+						$("#result_TotalFlow").text("查無符合資料");
+					}
+					return json.data;
 				},
 				"timeout" : parseInt(_timeout) * 1000 //設定60秒Timeout
 			},
@@ -158,7 +178,7 @@ function findData(from) {
 					alert(json.msg);
 				}
             },
-			"drawCallback" : function(settings, json) {
+			"drawCallback" : function(settings) {
 				//$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass('col-sm-12');
 				$("div.dataTables_length").parent().addClass('col-sm-6');

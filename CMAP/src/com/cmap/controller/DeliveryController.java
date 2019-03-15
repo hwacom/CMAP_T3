@@ -92,6 +92,7 @@ public class DeliveryController extends BaseController {
 			log.error(e.toString(), e);
 
 		} finally {
+			initMenu(model, request);
 		}
 
 		return "plugin/module_switch_port";
@@ -106,6 +107,7 @@ public class DeliveryController extends BaseController {
 			log.error(e.toString(), e);
 
 		} finally {
+			initMenu(model, request);
 		}
 
 		return "plugin/module_ip_open_block";
@@ -120,6 +122,7 @@ public class DeliveryController extends BaseController {
 			log.error(e.toString(), e);
 
 		} finally {
+			initMenu(model, request);
 		}
 
 		return "plugin/module_mac_open_block";

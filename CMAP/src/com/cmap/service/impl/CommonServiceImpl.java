@@ -5,12 +5,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +24,18 @@ import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.MenuItemDAO;
+import com.cmap.dao.ProtocolDAO;
 import com.cmap.dao.PrtgDAO;
 import com.cmap.dao.ScriptTypeDAO;
 import com.cmap.exception.AuthenticateException;
 import com.cmap.model.DeviceList;
 import com.cmap.model.MenuItem;
+import com.cmap.model.ProtocolSpec;
 import com.cmap.model.PrtgAccountMapping;
 import com.cmap.model.ScriptType;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.CommonService;
+import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.ApiUtils;
 import com.cmap.utils.impl.PrtgApiUtils;
@@ -53,6 +58,9 @@ public class CommonServiceImpl implements CommonService {
 
 	@Autowired
 	PrtgDAO prtgDAO;
+
+	@Autowired
+	ProtocolDAO protocolDAO;
 
 	/**
 	 * 組合 Local / Remote 落地檔路徑資料夾
@@ -308,5 +316,25 @@ public class CommonServiceImpl implements CommonService {
 			log.error(e.toString(), e);
 			return base64String;
 		}
+	}
+
+	@Override
+	public Map<Integer, CommonServiceVO> getProtoclSpecMap() {
+		Map<Integer, CommonServiceVO> retMap = new HashMap<>();
+		try {
+			List<ProtocolSpec> reList = protocolDAO.findAllProtocolSpec();
+
+			CommonServiceVO csVO;
+			for (ProtocolSpec ps : reList) {
+				csVO = new CommonServiceVO();
+				BeanUtils.copyProperties(csVO, ps);
+
+				retMap.put(ps.getProtocolNo(), csVO);
+			}
+
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+		return retMap;
 	}
 }

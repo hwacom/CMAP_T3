@@ -64,7 +64,7 @@ public class DataPollerDAOImpl extends BaseDaoHibernate implements DataPollerDAO
 		sb.append(" from DataPollerMapping dpm ")
 		  .append(" where 1=1 ")
 		  .append(" and dpm.mappingCode = :mappingCode ")
-		  .append(" order by dpm.mappingId ");
+		  .append(" order by dpm.targetFieldIdx ");
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 	    Query<?> q = session.createQuery(sb.toString());

@@ -20,8 +20,13 @@ public class NetFlowVO extends CommonServiceVO {
 	private String queryDate;
 	private String queryDateBegin;
 	private String queryDateEnd;
+	private String queryTimeBegin;
+	private String queryTimeEnd;
 	private String queryValue;
 	private String queryCondition;
+	private String queryDateStr;
+	private String queryTimeBeginStr;
+	private String queryTimeEndStr;
 
 	private List<NetFlowVO> matchedList = new ArrayList<>();
 	private int totalCount = 0;
@@ -53,6 +58,8 @@ public class NetFlowVO extends CommonServiceVO {
 	private String sourceVLAN;
 	private String destinationVLAN;
 	private String flowID;
+
+	private String totalFlow;
 
 	public String getQueryGroupId() {
 		return queryGroupId;
@@ -404,5 +411,53 @@ public class NetFlowVO extends CommonServiceVO {
 
 	public void setQuerySchoolId(String querySchoolId) {
 		this.querySchoolId = querySchoolId;
+	}
+
+	public String getQueryTimeBegin() {
+		return queryTimeBegin;
+	}
+
+	public void setQueryTimeBegin(String queryTimeBegin) {
+		this.queryTimeBegin = queryTimeBegin;
+	}
+
+	public String getQueryTimeEnd() {
+		return queryTimeEnd;
+	}
+
+	public void setQueryTimeEnd(String queryTimeEnd) {
+		this.queryTimeEnd = queryTimeEnd;
+	}
+
+	public String getQueryDateStr() {
+		return queryDateStr;
+	}
+
+	public void setQueryDateStr(String queryDateStr) {
+		this.queryDateStr = queryDateStr;
+	}
+
+	public String getQueryTimeBeginStr() {
+		return queryTimeBeginStr;
+	}
+
+	public void setQueryTimeBeginStr(String queryTimeBeginStr) {
+		this.queryTimeBeginStr = queryTimeBeginStr;
+	}
+
+	public String getQueryTimeEndStr() {
+		return queryTimeEndStr;
+	}
+
+	public void setQueryTimeEndStr(String queryTimeEndStr) {
+		this.queryTimeEndStr = queryTimeEndStr;
+	}
+
+	public String getTotalFlow() {
+		return totalFlow;
+	}
+
+	public void setTotalFlow(String totalFlow) {
+		this.totalFlow = totalFlow;
 	}
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,9 +70,9 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			  .append("       or nfrd.destination_MAC = :queryMac ) ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
-			  //.append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  //.append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
+			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+			sb.append(" and nfrd.from_date_str = :queryDateStr ")
+			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
 		}
 		/*
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
@@ -125,7 +126,9 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			q.setParameter("queryMac", nfVO.getQueryMac());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			q.setParameter("beginDate", nfVO.getQueryDateBegin());
+			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
+			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
+			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
 			q.setParameter("endDate", nfVO.getQueryDateEnd());
@@ -138,10 +141,17 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	}
 
 	@Override
-	public List<Object[]> findNetFlowDataFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField, String tableName) {
+	public List<Object[]> findNetFlowDataFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField, String tableName, String selectSql) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(" select * ")
-		  .append(" from ").append(tableName).append(" nfrd ")
+		sb.append(" select ");
+
+		if (StringUtils.isNotBlank(selectSql)) {
+			sb.append(selectSql);
+		} else {
+			sb.append("*");
+		}
+
+		sb.append(" from ").append(tableName).append(" nfrd ")
 		  .append(" where 1=1 ");
 
 		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
@@ -167,9 +177,9 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			  .append("       or nfrd.destination_MAC = :queryMac ) ");
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
-			  //.append("       or (nfrd.from_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.from_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ")
-			  //.append("       or (nfrd.to_date_time >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.to_date_time < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ) ");
+			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+			sb.append(" and nfrd.from_date_str = :queryDateStr ")
+			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
 		}
 		/*
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
@@ -202,7 +212,7 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			sb.append(" order by nfrd.").append(nfVO.getOrderColumn()).append(" ").append(nfVO.getOrderDirection());
 
 		} else {
-			sb.append(" order by nfrd.now desc ");
+			sb.append(" order by nfrd.size desc ");
 		}
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
@@ -230,7 +240,9 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 			q.setParameter("queryMac", nfVO.getQueryMac());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			q.setParameter("beginDate", nfVO.getQueryDateBegin());
+			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
+			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
+			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
 		}
 		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
 			q.setParameter("endDate", nfVO.getQueryDateEnd());
@@ -531,5 +543,106 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	    } else {
 	    	return null;
 	    }
+	}
+
+	@Override
+	public BigDecimal getTotalFlowOfQueryConditionsFromDB(NetFlowVO nfVO, List<String> searchLikeField, String tableName) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select sum(size) ")
+		  .append(" from ").append(tableName).append(" nfrd ")
+		  .append(" where 1=1 ");
+
+		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+			sb.append(" and nfrd.group_id = :groupId ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			sb.append(" and nfrd.source_ip = :querySourceIp ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			sb.append(" and nfrd.source_port = :querySourcePort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			sb.append(" and nfrd.sender_ip = :querySenderIp ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+			sb.append(" and ( nfrd.source_MAC = :queryMac ")
+			  .append("       or nfrd.destination_MAC = :queryMac ) ");
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+			sb.append(" and nfrd.from_date_str = :queryDateStr ")
+			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
+		}
+		/*
+		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+			sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+			  .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+			  .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
+		}
+		*/
+
+		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+			StringBuffer sfb = new StringBuffer();
+			sfb.append(" and ( ");
+
+			int i = 0;
+			for (String sField : searchLikeField) {
+				sfb.append(sField).append(" like :searchValue ");
+
+				if (i < searchLikeField.size() - 1) {
+					sfb.append(" or ");
+				}
+
+				i++;
+			}
+
+			sfb.append(" ) ");
+			sb.append(sfb);
+		}
+
+		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	    Query<?> q = session.createNativeQuery(sb.toString());
+
+	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+	    	q.setParameter("groupId", nfVO.getQueryGroupId());
+		}
+	    if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+			q.setParameter("queryMac", nfVO.getQueryMac());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
+			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
+			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
+		}
+		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+			q.setParameter("endDate", nfVO.getQueryDateEnd());
+		}
+		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+			q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
+		}
+
+		List<BigDecimal> retList = (List<BigDecimal>)q.list();
+	    return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;
 	}
 }

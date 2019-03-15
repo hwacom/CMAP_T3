@@ -150,7 +150,7 @@
 			      	  	<th colspan="1" width="60%" id="step2_varKey_td"><spring:message code="variable.value" /></th>
 		      	  	</tr>
 		      	  	<tr>
-		      	  		<td>ip_address</td>
+		      	  		<td class="delivery-var-title">ip_address</td>
 		      	  	</tr>
 		      	  </thead>
 		      	  <tbody>
@@ -187,6 +187,10 @@
 	      	<div class="col-2">
 	      		<button type="button" class="btn btn-success" id="btnStepGoNext" style="width: 100%;"><spring:message code="btn.step.next" /></button>
 	      		<button type="button" class="btn btn-success" id="btnStepGoFire" style="width: 100%;"><spring:message code="btn.delivery.confirm" /></button>
+	      	</div>
+	      	<div class="col-1"></div>
+	      	<div class="col-2">
+	      		<button type="button" class="btn btn-info" id="btnCancel" style="width: 100%;" data-dismiss="modal" aria-label="Close"><spring:message code="btn.cancel" /></button>
 	      	</div>
       	</div>
       </div>
