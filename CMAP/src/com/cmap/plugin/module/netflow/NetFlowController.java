@@ -204,9 +204,6 @@ public class NetFlowController extends BaseController {
 
 				NetFlowVO newVO = new NetFlowVO();
 				newVO.setQueryGroupId(queryGroup);
-				newVO.setQueryDateBegin(queryDateBegin);
-				newVO.setQueryTimeBegin(queryTimeBegin);
-				newVO.setQueryTimeEnd(queryTimeEnd);
 				total = netFlowService.countNetFlowRecordFromDB(newVO, targetFieldList);
 			}
 
