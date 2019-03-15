@@ -192,6 +192,9 @@ public class Constants {
 	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_YYYYMMDD = "[YYYYMMDD]";
 	public static final String DATA_POLLER_STORE_FILE_NAME_FORMAT_OF_FILE_EXT = "[FILE_EXT]";
 
+	public static final String DATA_POLLER_SCRIPT_EXECUTE_KEY_TYPE_OF_ENTRY = "ENTRY";
+	public static final String DATA_POLLER_SCRIPT_EXECUTE_KEY_TYPE_OF_LIST = "LIST";
+
 	public static final String SYMBOL_EQUAL = "=";
 	public static final String SYMBOL_FRONT_END_LIKE = "%...%";
 	public static final String SYMBOL_FRONT_LIKE = "%...";

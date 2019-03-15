@@ -61,7 +61,7 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 				telnet.connect(
 						ipAddress,
 						port == null ? Env.TELNET_DEFAULT_PORT : port);
-				log.info("Telnet connect success!");
+				log.info("Telnet connect success! >>> [ " + ipAddress + ":" + port + " ]");
 
 				in = telnet.getInputStream();
 				out = new PrintStream(telnet.getOutputStream());

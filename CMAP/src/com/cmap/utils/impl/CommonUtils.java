@@ -192,8 +192,40 @@ public class CommonUtils {
 
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_TFTP_OUTPUT_FILE_PATH, tFtpFilePath);
 		}
+		if (cmd.contains(Env.CLI_VAR_FTP_IP)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_IP, configInfoVO.getFtpIP());
+		}
+		if (cmd.contains(Env.CLI_VAR_FTP_URL)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_URL, configInfoVO.getFtpUrl());
+		}
+		if (cmd.contains(Env.CLI_VAR_FTP_LOGIN_ACT)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_LOGIN_ACT, configInfoVO.getFtpAccount());
+		}
+		if (cmd.contains(Env.CLI_VAR_FTP_LOGIN_PWD)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_LOGIN_PWD, configInfoVO.getFtpPassword());
+		}
+		if (cmd.contains(Env.CLI_VAR_FTP_OUTPUT_FILE_PATH)) {
+			String ftpFilePath = configInfoVO.getFtpFilePath();
+
+			if (!Env.FTP_SERVER_AT_LOCAL) {
+				/*
+				 * 目前預設從設備copy檔案到FTP時都先放在temp目錄下
+				 */
+				ftpFilePath = configInfoVO.getTempFilePath();
+			}
+
+			if (StringUtils.isNotBlank(remark)) {
+				ftpFilePath = StringUtils.replace(ftpFilePath, Env.COMM_SEPARATE_SYMBOL, remark);
+			}
+
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_OUTPUT_FILE_PATH, ftpFilePath);
+		}
 		if (cmd.contains(Env.CLI_VAR_CMD_LIST)) {
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_CMD_LIST, cli);
+		}
+
+		if (StringUtils.equals(Env.ENABLE_CMD_LOG, Constants.DATA_Y)) {
+			log.info("cmd: " + cmd);
 		}
 
 		return cmd;

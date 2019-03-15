@@ -230,12 +230,13 @@ public class DataPollerServiceImpl implements DataPollerService {
 										for (DataPollerScriptSetting script : scriptList) {
 											try {
 												final String executeKeySetting = script.getExecuteKeySetting();
+												final String executeKeyType = script.getExecuteKeyType();
 												final List<Map<String, String>> sourceEntryMapList = retVO.getSourceEntryMapList();
 												final String scriptCode = script.getExecuteScriptCode();
 												final String reason = script.getExecuteReason();
 
 												List<String> varKey = transSourceEntryMap2KeyList(executeKeySetting);
-												List<List<String>> varValue = transSourceEntryMap2ValueList(executeKeySetting, sourceEntryMapList);
+												List<List<String>> varValue = transSourceEntryMap2ValueList(executeKeyType, executeKeySetting, sourceEntryMapList);
 
 												List<String> groupIds = new ArrayList<>();
 												groupIds.add(groupId);
@@ -346,23 +347,77 @@ public class DataPollerServiceImpl implements DataPollerService {
 		return retList;
 	}
 
-	private List<List<String>> transSourceEntryMap2ValueList(String executeKeySetting, List<Map<String, String>> sourceEntryMapList) throws ServiceLayerException {
+	private List<List<String>> transSourceEntryMap2ValueList(String executeKeyType, String executeKeySetting, List<Map<String, String>> sourceEntryMapList) throws ServiceLayerException {
 		List<List<String>> retList = new ArrayList<>();
 
 		Map<String, String> keyMapping = transKeySetting2Map(executeKeySetting);
 
 		List<String> entryList = null;
-		for (Map<String, String> sourceEntry : sourceEntryMapList) {
 
-			entryList = new ArrayList<>();
-			for (String voKey : keyMapping.values()) {
+		if (StringUtils.equals(executeKeyType, Constants.DATA_POLLER_SCRIPT_EXECUTE_KEY_TYPE_OF_ENTRY)) {
+			/*
+			 * Case 1. 指令1個key對應1個sourceEntry的value
+			 */
+			for (Map<String, String> sourceEntry : sourceEntryMapList) {
 
-				if (sourceEntry.containsKey(voKey)) {
-					entryList.add(sourceEntry.get(voKey));
+				entryList = new ArrayList<>();
+				for (String voKey : keyMapping.values()) {
+
+					if (sourceEntry.containsKey(voKey)) {
+						entryList.add(sourceEntry.get(voKey));
+					}
 				}
+
+				retList.add(entryList);
 			}
 
-			retList.add(entryList);
+		} else if (StringUtils.equals(executeKeyType, Constants.DATA_POLLER_SCRIPT_EXECUTE_KEY_TYPE_OF_LIST)) {
+			/*
+			 * Case 2. 若指令key是要將所有sourceEntry其中的某個value組成一長串
+			 * e.g.: 防火牆黑名單多組IP加入至群組內
+			 * config firewall addrgrp
+				    edit "Black-List"
+				        set member "61.216.102.145/32" "220.135.193.215/32" <<--- 多組IP組成一長串
+				end
+			 */
+			entryList = new ArrayList<>();
+			StringBuffer sb = null;
+			for (String voKey : keyMapping.values()) {
+				sb = new StringBuffer();
+				String[] tmp = voKey.split(",");
+				String voField = tmp[0];
+
+				// 變數值VO參數名稱使用[]包夾
+				String voFieldName = voField.substring(voField.indexOf("[") + 1, voField.indexOf("]"));
+
+				// 判斷變數值前後是否有額外固定字詞組成最終指令結果
+				String frontStr = "";
+				String endStr = "";
+				if (StringUtils.isNotBlank(voField.split("\\[")[0])) {
+					frontStr = voField.substring(0, voField.indexOf("["));
+
+				}
+				if (StringUtils.isNotBlank(voField.split("\\]")[1])) {
+					endStr = voField.substring(voField.indexOf("]") + 1);
+				}
+
+				String _entrySymbol = tmp[1];	// 一組Entry包夾符號 (e.g.: "1.1.1.1/32" 使用「"」包夾)
+				String _entrySeperator = tmp[2];	// 多組Entry組成一長串時中間的分隔符號 (e.g.: "1.1.1.1/32" "2.2.2.2/32" 使用「<空格>」區隔)
+
+				for (Map<String, String> sourceEntry : sourceEntryMapList) {
+					if (sourceEntry.containsKey(voFieldName)) {
+						String sourceVal =
+								_entrySymbol
+								+ (frontStr + sourceEntry.get(voFieldName) + endStr)
+								+ _entrySymbol
+								+ _entrySeperator;
+						sb.append(sourceVal);
+					}
+				}
+
+				entryList.add(sb.toString());
+				retList.add(entryList);
+			}
 		}
 
 		return retList;

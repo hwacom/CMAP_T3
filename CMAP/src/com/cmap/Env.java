@@ -39,6 +39,8 @@ public class Env {
 
 	public static String TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;	// 設定防火牆黑名單紀錄TABLE名稱
 
+	public static String ENABLE_CMD_LOG;						// 設定是否開啟對設備下的CMD LOG
+
 	/**
 	 * GROUP_NAME下拉選單排序相關設定
 	 */
@@ -175,6 +177,11 @@ public class Env {
 	public static String CLI_VAR_TFTP_IP;
 	public static String CLI_VAR_TFTP_OUTPUT_FILE_PATH;
 	public static String CLI_VAR_CMD_LIST;
+	public static String CLI_VAR_FTP_IP;
+	public static String CLI_VAR_FTP_URL;
+	public static String CLI_VAR_FTP_LOGIN_ACT;
+	public static String CLI_VAR_FTP_LOGIN_PWD;
+	public static String CLI_VAR_FTP_OUTPUT_FILE_PATH;
 
 	public static String MENU_CODE_OF_CONFIG_TYPE;
 	public static String MENU_CODE_OF_SCHED_TYPE;
@@ -184,6 +191,10 @@ public class Env {
 
 	public static Integer FILES_UPLOAD_PER_BATCH_COUNT;
 	public static String UPLOAD_NEWEST_BACKUP_FILE_ONLY;
+
+	public static Boolean FTP_SERVER_AT_LOCAL;
+	public static String FTP_TEMP_DIR_PATH;
+	public static String FTP_DIR_PATH_SEPARATE_SYMBOL;
 
 	public static Boolean TFTP_SERVER_AT_LOCAL;
 	public static String TFTP_TEMP_DIR_PATH;
@@ -299,6 +310,7 @@ public class Env {
 			Step.SEND_COMMANDS,
 			Step.CLOSE_DEVICE_CONNECTION,
 			Step.CONNECT_FILE_SERVER_4_UPLOAD,
+			Step.LOGIN_FILE_SERVER_4_UPLOAD,
 			Step.COMPARE_CONTENTS,
 			Step.ANALYZE_CONFIG_INFO,
 			Step.COMPOSE_OUTPUT_VO,

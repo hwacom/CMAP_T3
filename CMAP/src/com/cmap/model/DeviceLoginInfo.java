@@ -42,6 +42,9 @@ public class DeviceLoginInfo {
 	@Column(name = "login_password", nullable = true)
 	private String loginPassword;
 
+	@Column(name = "enable_password", nullable = true)
+	private String enablePassword;
+
 	@Column(name = "remark", nullable = true)
 	private String remark;
 
@@ -62,8 +65,8 @@ public class DeviceLoginInfo {
 	}
 
 	public DeviceLoginInfo(String infoId, String deviceListId, String groupId, String deviceId, String connectionMode,
-			String loginAccount, String loginPassword, String remark, Timestamp createTime, String createBy,
-			Timestamp updateTime, String updateBy) {
+			String loginAccount, String loginPassword, String enablePassword, String remark, Timestamp createTime,
+			String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.infoId = infoId;
 		this.deviceListId = deviceListId;
@@ -72,6 +75,7 @@ public class DeviceLoginInfo {
 		this.connectionMode = connectionMode;
 		this.loginAccount = loginAccount;
 		this.loginPassword = loginPassword;
+		this.enablePassword = enablePassword;
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
@@ -133,6 +137,14 @@ public class DeviceLoginInfo {
 
 	public void setLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
+	}
+
+	public String getEnablePassword() {
+		return enablePassword;
+	}
+
+	public void setEnablePassword(String enablePassword) {
+		this.enablePassword = enablePassword;
 	}
 
 	public String getRemark() {
