@@ -1,6 +1,7 @@
 package com.cmap.utils.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -80,7 +81,7 @@ public class FtpFileUtils implements FileUtils {
 
 				int replyCode = ftp.getReplyCode();
 
-				log.info("FTP connect success: "+FTPReply.isPositiveCompletion(replyCode));
+				log.info("FTP [ " + hostIp + ":" + hostPort + " ] connect success: "+FTPReply.isPositiveCompletion(replyCode));
 				if (!FTPReply.isPositiveCompletion(replyCode)) {
 					throw new Exception("FTP init error!");
 				}
@@ -98,7 +99,7 @@ public class FtpFileUtils implements FileUtils {
 		try {
 			if (ftp != null) {
 				ftp.login(account, password);
-				log.info("FTP login success");
+				log.info("FTP login success [ " + account + " , " + password + " ] ");
 			}
 
 		} catch (Exception e) {
@@ -311,15 +312,25 @@ public class FtpFileUtils implements FileUtils {
 	@Override
 	public boolean moveFiles(ConfigInfoVO ciVO, String sourceDirPath, String targetDirPath) throws Exception {
 		try {
+			ftp.enterLocalPassiveMode();
+
 			//TODO
+			targetDirPath = targetDirPath.substring(0, targetDirPath.lastIndexOf(File.separator));
 			String sourceFilePath = sourceDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
 			String targetFilePath = targetDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
 
+			FTPFile[] sourceFTPFile = ftp.listFiles(sourceFilePath);
+			if (sourceFTPFile == null || (sourceFTPFile != null && sourceFTPFile.length == 0)) {
+				throw new ServiceLayerException("FTP移動檔案失敗，來源檔案不存在 >> sourceFilePath: " + sourceFilePath);
+			}
 			if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
 				SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
 
-				targetDirPath = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetDirPath);
-				targetFilePath = sdf.format(new Date()).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetFilePath);
+				targetDirPath = Env.FTP_DIR_SEPARATE_SYMBOL.concat(sdf.format(new Date())).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetDirPath);
+				targetFilePath = Env.FTP_DIR_SEPARATE_SYMBOL.concat(sdf.format(new Date())).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(targetFilePath);
+
+				targetDirPath = targetDirPath.replace("//", "/");
+				targetFilePath = targetFilePath.replace("//", "/");
 			}
 
 			boolean dirExists = ftp.changeWorkingDirectory(targetDirPath);
