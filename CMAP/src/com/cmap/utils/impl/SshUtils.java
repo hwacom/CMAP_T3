@@ -7,6 +7,7 @@ import static net.sf.expectit.matcher.Matchers.contains;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.CommandExecuteException;
 import com.cmap.exception.ConnectionException;
+import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
@@ -99,7 +101,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		return true;
 	}
 
-	private void sendCommand(Expect expect, ConfigInfoVO configInfoVO, ScriptServiceVO scriptVO, StringBuilder processLog, List<String> cmdOutputs) throws Exception {
+	private CommonServiceVO sendCommand(CommonServiceVO csVO, Expect expect, ConfigInfoVO configInfoVO, ScriptServiceVO scriptVO, StringBuilder processLog, List<String> cmdOutputs) throws Exception {
 		String output = "";
 		String[] errorSymbols = StringUtils.isNotBlank(scriptVO.getErrorSymbol()) ? scriptVO.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
 
@@ -107,10 +109,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
 		 * e.g. 「#」 > 「NK-HeNBGW-04#」
 		 */
-		String expectedTerminalSymbol = scriptVO.getExpectedTerminalSymbol();
-		if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
-			expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
-		}
+		String expectedTerminalSymbol = replaceExpectedTerminalSymbol(scriptVO.getExpectedTerminalSymbol(), configInfoVO);
 
 		int runTime = 1;	// 迴圈執行次數
 
@@ -126,11 +125,27 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			/*
 			 * 替換腳本參數(replaceContentSign)後送出命令，並等候至預期的結束符號(expectedTerminalSymbol)，將output結果取出
 			 */
-			output = expect.sendLine(replaceContentSign(scriptVO.getScriptContent(), configInfoVO, scriptVO.getRemark(), cli))
+			final String cmdRemark = scriptVO.getRemark();
+			if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_NO_WAIT)) {
+				expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli)).close();
+
+			} else if (StringUtils.contains(cmdRemark, Constants.SCRIPT_REMARK_OF_WAIT_TIME)) {
+				int time = cmdRemark.indexOf("+") != -1 ? Integer.valueOf(cmdRemark.substring(cmdRemark.indexOf("+") + 1)) : 5;
+				expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli)).withTimeout(time, TimeUnit.SECONDS);
+
+			} else if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_DISCONNECT)) {
+				expect.send(replaceContentSign(csVO, scriptVO, configInfoVO, cli))
+					  .sendLine()
+					  .expect(contains(expectedTerminalSymbol))
+					  .canStopMatching();
+
+			} else {
+				output = expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli))
 						   .expect(contains(expectedTerminalSymbol))
 						   .getBefore();
 
-			processLog.append(output + expectedTerminalSymbol);
+				processLog.append(output + expectedTerminalSymbol);
+			}
 
 			boolean success = true;
 
@@ -149,21 +164,12 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 
 			if (success) {
 				if (scriptVO.getOutput() != null && scriptVO.getOutput().equals(Constants.DATA_Y)) {
-					cmdOutputs.add(
-							scriptVO.getRemark()
-									.concat(Env.COMM_SEPARATE_SYMBOL)
-									.concat(
-										cutContent(
-											output,
-											StringUtils.isNotBlank(scriptVO.getHeadCuttingLines()) ? Integer.valueOf(scriptVO.getHeadCuttingLines()) : 0,
-												StringUtils.isNotBlank(scriptVO.getTailCuttingLines()) ? Integer.valueOf(scriptVO.getTailCuttingLines()) : 0,
-													System.lineSeparator()
-											)
-										)
-									);
+					csVO = processOutput(csVO, scriptVO, output, cmdOutputs);
 				}
 			}
 		}
+
+		return csVO;
 	}
 
 	@Override
@@ -190,9 +196,10 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 
 			StringBuilder processLog = new StringBuilder();
 			try {
+				CommonServiceVO csVO = new CommonServiceVO();
 				for (ScriptServiceVO scriptVO : scriptList) {
 					// 送出命令
-					sendCommand(expect, configInfoVO, scriptVO, processLog, cmdOutputs);
+					csVO = sendCommand(csVO, expect, configInfoVO, scriptVO, processLog, cmdOutputs);
 				}
 
 				/*

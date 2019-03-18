@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.CommandExecuteException;
+import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
@@ -149,22 +150,20 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 			try {
 				String cmd;
 				String output;
-				for (ScriptServiceVO vo : scriptList) {
+				CommonServiceVO csVO = new CommonServiceVO();
+				for (ScriptServiceVO scriptVO : scriptList) {
 					output = "";
 
 					/*
 					 * 預期命令送出後結束符號，針對VM設備的config檔因為內含有「#」符號，判斷會有問題
 					 * e.g. 「#」 > 「NK-HeNBGW-04#」
 					 */
-					String expectedTerminalSymbol = vo.getExpectedTerminalSymbol();
-					if (StringUtils.contains(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME)) {
-						expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
-					}
+					String expectedTerminalSymbol = replaceExpectedTerminalSymbol(scriptVO.getExpectedTerminalSymbol(), configInfoVO);
 
-					String[] errorSymbols = StringUtils.isNotBlank(vo.getErrorSymbol()) ? vo.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
+					String[] errorSymbols = StringUtils.isNotBlank(scriptVO.getErrorSymbol()) ? scriptVO.getErrorSymbol().split(Env.COMM_SEPARATE_SYMBOL) : null;
 
 					// 送出命令
-					cmd = replaceContentSign(vo.getScriptContent(), configInfoVO, vo.getRemark(), null);
+					cmd = replaceContentSign(csVO, scriptVO, configInfoVO, null);
 					write(cmd);
 					output = readUntil(expectedTerminalSymbol);
 
@@ -183,19 +182,8 @@ public class TelnetUtils extends CommonUtils implements ConnectUtils {
 					}
 
 					if (success) {
-						if (vo.getOutput() != null && vo.getOutput().equals(Constants.DATA_Y)) {
-							cmdOutputs.add(
-									vo.getRemark()
-									.concat(Env.COMM_SEPARATE_SYMBOL)
-									.concat(
-											cutContent(
-													output,
-													StringUtils.isNotBlank(vo.getHeadCuttingLines()) ? Integer.valueOf(vo.getHeadCuttingLines()) : 0,
-															StringUtils.isNotBlank(vo.getTailCuttingLines()) ? Integer.valueOf(vo.getTailCuttingLines()) : 0,
-																	System.lineSeparator()
-													)
-											)
-									);
+						if (scriptVO.getOutput() != null && scriptVO.getOutput().equals(Constants.DATA_Y)) {
+							csVO = processOutput(csVO, scriptVO, output, cmdOutputs);
 						}
 					}
 				}

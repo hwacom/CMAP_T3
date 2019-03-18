@@ -2,6 +2,7 @@ package com.cmap.utils.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,9 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.security.SecurityUtil;
+import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ScriptServiceVO;
 
 public class CommonUtils {
 	private static Logger log = LoggerFactory.getLogger(CommonUtils.class);
@@ -160,7 +164,10 @@ public class CommonUtils {
 		return spendTime;
 	}
 
-	protected String replaceContentSign(String cmd, ConfigInfoVO configInfoVO, String remark, String cli) {
+	protected String replaceContentSign(CommonServiceVO csVO, ScriptServiceVO scriptVO, ConfigInfoVO configInfoVO, String cli) {
+		String cmd = scriptVO.getScriptContent();
+		String remark = scriptVO.getRemark();
+
 		if (cmd.contains(Env.CLI_VAR_ACT)) {
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_ACT, configInfoVO.getAccount());
 		}
@@ -223,12 +230,45 @@ public class CommonUtils {
 		if (cmd.contains(Env.CLI_VAR_CMD_LIST)) {
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_CMD_LIST, cli);
 		}
+		/*
+		 * Y190318, APT ePDG & HeNBGW
+		 * 組態還原指令應用
+		 * copy ftp://[FTP_LOGIN_ACT]:[FTP_LOGIN_PWD]@[FTP_URL]/[FTP_FILE_PATH] [DEVICE_FLASH_PATH]
+		 * boot system priority [PRIORITY] image [IMAGE_BIN] config [CONFIG_FILE]
+		 */
+		if (cmd.contains(Env.CLI_VAR_FTP_CONFIG_FILE_PATH)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_FTP_CONFIG_FILE_PATH, configInfoVO.getFtpFilePath());
+		}
+		if (cmd.contains(Env.CLI_VAR_DEVICE_FLASH_PATH)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_DEVICE_FLASH_PATH, configInfoVO.getDeviceFlashConfigPath());
+		}
+		if (cmd.contains(Env.CLI_VAR_PRIORITY)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_PRIORITY, csVO.getBootInfoPriority());
+		}
+		if (cmd.contains(Env.CLI_VAR_IMAGE_BIN)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_IMAGE_BIN, csVO.getBootInfoImage());
+		}
+		if (cmd.contains(Env.CLI_VAR_CONFIG_FILE)) {
+			cmd = StringUtils.replace(cmd, Env.CLI_VAR_CONFIG_FILE, csVO.getBootInfoConfig());
+		}
 
 		if (StringUtils.equals(Env.ENABLE_CMD_LOG, Constants.DATA_Y)) {
 			log.info("cmd: " + cmd);
 		}
 
 		return cmd;
+	}
+
+	protected String replaceExpectedTerminalSymbol(String expectedTerminalSymbol, ConfigInfoVO configInfoVO) {
+		if (StringUtils.contains(expectedTerminalSymbol, Constants.EXPECTED_TERMINAL_SYMBOL_OF_DEVICE_NAME)) {
+			expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
+		}
+		if (StringUtils.contains(expectedTerminalSymbol, Constants.EXPECTED_TERMINAL_SYMBOL_OF_CURRENT_YEAR)) {
+			String currentYear = Constants.FORMAT_YYYY.format(new Date());
+			expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.EXPECTED_TERMINAL_SYMBOL_OF_CURRENT_YEAR, currentYear);
+		}
+
+		return expectedTerminalSymbol;
 	}
 
 	/**
@@ -263,5 +303,63 @@ public class CommonUtils {
 		}
 
 		return retString;
+	}
+
+	protected CommonServiceVO processOutput(CommonServiceVO csVO, ScriptServiceVO scriptVO, String cmdOutput, Object otherObj) throws Exception {
+		final String scriptRemark = scriptVO.getRemark();
+
+		if (StringUtils.equals(scriptRemark, Constants.SCRIPT_REMARK_OF_GET_BOOT_INFO)) {
+			/*
+			 * Case. ePDG / HeNBGW 備份還原
+			 * 取得 show boot 中，目前 priority 最高的 entry 設定
+			 * 目標取得目前的 prioriry 數值 & image 版號
+			 * e.g.:
+			 * 			boot system priority 80 \
+    		 *			image /flash/qvpc-di-21.7.12.bin \
+    		 *			config /flash/20190221_21712.cfg
+			 */
+			cmdOutput = cmdOutput.replace(System.lineSeparator(), " ").replace("\\", "");
+
+			if (cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_PRIORITY) == -1
+					|| cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_IMAGE) == -1
+					|| cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_CONFIG) == -1) {
+
+				throw new ServiceLayerException("命令回傳結果查無 BOOT 相關資訊!! cmdOutput: [" + cmdOutput + "]");
+			}
+
+			String priority = cmdOutput.substring(cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_PRIORITY),
+												  cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_IMAGE))
+									   .replace(Env.BOOT_INFO_PARA_TITLE_OF_PRIORITY, "")
+									   .trim();
+
+			String image = cmdOutput.substring(cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_IMAGE),
+											   cmdOutput.indexOf(Env.BOOT_INFO_PARA_TITLE_OF_CONFIG))
+									.replace(Env.BOOT_INFO_PARA_TITLE_OF_IMAGE, "")
+									.trim();
+
+			Integer currentPriority = StringUtils.isNotBlank(priority) ? Integer.valueOf(priority) : 2;
+			Integer newPriority = (currentPriority > 1) ? (currentPriority - 1) : 1;
+			csVO.setBootInfoPriority(String.valueOf(newPriority));
+			csVO.setBootInfoImage(image);
+
+		} else {
+			if (otherObj instanceof List) {
+				((List<String>)otherObj)
+					.add(
+						scriptVO.getRemark()
+							.concat(Env.COMM_SEPARATE_SYMBOL)
+							.concat(
+								cutContent(
+									cmdOutput,
+									StringUtils.isNotBlank(scriptVO.getHeadCuttingLines()) ? Integer.valueOf(scriptVO.getHeadCuttingLines()) : 0,
+										StringUtils.isNotBlank(scriptVO.getTailCuttingLines()) ? Integer.valueOf(scriptVO.getTailCuttingLines()) : 0,
+											System.lineSeparator()
+								)
+							)
+					);
+			}
+		}
+
+		return csVO;
 	}
 }

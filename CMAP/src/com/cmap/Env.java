@@ -159,6 +159,7 @@ public class Env {
 	public static String DEFAULT_DEVICE_LOGIN_ACCOUNT;
 	public static String DEFAULT_DEVICE_LOGIN_PASSWORD;
 	public static String DEFAULT_DEVICE_ENABLE_PASSWORD;
+	public static String DEFAULT_DEVICE_FLASH_DIR_PATH;
 
 	public static String DEFAULT_RESTORE_SCRIPT_CODE;
 	public static String DEFAULT_DEVICE_CONFIG_BACKUP_MODE;	//預設設備組態檔備份模式 (DEVICE -> TFTP SERVER1)
@@ -182,6 +183,11 @@ public class Env {
 	public static String CLI_VAR_FTP_LOGIN_ACT;
 	public static String CLI_VAR_FTP_LOGIN_PWD;
 	public static String CLI_VAR_FTP_OUTPUT_FILE_PATH;
+	public static String CLI_VAR_FTP_CONFIG_FILE_PATH;
+	public static String CLI_VAR_DEVICE_FLASH_PATH;
+	public static String CLI_VAR_PRIORITY;
+	public static String CLI_VAR_IMAGE_BIN;
+	public static String CLI_VAR_CONFIG_FILE;
 
 	public static String MENU_CODE_OF_CONFIG_TYPE;
 	public static String MENU_CODE_OF_SCHED_TYPE;
@@ -229,6 +235,10 @@ public class Env {
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
+
+	public static String BOOT_INFO_PARA_TITLE_OF_PRIORITY;
+	public static String BOOT_INFO_PARA_TITLE_OF_IMAGE;
+	public static String BOOT_INFO_PARA_TITLE_OF_CONFIG;
 
 	public static ConnectionMode CONNECTION_MODE_OF_DELIVERY;
 	public static ConnectionMode CONNECTION_MODE_OF_VM_SWITCH;
@@ -359,11 +369,6 @@ public class Env {
 			Step.FIND_DEVICE_CONNECT_INFO,
 			Step.FIND_DEVICE_LOGIN_INFO,
 			Step.GET_VERSION_INFO,
-			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
-			Step.LOGIN_FILE_SERVER_4_DOWNLOAD,
-			Step.DOWNLOAD_FILE,
-			Step.CLOSE_FILE_SERVER_CONNECTION,
-			Step.PROCESS_CONFIG_CONTENT_SETTING,
 			Step.LOAD_DEFAULT_SCRIPT,
 			Step.CONNECT_DEVICE,
 			Step.LOGIN_DEVICE,

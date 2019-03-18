@@ -35,6 +35,7 @@ public class Constants {
 	public static final String DELIVERY_ONLY_SCRIPT_OF_IP_OPEN_BLOCK = "IP_OPEN_BLOCK";
 	public static final String DELIVERY_ONLY_SCRIPT_OF_MAC_OPEN_BLOCK = "MAC_OPEN_BLOCK";
 
+	public static final SimpleDateFormat FORMAT_YYYY = new SimpleDateFormat("yyyy");
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS_NOSYMBOL = new SimpleDateFormat("yyyyMMddHHmmss");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD_NOSYMBOL = new SimpleDateFormat("yyyyMMdd");
 
@@ -116,6 +117,14 @@ public class Constants {
 	public static final String DIR_PATH_DATE = "[date]";
 	public static final String DIR_PATH_SEQ_NO = "[seqNo]";
 	public static final String DIR_PATH_EXT_NAME = "[extName]";
+
+	public static final String EXPECTED_TERMINAL_SYMBOL_OF_DEVICE_NAME = "[dName]";
+	public static final String EXPECTED_TERMINAL_SYMBOL_OF_CURRENT_YEAR = "[currentYear]";
+
+	public static final String SCRIPT_REMARK_OF_GET_BOOT_INFO = "[GET_BOOT_INFO]";
+	public static final String SCRIPT_REMARK_OF_NO_WAIT = "[NO_WAIT]";
+	public static final String SCRIPT_REMARK_OF_WAIT_TIME = "[WAIT_TIME]";
+	public static final String SCRIPT_REMARK_OF_DISCONNECT = "[DISCONNECT]";
 
 	public static final String SCRIPT_MODE_ACTION = "A";
 	public static final String SCRIPT_MODE_CHECK = "C";

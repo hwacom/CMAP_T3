@@ -1714,6 +1714,31 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								vsVOs = getVersionInfo(
 											new String[]{restoreVersionId}
 										);
+
+								if (vsVOs != null && !vsVOs.isEmpty() && ciVO != null) {
+									VersionServiceVO vsVO = vsVOs.get(0);
+									String remoteFileDirPath = vsVO.getRemoteFileDirPath();
+
+									if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
+										String yyyyMMdd = vsVO.getCreateYyyyMMdd();
+
+										if (StringUtils.isBlank(yyyyMMdd)) {
+											SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+											yyyyMMdd = sdf.format(new Date());
+										}
+
+										remoteFileDirPath =
+												(StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator).concat(yyyyMMdd).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+									}
+									String configFileName = vsVO.getFileFullName();
+
+									String ftpConfigPath = remoteFileDirPath.concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(configFileName);
+									String deviceFlashConfigPath = Env.DEFAULT_DEVICE_FLASH_DIR_PATH.concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(configFileName);
+
+									ciVO.setFtpFilePath(ftpConfigPath);						// 要還原的組態檔案在FTP上的完整路徑
+									ciVO.setDeviceFlashConfigPath(deviceFlashConfigPath);	// 要還原的組態檔案傳到設備後的儲存路徑
+								}
+
 								break;
 
 							} catch (ServiceLayerException sle) {

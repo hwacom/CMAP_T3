@@ -529,7 +529,7 @@ public class VersionController extends BaseController {
 			String userName = SecurityUtil.getSecurityUser().getUsername();
 			String reason = "組態設定還原(設備ID:" + deviceListId + ",版本ID:" + versionId + ")";
 			retVO = versionService.restoreConfig(
-					RestoreMethod.CLI, Constants.RESTORE_TYPE_BACKUP_RESTORE, vsVO, userName, reason);
+					RestoreMethod.FTP, Constants.RESTORE_TYPE_BACKUP_RESTORE, vsVO, userName, reason);
 
 			return new AppResponse(HttpServletResponse.SC_OK, retVO.getRetMsg());
 

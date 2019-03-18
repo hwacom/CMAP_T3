@@ -308,10 +308,12 @@ public class DataPollerServiceImpl implements DataPollerService {
 
 		} finally {
 			int totalCount = 0;
-			for (Map.Entry<String, List<String>> entry : recordListMap.entrySet()) {
-				totalCount += entry.getValue().size();
+			if (recordListMap != null) {
+				for (Map.Entry<String, List<String>> entry : recordListMap.entrySet()) {
+					totalCount += entry.getValue().size();
+				}
+				System.out.println("******* Finish records : " + totalCount);
 			}
-			System.out.println("******* Finish records : " + totalCount);
 
 			recordListMap = null;
 			specialSetFieldMap = null;

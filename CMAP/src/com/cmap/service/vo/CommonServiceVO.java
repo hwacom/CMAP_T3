@@ -28,6 +28,10 @@ public class CommonServiceVO {
 	private String description;
 	private String referenceDoc;
 
+	private String bootInfoPriority;
+	private String bootInfoImage;
+	private String bootInfoConfig;
+
 	public Integer getStartNum() {
 		return startNum;
 	}
@@ -135,5 +139,23 @@ public class CommonServiceVO {
 	}
 	public void setReferenceDoc(String referenceDoc) {
 		this.referenceDoc = referenceDoc;
+	}
+	public String getBootInfoPriority() {
+		return bootInfoPriority;
+	}
+	public void setBootInfoPriority(String bootInfoPriority) {
+		this.bootInfoPriority = bootInfoPriority;
+	}
+	public String getBootInfoImage() {
+		return bootInfoImage;
+	}
+	public void setBootInfoImage(String bootInfoImage) {
+		this.bootInfoImage = bootInfoImage;
+	}
+	public String getBootInfoConfig() {
+		return bootInfoConfig;
+	}
+	public void setBootInfoConfig(String bootInfoConfig) {
+		this.bootInfoConfig = bootInfoConfig;
 	}
 }

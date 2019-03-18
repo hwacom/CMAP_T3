@@ -20,6 +20,7 @@ public class ConfigInfoVO implements Cloneable {
 	private String fileFullName;
 	private String systemVersion;
 	private String configType;
+	private String deviceFlashConfigPath;
 
 	private String deviceIp;
 	private String account;
@@ -320,5 +321,13 @@ public class ConfigInfoVO implements Cloneable {
 
 	public void setFtpFilePath(String ftpFilePath) {
 		this.ftpFilePath = ftpFilePath;
+	}
+
+	public String getDeviceFlashConfigPath() {
+		return deviceFlashConfigPath;
+	}
+
+	public void setDeviceFlashConfigPath(String deviceFlashConfigPath) {
+		this.deviceFlashConfigPath = deviceFlashConfigPath;
 	}
 }
