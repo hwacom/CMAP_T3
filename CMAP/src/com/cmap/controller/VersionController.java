@@ -192,6 +192,10 @@ public class VersionController extends BaseController {
 
 			List<VersionServiceVO> vsVOList = versionService.findConfigFilesInfo(versionIDs);
 
+			for (VersionServiceVO vsVO : vsVOList) {
+				vsVO.setCheckEnableCurrentDateSetting(true);
+			}
+
 			if (vsVOList != null && !vsVOList.isEmpty() && vsVOList.size() == 2) {
 				VersionServiceVO retVO = versionService.compareConfigFiles(vsVOList);
 

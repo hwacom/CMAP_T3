@@ -54,6 +54,8 @@ public class VersionServiceVO extends CommonServiceVO {
 	private String deviceListId;
 	private String createYyyyMMdd;
 
+	private boolean checkEnableCurrentDateSetting;
+
 	private Date createDate;
 
 	private String configFileContent;
@@ -441,5 +443,11 @@ public class VersionServiceVO extends CommonServiceVO {
 	}
 	public void setQueryDeviceListId(String queryDeviceListId) {
 		this.queryDeviceListId = queryDeviceListId;
+	}
+	public boolean isCheckEnableCurrentDateSetting() {
+		return checkEnableCurrentDateSetting;
+	}
+	public void setCheckEnableCurrentDateSetting(boolean checkEnableCurrentDateSetting) {
+		this.checkEnableCurrentDateSetting = checkEnableCurrentDateSetting;
 	}
 }

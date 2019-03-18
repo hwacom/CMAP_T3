@@ -306,6 +306,19 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 					DeviceList dl = deviceDAO.findDeviceListByGroupAndDeviceId(cvi.getGroupId(), cvi.getDeviceId());
 
+					//TODO
+					/*
+					if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+						SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+
+						// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
+						String fileDir = dl.getConfigFileDirPath();
+						String date_yyyyMMdd = dl.getCreateTime() != null ? sdf.format(dl.getCreateTime()) : sdf.format(new Date());
+						fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+						dl.setConfigFileDirPath(fileDir);
+					}
+					*/
+
 					if (dl != null) {
 						BeanUtils.copyProperties(dl, vo);
 						retList.add(vo);
@@ -530,12 +543,14 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 					// Step3. 移動作業目錄至指定的裝置
 					String fileDir = vsVO.getConfigFileDirPath();
 
-					if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
-						SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+					if (vsVO.isCheckEnableCurrentDateSetting()) {
+						if (Env.FILE_TRANSFER_MODE == ConnectionMode.FTP && Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+							SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
 
-						// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
-						String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
-						fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+							// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
+							String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
+							fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+						}
 					}
 
 					fileUtils.changeDir(fileDir, false);

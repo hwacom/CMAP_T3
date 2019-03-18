@@ -668,7 +668,14 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	private void findDeviceLoginInfo(ConfigInfoVO ciVO, String deviceListId, String groupId, String deviceId) throws ServiceLayerException {
 		DeviceLoginInfo loginInfo = deviceDAO.findDeviceLoginInfo(deviceListId, groupId, deviceId);
 
-		if (loginInfo != null) {
+		if (loginInfo == null) {
+			if (!StringUtils.equals(deviceListId, Constants.DATA_STAR_SYMBOL)
+					|| !(StringUtils.equals(deviceId, Constants.DATA_STAR_SYMBOL))) {
+				// 若by設備查找不到，則再往上一層by群組查找
+				findDeviceLoginInfo(ciVO, Constants.DATA_STAR_SYMBOL, groupId, Constants.DATA_STAR_SYMBOL);
+			}
+
+		} else if (loginInfo != null) {
 			if (StringUtils.isNotBlank(loginInfo.getLoginAccount())) {
 				ciVO.setAccount(loginInfo.getLoginAccount());
 			}
@@ -775,9 +782,14 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			final String nowVersionFileName = StringUtils.replace(ciVO.getConfigFileName(), Env.COMM_SEPARATE_SYMBOL, type);
 
 			// 當前備份版本上傳於temp資料夾內檔名 (若TFTP Server與CMAP系統不是架設在同一台主機時)
-			final String nowVersionTempFileName =
+			String tempFileName = nowVersionFileName;
+			if (Env.ENABLE_TEMP_FILE_RANDOM_CODE) {
+				tempFileName =
 					_mode == ConnectionMode.TFTP ? (!Env.TFTP_SERVER_AT_LOCAL ? nowVersionFileName.concat(".").concat(ciVO.getTempFileRandomCode()) : null)
 												 : (!Env.FTP_SERVER_AT_LOCAL ? nowVersionFileName.concat(".").concat(ciVO.getTempFileRandomCode()) : null);
+			}
+
+			final String nowVersionTempFileName = tempFileName;
 
 			List<VersionServiceVO> vsVOs;
 			if (entityList != null && !entityList.isEmpty()) {
@@ -788,6 +800,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 				//前一版本VO
 				VersionServiceVO preVersionVO = new VersionServiceVO();
+
+				/*
+				String configFIleDirPath = dlEntity.getConfigFileDirPath();
+				if (Env.ENABLE_REMOTE_BACKUP_USE_TODAY_ROOT_DIR) {
+					SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+					String date_yyyyMMdd = cviEntity.getCreateTime() != null ? sdf.format(cviEntity.getCreateTime()) : sdf.format(new Date());
+					configFIleDirPath = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(configFIleDirPath);
+				}
+				*/
+				preVersionVO.setCheckEnableCurrentDateSetting(true);
 				preVersionVO.setConfigFileDirPath(dlEntity.getConfigFileDirPath());
 				preVersionVO.setFileFullName(cviEntity.getFileFullName());
 				preVersionVO.setCreateDate(cviEntity.getCreateTime() != null ? new Date(cviEntity.getCreateTime().getTime()) : null);
