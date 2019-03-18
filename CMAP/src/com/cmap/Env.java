@@ -212,6 +212,10 @@ public class Env {
 	public static String DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
 	public static String NET_FLOW_OUTPUT_FILE_EXT_NAE;
 
+	public static Integer NET_FLOW_SIZE_SCALE;
+	public static Integer NET_FLOW_SHOW_UNIT_OF_RESULT_DATA_SIZE;
+	public static Integer NET_FLOW_SHOW_UNIT_OF_TOTOAL_FLOW;
+
 	public static String PRTG_LOGIN_URI;
 	public static String PRTG_INDEX_URI;
 	public static String PRTG_DEFAULT_INDEX_URI;

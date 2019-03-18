@@ -210,7 +210,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 								}
 								*/
 
-								fValue = convertByteSizeUnit(sizeByte);
+								fValue = convertByteSizeUnit(sizeByte, Env.NET_FLOW_SHOW_UNIT_OF_RESULT_DATA_SIZE);
 
 							} else if (oriName.equals("GroupId")) {
 								String groupId = Objects.toString(data[dataIdx]);
@@ -242,7 +242,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 					}
 
 					BigDecimal flowSum = netFlowDAO.getTotalFlowOfQueryConditionsFromDB(nfVO, searchLikeField, queryTable);
-					String totalFlow = (flowSum == null) ? "N/A" : convertByteSizeUnit(flowSum);
+					String totalFlow = (flowSum == null) ? "N/A" : convertByteSizeUnit(flowSum, Env.NET_FLOW_SHOW_UNIT_OF_TOTOAL_FLOW);
 					retList.get(0).setTotalFlow(totalFlow);	// 塞入總流量至第一筆VO內
 				}
 			}
@@ -254,30 +254,34 @@ public class NetFlowServiceImpl implements NetFlowService {
 		return retList;
 	}
 
-	private String convertByteSizeUnit(BigDecimal sizeByte) {
-		int scale = 1;
+	private String convertByteSizeUnit(BigDecimal sizeByte, Integer targetUnit) {
+		int scale = Env.NET_FLOW_SIZE_SCALE;
 		BigDecimal unitSize = new BigDecimal("1024");
 		BigDecimal sizeKb = sizeByte.divide(unitSize, scale, RoundingMode.HALF_UP);
 		BigDecimal sizeMb = (sizeByte.divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
 		BigDecimal sizeGb = (sizeByte.divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
 		BigDecimal sizeTb = (sizeByte.divide(unitSize).divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
-		BigDecimal zeroSize = new BigDecimal("0.0");
+		BigDecimal unitBaseSize = new BigDecimal("1.00"); //有超過下一單位的數量1時再轉換 (e.g. 100MB不到1GB，不轉換成0.1GB；1120MB有超過1GB，轉換成1.xxGB)
 
+		/*
+		 * targetUnit : 目標最高轉換至哪個單位
+		 * 1=B / 2=KB / 3=MB / 4=GB / 5=TB
+		 */
 		String convertedSize = "";
-		if (sizeTb.compareTo(zeroSize) == 1) {
-			convertedSize = sizeTb.toString() + " TB";
+		if (targetUnit >= 5 && sizeTb.compareTo(unitBaseSize) == 1) {
+			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeTb) + " TB";
 
-		} else if (sizeGb.compareTo(zeroSize) == 1) {
-			convertedSize = sizeGb.toString() + " GB";
+		} else if (targetUnit >= 4 && sizeGb.compareTo(unitBaseSize) == 1) {
+			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeGb) + " GB";
 
-		} else if (sizeMb.compareTo(zeroSize) == 1) {
-			convertedSize = sizeMb.toString() + " MB";
+		} else if (targetUnit >= 3 && sizeMb.compareTo(unitBaseSize) == 1) {
+			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeMb) + " MB";
 
-		} else if (sizeKb.compareTo(zeroSize) == 1) {
-			convertedSize = sizeKb.toString() + " KB";
+		} else if (targetUnit >= 2 && sizeKb.compareTo(unitBaseSize) == 1) {
+			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeKb) + " KB";
 
-		} else {
-			convertedSize = sizeByte.toString() + " B";
+		} else if (targetUnit >= 1){
+			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeByte) + " B";
 		}
 
 		return convertedSize;
