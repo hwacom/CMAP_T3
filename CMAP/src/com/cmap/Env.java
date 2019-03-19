@@ -200,7 +200,6 @@ public class Env {
 
 	public static Boolean FTP_SERVER_AT_LOCAL;
 	public static String FTP_TEMP_DIR_PATH;
-	public static String FTP_DIR_PATH_SEPARATE_SYMBOL;
 
 	public static Boolean TFTP_SERVER_AT_LOCAL;
 	public static String TFTP_TEMP_DIR_PATH;
@@ -212,6 +211,8 @@ public class Env {
 
 	public static String DEFAULT_DATA_POLLER_FILE_CHARSET;
 	public static Integer DEFAULT_BATCH_INSERT_FLUSH_COUNT;
+
+	public static Integer DEFAULT_SSH_RESPONSE_TIMEOUT_SECONDS;
 
 	public static String SETTING_ID_OF_NET_FLOW;
 

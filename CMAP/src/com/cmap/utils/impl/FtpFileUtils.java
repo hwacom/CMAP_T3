@@ -1,7 +1,6 @@
 package com.cmap.utils.impl;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -315,7 +314,7 @@ public class FtpFileUtils implements FileUtils {
 			ftp.enterLocalPassiveMode();
 
 			//TODO
-			targetDirPath = targetDirPath.substring(0, targetDirPath.lastIndexOf(File.separator));
+			targetDirPath = targetDirPath.substring(0, targetDirPath.lastIndexOf(Env.FTP_DIR_SEPARATE_SYMBOL));
 			String sourceFilePath = sourceDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
 			String targetFilePath = targetDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(ciVO.getFileFullName());
 

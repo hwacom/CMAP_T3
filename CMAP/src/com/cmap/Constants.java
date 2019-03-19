@@ -122,9 +122,11 @@ public class Constants {
 	public static final String EXPECTED_TERMINAL_SYMBOL_OF_CURRENT_YEAR = "[currentYear]";
 
 	public static final String SCRIPT_REMARK_OF_GET_BOOT_INFO = "[GET_BOOT_INFO]";
-	public static final String SCRIPT_REMARK_OF_NO_WAIT = "[NO_WAIT]";
-	public static final String SCRIPT_REMARK_OF_WAIT_TIME = "[WAIT_TIME]";
+	public static final String SCRIPT_REMARK_OF_NO_EXPECT = "[NO_EXPECT]";
+	public static final String SCRIPT_REMARK_OF_WAIT_AND_TIMEOUT = "[WAIT_AND_TIMEOUT]";
 	public static final String SCRIPT_REMARK_OF_DISCONNECT = "[DISCONNECT]";
+	public static final String SCRIPT_REMARK_OF_NEW_LINE = "[NEW_LINE]";
+	public static final String SCRIPT_REMARK_OF_EXIT = "[EXIT]";
 
 	public static final String SCRIPT_MODE_ACTION = "A";
 	public static final String SCRIPT_MODE_CHECK = "C";

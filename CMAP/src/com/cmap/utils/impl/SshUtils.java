@@ -3,6 +3,7 @@ package com.cmap.utils.impl;
 import static net.sf.expectit.filter.Filters.removeColors;
 import static net.sf.expectit.filter.Filters.removeNonPrintable;
 import static net.sf.expectit.matcher.Matchers.contains;
+import static net.sf.expectit.matcher.Matchers.eof;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -121,31 +122,56 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 
 		for (int i=0; i<runTime; i++) {
 			String cli = (cmdsList != null && !cmdsList.isEmpty()) ? cmdsList.get(i) : null;
+			String sendCli = replaceContentSign(csVO, scriptVO, configInfoVO, cli);
+			output = sendCli;
 
 			/*
 			 * 替換腳本參數(replaceContentSign)後送出命令，並等候至預期的結束符號(expectedTerminalSymbol)，將output結果取出
 			 */
 			final String cmdRemark = scriptVO.getRemark();
-			if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_NO_WAIT)) {
-				expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli)).close();
+			if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_NO_EXPECT)) {
+				expect.sendLine(sendCli);
 
-			} else if (StringUtils.contains(cmdRemark, Constants.SCRIPT_REMARK_OF_WAIT_TIME)) {
-				int time = cmdRemark.indexOf("+") != -1 ? Integer.valueOf(cmdRemark.substring(cmdRemark.indexOf("+") + 1)) : 5;
-				expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli)).withTimeout(time, TimeUnit.SECONDS);
+			} else if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_NEW_LINE)) {
+				output = expect.sendLine()
+								.expect(contains(expectedTerminalSymbol))
+								.getBefore();
+
+			} else if (StringUtils.contains(cmdRemark, Constants.SCRIPT_REMARK_OF_WAIT_AND_TIMEOUT)) {
+				int time = cmdRemark.indexOf("+") != -1 ? Integer.valueOf(cmdRemark.substring(cmdRemark.indexOf("+") + 1)) : 10;
+
+				try {
+					expect.sendLine(sendCli).withTimeout(time, TimeUnit.SECONDS);
+					expect.expect(contains(expectedTerminalSymbol));
+
+				} catch (Exception e) {
+					// 送出 reload 指令後設備不會有回應，Timeout不處理
+					e.printStackTrace();
+					csVO.setNeedCloseSession(false); // 送出 reload 指令後設備不會有回應，Session會被reset，以此標記在finally時不需做session.close，否則會報錯
+				}
 
 			} else if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_DISCONNECT)) {
-				expect.send(replaceContentSign(csVO, scriptVO, configInfoVO, cli))
-					  .sendLine()
-					  .expect(contains(expectedTerminalSymbol))
-					  .canStopMatching();
+				try {
+					expect.sendLine(sendCli)
+							.expect(contains(expectedTerminalSymbol));
+
+				} catch (Exception e) {
+					// 送出 reload 指令後設備不會有回應，Timeout不處理
+					e.printStackTrace();
+					csVO.setNeedCloseSession(false); // 送出 reload 指令後設備不會有回應，Session會被reset，以此標記在finally時不需做session.close，否則會報錯
+				}
+
+			} else if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_EXIT)) {
+				expect.sendLine(sendCli)
+						.expect(eof());
 
 			} else {
-				output = expect.sendLine(replaceContentSign(csVO, scriptVO, configInfoVO, cli))
+				output = expect.sendLine(sendCli)
 						   .expect(contains(expectedTerminalSymbol))
 						   .getBefore();
-
-				processLog.append(output + expectedTerminalSymbol);
 			}
+
+			processLog.append(output + expectedTerminalSymbol);
 
 			boolean success = true;
 
@@ -191,12 +217,13 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 					.withEchoInput(System.out)
 					.withEchoOutput(System.err)
 					.withInputFilters(removeColors(), removeNonPrintable())
+					.withTimeout(Env.DEFAULT_SSH_RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)	// 預設Timeout為10秒
 					.withExceptionOnFailure()
 					.build();
 
+			CommonServiceVO csVO = new CommonServiceVO();
 			StringBuilder processLog = new StringBuilder();
 			try {
-				CommonServiceVO csVO = new CommonServiceVO();
 				for (ScriptServiceVO scriptVO : scriptList) {
 					// 送出命令
 					csVO = sendCommand(csVO, expect, configInfoVO, scriptVO, processLog, cmdOutputs);
@@ -220,7 +247,10 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 				ssVO.setCmdProcessLog(processLog.toString());
 
 				expect.close();
-				session.close();
+
+				if (csVO.isNeedCloseSession()) {
+					session.close();
+				}
 			}
 
 		} catch (CommandExecuteException cee) {

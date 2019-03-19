@@ -31,6 +31,7 @@ public class CommonServiceVO {
 	private String bootInfoPriority;
 	private String bootInfoImage;
 	private String bootInfoConfig;
+	private boolean needCloseSession = true;
 
 	public Integer getStartNum() {
 		return startNum;
@@ -157,5 +158,11 @@ public class CommonServiceVO {
 	}
 	public void setBootInfoConfig(String bootInfoConfig) {
 		this.bootInfoConfig = bootInfoConfig;
+	}
+	public boolean isNeedCloseSession() {
+		return needCloseSession;
+	}
+	public void setNeedCloseSession(boolean needCloseSession) {
+		this.needCloseSession = needCloseSession;
 	}
 }

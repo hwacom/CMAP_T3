@@ -166,6 +166,11 @@ public class CommonUtils {
 
 	protected String replaceContentSign(CommonServiceVO csVO, ScriptServiceVO scriptVO, ConfigInfoVO configInfoVO, String cli) {
 		String cmd = scriptVO.getScriptContent();
+
+		if (StringUtils.isBlank(cmd)) {
+			return cmd;
+		}
+
 		String remark = scriptVO.getRemark();
 
 		if (cmd.contains(Env.CLI_VAR_ACT)) {
@@ -260,6 +265,10 @@ public class CommonUtils {
 	}
 
 	protected String replaceExpectedTerminalSymbol(String expectedTerminalSymbol, ConfigInfoVO configInfoVO) {
+		if (StringUtils.isBlank(expectedTerminalSymbol)) {
+			return "";
+		}
+
 		if (StringUtils.contains(expectedTerminalSymbol, Constants.EXPECTED_TERMINAL_SYMBOL_OF_DEVICE_NAME)) {
 			expectedTerminalSymbol = StringUtils.replace(expectedTerminalSymbol, Constants.DIR_PATH_DEVICE_NAME, configInfoVO.getDeviceEngName());
 		}

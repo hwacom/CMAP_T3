@@ -882,7 +882,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				} else if (_mode == ConnectionMode.FTP) {
 					if (Env.FTP_SERVER_AT_LOCAL == null || (Env.FTP_SERVER_AT_LOCAL != null && !Env.FTP_SERVER_AT_LOCAL)) {
 						final String sourceDirPath = Env.FTP_TEMP_DIR_PATH;
-						final String targetDirPath = ciVO.getConfigFileDirPath().concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(nowVersionFileName);
+						final String targetDirPath = ciVO.getConfigFileDirPath().concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(nowVersionFileName);
 						ciVO.setFileFullName(nowVersionTempFileName);
 
 						fileUtils.moveFiles(ciVO, sourceDirPath, targetDirPath);
@@ -1092,7 +1092,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		String tFtpTargetFilePath =
 				(Env.TFTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.TFTP_TEMP_DIR_PATH).concat((StringUtils.isNotBlank(Env.TFTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.TFTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(fileName);
 		String ftpTargetFilePath =
-				(Env.FTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.FTP_TEMP_DIR_PATH).concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(fileName);
+				(Env.FTP_SERVER_AT_LOCAL ? configInfoVO.getConfigFileDirPath() : Env.FTP_TEMP_DIR_PATH).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileName);
 		//configInfoVO.getConfigFileDirPath().concat(File.separator).concat(fileName);
 
 		/*
@@ -1728,12 +1728,12 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 										}
 
 										remoteFileDirPath =
-												(StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator).concat(yyyyMMdd).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+												Env.FTP_DIR_SEPARATE_SYMBOL.concat(yyyyMMdd).concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
 									}
 									String configFileName = vsVO.getFileFullName();
 
-									String ftpConfigPath = remoteFileDirPath.concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(configFileName);
-									String deviceFlashConfigPath = Env.DEFAULT_DEVICE_FLASH_DIR_PATH.concat((StringUtils.isNotBlank(Env.FTP_DIR_PATH_SEPARATE_SYMBOL) ? Env.FTP_DIR_PATH_SEPARATE_SYMBOL : File.separator)).concat(configFileName);
+									String ftpConfigPath = remoteFileDirPath.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(configFileName);
+									String deviceFlashConfigPath = Env.DEFAULT_DEVICE_FLASH_DIR_PATH.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(configFileName);
 
 									ciVO.setFtpFilePath(ftpConfigPath);						// 要還原的組態檔案在FTP上的完整路徑
 									ciVO.setDeviceFlashConfigPath(deviceFlashConfigPath);	// 要還原的組態檔案傳到設備後的儲存路徑
