@@ -448,7 +448,7 @@ function viewConfig(versionId) {
 				$('#viewModal_group').val(resp.data.group);
 				$('#viewModal_device').val(resp.data.device);
 				$('#viewModal_version').val(resp.data.version);
-				$('#viewModal_content').html(resp.data.content);
+				$('#viewModal_content').html("<pre>" + resp.data.content + "</pre>");
 				
 				$('#viewModal').modal('show');
 				

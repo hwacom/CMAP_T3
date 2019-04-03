@@ -3,6 +3,7 @@
  */
 var currentDiffPos = -1;
 var diffPos = [];
+var diffPos_offsetTopDeductNum = 66;
 var remarkShowLength = 50;	//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
@@ -27,7 +28,7 @@ $(document).ready(function() {
     				.add($("div[id$='compareModal_contentRight']"))
     				.add($("div[id$='compareModal_contentLineNum']"));
     
-    combined.on("scroll", function () {
+    	combined.on("scroll", function () {
         combined.scrollTop($(this).scrollTop());
     });
     
@@ -76,8 +77,9 @@ $(document).ready(function() {
         	currentDiffPos -= 1;
         }
     	
+    	console.log("diffPos[" + currentDiffPos + "] : " + $('.diffPos')[currentDiffPos].offsetTop);
         $('#compareModal_contentLineNum').animate({
-            scrollTop: $('.diffPos')[currentDiffPos].offsetTop
+            scrollTop: $('.diffPos')[currentDiffPos].offsetTop - diffPos_offsetTopDeductNum
         }, '500');
         
         
@@ -95,8 +97,9 @@ $(document).ready(function() {
         	currentDiffPos += 1;
         }
     	
+    	console.log("diffPos[" + currentDiffPos + "] : " + $('.diffPos')[currentDiffPos].offsetTop);
         $('#compareModal_contentLineNum').animate({
-            scrollTop: $('.diffPos')[currentDiffPos].offsetTop
+            scrollTop: $('.diffPos')[currentDiffPos].offsetTop - diffPos_offsetTopDeductNum
         }, '500');
         
         $('.diffPos').removeClass("compare-current-pos");
@@ -158,6 +161,12 @@ function compareFile() {
 			type : "POST",
 			dataType : 'json',
 			async: true,
+			beforeSend : function() {
+				showProcessing();
+			},
+			complete : function() {
+				hideProcessing();
+			},
 			success : function(resp) {
 				if (resp.code == '200') {
 					

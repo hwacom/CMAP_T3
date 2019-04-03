@@ -258,11 +258,11 @@ function initStep1Panel() {
 	
 	if (variables === '') {
 		$("#stepModal_variable_description").text("此腳本不需輸入變數");
-		$("#stepModal_variable_description").removeClass("red bold");
+		$("#stepModal_variable_description").removeClass("yellow bold");
 		
 	} else {
 		$("#stepModal_variable_description").text("※ 此腳本需輸入變數值 : ");
-		$("#stepModal_variable_description").addClass("red bold");
+		$("#stepModal_variable_description").addClass("yellow bold");
 		$('#stepModal_variable_show').text(variables.join(", "));
 	}
 	
@@ -526,7 +526,7 @@ function initStep3Panel() {
 	var itemTopic = $("<span></span>").attr("class", "preview-topic");
 	var br = $("<br>");
 	var hr = $("<hr>").attr("class", "bg_yellow");
-	var target_table_el = $("<table></table>").attr("id", "step3_target_table").attr("class", "myTable center");
+	var target_table_el = $("<table></table>").attr("id", "step3_target_table").attr("class", "mySTable center");
 	var target_thead_el = $("<thead></thead>").attr("class", "bold")
 								.append($("<tr></tr>")
 												.append($("<td></td>").attr("rowspan", 2).attr("width", "5%").text("序"))
@@ -583,11 +583,11 @@ function initStep3Panel() {
 	*/
 	
 	$("#stepModal_preview").append(
-		[itemTopic.clone().text("腳本名稱 : ")],
-		[$("<span></span>").text(" "+scriptName)],
+		[itemTopic.clone().text("腳本名稱 : ").attr("class", "bold")],
+		[$("<span></span>").text(" "+scriptName).attr("class", "yellow bold")],
 		[br.clone()],
 		[hr.clone()],
-		[itemTopic.clone().text("派送對象與變數值 : ")],
+		[itemTopic.clone().text("派送對象與變數值 : ").attr("class", "bold")],
 		[br.clone()],
 		[target_table_el]
 	);
@@ -814,7 +814,7 @@ function showFullScript(jObj) {
 	var scriptName = jObj.parent().find('td').eq(2).text();
 	var scriptContent = jObj.attr('content');
 	
-	$('#viewScriptModal_scriptName').val(scriptName);
+	$('#viewScriptModal_scriptName').text(scriptName);
 	
 	var scriptContent = scriptContent != null ? scriptContent.replace(/(\r\n|\r|\n)/g, "<br>") : "異常無紀錄";
 	

@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -17,7 +16,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.ServiceLayerException;
@@ -122,6 +120,7 @@ public class FtpFileUtils implements FileUtils {
 			}
 
 			ftp.changeWorkingDirectory(targetDirPath);
+
 			returnCode = ftp.getReplyCode();
 			if (returnCode == FTPReply.FILE_UNAVAILABLE) {
 				//若目標路徑目錄不存在，則依循路徑建立資料夾
@@ -231,7 +230,7 @@ public class FtpFileUtils implements FileUtils {
 			iStream = ftp.retrieveFileStream(ciVO.getFileFullName());
 
 			if (iStream == null || returnCode == FTPReply.FILE_UNAVAILABLE) {
-				throw new Exception("[FTP]下載檔案異常 >> 「" + ciVO.getFileFullName() + "」檔案不存在");
+				throw new Exception("[FTP]下載檔案異常 >> 「" + ftp.printWorkingDirectory() + "\\" + ciVO.getFileFullName() + "」檔案不存在");
 
 			} else {
 				fileContentList = new ArrayList<>();

@@ -34,22 +34,22 @@
 	        <div class="container-fluid">
 	        	<div class="row">
 	        		<div class="col-1 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.add" /></button>
+			  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnAdd"><spring:message code="script.add" /></button>
 			  	    </div>
 			  	    <div class="col-1 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.modify" /></button>
+			  	    	<button type="button" class="btn btn-info btn-sm" style="width: 100%" id="btnModify_script"><spring:message code="script.modify" /></button>
 			  	    </div>
 			  	    <div class="col-1 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.delete" /></button>
+			  	    	<button type="button" class="btn btn-danger btn-sm" style="width: 100%" id="btnDelete"><spring:message code="script.delete" /></button>
 			  	    </div>
 			  	    <div class="center" style="width: 3%">
 			  	    	<span style="font-size: 1.5rem">|</span>
 			  	    </div>
 			  	    <div class="col-1 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare"><spring:message code="variable.modify" /></button>
+			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnModify_var"><spring:message code="variable.modify" /></button>
 			  	    </div>
 			  	    <div class="col-1 action-btn-bar-style center">
-			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnCompare"><spring:message code="script.type.modify" /></button>
+			  	    	<button type="button" class="btn btn-secondary btn-sm" style="width: 100%" id="btnModify_type"><spring:message code="script.type.modify" /></button>
 			  	    </div>
 	        	</div>
 	        </div>

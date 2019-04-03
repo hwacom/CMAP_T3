@@ -124,26 +124,26 @@
       </div>
       <div class="modal-body">
       	<div class="form-group row">
-      		<label for="viewVersionModal_viewContent" class="col-md-10 col-sm-12 col-form-label"><spring:message code="please.choose.restore.version" /> :</label>
-      		<div class="col-md-2 col-sm-12" id="viewVersionModal_viewContent">
+      		<label for="viewVersionModal_viewContent" class="col-10 col-form-label bold"><spring:message code="please.choose.restore.version" /> :</label>
+      		<div class="col-2 bold" id="viewVersionModal_viewContent">
       			<a href="#" onclick="pressViewConfig()"><span data-feather="zoom-in"></span>[<spring:message code="preview" />]</a>
       		</div>
       	</div>
      	<div class="form-group row">
-    		<select class="form-control form-control-sm col-12" id="viewScriptModal_versionSelect" size="10">
+    		<select class="multi-select col-12" id="viewVersionModal_versionSelect" size="10">
     		</select>
         </div>
-      </div>
-      <div class="modal-footer">
-      	<div class="col-12 row center">
+        <div class="col-12 row center">
       		<div class="col-2">
-	      		<button type="button" class="btn btn-success" id="btnRestoreConfirm" style="width: 100%;"><spring:message code="btn.confirm" /></button>
+	      		<button type="button" class="btn btn-primary" id="btnRestoreConfirm" style="width: 100%;"><spring:message code="btn.confirm" /></button>
 	      	</div>
 	      	<div class="col-1"></div>
 	      	<div class="col-2">
 	      		<button type="submit" class="btn btn-secondary" id="btnRestoreCancel" style="width: 100%;"><spring:message code="btn.cancel" /></button>
 	      	</div>
       	</div>
+      </div>
+      <div class="modal-footer">
       </div>
     </div>
   </div>

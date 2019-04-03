@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -45,7 +43,6 @@ import com.cmap.utils.FileUtils;
 import com.cmap.utils.impl.CommonUtils;
 import com.cmap.utils.impl.FtpFileUtils;
 import com.cmap.utils.impl.TFtpFileUtils;
-
 import difflib.Chunk;
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -380,9 +377,10 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 					// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
 					String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
 					fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+					vsVO.setRemoteFileDirPath(date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(vsVO.getRemoteFileDirPath()));
 				}
 
-				fileUtils.changeDir(fileDir, false);
+				//fileUtils.changeDir(fileDir, false);
 
 				// Step4. 下載指定的Config落地檔
 				ConfigInfoVO ciVO = new ConfigInfoVO();
@@ -550,10 +548,11 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 							// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
 							String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
 							fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
+							vsVO.setRemoteFileDirPath(date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(vsVO.getRemoteFileDirPath()));
 						}
 					}
 
-					fileUtils.changeDir(fileDir, false);
+					//fileUtils.changeDir(fileDir, false);
 
 					// Step4. 下載指定的Config落地檔
 					ConfigInfoVO ciVO = new ConfigInfoVO();
@@ -636,7 +635,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			throw new ServiceLayerException(e);
+			throw new ServiceLayerException("版本比對發生異常，請重新操作");
 
 		}
 		return retVO;
@@ -661,16 +660,20 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			diff = vo.isLineDiff();
 
 			if (vo.getLine().equals(Constants.ADD_LINE)) {
+			    /*
 				sb.append("<div class=\"progress\" style=\"margin-top: 5px; background-color: #637381; height: 1.1rem;\">")
 				.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
 				.append("</div>")
 				.append("</span>");
+				*/
+			    sb.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
+                  .append("</span>");
 
 			} else {
-				sb.append(diff ? "<span style=\"color:red\">" : "<span>")
-				.append(vo.getLine())
-				.append(diff ? "</span>" : "</span>")
-				.append("<br />");
+				sb.append(diff ? "<span style=\"color:red;white-space:pre;\">" : "<span style=\"white-space:pre;\">")
+				  .append(vo.getLine())
+				  .append(diff ? "</span>" : "</span>")
+				  .append("<br />");
 			}
 
 			if (genLineNum) {
@@ -679,15 +682,18 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 				if (!diffList.isEmpty()) {
 					for (String dp : diffList) {
 						if ((lineNo-1) == Integer.valueOf(dp)) {
-							ln.append(" class=\"diffPos\" style=\"color:red\"");
+							ln.append(" class=\"diffPos\" style=\"color:red;white-space:pre;\"");
 						}
 					}
+
+				} else {
+				    ln.append(" style=\"white-space:pre;\"");
 				}
 
 				ln.append(">")
-				.append(lineNo)
-				.append("</span>")
-				.append("<br />");
+				  .append(lineNo)
+				  .append("</span>")
+				  .append("<br />");
 			}
 
 			lineNo++;

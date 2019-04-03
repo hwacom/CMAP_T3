@@ -141,7 +141,7 @@
 
 <!-- Modal [Step] start -->
 <div class="modal fade" id="stepModal" tabindex="-1" role="dialog" aria-labelledby="stepModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-mid" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="stepModalLabel"><span id="msgModal_title"><spring:message code="provision.delivery" /></span></h5>
@@ -177,26 +177,26 @@
       	<div id="stepModal_scroll">
 	      	<div id="step1_section" style="display: inline;">
 	      	  	<div class="form-group row">
-		        	<label for="stepModal_chooseDevice" class="col-md-4 col-sm-6 col-form-label bold">
-		        		<spring:message code="please.choose" /><spring:message code="device.name" />(<spring:message code="provision.press.ctrl.to.multiple.select" />) :
+		        	<label for="stepModal_chooseDevice" class="col-4 col-form-label bold">
+		        		<spring:message code="please.choose" /><spring:message code="device.name" /><br>(<spring:message code="provision.press.ctrl.to.multiple.select" />) :
 		        	</label>
-		        	<label for="stepModal_searchDevice" class="col-md-1 col-sm-1 col-form-label bold right"><spring:message code="search" /></label>
-		    		<input type="text" class="form-control form-control-sm col-md-5 col-sm-" id="stepModal_searchDevice">
+		        	<label for="stepModal_searchDevice" class="col-1 col-form-label bold right"><spring:message code="search" /></label>
+		    		<input type="text" class="form-control form-control-sm col-5" id="stepModal_searchDevice">
 		    		<img src="${pageContext.request.contextPath}/resources/images/loading.gif" id="stepModal_searchWaiting" alt="loading...">
 		        </div>
 		        <div class="form-group row">
-		        	<select class="multi-select col-md-12 col-sm-12" id="stepModal_chooseDevice" size="10" multiple="multiple">
+		        	<select class="multi-select col-12" id="stepModal_chooseDevice" size="10" multiple="multiple">
 		    		</select>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="stepModal_remark" class="col-md-12 col-sm-12 col-form-label">
+		        	<label for="stepModal_remark" class="col-12 col-form-label">
 		        		<span id="stepModal_variable_description"></span>
-		        		<span id="stepModal_variable_show"></span>
+		        		<span id="stepModal_variable_show" class="red"></span>
 		        	</label>
 		        </div>
 		        <div class="form-group row">
-		        	<label for="stepModal_reason" class="col-md-2 col-sm-12 col-form-label bold"><spring:message code="provision.reason" /> :</label>
-		        	<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="stepModal_reason" name="stepModal_reason">
+		        	<label for="stepModal_reason" class="col-2 col-form-label bold"><spring:message code="provision.reason" /> :</label>
+		        	<input type="text" class="form-control form-control-sm col-10" id="stepModal_reason" name="stepModal_reason">
 		        </div>
 	      	</div>
 	      	<!-- [END] Step.1 -->
@@ -206,8 +206,8 @@
 	      	  <div class="form-group row">
 		      	<label for="stepModal_enterVarRemark" class="col-md-12 col-sm-2 col-form-label bold"><spring:message code="please.confirm.target.and.enter.variable.value" /> :</label>
 		      </div>
-		      <div id="step2_target_section">
-		      	<table id="step2_target_table" class="myTable">
+		      <div id="step2_target_section" style="padding-left: 10px;padding-top: 5px;">
+		      	<table id="step2_target_table" class="mySTable">
 		      	  <thead class="center bold">
 		      	  	<tr>
 			      	  	<th rowspan="3" width="3%"><spring:message code="seq" /></th>
@@ -224,11 +224,6 @@
 		      	  </tbody>
 		      	</table>
 		      </div>
-		      
-		      <div class="row">
-		      	<hr class="col-12">
-		      </div>
-
 	      	</div>
 	      	<!-- [END] Step.2 -->
 	      	
@@ -243,22 +238,27 @@
 	      	<!-- [END] Step.3 -->
       	</div>
       	
-      </div>
-      <div class="modal-footer">
-      	<div class="col-12 row center">
-      		<div class="col-2">
-	      		<button type="button" class="btn btn-secondary" id="btnStepGoPrev" style="width: 100%;"><spring:message code="btn.step.back" /></button>
-	      	</div>
-	      	<div class="col-1"></div>
-	      	<div class="col-2">
-	      		<button type="button" class="btn btn-success" id="btnStepGoNext" style="width: 100%;"><spring:message code="btn.step.next" /></button>
-	      		<button type="button" class="btn btn-success" id="btnStepGoFire" style="width: 100%;"><spring:message code="btn.delivery.confirm" /></button>
-	      	</div>
-	      	<div class="col-1"></div>
-	      	<div class="col-2">
-	      		<button type="button" class="btn btn-info" id="btnCancel" style="width: 100%;" data-dismiss="modal" aria-label="Close"><spring:message code="btn.cancel" /></button>
+      	<hr />
+      	
+      	<div class="container-fluid">
+      		<div class="row center">
+	      		<div class="col-2">
+		      		<button type="button" class="btn btn-success" id="btnStepGoPrev" style="width: 100%;"><spring:message code="btn.step.back" /></button>
+		      	</div>
+		      	<div class="col-1"></div>
+		      	<div class="col-2">
+		      		<button type="button" class="btn btn-primary" id="btnStepGoNext" style="width: 100%;"><spring:message code="btn.step.next" /></button>
+		      		<button type="button" class="btn btn-primary" id="btnStepGoFire" style="width: 100%;"><spring:message code="btn.delivery.confirm" /></button>
+		      	</div>
+		      	<div class="col-1"></div>
+		      	<div class="col-2">
+		      		<button type="button" class="btn btn-secondary" id="btnCancel" style="width: 100%;" data-dismiss="modal" aria-label="Close"><spring:message code="btn.cancel" /></button>
+		      	</div>
 	      	</div>
       	</div>
+      	
+      </div>
+      <div class="modal-footer">
       </div>
     </div>
   </div>

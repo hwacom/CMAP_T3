@@ -8,6 +8,7 @@ $(document).ready(function() {
 	
 	changeDeviceMenu("queryDevice1", $("#queryGroup1").val());
 	
+	/*
 	//查詢按鈕(Web)點擊事件
     $('#btnSearch_web').click(function (e) {
     	findData('WEB');
@@ -17,6 +18,7 @@ $(document).ready(function() {
     $('#btnSearch_mobile').click(function (e) {
     	findData('MOBILE');
     });
+    */
     
     $('#btnRestore').click(function (e) {
     	showRestorePanel();
@@ -52,17 +54,19 @@ function showRestorePanel() {
 			dataType : 'json',
 			async: true,
 			beforeSend : function() {
+				showProcessing();
 			},
 			complete : function() {
+				hideProcessing();
 			},
 			success : function(resp) {
 				if (resp.code == '200') {
-					$("#viewScriptModal_versionSelect option").remove();
+					$("#viewVersionModal_versionSelect option").remove();
 					
 					var obj = resp.data.versionList;
 					var idx = 1;
 					$.each(obj, function(key, vo) {
-						$("#viewScriptModal_versionSelect")
+						$("#viewVersionModal_versionSelect")
 							.append($("<option></option>")
 											.attr("value", vo.deviceListId+"@~"+vo.versionId)
 											.text("(" + idx + ") " + vo.configVersion));
@@ -83,7 +87,7 @@ function showRestorePanel() {
 }
 
 function doRestore() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -94,7 +98,7 @@ function doRestore() {
 }
 
 function doRestoreGo() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -136,7 +140,7 @@ function doRestoreGo() {
 }
 
 function pressViewConfig() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要預覽的版本號");
@@ -157,7 +161,7 @@ function findData(from) {
 	}
 	
 	if (typeof resutTable !== "undefined") {
-		resutTable.clear().draw();
+		//resutTable.clear().draw(); server-side is enabled.
 		resutTable.ajax.reload();
 		
 	} else {
@@ -188,12 +192,12 @@ function findData(from) {
 					d.maxCountByDevice = true;
 					
 					if ($('#queryFrom').val() == 'WEB') {
-						d.queryGroup1 = $("#queryGroup1").val(),
-						d.queryDevice1 = $("#queryDevice1").val()
+						d.queryGroup = $("#queryGroup1").val(),
+						d.queryDevice = $("#queryDevice1").val()
 					
 					} else if ($('#queryFrom').val() == 'MOBILE') {
-						d.queryGroup1 = $("#queryGroup1_mobile").val(),
-						d.queryDevice1 = $("#queryDevice1_mobile").val()
+						d.queryGroup = $("#queryGroup1_mobile").val(),
+						d.queryDevice = $("#queryDevice1_mobile").val()
 					}
 					
 					return d;
@@ -235,7 +239,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.deviceListId+'>';
+								 var html = '<input type="radio" id="chkbox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.deviceListId+'>';
 								 return html;
 							 }
 				},

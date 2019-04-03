@@ -33,8 +33,8 @@ function showScriptContent(scriptInfoId, type) {
 		*/
 		success : function(resp) {
 			if (resp.code == '200') {
-				$('#viewScriptModal_scriptName').val(resp.data.script);
-				$('#viewScriptModal_scriptContent').html(resp.data.content);
+				$('#viewScriptModal_scriptName').text(resp.data.script);
+				$('#viewScriptModal_scriptContent').html("<pre>" + resp.data.content + "</pre>");
 				
 				$('#viewScriptModal').modal('show');
 				
@@ -177,7 +177,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.scriptTypeId+'>';
+								 var html = '<input type="radio" id="chkbox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.scriptTypeId+'>';
 								 return html;
 							 }
 				},

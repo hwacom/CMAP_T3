@@ -120,9 +120,9 @@
   
 </section>
 
-<!-- Modal [Compare] start -->
+<!-- Modal [Provision Log] start -->
 <div class="modal fade" id="viewProvisionLogModal" tabindex="-1" role="dialog" aria-labelledby="viewProvisionLogModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-mid" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="viewProvisionLogModalLabel"><span id="msgModal_title"><spring:message code="provision.execute.result.detail" /></span></h5>
@@ -132,42 +132,42 @@
       </div>
       <div class="modal-body">
      	<div class="form-group row">
-        	<label for="viewModal_beginTime" class="col-md-2 col-sm-12 col-form-label"><spring:message code="execute.time" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_beginTime" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="execute.time" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_beginTime"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_userName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="user" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_userName" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="user" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_userName"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_groupName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="group.name" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_groupName" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="group.name" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_groupName"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_deviceName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="device.name" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_deviceName" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="device.name" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_deviceName"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_systemVersion" class="col-md-2 col-sm-12 col-form-label"><spring:message code="system.version" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_systemVersion" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="system.version" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_systemVersion"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_scriptName" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="script.name" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_scriptName"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_reason" class="col-md-2 col-sm-12 col-form-label"><spring:message code="provision.reason" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_reason" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="provision.reason" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_reason"></span></div>
         </div>
         <div class="form-group row">
-        	<label for="viewModal_result" class="col-md-2 col-sm-12 col-form-label"><spring:message code="execute.result" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_result" readonly>
+        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="execute.result" /> :</span></div>
+    		<div class="col-11"><span class="yellow" id="viewModal_result"></span></div>
         </div>
         <div>
         	<hr>
         </div>
         <div class="form-group row">
-        	<div class="form-control form-control-sm col-12 script" id="viewModal_provisionLog"></div>
+        	<div class="form-group textarea-section textarea" id="viewModal_provisionLog" style="height: 38vh;"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -175,6 +175,6 @@
     </div>
   </div>
 </div>
-<!-- Modal [Compare] end -->
+<!-- Modal [Provision Log] end -->
 	
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.delivery.record.min.js"></script>

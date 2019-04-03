@@ -142,10 +142,22 @@
                 </div>                              
             </div>
         </form>
+        <div class="row center">
+      		<div class="col-12">
+      			<hr>
+      		</div>
+      	</div>
+        <div class="form-group row center">
+	        <div class="col-3">
+	     		<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal"><spring:message code="close" /></button>
+	     	</div>
+	     	<div class="col-1"></div>
+	     	<div class="col-3">
+	     		<button type="button" class="btn btn-primary" id="btnConfirm"><spring:message code="confirm" /></button>
+	     	</div>
+	    </div>
       </div>
       <div class="modal-footer">
-      	<button type="button" class="btn btn-secondary" id="btnClose" data-dismiss="modal"><spring:message code="close" /></button>
-      	<button type="button" class="btn btn-success" id="btnConfirm"><spring:message code="confirm" /></button>
 	  </div>
     </div>
   </div>

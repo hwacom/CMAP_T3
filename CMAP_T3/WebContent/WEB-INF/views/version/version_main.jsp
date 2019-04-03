@@ -227,7 +227,7 @@
 
 <!-- Modal [Compare] start -->
 <div class="modal fade" id="compareModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xxg" role="document">
+  <div class="modal-dialog modal-xg" role="document">
     <div class="modal-content">
       <div class="modal-header">
       
@@ -239,22 +239,33 @@
       </div>
       <div class="modal-body">
         <div class="form-group row">
-        	<div class="col-1"></div>
-        	<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label"><spring:message code="config.version.short" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionLeft" readonly>
-    		<label for="viewModal_version" class="col-md-1 col-sm-12 col-form-label"><spring:message code="config.version.short" /> :</label>
-    		<input type="text" class="form-control form-control-sm col-md-4 col-sm-12" id="viewModal_versionRight" readonly>
+        	<div class="col-0_5"></div>
+        	<div class="col-0_5">
+        		<label for="viewModal_version" class="col-1 col-form-label bold"><spring:message code="config.version.short" /> :</label>
+        	</div>
+        	<div class="col-5">
+        		<input type="text" class="form-control form-control-sm col-4" id="viewModal_versionLeft" readonly>	
+        	</div>
+    		<div class="col-0_5">
+        		<label for="viewModal_version" class="col-1 col-form-label bold"><spring:message code="config.version.short" /> :</label>
+        	</div>
+    		<div class="col-5">
+        		<input type="text" class="form-control form-control-sm col-4" id="viewModal_versionRight" readonly>
+        	</div>
+    		<div class="col-0_5"></div>
         </div>
         <div class="form-group row">
-        	<div class="form-control form-control-sm col-1 compare-line script" id="compareModal_contentLineNum"></div>
-        	<div class="form-control form-control-sm col-5 compare-content nowrap script" id="compareModal_contentLeft"></div>
-        	<div class="form-control form-control-sm col-5 compare-content nowrap script" id="compareModal_contentRight"></div>
-        	<div class="col-1">
+        	<div class="form-control form-control-sm col-0_5 compare-line textarea center" id="compareModal_contentLineNum"></div>
+        	<div class="form-control form-control-sm col-5_5 compare-content nowrap textarea" id="compareModal_contentLeft"></div>
+        	<div class="form-control form-control-sm col-5_5 compare-content nowrap textarea" id="compareModal_contentRight"></div>
+        	<div class="col-0_5">
         		<span data-feather="chevrons-up" class="feather-compare" id="jumpToTop"></span>
         		<span data-feather="chevron-up" class="feather-compare" id="jumpToPre"></span>
         		<span data-feather="chevron-down" class="feather-compare" id="jumpToNext"></span>
         		<span data-feather="chevrons-down" class="feather-compare" id="jumpToBottom"></span>
         	</div>
+       	</div>
+       	<div class="row">
         	<div class="col-12 center">
         		<span id="compareModal_summary"></span>
         	</div>

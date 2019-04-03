@@ -149,7 +149,7 @@
         
     <!-- Modal [View 組態內容] start -->
 	<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog modal-mid" role="document">
+	  <div class="modal-dialog modal-lg" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <h5 class="modal-title" id="exampleModalLabel"><span id="msgModal_title"><spring:message code="config.content.preview" /></span></h5>
@@ -159,21 +159,21 @@
 	      </div>
 	      <div class="modal-body">
 	     	<div class="form-group row">
-	        	<label for="viewModal_group" class="col-md-2 col-sm-12 col-form-label"><spring:message code="group.name" /> :</label>
-	    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_group" readonly>
+	        	<label for="viewModal_group" class="col-1 col-form-label"><spring:message code="group.name" /> :</label>
+	    		<input type="text" class="form-control form-control-sm col-11" id="viewModal_group" readonly>
 	        </div>
 	        <div class="form-group row">
-	        	<label for="viewModal_device" class="col-md-2 col-sm-12 col-form-label"><spring:message code="device.name" /> :</label>
-	    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_device" readonly>
+	        	<label for="viewModal_device" class="col-1 col-form-label"><spring:message code="device.name" /> :</label>
+	    		<input type="text" class="form-control form-control-sm col-11" id="viewModal_device" readonly>
 	        </div>
 	        <div class="form-group row">
-	        	<label for="viewModal_version" class="col-md-2 col-sm-12 col-form-label"><spring:message code="config.version" /> :</label>
-	    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewModal_version" readonly>
+	        	<label for="viewModal_version" class="col-1 col-form-label"><spring:message code="config.version" /> :</label>
+	    		<input type="text" class="form-control form-control-sm col-11" id="viewModal_version" readonly>
 	        </div>
 	        <div class="form-group row">
-	        	<label for="viewModal_content" class="col-md-2 col-sm-12 col-form-label"><spring:message code="config.content" /> :</label>
+	        	<label for="viewModal_content" class="col-1 col-form-label"><spring:message code="config.content" /> :</label>
 	        	<!-- <textarea class="form-control col-md-9 col-sm-12" id="viewModal_content" rows="10" readonly></textarea> -->
-	        	<div class="form-control form-control-sm col-md-10 col-sm-12 script" id="viewModal_content"></div>
+	        	<div class="form-group col-11 textarea-section textarea script" style="min-height: 300px; margin-left: 8px; border-radius: 0.25rem; border: 1px solid #ced4da;" id="viewModal_content"></div>
 	        </div>
 	        
 	      </div>
@@ -186,7 +186,7 @@
 	
 	<!-- Modal [View 腳本內容] start -->
 	<div class="modal fade" id="viewScriptModal" tabindex="-1" role="dialog" aria-labelledby="viewScriptModalLabel" aria-hidden="true">
-	  <div class="modal-dialog modal-mid" role="document">
+	  <div class="modal-dialog modal-lg" role="document">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <h5 class="modal-title" id="viewScriptModalLabel"><span id="msgModal_title"><spring:message code="script.content.preview" /></span></h5>
@@ -196,12 +196,16 @@
 	      </div>
 	      <div class="modal-body">
 	     	<div class="form-group row">
-	        	<label for="viewScriptModal_scriptName" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.name" /> :</label>
-	    		<input type="text" class="form-control form-control-sm col-md-10 col-sm-12" id="viewScriptModal_scriptName" readonly>
+	        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="script.name" /> :</span></div>
+	    		<div class="col-11 yellow" id="viewScriptModal_scriptName"></div>
 	        </div>
 	        <div class="form-group row">
-	        	<label for="viewScriptModal_scriptContent" class="col-md-2 col-sm-12 col-form-label"><spring:message code="script.content" /> :</label>
-	        	<div class="form-control form-control-sm col-md-10 col-sm-12 font script" id="viewScriptModal_scriptContent"></div>
+	        	<div class="col-1 bold"><span class="log-item-title"><spring:message code="script.content" /> :</span></div>
+	        </div>
+	        <div class="form-group row">
+	        	<div class="form-group textarea-section textarea script">
+	        		<pre id="viewScriptModal_scriptContent"></pre>
+	        	</div>
 	        </div>
 	      </div>
 	      <div class="modal-footer">

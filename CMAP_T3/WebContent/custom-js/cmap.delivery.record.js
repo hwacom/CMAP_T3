@@ -177,6 +177,12 @@ function viewProvisionLog(obj) {
 		type : "POST",
 		dataType : 'json',
 		async: true,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
 		success : function(resp) {
 			if (resp.code == '200') {
 				var ps = {
@@ -192,14 +198,14 @@ function viewProvisionLog(obj) {
 				}
 				var provisionLog = resp.data.log != null ? (resp.data.log).replace(/(\r\n|\r|\n)/g, "<br>") : "異常無紀錄";
 				
-				$("#viewModal_beginTime").val(beginTime);
-				$("#viewModal_userName").val(userName);
-				$("#viewModal_groupName").val(groupName);
-				$("#viewModal_deviceName").val(deviceName);
-				$("#viewModal_systemVersion").val(systemVersion);
-				$("#viewModal_scriptName").val(scriptName);
-				$("#viewModal_reason").val(reason);
-				$("#viewModal_result").val(result);
+				$("#viewModal_beginTime").text(beginTime);
+				$("#viewModal_userName").text(userName);
+				$("#viewModal_groupName").text(groupName);
+				$("#viewModal_deviceName").text(deviceName);
+				$("#viewModal_systemVersion").text(systemVersion);
+				$("#viewModal_scriptName").text(scriptName);
+				$("#viewModal_reason").text(reason);
+				$("#viewModal_result").text(result);
 				$("#viewModal_provisionLog").html(provisionLog);
 				
 				$("#viewProvisionLogModal").modal('show');
