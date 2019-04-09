@@ -478,7 +478,7 @@ button {
 	background-color: rgba(162,189,59,1);
 }
 .btn-success {
-	background-color: rgba(250,162,27,0.7)
+	background-color: rgba(250,162,27,0.7);
 }
 .btn-success:hover {
 	background-color: rgba(250,162,27,1);
@@ -518,6 +518,34 @@ button {
 
 .form-group {
 	padding-left: 10px;
+}
+
+area:link, 
+area:hover, 
+area:active, 
+area:focus {
+   border: solid 5px red;
+   z-index: 1234;
+}
+
+.mapLabel {
+	position: relative;
+	left: 3px;
+	top: -320px;
+	background-color: rgba(19,118,187,1);
+	z-index: 9999;
+	font-weight: bold;
+	padding: 1px 8px 1px 8px;
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.7);
+	cursor: pointer;
+}
+
+a#a_deviceSiteImg:hover {
+	color: #fff;
+}
+
+#label_deviceSiteImg:hover {
+	background-color: rgba(19,118,187,0.7);
 }
 
 /*##########################################################################################################################################*/

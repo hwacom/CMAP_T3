@@ -56,6 +56,8 @@
 	<script src="${pageContext.request.contextPath}/resources/js/cleave/cleave.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/js/modernizr/modernizr-custom.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/js/custom/min/common.min.js"></script>
+	<!-- ImageMapster -->
+	<script src="${pageContext.request.contextPath}/resources/js/imagemapster/jquery.imagemapster.js"></script>
 	
 	<script>
 		$(function () {
@@ -120,12 +122,12 @@
 			其他系統
 		</div>
 		<ul>
-			<li data-li-id="ot_A"><a id="ot_A" href="${pageContext.request.contextPath}/others?sys=A"><span>建物管理系統</span></a></li>
-			<li data-li-id="ot_B"><a id="ot_B" href="${pageContext.request.contextPath}/others?sys=B"><span>機場收入管理系統</span></a></li>
-			<li data-li-id="ot_C"><a id="ot_C" href="${pageContext.request.contextPath}/others?sys=C"><span>私有雲平台</span></a></li>
-			<li data-li-id="ot_D"><a id="ot_D" href="${pageContext.request.contextPath}/others?sys=D"><span>統一威脅管理平台</span></a></li>
-			<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others?sys=CCTV"><span>CCTV</span></a></li>
-			<li data-li-id="ot_E"><a id="ot_E" href="${pageContext.request.contextPath}/others?sys=F"><span>無線網路網管</span></a></li>
+			<li data-li-id="ot_A"><a id="ot_A" href="${pageContext.request.contextPath}/others/sys/A"><span>建物管理系統</span></a></li>
+			<li data-li-id="ot_B"><a id="ot_B" href="${pageContext.request.contextPath}/others/sys/B"><span>機場收入管理系統</span></a></li>
+			<li data-li-id="ot_C"><a id="ot_C" href="${pageContext.request.contextPath}/others/sys/C"><span>私有雲平台</span></a></li>
+			<li data-li-id="ot_D"><a id="ot_D" href="${pageContext.request.contextPath}/others/sys/D"><span>統一威脅管理平台</span></a></li>
+			<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others/sys/CCTV"><span>CCTV</span></a></li>
+			<li data-li-id="ot_E"><a id="ot_E" href="${pageContext.request.contextPath}/others/sys/F"><span>無線網路網管</span></a></li>
 		</ul>
 		<div data-ul-id="bk" class="ul-bg"></div>
 		<div class="ul-title">
