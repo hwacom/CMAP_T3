@@ -46,7 +46,7 @@ function findData(from) {
 	        },
 	        "createdRow": function( row, data, dataIndex ) {
 	        	   if(data.deliveryReason != null && data.deliveryReason.length > reasonShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(7).attr('onclick','javascript:showFullScript($(this));');
+	        	      $(row).children('td').eq(7).attr('onclick','javascript:changeShowContent($(this));');
 	        	      $(row).children('td').eq(7).addClass('cursor_zoom_in');
 	        	   }
 	        	   $(row).children('td').eq(7).attr('content', data.deliveryReason);
@@ -166,7 +166,7 @@ function viewProvisionLog(obj) {
 	var deviceName = $(obj).closest("tr").find("td").eq(4).text();
 	var systemVersion = $(obj).closest("tr").find("td").eq(5).text();
 	var scriptName = $(obj).closest("tr").find("td").eq(6).text();
-	var reason = $(obj).closest("tr").find("td").eq(7).text();
+	var reason = $(obj).closest("tr").find("td").eq(7).attr("content");
 	var result = $(obj).text();
 	
 	$.ajax({

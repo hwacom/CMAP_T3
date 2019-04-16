@@ -78,7 +78,9 @@
 	<!-- [START] Top bar -->
 	<nav class="navbar">
 		<div class="nav">
-			<img class="logo" src="${pageContext.request.contextPath}/resources/images/hwacom_white.png">
+			<a href="${pageContext.request.contextPath}/index">
+				<img class="logo" src="${pageContext.request.contextPath}/resources/images/hwacom_white.png">
+			</a>
 		</div>
 		<div class="nav system-title">
 			<a href="${pageContext.request.contextPath}/index"><spring:message code="cmap.title" /></a>
