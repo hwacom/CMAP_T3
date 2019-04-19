@@ -31,7 +31,7 @@
 						src="http://127.0.0.1:8888/public/mapshow.htm?id=2169&mapid=D04D2281-D51C-4304-A39D-2A7456BD8B1F">
 					</iframe>
 					 -->
-					 <img class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/right_top.png" width="360px" height="145px" />
+					 <img class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/traffic_1.png" width="360px" height="145px" />
 	      		</div>
 	      		
 	      		<div style="width: 360px; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
@@ -43,7 +43,7 @@
 						src="http://127.0.0.1:8888/public/mapshow.htm?id=2171&mapid=854CD22D-B4FD-412B-8D45-2EF1F23D4ECF">
 					</iframe>
 					-->
-					<img class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/right_top.png" width="360px" height="145px" />
+					<img class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/traffic_2.png" width="360px" height="145px" />
 	      		</div>
 	      	</div>
 	      	

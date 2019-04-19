@@ -63,7 +63,7 @@
 				  		  <div class="form-group row" style="margin-right: 1%;">
 				  		    <div class="col-1"></div>
 				  		  	<div class="col-10 left" style="padding-left: 0px; margin-bottom: 10px;">
-				  		  		<span class="h5" style="font-weight: bold;">Log in<br>使用者登入</span>
+				  		  		<span class="h5" style="font-weight: bold;">使用者登入</span>
 				  		  	</div>
 				  		  </div>
 				  		  <div class="form-group row offset-1" style="vertical-align: middle; border-bottom: solid 2px #faa21b; padding-bottom: 5px; margin-right: 1%;">

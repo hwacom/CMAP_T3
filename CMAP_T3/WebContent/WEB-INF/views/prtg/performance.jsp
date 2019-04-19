@@ -8,7 +8,7 @@
   	 }
    </style>
    
-   <iframe id="prtgFrame" class="scrollbar-macosx" style="width: 98%; height: 650px; padding-left: 10px; padding-top: 10px;" frameborder="0" src="https://172.30.24.68/map.htm?id=3802&tabid=1&username=prtgadmin&password=Prtgadmin123">
+   <iframe id="prtgFrame" class="scrollbar-macosx" style="width: 98%; height: 650px; padding-left: 10px; padding-top: 10px;" frameborder="0" src="https://172.30.24.68/device.htm?id=2286&tabid=1&username=prtgadmin&password=Prtgadmin123">
   	 Failed to open PRTG main page.
    </iframe>
 

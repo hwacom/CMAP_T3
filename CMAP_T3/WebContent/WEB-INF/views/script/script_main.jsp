@@ -70,7 +70,7 @@
 		      	<th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
 		      </c:if>
 		      <c:if test="${not enableModify}">
-		      	<th scope="col" nowrap="nowrap" style="display: none"><spring:message code="action" /></th>
+		      	<th scope="col" nowrap="nowrap"></th>
 		      </c:if>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="script.name" /></th>

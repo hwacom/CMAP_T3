@@ -1,11 +1,12 @@
 /**
  * 
  */
-var scriptShowMaxLine = 2;
+var scriptShowMaxLine = 1;
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_script");
 			
+	findData('WEB');
 });
 
 //查看腳本內容
@@ -102,7 +103,7 @@ function findData(from) {
 			"scrollX"		: true,
 			"scrollY"		: dataTableHeight,
 			"scrollCollapse": true,
-			"pageLength"	: 100,
+			"pageLength"	: 10,
 			"language" : {
 	    		"url" : _ctx + "/resources/js/dataTable/i18n/Chinese-traditional.json"
 	        },
@@ -129,7 +130,7 @@ function findData(from) {
             },
             */
 			"drawCallback" : function(settings) {
-				$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
+				//$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass('col-sm-12');
 				$("div.dataTables_length").parent().addClass('col-sm-6');
 				$("div.dataTables_filter").parent().removeClass('col-sm-12');
@@ -161,7 +162,7 @@ function findData(from) {
 			"columns" : [
 				{},{},
 				{ "data" : "scriptName" },
-				{ "data" : "scriptTypeName" , "className" : "center" },
+				{ "data" : "scriptTypeName" , "className" : "left" },
 				{ "data" : "systemVersion" , "className" : "center" },
 				{},
 				{ "data" : "actionScriptRemark"},

@@ -4,11 +4,9 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -28,7 +26,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.Env;
@@ -376,6 +373,28 @@ public class PrtgController extends BaseController {
 		}
 		return "prtg/device_failure";
 	}
+
+	@RequestMapping(value = "/performance", method = RequestMethod.GET)
+    public String performance(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/performance";
+    }
+
+	@RequestMapping(value = "/report", method = RequestMethod.GET)
+    public String report(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/report";
+    }
 
 	@RequestMapping(value = "/abnormalTraffic", method = RequestMethod.GET)
 	public String abnormalTraffic(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {

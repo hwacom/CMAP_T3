@@ -233,6 +233,18 @@ function initMenuStatus(mainItemId, toggleMenuId, funcId) {
 	$("div[data-ul-id]").switchClass("ul-bg-active", "ul-bg");
 	
 	switch (funcId) {
+		case "cm_failure":
+			$("div[data-ul-id=cmf]").switchClass("ul-bg", "ul-bg-active");
+			break;
+			
+		case "cm_effience":
+			$("div[data-ul-id=cme]").switchClass("ul-bg", "ul-bg-active");
+			break;
+			
+		case "cm_report":
+			$("div[data-ul-id=cmr]").switchClass("ul-bg", "ul-bg-active");
+			break;
+			
 		case "cm_manage":
 		case "cm_backup":
 		case "cm_restore":

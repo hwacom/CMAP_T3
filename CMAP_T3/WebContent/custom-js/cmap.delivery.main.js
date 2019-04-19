@@ -53,6 +53,8 @@ $(document).ready(function() {
 	$("#stepModal_searchDevice").keyup(_.debounce(function(e) {
 		searchDevice($(this).val());
 	}, 500));
+	
+	findData('WEB');
 });
 
 function showDeliveryPanel() {
@@ -883,7 +885,7 @@ function findData(from) {
 				}
 			},
 			"order" : [[2 , 'asc' ]],
-			"pageLength" : 100,
+			"pageLength" : 10,
 			/*
 			"initComplete": function(settings, json){
             },

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.cmap.AppResponse;
+import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -46,7 +47,7 @@ public class ScriptController extends BaseController {
       HttpServletResponse response) {
     Map<String, String> scriptTypeMap = null;
     try {
-      scriptTypeMap = getScriptTypeList(null);
+      scriptTypeMap = getScriptTypeList(Constants.DATA_N);
 
     } catch (Exception e) {
       log.error(e.toString(), e);
@@ -101,6 +102,7 @@ public class ScriptController extends BaseController {
       ssVO.setOrderColumn(UI_SCRIPT_TABLE_COLUMNS[orderColIdx]);
       ssVO.setOrderDirection(orderDirection);
       ssVO.setQueryScriptTypeCode(queryScriptTypeCode);
+      ssVO.setQuerySystemDefault(Constants.DATA_N);
 
       filterdTotal = scriptService.countScriptInfo(ssVO);
 

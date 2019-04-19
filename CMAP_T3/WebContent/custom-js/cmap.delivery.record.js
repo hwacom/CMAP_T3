@@ -14,6 +14,8 @@ $(document).ready(function() {
     		$('#viewModal_provisionLog').scrollTop(0);
     	}, 300);
     });
+	
+	findData('WEB');
 });
 
 //查詢按鈕動作
@@ -75,7 +77,7 @@ function findData(from) {
 				}
 			},
 			"order" : [[1 , 'desc' ]],
-			"pageLength" : 100,
+			"pageLength" : 10,
 			/*
 			"initComplete": function(settings, json){
             },

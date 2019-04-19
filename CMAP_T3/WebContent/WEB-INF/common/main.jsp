@@ -95,6 +95,24 @@
 
 	<!-- [START] Menu -->
 	<aside class="menu">
+		<div data-ul-id="cmf" class="ul-bg"></div>
+		<div class="ul-title">
+			障礙管理
+		</div>
+		<ul>
+			<li data-li-id="cm_failure"><a id="cm_failure" href="${pageContext.request.contextPath}/prtg/deviceFailure"><span>即時監控</span></a></li>
+			<li data-li-id="cm_report"><a id="cm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+		</ul>
+		
+		<div data-ul-id="cme" class="ul-bg"></div>
+		<div class="ul-title">
+			效能管理
+		</div>
+		<ul>
+			<li data-li-id="cm_effience"><a id="cm_effience" href="${pageContext.request.contextPath}/prtg/performance"><span>即時監控</span></a></li>
+			<li data-li-id="cm_report"><a id="cm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+		</ul>
+		
 		<div data-ul-id="cm1" class="ul-bg"></div>
 		<div class="ul-title">
 			<spring:message code="menu.cm.manage" />
@@ -104,46 +122,54 @@
 		    <li data-li-id="cm_backup"><a id="cm_backup" href="${pageContext.request.contextPath}/version/backup"><span><spring:message code="func.version.backup" /></span></a></li>
 		    <li data-li-id="cm_restore"><a id="cm_restore" href="${pageContext.request.contextPath}/version/restore"><span><spring:message code="func.version.restore" /></span></a></li>
 		</ul>
-		<div data-ul-id="cm2" class="ul-bg"></div>
-		<div class="ul-title">
-			<spring:message code="menu.provision" />
-		</div>
-		<ul>
-		    <li data-li-id="cm_delivery"><a id="cm_delivery" href="${pageContext.request.contextPath}/delivery"><span><spring:message code="func.provision.delivery" /></span></a></li>
-		    <%
-              if (Env.SHOW_MENU_ITEM_CM_SCRIPT.equals(__SHOW__)) {
-            %>
-		    	<li data-li-id="cm_script"><a id="cm_script" href="${pageContext.request.contextPath}/script"><span><spring:message code="func.script.manage" /></span></a></li>
-		    <%
-              }
-            %>
-		    <li data-li-id="cm_record"><a id="cm_record" href="${pageContext.request.contextPath}/delivery/record"><span><spring:message code="func.provision.record" /></span></a></li>
-		</ul>
+		
+		<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+			<div data-ul-id="cm2" class="ul-bg"></div>
+			<div class="ul-title">
+				<spring:message code="menu.provision" />
+			</div>
+			<ul>
+			    <li data-li-id="cm_delivery"><a id="cm_delivery" href="${pageContext.request.contextPath}/delivery"><span><spring:message code="func.provision.delivery" /></span></a></li>
+			    <%
+	              if (Env.SHOW_MENU_ITEM_CM_SCRIPT.equals(__SHOW__)) {
+	            %>
+			    	<li data-li-id="cm_script"><a id="cm_script" href="${pageContext.request.contextPath}/script"><span><spring:message code="func.script.manage" /></span></a></li>
+			    <%
+	              }
+	            %>
+			    <li data-li-id="cm_record"><a id="cm_record" href="${pageContext.request.contextPath}/delivery/record"><span><spring:message code="func.provision.record" /></span></a></li>
+			</ul>
+		</sec:authorize>
+		
 		<div data-ul-id="ot" class="ul-bg"></div>
 		<div class="ul-title">
 			其他系統
 		</div>
 		<ul>
-			<!-- 
 			<li data-li-id="ot_A"><a id="ot_A" href="${pageContext.request.contextPath}/others/sys/A"><span>建物管理系統</span></a></li>
 			<li data-li-id="ot_B"><a id="ot_B" href="${pageContext.request.contextPath}/others/sys/B"><span>機場收入管理系統</span></a></li>
-			 -->
 			<li data-li-id="ot_C"><a id="ot_C" href="${pageContext.request.contextPath}/others/sys/C"><span>私有雲平台</span></a></li>
 			<li data-li-id="ot_D"><a id="ot_D" href="${pageContext.request.contextPath}/others/sys/D"><span>統一威脅管理平台</span></a></li>
-			<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others/sys/CCTV"><span>CCTV</span></a></li>
+			<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others/sys/CCTV"><span>閉路電視</span></a></li>
 			<li data-li-id="ot_E"><a id="ot_E" href="${pageContext.request.contextPath}/others/sys/E"><span>無線網路網管</span></a></li>
+			<!-- 
 			<li data-li-id="ot_F"><a id="ot_F" href="${pageContext.request.contextPath}/others/sys/F"><span>PRTG</span></a></li>
 			<li data-li-id="ot_G"><a id="ot_G" href="${pageContext.request.contextPath}/others/sys/G"><span>Prime Network</span></a></li>
+			 -->
 		</ul>
-		<div data-ul-id="bk" class="ul-bg"></div>
-		<div class="ul-title">
-			<spring:message code="menu.backend" />
-		</div>
-		<ul>
-			<li data-li-id="bk_env"><a id="bk_env" href="${pageContext.request.contextPath}/admin/env/main"><span><spring:message code="func.sys.env.manage" /></span></a></li>
-			<li data-li-id="bk_job"><a id="bk_job" href="${pageContext.request.contextPath}/admin/job/main"><span><spring:message code="func.job.manage" /></span></a></li>
-			<li data-li-id="bk_log"><a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main"><span><spring:message code="func.sys.log.inquiry" /></span></a></li>
-		</ul>
+		
+		<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+			<div data-ul-id="bk" class="ul-bg"></div>
+			<div class="ul-title">
+				<spring:message code="menu.backend" />
+			</div>
+			<ul>
+				<li data-li-id="bk_env"><a id="bk_env" href="${pageContext.request.contextPath}/admin/env/main"><span><spring:message code="func.sys.env.manage" /></span></a></li>
+				<li data-li-id="bk_job"><a id="bk_job" href="${pageContext.request.contextPath}/admin/job/main"><span><spring:message code="func.job.manage" /></span></a></li>
+				<li data-li-id="bk_log"><a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main"><span><spring:message code="func.sys.log.inquiry" /></span></a></li>
+			</ul>
+		</sec:authorize>
+		
 	</aside>
 	<!-- [END] Menu -->
     

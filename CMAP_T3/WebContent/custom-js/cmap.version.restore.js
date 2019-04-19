@@ -31,6 +31,8 @@ $(document).ready(function() {
     $('#btnRestoreConfirm').click(function (e) {
     	doRestore();
     });
+    
+    findData('WEB');
 });
 
 function resetTrBgColor() {
@@ -181,7 +183,7 @@ function findData(from) {
 			"scrollX"		: true,
 			"scrollY"		: dataTableHeight,
 			"scrollCollapse": true,
-			"pageLength"	: 100,
+			"pageLength"	: 10,
 			"language" : {
 	    		"url" : _ctx + "/resources/js/dataTable/i18n/Chinese-traditional.json"
 	        },
