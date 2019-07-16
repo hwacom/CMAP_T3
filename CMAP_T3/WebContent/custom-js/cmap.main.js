@@ -227,22 +227,21 @@ function initMenuStatus(mainItemId, toggleMenuId, funcId) {
 	$("#" + funcId).addClass("yellow");
 	*/
 	
+	console.log("mainItemId: " + mainItemId + " >> toggleMenuId: " + toggleMenuId + " >> funcId: " + funcId);
 	$("li[data-li-id]").removeClass("li-active");
 	$("li[data-li-id=" + funcId + "]").addClass("li-active");
 	
 	$("div[data-ul-id]").switchClass("ul-bg-active", "ul-bg");
 	
 	switch (funcId) {
-		case "cm_failure":
+		case "am_failure":
+		case "am_report":
 			$("div[data-ul-id=cmf]").switchClass("ul-bg", "ul-bg-active");
 			break;
 			
-		case "cm_effience":
+		case "pm_effience":
+		case "pm_report":
 			$("div[data-ul-id=cme]").switchClass("ul-bg", "ul-bg-active");
-			break;
-			
-		case "cm_report":
-			$("div[data-ul-id=cmr]").switchClass("ul-bg", "ul-bg-active");
 			break;
 			
 		case "cm_manage":

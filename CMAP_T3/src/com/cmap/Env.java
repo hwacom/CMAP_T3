@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.comm.enums.Step;
 
@@ -17,29 +16,78 @@ public class Env {
 	public static String HOME_PAGE;
 
 	/**
+	 * 設定 OIDC 登入後先跳轉至 PRTG 頁面 FOR 第一次連線的使用者，需先允許自簽憑證的SSL
+	 */
+	public static String PRTG_SSH_CONFIRM_PAGE;
+	public static Boolean ENABLE_PRTG_SSH_CONFIRM_PAGE;
+
+	/**
 	 * 設定MENU TREE功能是否顯示
 	 */
-	public static String SHOW_MENU_TREE_PRTG;					// PRTG index & net_flow & dashboard
-	public static String SHOW_MENU_ITEM_CM_SCRIPT;				// 組態管理 > 腳本管理
-	public static String SHOW_MENU_TREE_ABNORMAL_ALARM;			// 異常告警
-	public static String SHOW_MENU_ITEM_IP_CONFLICT;			// 異常告警 > IP衝突查詢
-	public static String SHOW_MENU_ITEM_UNAUTHORIZED_DHCP;		// 異常告警 > 未授權DHCP設備
-	public static String SHOW_MENU_ITEM_LOOP_LOOP;				// 異常告警 > LOOP迴圈
-	public static String SHOW_MENU_ITEM_DEVICE_FAILURE;			// 異常告警 > 設備故障
-	public static String SHOW_MENU_ITEM_ABNORMAL_TRAFFIC;		// 異常告警 > 流量異常
-	public static String SHOW_MENU_ITEM_OTHER_EXCEPTION;		// 異常告警 > 其他異常
-	public static String SHOW_MENU_TREE_PLUGIN;					// 資安通報
-	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;		// 資安通報 > Wifi查詢
-	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		// 資安通報 > Net flow查詢
-	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		// 資安通報 > 開關PORT
-	public static String SHOW_MENU_ITEM_IP_OPEN_BLOCK;			// 資安通報 > IP開通/封鎖
-	public static String SHOW_MENU_ITEM_MAC_OPEN_BLOCK;			// 資安通報 > 網卡MAC開通/封鎖
+	public static String SHOW_MENU_TREE_CONTROL_PLATFORM;					 // 間控平台
+	public static String SHOW_MENU_ITEM_PRTG_INDEX;                          // 間控平台 > 首頁
+	public static String SHOW_MENU_ITEM_PRTG_DASHBOARD;                      // 間控平台 > DASHBOARD
+    public static String SHOW_MENU_ITEM_PRTG_TOPOGRAPHY;                     // 間控平台 > 拓樸圖
+    public static String SHOW_MENU_ITEM_PRTG_ALARM_SUMMARY;                  // 間控平台 > 警報總覽
+    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_STATICS;               // 間控平台 > 流量統計
+    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_OUTPUT;                // 間控平台 > 各校出口端流量圖
+    public static String SHOW_MENU_ITEM_NET_FLOW_CURRNET_RANKING;            // 間控平台 > 各校即時IP流量排行
+    public static String SHOW_MENU_ITEM_NET_FLOW_ALL_CURRNET_RANKING;        // 間控平台 > 所有學校即時IP流量排行
+
+    public static String SHOW_MENU_TREE_CONFIG_MANAGEMENT;                   // 組態管理
+	public static String SHOW_MENU_ITEM_CM_VERSION_MANAGEMENT;               // 組態管理 > 版本管理
+	public static String SHOW_MENU_ITEM_CM_VERSION_BACKUP;                   // 組態管理 > 版本備份
+	public static String SHOW_MENU_ITEM_CM_VERSION_RESTORE;                  // 組態管理 > 版本還原
+	public static String SHOW_MENU_ITEM_CM_SCRIPT;				             // 組態管理 > 腳本管理
+	public static String SHOW_MENU_ITEM_CM_PROVISION_DELIVERY;               // 組態管理 > 供裝派送
+	public static String SHOW_MENU_ITEM_CM_PROVISION_RECORD;                 // 組態管理 > 供裝紀錄
+
+	public static String SHOW_MENU_TREE_ABNORMAL_ALARM;			             // 異常告警
+	public static String SHOW_MENU_ITEM_IP_CONFLICT;			             // 異常告警 > IP衝突查詢
+	public static String SHOW_MENU_ITEM_UNAUTHORIZED_DHCP;		             // 異常告警 > 未授權DHCP設備
+	public static String SHOW_MENU_ITEM_LOOP_LOOP;				             // 異常告警 > LOOP迴圈
+	public static String SHOW_MENU_ITEM_DEVICE_FAILURE;			             // 異常告警 > 設備故障
+	public static String SHOW_MENU_ITEM_ABNORMAL_TRAFFIC;		             // 異常告警 > 流量異常
+	public static String SHOW_MENU_ITEM_OTHER_EXCEPTION;		             // 異常告警 > 其他異常
+
+	public static String SHOW_MENU_TREE_PLUGIN;					             // 資安通報
+	public static String SHOW_MENU_ITEM_PLUGIN_WIFI_POLLER;		             // 資安通報 > Wifi查詢
+	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		             // 資安通報 > Net flow查詢
+	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		             // 資安通報 > 開關PORT
+	public static String SHOW_MENU_ITEM_IP_OPEN_BLOCK;			             // 資安通報 > IP開通/封鎖
+	public static String SHOW_MENU_ITEM_MAC_OPEN_BLOCK;			             // 資安通報 > 網卡MAC開通/封鎖
+	public static String SHOW_MENU_ITEM_PLUGIN_FIREWALL;                     // 資安通報 > 防火牆LOG查詢
+
+	public static String SHOW_MENU_TREE_ABNORMAL_MANAGEMENT;                 // 障礙管理
+	public static String SHOW_MENU_ITEM_ABNORMAL_REPORT;                     // 障礙管理 > 管理報表
+
+	public static String SHOW_MENU_TREE_PERFORMANCE_MANAGEMENT;              // 效能管理
+	public static String SHOW_MENU_ITEM_PERFORMANCE_MONITOR;                 // 效能管理 > 即時監控
+	public static String SHOW_MENU_ITEM_PERFORMANCE_REPORT;                  // 效能管理 > 管理報表
+
+	public static String SHOW_MENU_TREE_PROVISION;                           // 供裝功能模組
+	public static String SHOW_MENU_TREE_OTHER_SYSTEM;                        // 其他系統
+
+	public static String SHOW_MENU_TREE_BACKEND;                             // 後台管理
+    public static String SHOW_MENU_ITEM_BK_SYS_ENV;                          // 後台管理 > 系統參數維護
+    public static String SHOW_MENU_ITEM_BK_DEFAULT_SCRIPT;                   // 後台管理 > 預設腳本維護
+    public static String SHOW_MENU_ITEM_BK_SYS_JOB;                          // 後台管理 > 排程設定維護
+    public static String SHOW_MENU_ITEM_BK_SYS_LOG;                          // 後台管理 > 系統紀錄查詢
 
 	public static Boolean ENABLE_CM_SCRIPT_MODIFY;				// 設定是否啟用腳本管理編輯功能(Y:啟用;N:不啟用，僅可做查詢)
 
 	public static String TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;	// 設定防火牆黑名單紀錄TABLE名稱
 
 	public static String ENABLE_CMD_LOG;						// 設定是否開啟對設備下的CMD LOG
+
+	public static String MAIL_SERVER_HOST;
+	public static String MAIL_SERVER_PORT;
+	public static String MAIL_FROM_ADDRESS;               // 設定Email from address
+	public static String MAIL_FROM_USERNAME;
+	public static String MAIL_SERVER_ACCOUNT;
+	public static String MAIL_SERVER_PASSWORD;
+
+	public static Integer SEND_COMMAND_SLEEP_TIME;     // 設定發送多條命令的間格時間(毫秒)
 
 	/**
 	 * GROUP_NAME下拉選單排序相關設定
@@ -64,6 +112,8 @@ public class Env {
 	public static Integer CONFIG_CONTENT_ONE_LAYER_EQUAL_TO_WHITE_SPACE_COUNT;
 	public static Integer CONFIG_CONTENT_TOP_LAYER_NUM;
 	public static Integer CONFIG_CONTENT_NO_LIMIT_LAYER_NUM;
+
+	public static Integer THREAD_COUNT_OF_DATA_POLLER;
 
 	/**
 	 * 組態檔異地備份上傳至FTP時，BY日期創建資料夾的名稱格式
@@ -152,6 +202,10 @@ public class Env {
 	public static Integer TELNET_CONNECT_TIME_OUT;
 	public static Integer TELNET_DEFAULT_PORT;
 
+	public static String TELNET_LOGIN_USERNAME_TEXT;
+	public static String TELNET_LOGIN_PASSWORD_TEXT;
+	public static Integer TELNET_READ_UNTIL_MAX_RUNTIME;
+
 	public static Integer SSH_CONNECT_TIME_OUT;
 	public static Integer SSH_SOCKET_TIME_OUT;
 	public static Integer SSH_DEFAULT_PORT;
@@ -185,6 +239,7 @@ public class Env {
 	public static String CLI_VAR_FTP_OUTPUT_FILE_PATH;
 	public static String CLI_VAR_FTP_CONFIG_FILE_PATH;
 	public static String CLI_VAR_DEVICE_FLASH_PATH;
+	public static String CLI_VAR_DEVICE_IMAGE_PATH;
 	public static String CLI_VAR_PRIORITY;
 	public static String CLI_VAR_IMAGE_BIN;
 	public static String CLI_VAR_CONFIG_FILE;
@@ -227,7 +282,10 @@ public class Env {
 	public static String PRTG_INDEX_URI;
 	public static String PRTG_DEFAULT_INDEX_URI;
 	public static String PRTG_DEFAULT_DASHBOARD_URI;
+	public static String PRTG_DEFAULT_TOPOGRAPHY_URI;
+	public static String PRTG_DEFAULT_ALARM_SUMMARY_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
+	public static String PRTG_DEFAULT_NET_FLOW_OUTPUT_URI;
 	public static String PRTG_DEFAULT_DEVICE_FAILURE_URI;
 	public static String PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;
 	public static String PRTG_LOGOUT_URI;
@@ -236,10 +294,21 @@ public class Env {
 	public static String DEFAULT_FILE_LINE_ENDING_SYMBOL;
 
 	public static String TIMEOUT_4_NET_FLOW_QUERY;
+	public static String TIMEOUT_4_FIREWALL_LOG_QUERY;
+
+	public static String ABNORMAL_NET_FLOW_LIMIT_SIZE;
+	public static String DEFAULT_NET_FLOW_FILE_NAME_REGEX;
+	public static String DEFAULT_NET_FLOW_DATA_TYPE;
+	public static String NET_FLOW_IP_STAT_SEND_TO_PRTG_SERVER_IP;
 
 	public static String BOOT_INFO_PARA_TITLE_OF_PRIORITY;
 	public static String BOOT_INFO_PARA_TITLE_OF_IMAGE;
 	public static String BOOT_INFO_PARA_TITLE_OF_CONFIG;
+
+	// 設定是否啟用組態檔內容比對差異時發MAIL通知
+	public static Boolean ENABLE_CONFIG_DIFF_NOTIFY;
+	// 設定組態檔備份時是否要參照比對模板
+	public static Boolean ENABLE_CONFIG_BACKUP_REFER_TEMPLATE;
 
 	public static ConnectionMode CONNECTION_MODE_OF_DELIVERY;
 	public static ConnectionMode CONNECTION_MODE_OF_VM_SWITCH;
@@ -272,6 +341,11 @@ public class Env {
 	public static String OIDC_USERINFO_ENDPOINT_JSON_OPEN2ID_NODE;
 	public static String OIDC_EDUINFO_ENDPOINT_JSON_SCHOOLID_NODE;
 
+	/*
+	 * 新北市教育局OpenID
+	 */
+	public static String OIDC_URL_OF_NEW_TAIPEI_CITY;
+
 	public static String FILE_EXTENSION_NAME_OF_NET_FLOW;
 
 	public static final Step[] SEND_SCRIPT = new Step[] {
@@ -284,6 +358,15 @@ public class Env {
 			Step.CHECK_PROVISION_RESULT,
 			Step.CLOSE_DEVICE_CONNECTION
 	};
+	public static final Step[] SEND_COMMANDS = new Step[] {
+            Step.FIND_DEVICE_CONNECT_INFO,
+            Step.FIND_DEVICE_LOGIN_INFO,
+            Step.CONNECT_DEVICE,
+            Step.LOGIN_DEVICE,
+            Step.SEND_COMMANDS,
+            Step.CHECK_PROVISION_RESULT,
+            Step.CLOSE_DEVICE_CONNECTION
+    };
 	public static final Step[] BACKUP_BY_TELNET = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT,
 			Step.FIND_DEVICE_CONNECT_INFO,
@@ -313,7 +396,8 @@ public class Env {
 			Step.COMPARE_CONTENTS,
 			Step.ANALYZE_CONFIG_INFO,
 			Step.COMPOSE_OUTPUT_VO,
-			Step.RECORD_DB_OF_CONFIG_VERSION_INFO
+			Step.RECORD_DB_OF_CONFIG_VERSION_INFO,
+			Step.VERSION_DIFF_NOTIFY
 	};
 	public static final Step[] BACKUP_BY_FTP = new Step[] {
 			Step.LOAD_DEFAULT_SCRIPT,
@@ -329,7 +413,8 @@ public class Env {
 			Step.COMPARE_CONTENTS,
 			Step.ANALYZE_CONFIG_INFO,
 			Step.COMPOSE_OUTPUT_VO,
-			Step.RECORD_DB_OF_CONFIG_VERSION_INFO
+			Step.RECORD_DB_OF_CONFIG_VERSION_INFO,
+            Step.VERSION_DIFF_NOTIFY
 	};
 	public static final Step[] DOWNLOAD_FILE_FROM_TFTP = new Step[] {
 			Step.CONNECT_FILE_SERVER_4_DOWNLOAD,
@@ -376,6 +461,16 @@ public class Env {
 			Step.SEND_COMMANDS,
 			Step.CLOSE_DEVICE_CONNECTION
 	};
+	public static final Step[] RESTORE_BY_LOCAL = new Step[] {
+            Step.FIND_DEVICE_CONNECT_INFO,
+            Step.FIND_DEVICE_LOGIN_INFO,
+            Step.SET_LOCAL_VERSION_INFO,
+            Step.LOAD_DEFAULT_SCRIPT,
+            Step.CONNECT_DEVICE,
+            Step.LOGIN_DEVICE,
+            Step.SEND_COMMANDS,
+            Step.CLOSE_DEVICE_CONNECTION
+    };
 	public static final Step[] RESTORE_BY_TFTP = new Step[] {
 			Step.FIND_DEVICE_CONNECT_INFO,
 			Step.FIND_DEVICE_LOGIN_INFO,

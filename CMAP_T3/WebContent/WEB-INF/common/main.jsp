@@ -17,7 +17,13 @@
     <meta name="timeout" content="${timeout}" />
     
     <!-- Favicon icon -->
+    <!-- 桃機 -->
+    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/icon.ico">
+     -->
+    
+    <!-- 台鐵 -->
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/taiwan_railway.ico">
     
     <!-- Bootstrap Core CSS -->
     <!-- <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet"> -->
@@ -32,7 +38,13 @@
     <!-- <link href="${pageContext.request.contextPath}/resources/css/blog.css" rel="stylesheet"> -->
     <link href="${pageContext.request.contextPath}/resources/css/fontawesome/all.css" rel="stylesheet">
     
+    <!-- 桃機 -->
+    <!-- 
     <link href="${pageContext.request.contextPath}/resources/css/main_T3.css" rel="stylesheet">
+    -->
+    
+    <!-- 台鐵 -->
+    <link href="${pageContext.request.contextPath}/resources/css/main_TRA.css" rel="stylesheet">
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
@@ -66,9 +78,7 @@
 	</script>
 </head>
 
-<%
-	final String __SHOW__ = "Y";
-%>
+<c:set var="__SHOW__" value="Y" scope="request"/>
 
 <body>
 	<div class="loader"></div>
@@ -79,7 +89,13 @@
 	<nav class="navbar">
 		<div class="nav">
 			<a href="${pageContext.request.contextPath}/index">
+				<!-- 
 				<img class="logo" src="${pageContext.request.contextPath}/resources/images/hwacom_white.png">
+				-->
+				
+				<!-- 台鐵 -->
+		      	<img class="img" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_icon.png" width="auto" height="45" style="margin-top: 10px; margin-left: .5rem; float: left;" />
+		  		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_word.png" width="auto" height="40" style="margin-top: 15px; float: left" />
 			</a>
 		</div>
 		<div class="nav system-title">
@@ -95,81 +111,158 @@
 
 	<!-- [START] Menu -->
 	<aside class="menu">
-		<div data-ul-id="cmf" class="ul-bg"></div>
-		<div class="ul-title">
-			障礙管理
-		</div>
-		<ul>
-			<li data-li-id="cm_failure"><a id="cm_failure" href="${pageContext.request.contextPath}/prtg/deviceFailure"><span>即時監控</span></a></li>
-			<li data-li-id="cm_report"><a id="cm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
-		</ul>
-		
-		<div data-ul-id="cme" class="ul-bg"></div>
-		<div class="ul-title">
-			效能管理
-		</div>
-		<ul>
-			<li data-li-id="cm_effience"><a id="cm_effience" href="${pageContext.request.contextPath}/prtg/performance"><span>即時監控</span></a></li>
-			<li data-li-id="cm_report"><a id="cm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
-		</ul>
-		
-		<div data-ul-id="cm1" class="ul-bg"></div>
-		<div class="ul-title">
-			<spring:message code="menu.cm.manage" />
-		</div>
-		<ul>
-			<li data-li-id="cm_manage"><a id="cm_manage" href="${pageContext.request.contextPath}/version/manage"><span><spring:message code="func.version.manage" /></span></a></li>
-		    <li data-li-id="cm_backup"><a id="cm_backup" href="${pageContext.request.contextPath}/version/backup"><span><spring:message code="func.version.backup" /></span></a></li>
-		    <li data-li-id="cm_restore"><a id="cm_restore" href="${pageContext.request.contextPath}/version/restore"><span><spring:message code="func.version.restore" /></span></a></li>
-		</ul>
-		
-		<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-			<div data-ul-id="cm2" class="ul-bg"></div>
+		<!-- [障礙管理] START -->
+		<c:if test="${Env.SHOW_MENU_TREE_ABNORMAL_MANAGEMENT eq __SHOW__}">
+			<div data-ul-id="cmf" class="ul-bg"></div>
 			<div class="ul-title">
-				<spring:message code="menu.provision" />
+				障礙管理
 			</div>
 			<ul>
-			    <li data-li-id="cm_delivery"><a id="cm_delivery" href="${pageContext.request.contextPath}/delivery"><span><spring:message code="func.provision.delivery" /></span></a></li>
-			    <%
-	              if (Env.SHOW_MENU_ITEM_CM_SCRIPT.equals(__SHOW__)) {
-	            %>
-			    	<li data-li-id="cm_script"><a id="cm_script" href="${pageContext.request.contextPath}/script"><span><spring:message code="func.script.manage" /></span></a></li>
-			    <%
-	              }
-	            %>
-			    <li data-li-id="cm_record"><a id="cm_record" href="${pageContext.request.contextPath}/delivery/record"><span><spring:message code="func.provision.record" /></span></a></li>
+				<!-- [障礙即時監控] START -->
+                <c:if test="${Env.SHOW_MENU_ITEM_DEVICE_FAILURE eq __SHOW__}">
+                	<li data-li-id="am_failure"><a id="am_failure" href="${pageContext.request.contextPath}/prtg/deviceFailure"><span>即時監控</span></a></li>
+                </c:if>
+                <!-- [障礙即時監控] END -->
+                
+                <!-- [障礙報表管理] START -->
+                <c:if test="${Env.SHOW_MENU_ITEM_ABNORMAL_REPORT eq __SHOW__}">
+                	<li data-li-id="am_report"><a id="am_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+                </c:if>
+                <!-- [障礙報表管理] END -->
 			</ul>
-		</sec:authorize>
+		</c:if>
+		<!-- [障礙管理] END -->
 		
-		<div data-ul-id="ot" class="ul-bg"></div>
-		<div class="ul-title">
-			其他系統
-		</div>
-		<ul>
-			<li data-li-id="ot_A"><a id="ot_A" href="${pageContext.request.contextPath}/others/sys/A"><span>建物管理系統</span></a></li>
-			<li data-li-id="ot_B"><a id="ot_B" href="${pageContext.request.contextPath}/others/sys/B"><span>機場收入管理系統</span></a></li>
-			<li data-li-id="ot_C"><a id="ot_C" href="${pageContext.request.contextPath}/others/sys/C"><span>私有雲平台</span></a></li>
-			<li data-li-id="ot_D"><a id="ot_D" href="${pageContext.request.contextPath}/others/sys/D"><span>統一威脅管理平台</span></a></li>
-			<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others/sys/CCTV"><span>閉路電視</span></a></li>
-			<li data-li-id="ot_E"><a id="ot_E" href="${pageContext.request.contextPath}/others/sys/E"><span>無線網路網管</span></a></li>
-			<!-- 
-			<li data-li-id="ot_F"><a id="ot_F" href="${pageContext.request.contextPath}/others/sys/F"><span>PRTG</span></a></li>
-			<li data-li-id="ot_G"><a id="ot_G" href="${pageContext.request.contextPath}/others/sys/G"><span>Prime Network</span></a></li>
-			 -->
-		</ul>
-		
-		<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-			<div data-ul-id="bk" class="ul-bg"></div>
+		<!-- [效能管理] START -->
+		<c:if test="${Env.SHOW_MENU_TREE_PERFORMANCE_MANAGEMENT eq __SHOW__}">
+			<div data-ul-id="cme" class="ul-bg"></div>
 			<div class="ul-title">
-				<spring:message code="menu.backend" />
+				效能管理
 			</div>
 			<ul>
-				<li data-li-id="bk_env"><a id="bk_env" href="${pageContext.request.contextPath}/admin/env/main"><span><spring:message code="func.sys.env.manage" /></span></a></li>
-				<li data-li-id="bk_job"><a id="bk_job" href="${pageContext.request.contextPath}/admin/job/main"><span><spring:message code="func.job.manage" /></span></a></li>
-				<li data-li-id="bk_log"><a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main"><span><spring:message code="func.sys.log.inquiry" /></span></a></li>
+				<!-- [效能即時監控] START -->
+                <c:if test="${Env.SHOW_MENU_ITEM_PERFORMANCE_MONITOR eq __SHOW__}">
+                	<li data-li-id="pm_effience"><a id="pm_effience" href="${pageContext.request.contextPath}/prtg/performance"><span>即時監控</span></a></li>
+                </c:if>
+                <!-- [效能即時監控] END -->
+                
+                <!-- [效能報表管理] START -->
+                <c:if test="${Env.SHOW_MENU_ITEM_PERFORMANCE_REPORT eq __SHOW__}">
+                	<li data-li-id="pm_report"><a id="pm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+                </c:if>
+                <!-- [效能報表管理] END -->
 			</ul>
-		</sec:authorize>
+		</c:if>
+		<!-- [效能管理] END -->
 		
+		<!-- [組態管理] END -->
+		<c:if test="${Env.SHOW_MENU_TREE_CONFIG_MANAGEMENT eq __SHOW__}">
+			<div data-ul-id="cm1" class="ul-bg"></div>
+			<div class="ul-title">
+				<spring:message code="menu.cm.manage" />
+			</div>
+			<ul>
+				<!-- [版本管理] START -->
+              	<c:if test="${Env.SHOW_MENU_ITEM_CM_VERSION_MANAGEMENT eq __SHOW__}">
+              		<li data-li-id="cm_manage"><a id="cm_manage" href="${pageContext.request.contextPath}/version/manage"><span><spring:message code="func.version.manage" /></span></a></li>
+              	</c:if>
+              	<!-- [版本管理] END -->
+              	
+              	<!-- [版本備份] START -->
+                <c:if test="${Env.SHOW_MENU_ITEM_CM_VERSION_BACKUP eq __SHOW__}">
+                	<li data-li-id="cm_backup"><a id="cm_backup" href="${pageContext.request.contextPath}/version/backup"><span><spring:message code="func.version.backup" /></span></a></li>
+                </c:if>
+                <!-- [版本備份] END -->
+                
+                <!-- [版本還原] START -->
+	            <c:if test="${Env.SHOW_MENU_ITEM_CM_VERSION_RESTORE eq __SHOW__}">
+	            	<li data-li-id="cm_restore"><a id="cm_restore" href="${pageContext.request.contextPath}/version/restore"><span><spring:message code="func.version.restore" /></span></a></li>
+	            </c:if>
+	            <!-- [版本還原] END -->
+			</ul>
+		</c:if>
+		<!-- [組態管理] END -->
+		
+		<!-- [供裝功能模組] START -->
+		<c:if test="${Env.SHOW_MENU_TREE_PROVISION eq __SHOW__}">
+			<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+				<div data-ul-id="cm2" class="ul-bg"></div>
+				<div class="ul-title">
+					<spring:message code="menu.provision" />
+				</div>
+				<ul>
+					<!-- [供裝派送] START -->
+					<c:if test="${Env.SHOW_MENU_ITEM_CM_PROVISION_DELIVERY eq __SHOW__}">
+						<li data-li-id="cm_delivery"><a id="cm_delivery" href="${pageContext.request.contextPath}/delivery"><span><spring:message code="func.provision.delivery" /></span></a></li>
+					</c:if>
+					<!-- [供裝派送] END -->
+					
+					<!-- [腳本管理] START -->
+					<c:if test="${Env.SHOW_MENU_ITEM_CM_SCRIPT eq __SHOW__}">
+						<li data-li-id="cm_script"><a id="cm_script" href="${pageContext.request.contextPath}/script"><span><spring:message code="func.script.manage" /></span></a></li>
+					</c:if>
+					<!-- [腳本管理] END -->
+					
+					<!-- [供裝紀錄] START -->
+					<c:if test="${Env.SHOW_MENU_ITEM_CM_PROVISION_RECORD eq __SHOW__}">
+						<li data-li-id="cm_record"><a id="cm_record" href="${pageContext.request.contextPath}/delivery/record"><span><spring:message code="func.provision.record" /></span></a></li>
+					</c:if>
+					<!-- [供裝紀錄] END -->
+			    </ul>
+			</sec:authorize>
+		</c:if>
+		<!-- [供裝功能模組] END -->
+		
+		<!-- [其他系統] START -->
+		<c:if test="${Env.SHOW_MENU_TREE_OTHER_SYSTEM eq __SHOW__}">
+			<div data-ul-id="ot" class="ul-bg"></div>
+			<div class="ul-title">
+				其他系統
+			</div>
+			<ul>
+				<li data-li-id="ot_A"><a id="ot_A" href="${pageContext.request.contextPath}/others/sys/A"><span>建物管理系統</span></a></li>
+				<li data-li-id="ot_B"><a id="ot_B" href="${pageContext.request.contextPath}/others/sys/B"><span>機場收入管理系統</span></a></li>
+				<li data-li-id="ot_C"><a id="ot_C" href="${pageContext.request.contextPath}/others/sys/C"><span>私有雲平台</span></a></li>
+				<li data-li-id="ot_D"><a id="ot_D" href="${pageContext.request.contextPath}/others/sys/D"><span>統一威脅管理平台</span></a></li>
+				<li data-li-id="ot_CCTV"><a id="ot_CCTV" href="${pageContext.request.contextPath}/others/sys/CCTV"><span>閉路電視</span></a></li>
+				<li data-li-id="ot_E"><a id="ot_E" href="${pageContext.request.contextPath}/others/sys/E"><span>無線網路網管</span></a></li>
+				<!-- 
+				<li data-li-id="ot_F"><a id="ot_F" href="${pageContext.request.contextPath}/others/sys/F"><span>PRTG</span></a></li>
+				<li data-li-id="ot_G"><a id="ot_G" href="${pageContext.request.contextPath}/others/sys/G"><span>Prime Network</span></a></li>
+				 -->
+			</ul>
+		</c:if>
+		<!-- [其他系統] END -->
+		
+		<!-- [後台管理] START -->
+		<c:if test="${Env.SHOW_MENU_TREE_BACKEND eq __SHOW__}">
+			<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+				<div data-ul-id="bk" class="ul-bg"></div>
+				<div class="ul-title">
+					<spring:message code="menu.backend" />
+				</div>
+				<ul>
+					<!-- [系統參數維護] START -->
+                	<c:if test="${Env.SHOW_MENU_ITEM_BK_SYS_ENV eq __SHOW__}">
+                		<li data-li-id="bk_env"><a id="bk_env" href="${pageContext.request.contextPath}/admin/env/main"><span><spring:message code="func.sys.env.manage" /></span></a></li>
+                	</c:if>
+                	<!-- [系統參數維護] END -->
+                	
+                	<!-- [排程設定維護] START -->
+                    <c:if test="${Env.SHOW_MENU_ITEM_BK_SYS_JOB eq __SHOW__}">
+                    	<li data-li-id="bk_job"><a id="bk_job" href="${pageContext.request.contextPath}/admin/job/main"><span><spring:message code="func.job.manage" /></span></a></li>
+                    </c:if>
+                    <!-- [排程設定維護] END -->
+                    
+                    <!-- [系統紀錄查詢] END -->
+                    <c:if test="${Env.SHOW_MENU_ITEM_BK_SYS_LOG eq __SHOW__}">
+                    	<li data-li-id="bk_log"><a id="bk_log" href="${pageContext.request.contextPath}/admin/log/main"><span><spring:message code="func.sys.log.inquiry" /></span></a></li>
+                    </c:if>
+                    <!-- [系統紀錄查詢] END -->
+				</ul>
+			</sec:authorize>
+		</c:if>
+		<!-- [後台管理] END -->
 	</aside>
 	<!-- [END] Menu -->
     
