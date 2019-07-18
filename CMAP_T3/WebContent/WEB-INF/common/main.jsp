@@ -126,7 +126,7 @@
                 
                 <!-- [障礙報表管理] START -->
                 <c:if test="${Env.SHOW_MENU_ITEM_ABNORMAL_REPORT eq __SHOW__}">
-                	<li data-li-id="am_report"><a id="am_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+                	<li data-li-id="am_report"><a id="am_report" href="${pageContext.request.contextPath}/prtg/deviceFailure/report"><span>報表管理</span></a></li>
                 </c:if>
                 <!-- [障礙報表管理] END -->
 			</ul>
@@ -148,7 +148,7 @@
                 
                 <!-- [效能報表管理] START -->
                 <c:if test="${Env.SHOW_MENU_ITEM_PERFORMANCE_REPORT eq __SHOW__}">
-                	<li data-li-id="pm_report"><a id="pm_report" href="${pageContext.request.contextPath}/prtg/report"><span>報表管理</span></a></li>
+                	<li data-li-id="pm_report"><a id="pm_report" href="${pageContext.request.contextPath}/prtg/performance/report"><span>報表管理</span></a></li>
                 </c:if>
                 <!-- [效能報表管理] END -->
 			</ul>
@@ -185,7 +185,7 @@
 		
 		<!-- [供裝功能模組] START -->
 		<c:if test="${Env.SHOW_MENU_TREE_PROVISION eq __SHOW__}">
-			<sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+			<sec:authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_USER')">
 				<div data-ul-id="cm2" class="ul-bg"></div>
 				<div class="ul-title">
 					<spring:message code="menu.provision" />

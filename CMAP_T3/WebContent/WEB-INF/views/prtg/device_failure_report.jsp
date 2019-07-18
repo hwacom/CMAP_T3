@@ -24,6 +24,4 @@
     -->
    
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.common.min.js"></script>
-<!-- 
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.deviceFailure.min.js"></script>
- -->
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.deviceFailure.report.min.js"></script>

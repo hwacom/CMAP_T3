@@ -6,11 +6,12 @@
 	</decorator>
 	<decorator name="login" page="views/login.jsp">
 		<pattern>/login</pattern>
-		<pattern>/accessdenied*</pattern>
 	</decorator>
 	<decorator name="loginOIDC" page="views/login_openid.jsp">
 		<pattern>/loginOIDC</pattern>
-		<pattern>/accessdenied*</pattern>
+	</decorator>
+	<decorator name="accessDenied" page="views/access_denied.jsp">
+		<pattern>/accessDenied*</pattern>
 	</decorator>
 	<decorator name="outsite" page="common/blank.jsp">
 		<pattern>/outsite*</pattern>

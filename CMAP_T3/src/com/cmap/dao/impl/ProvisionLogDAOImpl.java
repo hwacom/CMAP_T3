@@ -1,14 +1,12 @@
 package com.cmap.dao.impl;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.dao.ProvisionLogDAO;
 import com.cmap.dao.vo.ProvisionLogDAOVO;
 import com.cmap.model.ProvisionAccessLog;
@@ -96,8 +94,8 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select distinct")
 		  .append("   plm.log_master_id, pld.log_detail_id, pls.log_step_id, pldc.log_device_id, ") //index: 0~3
-		  .append("   plm.begin_time, ")		//index: 4
-		  .append("   plm.create_by, ")			//index: 5
+		  .append("   pld.begin_time, ")		//index: 4
+		  .append("   pld.create_by, ")			//index: 5
 		  .append("   dl.group_name, ")			//index: 6
 		  .append("   dl.device_name, ")		//index: 7
 		  .append("   dl.system_version, ")		//index: 8

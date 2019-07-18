@@ -8,14 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -588,7 +586,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 					vo = new DeliveryServiceVO();
 					vo.setLogStepId(logStepId);
-					vo.setDeliveryBeginTime(beginTime != null ? Constants.FORMAT_YYYYMMDD_HH24MI.format(beginTime) : "");
+					vo.setDeliveryBeginTime(beginTime != null ? Constants.FORMAT_YYYYMMDD_HH24MISS.format(beginTime) : "");
 					vo.setCreateBy(userName);
 					vo.setGroupName(groupName);
 					vo.setDeviceName(deviceName);

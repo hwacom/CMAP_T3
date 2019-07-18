@@ -153,11 +153,12 @@ function findData(from) {
 					$(row).children('td').eq(5).attr('onclick','javascript:showScriptContent(\''+data.scriptInfoId+'\', \'A\');');
 					$(row).children('td').eq(5).addClass('cursor_zoom_in');
 				}
-        	   
+				/*
 				if(data.checkScript != null) { //加上onclick事件(查看script完整內容)
 					$(row).children('td').eq(7).attr('onclick','javascript:showScriptContent(\''+data.scriptInfoId+'\', \'C\');');
 					$(row).children('td').eq(7).addClass('cursor_zoom_in');
 				}
+				*/
         	},
 			"columns" : [
 				{},{},
@@ -166,8 +167,10 @@ function findData(from) {
 				{ "data" : "systemVersion" , "className" : "center" },
 				{},
 				{ "data" : "actionScriptRemark"},
+				/*
 				{},
 				{ "data" : "checkScriptRemark"},
+				*/
 				{ "data" : "createTimeStr" , "className" : "center" },
 				{ "data" : "updateTimeStr" , "className" : "center" }
 			],
@@ -200,6 +203,7 @@ function findData(from) {
 								return getPartialContent(row.actionScript); //當內容行數超出設定，僅顯示部分內容
 						   	}
 				},
+				/*
 				{
 					"targets" : [7],
 					"className" : "left",
@@ -209,6 +213,7 @@ function findData(from) {
 								return getPartialContent(row.checkScript); //當內容行數超出設定，僅顯示部分內容
 						   	}
 				}
+				*/
 			],
 		});
 	}

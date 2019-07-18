@@ -385,7 +385,7 @@ public class PrtgController extends BaseController {
         return "prtg/performance";
     }
 
-	@RequestMapping(value = "/report", method = RequestMethod.GET)
+	@RequestMapping(value = "/deviceFailure/report", method = RequestMethod.GET)
     public String report(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
         try {
             init(model);
@@ -393,7 +393,18 @@ public class PrtgController extends BaseController {
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
-        return "prtg/report";
+        return "prtg/device_failure_report";
+    }
+
+	@RequestMapping(value = "/performance/report", method = RequestMethod.GET)
+    public String performanceReport(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/performance_report";
     }
 
 	@RequestMapping(value = "/abnormalTraffic", method = RequestMethod.GET)

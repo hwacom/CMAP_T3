@@ -15,4 +15,4 @@
    <div id="uriFrame" style="width: 100%; height: 450px;" >&nbsp;</div>
    
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.common.min.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.abnormalTraffic.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.performance.min.js"></script>

@@ -226,8 +226,6 @@ function initMenuStatus(mainItemId, toggleMenuId, funcId) {
 	$("#" + toggleMenuId).removeClass("collapse");
 	$("#" + funcId).addClass("yellow");
 	*/
-	
-	console.log("mainItemId: " + mainItemId + " >> toggleMenuId: " + toggleMenuId + " >> funcId: " + funcId);
 	$("li[data-li-id]").removeClass("li-active");
 	$("li[data-li-id=" + funcId + "]").addClass("li-active");
 	

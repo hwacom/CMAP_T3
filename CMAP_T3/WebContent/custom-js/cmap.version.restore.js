@@ -56,10 +56,10 @@ function showRestorePanel() {
 			dataType : 'json',
 			async: true,
 			beforeSend : function() {
-				showProcessing();
+				//showProcessing();
 			},
 			complete : function() {
-				hideProcessing();
+				//hideProcessing();
 			},
 			success : function(resp) {
 				if (resp.code == '200') {

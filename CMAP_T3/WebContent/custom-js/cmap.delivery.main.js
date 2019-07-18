@@ -859,11 +859,13 @@ function findData(from) {
 	        	   }
 	        	   $(row).children('td').eq(5).attr('content', data.actionScript);
 	        	   
+	        	   /*
 	        	   if(data.checkScript != null && data.checkScript.length > scriptShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
 	        	      $(row).children('td').eq(7).attr('onclick','javascript:showFullScript($(this));');
 	        	      $(row).children('td').eq(7).addClass('cursor_zoom_in');
 	        	   }
 	        	   $(row).children('td').eq(7).attr('content', data.checkScript);
+	        	   */
 	        	},
 			"ajax" : {
 				"url" : _ctx + '/delivery/getScriptListData.json',
@@ -912,8 +914,10 @@ function findData(from) {
 				{ "data" : "systemVersion" , "className" : "center"},
 				{},
 				{ "data" : "actionScriptRemark" , "orderable" : false },
+				/*
 				{},
 				{ "data" : "checkScriptRemark" , "orderable" : false }
+				*/
 			],
 			"columnDefs" : [ 
 				{
@@ -948,6 +952,7 @@ function findData(from) {
 						}
 					}
 				},
+				/*
 				{
 					"targets" : [7],
 					"className" : "left",
@@ -961,6 +966,7 @@ function findData(from) {
 						}
 					}
 				}
+				*/
 			],
 		});
 	}

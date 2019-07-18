@@ -10,13 +10,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import com.cmap.configuration.filter.RequestBodyReaderAuthenticationFilter;
 import com.cmap.security.AuthSuccessHandler;
 import com.cmap.security.AuthUnsuccessHandler;
+import com.cmap.security.CustomAccessDeniedHandler;
 import com.cmap.security.CustomLogoutHandler;
 import com.cmap.security.UserDetailsServiceImpl;
 
@@ -111,6 +112,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	*/
 
+	@Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler();
+    }
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -119,7 +125,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/loginOIDC").permitAll()
 			.antMatchers("/login/code/**").permitAll()
 			.antMatchers("/login/authByOIDC/**").permitAll()
-			.antMatchers("/admin/env/refreshAll").permitAll()
+			//.antMatchers("/admin/env/refreshAll").permitAll()
+			.antMatchers("/admin/**").hasAnyRole("ADMIN")
 			.antMatchers("/plugin/module/vmswitch/**").permitAll()	//提供PRTG呼叫切換VM備援 (Y190117, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
 			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
@@ -129,6 +136,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.successHandler(authSuccessHandler())
 //			.failureHandler(authUnsuccessHandler())
 			.and()
+			.exceptionHandling().accessDeniedHandler(accessDeniedHandler())
+		    .and()
 		.logout()
 		.addLogoutHandler(customLogoutHandler())
 	    .permitAll()

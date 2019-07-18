@@ -78,8 +78,10 @@
 		      <th scope="col" nowrap="nowrap"><spring:message code="system.version" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="execute.script.content" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="execute.script.remark" /></th>
+		      <!-- 
 		      <th scope="col" nowrap="nowrap"><spring:message code="check.script.content" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="check.script.remark" /></th>
+		       -->
 		      <th scope="col" nowrap="nowrap"><spring:message code="create.time" /></th>
 		      <th scope="col" nowrap="nowrap"><spring:message code="last.update.time" /></th>
 		    </tr>
