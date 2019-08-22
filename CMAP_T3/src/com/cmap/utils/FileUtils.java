@@ -3,12 +3,22 @@ package com.cmap.utils;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
-
 import org.apache.commons.net.ftp.FTPFile;
-
 import com.cmap.service.vo.ConfigInfoVO;
 
 public interface FileUtils {
+
+    /**
+     * 開啟連線並登入 for SFTP
+     * @param hostIp
+     * @param hostPort
+     * @param account
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public boolean connectAndLogin(final String hostIp, final Integer hostPort,
+            final String account, final String password) throws Exception;
 
 	/**
 	 * 開啟連線

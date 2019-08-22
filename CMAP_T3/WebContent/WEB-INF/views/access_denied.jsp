@@ -9,16 +9,16 @@
 
 	<!-- Favicon icon -->
     <!-- 桃機 -->
-    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/icon.ico">
-     -->
     
     <!-- 台鐵 -->
+    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/taiwan_railway.ico">
-
-	<!-- dataTable -->
-	<link href="${pageContext.request.contextPath}/resources/DataTables/datatables.min.css" rel="stylesheet">
-	<link href="${pageContext.request.contextPath}/resources/css/main_TRA.css" rel="stylesheet">
+	 -->
+	 
+	<!-- Bootstrap core CSS -->
+    <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/resources/css/main_T3.css" rel="stylesheet">
 	
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>  
 </head>
@@ -39,7 +39,7 @@
 		var redirUrl = _url.replace(_uri, "");
 		
 	    // Total seconds to wait
-	    var seconds = 3;
+	    var seconds = 4;
 	    
 	    function countdown() {
 	        seconds = seconds - 1;
@@ -48,7 +48,7 @@
 	            window.location = redirUrl;
 	        } else {
 	            // Update remaining seconds
-	            document.getElementById("countdown").innerHTML = "(" + seconds + "秒後將導向登入頁)";
+	            document.getElementById("countdown").innerHTML = "<h6>(" + seconds + "秒後自動跳轉至首頁)</h6>";
 	            // Count down using javascript
 	            window.setTimeout("countdown()", 1000);
 	        }

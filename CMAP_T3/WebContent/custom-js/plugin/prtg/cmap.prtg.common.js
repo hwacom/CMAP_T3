@@ -4,9 +4,14 @@
 var URI_LOGIN = "getLoginUri";
 var URI_INDEX = "getPrtgIndexUri";
 var URI_DASHBOARD = "getPrtgDashboardUri";
+var URI_TOPOGRAPHY = "getPrtgTopographyUri";
+var URI_ALARM_SUMMARY = "getPrtgAlarmSummaryUri";
 var URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
+var URI_NET_FLOW_OUTPUT = "getPrtgNetFlowOutputUri";
+var URI_NET_FLOW_OUTPUT_CORE = "getPrtgNetFlowOutputCoreUri";
 var URI_DEVICE_FAILURE = "getPrtgDeviceFailureUri";
 var URI_ABNORMAL_TRAFFIC = "getPrtgAbnormalTrafficUri";
+var URI_EMAIL_UPDATE = "getEmailUpdateUri";
 
 var OPEN_METHOD_IFRAME = "IFRAME";
 var OPEN_METHOD_WINDOW = "WINDOW";
@@ -73,8 +78,13 @@ function openPrtgWindow(_uri) {
 	//var wdw = window.open("", "_prtg");
     //wdw.close();
   	var obj = $("#uriFrame").get(0).getBoundingClientRect();
-  	var x = parseInt(obj.left) + parseInt((window.screenX != undefined ? window.screenX : window.screenLeft)) + 30;
-  	var y = parseInt(obj.top) + parseInt((window.screenY != undefined ? window.screenY : window.screenTop)) + 100;
+  	//var x = parseInt(obj.left) + parseInt((window.screenX != undefined ? window.screenX : window.screenLeft)) + 30;
+  	//var y = parseInt(obj.top) + parseInt((window.screenY != undefined ? window.screenY : window.screenTop)) + 100;
+  	var menu = $("#uriFrame").get(0).getBoundingClientRect();
+  	
+  	var x = parseInt(menu.width) + 60;
+  	var y = parseInt(menu.top) + 100;
+  	
   	var width = obj.width;
   	var height = obj.height - 50;
 

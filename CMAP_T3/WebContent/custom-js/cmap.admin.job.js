@@ -10,6 +10,11 @@ $(document).ready(function() {
 		isModify = false;
 		uncheckAll();
 		initModal();
+		
+		// hidden欄位清空，避免仍保留住前一次按修改按鈕時的排程資料，導致後續若是要add會判斷成modify
+		$("#jobKeyName").val("");
+		$("#jobKeyGroup").val("");
+		
 		$("#addModifyModal").modal({
 			backdrop : 'static'
 		});
@@ -26,12 +31,12 @@ $(document).ready(function() {
 	});
 
 	$("#btnDelete").click(function() {
+		isModify = false;
 		confirm("確認是否刪除?", "doDelete");
 	});
 	
 	$("#btnModify").click(function() {
 		isModify = true;
-		changeSchedView($("#inputSchedType").val());
 		jobAction('modify');
 	});
 	
@@ -116,7 +121,10 @@ function jobAction(action) {
 					$("#inputSysCheckSql").val(resp.data.inputSysCheckSql);
 					
 					$("#inputDataPollerSettingId").val(resp.data.inputDataPollerSettingId);
+					$("#inputDataPollerOperatorSettingId").val(resp.data.inputDataPollerSettingId);
 					$("#inputLocalFileOperationSettingId").val(resp.data.inputLocalFileOperationSettingId);
+					$("#inputMailSenderSettingId").val(resp.data.inputMailSenderSettingId);
+					$("#inputIpMacPortMappingPollerGroupId").val(resp.data.inputIpMacPortMappingPollerGroupId);
 					
 					$("#inputMisFirePolicy option").filter(function() {
 					    return $(this).val() == resp.data.inputMisFirePolicy; 
@@ -140,7 +148,15 @@ function jobAction(action) {
 						backdrop : 'static'
 					});
 					
+					if (action == "modify") {
+						changeSchedView($("#inputSchedType").val());
+					}
+					
 				} else {
+					// hidden欄位清空，避免仍保留住前一次按修改按鈕時的排程資料，導致後續若是要add會判斷成modify
+					$("#jobKeyName").val("");
+					$("#jobKeyGroup").val("");
+					
 					alert(resp.message);
 					findData('WEB');
 				}
@@ -226,6 +242,8 @@ function viewDetail(key) {
 				
 				$("#viewDataPollerSettingId").val(resp.data.dataPollerSettingId);
 				$("#viewLocalFileOperationSettingId").val(resp.data.localFileOperationSettingId);
+				$("#viewMailSenderSettingId").val(resp.data.mailSenderSettingId);
+				$("#viewIpMacPortMappingPollerGroupId").val(resp.data.ipMacPortMappingPollerGroupId);
 				
 				var schedType = resp.data.schedType;
 				
@@ -260,14 +278,14 @@ function findData(from) {
 		$("#collapseExample").collapse("hide");
 	}
 	
-	if (typeof resutTable !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $("#resutTable").DataTable(
+		resultTable = $("#resultTable").DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -288,15 +306,19 @@ function findData(from) {
 				"url" : _ctx + "/admin/job/getJobInfo.json",
 				"type" : "POST",
 				"data" : function ( d ) {},
+				"beforeSend" : function() {
+					//showProcessing();
+				},
+				"complete" : function() {
+					//hideProcessing();
+				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
 					ajaxErrorHandler();
 				}
 			},
 			"order": [[7 , "desc" ]],
-			/*
 			"initComplete": function(settings, json){
             },
-            */
 			"drawCallback" : function(settings) {
 				$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass("col-sm-12");
@@ -308,9 +330,9 @@ function findData(from) {
 				$("div.dataTables_info").parent().addClass("col-sm-6");
 				$("div.dataTables_paginate").parent().removeClass("col-sm-12");
 				$("div.dataTables_paginate").parent().addClass("col-sm-6");
-				
-				bindTrEvent();
+
 				feather.replace();
+				bindTrEvent();
 			},
 			"columns" : [
 				{},{},{},

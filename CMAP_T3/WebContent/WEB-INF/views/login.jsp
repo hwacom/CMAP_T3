@@ -11,13 +11,13 @@
     
    	<!-- Favicon icon -->
     <!-- 桃機 -->
-    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/icon.ico">
-     -->
     
     <!-- 台鐵 -->
+    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/taiwan_railway.ico">
-
+	 -->
+	 
     <title><spring:message code="cmap.title" /></title>
 
     <!-- Bootstrap core CSS -->
@@ -25,12 +25,12 @@
 
     <!-- Custom styles for this template -->
     <!-- 桃機 -->
-    <!-- 
-	<link href="${pageContext.request.contextPath}/resources/css/signin.css" rel="stylesheet">
-	-->
+	<link href="${pageContext.request.contextPath}/resources/css/signin_T3.css" rel="stylesheet">
 	
 	<!-- 台鐵 -->
+	<!-- 
 	<link href="${pageContext.request.contextPath}/resources/css/signin_TRA.css" rel="stylesheet">
+	-->
 	
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
 	
@@ -45,14 +45,14 @@
         <!-- ============================================================== -->
         <div class="row" style="height: 20vh; align-content: center; margin-left: -10%;">
         	<!-- 桃機 -->
-        	<!--
         	<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="80" style="padding-top: 3px; z-index: 1004;" />
       		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short_white.png" width="auto" height="30" style="margin-top: 50px; z-index: 1004;" />
-        	-->
         	
         	<!-- 台鐵 -->
+        	<!--
 	      	<img class="img" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_icon.png" width="auto" height="80" style="padding-top: 3px; z-index: 1004;" />
 	  		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_word.png" width="auto" height="50" style="margin-top: 33px; z-index: 1004; margin-left: 5px;" />
+        	-->
         </div>
         <div class="row" style="height: 55vh;">
             <div class="col-12">

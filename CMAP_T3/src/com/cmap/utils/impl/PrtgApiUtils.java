@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -20,7 +18,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.ServiceLayerException;
@@ -284,7 +281,26 @@ public class PrtgApiUtils implements ApiUtils {
 			deviceInfoMap.put(Constants.DEVICE_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_NAME));
 			deviceInfoMap.put(Constants.DEVICE_ENG_NAME, getName(device.getName(), Env.PRTG_WRAPPED_SYMBOL_FOR_DEVICE_ENG_NAME));
 			deviceInfoMap.put(Constants.DEVICE_IP, device.getHost());
-			deviceInfoMap.put(Constants.DEVICE_SYSTEM, device.getTags());
+
+			String tags = device.getTags();
+
+			if (StringUtils.isNotBlank(tags)) {
+			    /*
+	             * tags格式 = [型號] [層級(L3/L2)] (中間用空格隔開)
+	             */
+	            String[] tag = StringUtils.split(tags);
+	            if (tag != null) {
+	                deviceInfoMap.put(Constants.DEVICE_MODEL, tag[0]);
+	                deviceInfoMap.put(Constants.DEVICE_LAYER, tag.length > 1 ? tag[1] : null);
+	            } else {
+	                deviceInfoMap.put(Constants.DEVICE_MODEL, null);
+	                deviceInfoMap.put(Constants.DEVICE_LAYER, null);
+	            }
+			} else {
+			    //如果PRTG內沒設定tag情況則預設塞入null
+			    deviceInfoMap.put(Constants.DEVICE_MODEL, null);
+                deviceInfoMap.put(Constants.DEVICE_LAYER, null);
+			}
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -330,6 +346,46 @@ public class PrtgApiUtils implements ApiUtils {
 		}
 
 		return false;
+	}
+
+	/**
+	 * 取得PRTG pashhash
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public String getPasshash(String username, String password) throws ServiceLayerException {
+	    String retVal = null;
+	    try {
+            if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+                throw new Exception("[Login failed] >> username or password is blank.");
+
+            } else {
+                API_LOGIN = StringUtils.replace(API_LOGIN, "{username}", username);
+                API_LOGIN = StringUtils.replace(API_LOGIN, "{password}", password);
+
+                String apiUrl = PRTG_ROOT.concat(API_LOGIN);
+
+                try {
+                    retVal = callPrtg(apiUrl);
+
+                } catch (ConnectTimeoutException cte) {
+                    throw new ServiceLayerException("PRTG連線超時");
+                }
+
+                if (StringUtils.isBlank(retVal)) {
+                    throw new ServiceLayerException("PRTG認證失敗");
+                }
+            }
+
+        } catch (ServiceLayerException sle) {
+            throw sle;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServiceLayerException("PRTG認證異常");
+        }
+        return retVal;
 	}
 
 	private void checkPasshash(HttpServletRequest request) throws Exception {

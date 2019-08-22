@@ -3,7 +3,6 @@ package com.cmap.service.vo;
 public class ScriptServiceVO extends CommonServiceVO {
 
 	private String queryScriptTypeCode;
-	private String querySystemDefault;
 
 	private String scriptInfoId;
 	private String scriptListId;
@@ -226,10 +225,4 @@ public class ScriptServiceVO extends CommonServiceVO {
 	public void setEnableModify(Boolean enableModify) {
 		this.enableModify = enableModify;
 	}
-    public String getQuerySystemDefault() {
-        return querySystemDefault;
-    }
-    public void setQuerySystemDefault(String querySystemDefault) {
-        this.querySystemDefault = querySystemDefault;
-    }
 }

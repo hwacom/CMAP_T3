@@ -3,17 +3,15 @@ package com.cmap.configuration.filter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -26,6 +24,7 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 
@@ -178,8 +177,14 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 		//        String requestBody;
 		//            requestBody = IOUtils.toString(request.getReader());
 
+	    String previousPage = Objects.toString(request.getSession().getAttribute(Constants.PREVIOUS_URL));
+
 		//每次登入動作首先清空Session所有值
 		request.getSession().invalidate();
+
+		if (StringUtils.isNotBlank(previousPage)) {
+		    request.getSession().setAttribute(Constants.PREVIOUS_URL, previousPage);
+		}
 
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
@@ -194,7 +199,7 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 				loginAuthByPRTG(request, username, password);
 				break;
 
-			case Constants.LOGIN_AUTH_MODE_OIDC:
+			case Constants.LOGIN_AUTH_MODE_OIDC_MIAOLI:
 				loginAuthByOIDC(request, response);
 				break;
 		}

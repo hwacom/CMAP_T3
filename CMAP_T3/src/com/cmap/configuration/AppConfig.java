@@ -1,14 +1,14 @@
 package com.cmap.configuration;
 
 import java.util.Locale;
-
+import java.util.Properties;
 import javax.servlet.Filter;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -23,7 +23,6 @@ import org.springframework.web.servlet.view.JstlView;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
-
 import com.cmap.dao.I18nDAO;
 import com.cmap.dao.impl.I18nDAOImpl;
 import com.cmap.i18n.DatabaseMessageSourceBase;
@@ -140,7 +139,6 @@ public class AppConfig implements WebMvcConfigurer {
 		return i18nDAO;
 	}
 
-	/*
 	@Bean
 	public JavaMailSenderImpl javaMailSenderImpl(){
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -158,7 +156,6 @@ public class AppConfig implements WebMvcConfigurer {
 		prop.setProperty("mail.debug", "false");
 		return mailSender;
 	}
-	 */
 
 	@Bean
 	public Filter characterEncodingFilter() {

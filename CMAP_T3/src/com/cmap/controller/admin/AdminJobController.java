@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.cmap.AppResponse;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
@@ -206,6 +203,8 @@ public class AdminJobController extends BaseController {
 			retMap.put("inputSysCheckSql", retVO.getSysCheckSqlStr());
 			retMap.put("inputDataPollerSettingId", retVO.getDataPollerSettingId());
 			retMap.put("inputLocalFileOperationSettingId", retVO.getLocalFileOperationSettingId());
+			retMap.put("inputMailSenderSettingId", retVO.getMailSenderSettingId());
+			retMap.put("inputIpMacPortMappingPollerGroupId", retVO.getIpMacPortMappingPollerGroupId());
 
 			return new AppResponse(HttpServletResponse.SC_OK, "OK", retMap);
 
@@ -364,6 +363,8 @@ public class AdminJobController extends BaseController {
 				retMap.put("sysCheckSqls", jsVO.getSysCheckSqlStr());
 				retMap.put("dataPollerSettingId", jsVO.getDataPollerSettingId());
 				retMap.put("localFileOperationSettingId", jsVO.getLocalFileOperationSettingId());
+				retMap.put("mailSenderSettingId", jsVO.getMailSenderSettingId());
+				retMap.put("ipMacPortMappingPollerGroupId", jsVO.getIpMacPortMappingPollerGroupId());
 			}
 
 			return new AppResponse(HttpServletResponse.SC_OK, "資料取得正常", retMap);

@@ -2,6 +2,7 @@ package com.cmap.service.vo;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.cmap.comm.enums.ConnectionMode;
 
 public class ConfigInfoVO implements Cloneable {
 
@@ -20,12 +21,15 @@ public class ConfigInfoVO implements Cloneable {
 	private String fileFullName;
 	private String systemVersion;
 	private String configType;
-	private String deviceFlashConfigPath;
+	private String deviceFlashConfigPath;  // 設備端要還原的版本組態檔路徑
+	private String deviceFlashImagePath;   // 設備端要還原的Image檔路徑
 
 	private String deviceIp;
+	private Integer devicePort;
 	private String account;
 	private String password;
 	private String enablePassword;
+	private ConnectionMode connectionMode;
 
 	private String tFtpIP;
 	private Integer tFtpPort;
@@ -330,4 +334,28 @@ public class ConfigInfoVO implements Cloneable {
 	public void setDeviceFlashConfigPath(String deviceFlashConfigPath) {
 		this.deviceFlashConfigPath = deviceFlashConfigPath;
 	}
+
+    public String getDeviceFlashImagePath() {
+        return deviceFlashImagePath;
+    }
+
+    public void setDeviceFlashImagePath(String deviceFlashImagePath) {
+        this.deviceFlashImagePath = deviceFlashImagePath;
+    }
+
+    public Integer getDevicePort() {
+        return devicePort;
+    }
+
+    public void setDevicePort(Integer devicePort) {
+        this.devicePort = devicePort;
+    }
+
+    public ConnectionMode getConnectionMode() {
+        return connectionMode;
+    }
+
+    public void setConnectionMode(ConnectionMode connectionMode) {
+        this.connectionMode = connectionMode;
+    }
 }

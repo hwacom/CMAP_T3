@@ -24,15 +24,19 @@ public class Env {
 	/**
 	 * 設定MENU TREE功能是否顯示
 	 */
-	public static String SHOW_MENU_TREE_CONTROL_PLATFORM;					 // 間控平台
-	public static String SHOW_MENU_ITEM_PRTG_INDEX;                          // 間控平台 > 首頁
-	public static String SHOW_MENU_ITEM_PRTG_DASHBOARD;                      // 間控平台 > DASHBOARD
-    public static String SHOW_MENU_ITEM_PRTG_TOPOGRAPHY;                     // 間控平台 > 拓樸圖
-    public static String SHOW_MENU_ITEM_PRTG_ALARM_SUMMARY;                  // 間控平台 > 警報總覽
-    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_STATICS;               // 間控平台 > 流量統計
-    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_OUTPUT;                // 間控平台 > 各校出口端流量圖
-    public static String SHOW_MENU_ITEM_NET_FLOW_CURRNET_RANKING;            // 間控平台 > 各校即時IP流量排行
-    public static String SHOW_MENU_ITEM_NET_FLOW_ALL_CURRNET_RANKING;        // 間控平台 > 所有學校即時IP流量排行
+	public static String SHOW_MENU_TREE_CONTROL_PLATFORM;					    // 間控平台
+	public static String SHOW_MENU_ITEM_PRTG_INDEX;                             // 間控平台 > 首頁
+	public static String SHOW_MENU_ITEM_PRTG_DASHBOARD;                         // 間控平台 > DASHBOARD
+    public static String SHOW_MENU_ITEM_PRTG_TOPOGRAPHY;                        // 間控平台 > 拓樸圖
+    public static String SHOW_MENU_ITEM_PRTG_ALARM_SUMMARY;                     // 間控平台 > 警報總覽
+    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_STATICS;                  // 間控平台 > 流量統計
+    public static String SHOW_MENU_ITEM_PRTG_CR_NET_FLOW_OUTPUT;                // 間控平台 > 核心路由器出口流量圖
+    public static String SHOW_MENU_ITEM_PRTG_NET_FLOW_OUTPUT;                   // 間控平台 > 各校出口端流量圖
+    public static String SHOW_MENU_ITEM_NET_FLOW_CURRNET_RANKING_TRAFFIC;       // 間控平台 > 各校即時IP流量排行
+    public static String SHOW_MENU_ITEM_NET_FLOW_ALL_CURRNET_RANKING_TRAFFIC;   // 間控平台 > 所有學校即時IP流量排行
+    public static String SHOW_MENU_ITEM_NET_FLOW_CURRNET_RANKING_SESSION;       // 間控平台 > 各校即時連線數排行
+    public static String SHOW_MENU_ITEM_NET_FLOW_ALL_CURRNET_RANKING_SESSION;   // 間控平台 > 所有學校即時連線數排行
+    public static String SHOW_MENU_ITEM_EMAIL_UPDATE;                           // 間控平台 > Email修改
 
     public static String SHOW_MENU_TREE_CONFIG_MANAGEMENT;                   // 組態管理
 	public static String SHOW_MENU_ITEM_CM_VERSION_MANAGEMENT;               // 組態管理 > 版本管理
@@ -43,8 +47,8 @@ public class Env {
 	public static String SHOW_MENU_ITEM_CM_PROVISION_RECORD;                 // 組態管理 > 供裝紀錄
 
 	public static String SHOW_MENU_TREE_ABNORMAL_ALARM;			             // 異常告警
-	public static String SHOW_MENU_ITEM_IP_CONFLICT;			             // 異常告警 > IP衝突查詢
-	public static String SHOW_MENU_ITEM_UNAUTHORIZED_DHCP;		             // 異常告警 > 未授權DHCP設備
+	public static String SHOW_MENU_ITEM_IP_CONFLICT;			             // 異常告警 > IP衝突查詢(IP/MAC/Port異動查詢)
+	public static String SHOW_MENU_ITEM_UNAUTHORIZED_DHCP;		             // 異常告警 > 未授權DHCP設備(私接分享器)
 	public static String SHOW_MENU_ITEM_LOOP_LOOP;				             // 異常告警 > LOOP迴圈
 	public static String SHOW_MENU_ITEM_DEVICE_FAILURE;			             // 異常告警 > 設備故障
 	public static String SHOW_MENU_ITEM_ABNORMAL_TRAFFIC;		             // 異常告警 > 流量異常
@@ -55,18 +59,19 @@ public class Env {
 	public static String SHOW_MENU_ITEM_PLUGIN_NET_FLOW;		             // 資安通報 > Net flow查詢
 	public static String SHOW_MENU_ITEM_PLUGIN_SWITCH_PORT;		             // 資安通報 > 開關PORT
 	public static String SHOW_MENU_ITEM_IP_OPEN_BLOCK;			             // 資安通報 > IP開通/封鎖
+	public static String SHOW_MENU_ITEM_IP_BLOCKED_RECORD;                   // 資安通報 > IP封鎖紀錄查詢
 	public static String SHOW_MENU_ITEM_MAC_OPEN_BLOCK;			             // 資安通報 > 網卡MAC開通/封鎖
 	public static String SHOW_MENU_ITEM_PLUGIN_FIREWALL;                     // 資安通報 > 防火牆LOG查詢
 
-	public static String SHOW_MENU_TREE_ABNORMAL_MANAGEMENT;                 // 障礙管理
-	public static String SHOW_MENU_ITEM_ABNORMAL_REPORT;                     // 障礙管理 > 管理報表
+    public static String SHOW_MENU_TREE_ABNORMAL_MANAGEMENT;                 // 障礙管理
+    public static String SHOW_MENU_ITEM_ABNORMAL_REPORT;                     // 障礙管理 > 管理報表
 
-	public static String SHOW_MENU_TREE_PERFORMANCE_MANAGEMENT;              // 效能管理
-	public static String SHOW_MENU_ITEM_PERFORMANCE_MONITOR;                 // 效能管理 > 即時監控
-	public static String SHOW_MENU_ITEM_PERFORMANCE_REPORT;                  // 效能管理 > 管理報表
+    public static String SHOW_MENU_TREE_PERFORMANCE_MANAGEMENT;              // 效能管理
+    public static String SHOW_MENU_ITEM_PERFORMANCE_MONITOR;                 // 效能管理 > 即時監控
+    public static String SHOW_MENU_ITEM_PERFORMANCE_REPORT;                  // 效能管理 > 管理報表
 
-	public static String SHOW_MENU_TREE_PROVISION;                           // 供裝功能模組
-	public static String SHOW_MENU_TREE_OTHER_SYSTEM;                        // 其他系統
+    public static String SHOW_MENU_TREE_PROVISION;                           // 供裝功能模組
+    public static String SHOW_MENU_TREE_OTHER_SYSTEM;                        // 其他系統
 
 	public static String SHOW_MENU_TREE_BACKEND;                             // 後台管理
     public static String SHOW_MENU_ITEM_BK_SYS_ENV;                          // 後台管理 > 系統參數維護
@@ -74,27 +79,41 @@ public class Env {
     public static String SHOW_MENU_ITEM_BK_SYS_JOB;                          // 後台管理 > 排程設定維護
     public static String SHOW_MENU_ITEM_BK_SYS_LOG;                          // 後台管理 > 系統紀錄查詢
 
-	public static Boolean ENABLE_CM_SCRIPT_MODIFY;				// 設定是否啟用腳本管理編輯功能(Y:啟用;N:不啟用，僅可做查詢)
+	public static Boolean ENABLE_CM_SCRIPT_MODIFY;				             // 設定是否啟用腳本管理編輯功能(Y:啟用;N:不啟用，僅可做查詢)
 
-	public static String TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;	// 設定防火牆黑名單紀錄TABLE名稱
+	public static String TABLE_NAME_OF_FIREWALL_BLACK_LIST_RECORD;	         // 設定防火牆黑名單紀錄TABLE名稱
 
-	public static String ENABLE_CMD_LOG;						// 設定是否開啟對設備下的CMD LOG
+	public static String ENABLE_CMD_LOG;						             // 設定是否開啟對設備下的CMD LOG
+
+	public static String DEVICE_LAYER_L3;                                    // 設定PRTG中設定的tag，表示device layer為L3的字串
+	public static String DEVICE_LAYER_L2;                                    // 設定PRTG中設定的tag，表示device layer為L2的字串
 
 	public static String MAIL_SERVER_HOST;
 	public static String MAIL_SERVER_PORT;
-	public static String MAIL_FROM_ADDRESS;               // 設定Email from address
+	public static String MAIL_FROM_ADDRESS;                                  // 設定Email from address
 	public static String MAIL_FROM_USERNAME;
 	public static String MAIL_SERVER_ACCOUNT;
 	public static String MAIL_SERVER_PASSWORD;
 
-	public static Integer SEND_COMMAND_SLEEP_TIME;     // 設定發送多條命令的間格時間(毫秒)
+	public static Integer SEND_COMMAND_SLEEP_TIME;                           // 設定發送多條命令的間格時間(毫秒)
+	public static String GET_IP_FROM_INFO_API_URL;                           // 設定查詢IP來源資訊的網站API URL (http://ip-api.com/docs/)
+	public static String GET_IP_FROM_INFO_WEB_SITE_URL;                      // 設定查詢IP來源資訊的網站URL (https://dnslytics.com/，由苗栗教網老師提供)
+
+	public static String ENABLE_NET_FLOW_IP_STATISTICS;                      // 設定是否啟用 NET_FLOW IP流量統計
+	public static String NET_FLOW_IP_STATISTICS_ONLY_IN_GROUP;               // 設定 NET_FLOW IP流量統計的對象是否只計算 GROUP(學校)清單內的範圍
+	public static String NET_FLOW_SOURCE_COLUMN_NAME_OF_SOURCE_IP;           // 設定 NET_FLOW 檔案中「Source_IP」(來源IP)欄位名稱
+	public static String NET_FLOW_SOURCE_COLUMN_NAME_OF_DESTINATION_IP;      // 設定 NET_FLOW 檔案中「Destination_IP」(目的IP)欄位名稱
+	public static String NET_FLOW_SOURCE_COLUMN_NAME_OF_SIZE;                // 設定 NET_FLOW 檔案中「Size」(大小)欄位名稱
+	public static Integer NET_FLOW_PAGE_LENGTH;                              // 設定 NET_FLOW 查詢功能，每次查詢的筆數上限
+
+	public static String ENABLE_LOG_USER_OPERATIONS;						 // 設定是否啟用USER操作紀錄到DB
 
 	/**
 	 * GROUP_NAME下拉選單排序相關設定
 	 */
-	public static Boolean SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO;	// 以GROUP_NAME內含的序碼做排序 (e.g. 030.XX國小)，目前for苗栗縣教網使用
-	public static String GROUP_NAME_SPLIT_SEQ_NO_SYMBOL;		// 設定GROUP_NAME用來切割序碼的符號 (搭配SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO使用)
-	public static Integer GROUP_NAME_SPLITTED_SEQ_NO_INDEX;		// 設定GROUP_NAME切割後序碼所在陣列的INDEX (搭配GROUP_NAME_SPLIT_SEQ_NO_SYMBOL使用)
+	public static Boolean SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO;	 // 以GROUP_NAME內含的序碼做排序 (e.g. 030.XX國小)，目前for苗栗縣教網使用
+	public static String GROUP_NAME_SPLIT_SEQ_NO_SYMBOL;		             // 設定GROUP_NAME用來切割序碼的符號 (搭配SORT_GROUP_MENU_BY_GROUP_NAME_INCLUDED_SEQ_NO使用)
+	public static Integer GROUP_NAME_SPLITTED_SEQ_NO_INDEX;		             // 設定GROUP_NAME切割後序碼所在陣列的INDEX (搭配GROUP_NAME_SPLIT_SEQ_NO_SYMBOL使用)
 
 	public static List<String> DECODE_FIELDS = new ArrayList<>();
 	public static ConnectionMode FILE_TRANSFER_MODE;
@@ -210,10 +229,14 @@ public class Env {
 	public static Integer SSH_SOCKET_TIME_OUT;
 	public static Integer SSH_DEFAULT_PORT;
 
+	public static Integer SNMP_CONNECT_TIME_OUT;
+
 	public static String DEFAULT_DEVICE_LOGIN_ACCOUNT;
 	public static String DEFAULT_DEVICE_LOGIN_PASSWORD;
 	public static String DEFAULT_DEVICE_ENABLE_PASSWORD;
 	public static String DEFAULT_DEVICE_FLASH_DIR_PATH;
+	public static String DEFAULT_DEVICE_COMMUNITY_STRING;
+	public static Integer DEFAULT_DEVICE_UDP_PORT;
 
 	public static String DEFAULT_RESTORE_SCRIPT_CODE;
 	public static String DEFAULT_DEVICE_CONFIG_BACKUP_MODE;	//預設設備組態檔備份模式 (DEVICE -> TFTP SERVER1)
@@ -225,6 +248,15 @@ public class Env {
 	public static String COMM_SEPARATE_SYMBOL;
 
 	public static Integer QUARTZ_DEFAULT_PRIORITY;
+
+	public static String OID_NAME_OF_ARP_TABLE;
+	public static String OID_NAME_OF_ARP_TABLE_INTERFACE_ID;
+	public static String OID_NAME_OF_ARP_TABLE_MAC_ADDRESS;
+	public static String OID_NAME_OF_ARP_TABLE_IP_ADDRESS;
+
+	public static String OID_NAME_OF_MAC_TABLE;
+	public static String OID_NAME_OF_MAC_TABLE_PORT_ID;
+	public static String OID_NAME_OF_MAC_TABLE_MAC_ADDRESS;
 
 	public static String CLI_VAR_ENABLE_PWD;
 	public static String CLI_VAR_PWD;
@@ -286,8 +318,10 @@ public class Env {
 	public static String PRTG_DEFAULT_ALARM_SUMMARY_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_OUTPUT_URI;
+	public static String PRTG_DEFAULT_NET_FLOW_OUTPUT_CORE_URI;
 	public static String PRTG_DEFAULT_DEVICE_FAILURE_URI;
 	public static String PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;
+	public static String PRTG_DEFAULT_EMAIL_UPDATE_URI;
 	public static String PRTG_LOGOUT_URI;
 
 	public static String DEFAULT_INSERT_DB_FILE_DIR;

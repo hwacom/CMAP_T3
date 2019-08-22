@@ -2,14 +2,12 @@ package com.cmap.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.comm.enums.ScriptType;
 import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.vo.ScriptDAOVO;
@@ -38,18 +36,18 @@ public class ScriptDefaultMappingDAOImpl extends BaseDaoHibernate implements Scr
 	}
 
 	@Override
-	public String findDefaultScriptCodeBySystemVersion(ScriptType scriptType, String systemVersion) {
+	public String findDefaultScriptCodeBySystemVersion(ScriptType scriptType, String deviceModel) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select sdm ")
 		.append(" from ScriptDefaultMapping sdm ")
 		.append(" where 1=1 ")
 		.append(" and sdm.scriptType = :scriptType ")
-		.append(" and sdm.systemVersion = :systemVersion ");
+		.append(" and sdm.deviceModel = :deviceModel ");
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 		q.setParameter("scriptType", scriptType.toString());
-		q.setParameter("systemVersion", StringUtils.isBlank(systemVersion) ? "*" : systemVersion);
+		q.setParameter("deviceModel", StringUtils.isBlank(deviceModel) ? "*" : deviceModel);
 
 		List<ScriptDefaultMapping> entity = (List<ScriptDefaultMapping>)q.list();
 		String scriptCode = entity != null && !entity.isEmpty() ? entity.get(0).getDefaultScriptCode() : null;

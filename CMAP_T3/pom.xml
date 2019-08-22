@@ -136,11 +136,13 @@
 		<version>5.1.2.RELEASE</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-openid -->
+	<!-- 
 	<dependency>
 	    <groupId>org.springframework.security</groupId>
 	    <artifactId>spring-security-openid</artifactId>
 	    <version>5.1.2.RELEASE</version>
 	</dependency>
+	 -->
 	<!-- Logging -->
 	<!-- https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j -->
 	<dependency>
@@ -360,6 +362,54 @@
 	    <artifactId>oauth2-oidc-sdk</artifactId>
 	    <version>6.2</version>
 	    <scope>runtime</scope>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.openid4java/openid4java -->
+	<dependency>
+	    <groupId>org.openid4java</groupId>
+	    <artifactId>openid4java</artifactId>
+	    <version>1.0.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/javax.cache/cache-api -->
+	<dependency>
+	    <groupId>javax.cache</groupId>
+	    <artifactId>cache-api</artifactId>
+	    <version>1.1.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.ehcache/ehcache -->
+	<dependency>
+	    <groupId>org.ehcache</groupId>
+	    <artifactId>ehcache</artifactId>
+	    <version>3.7.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+	<dependency>
+	    <groupId>org.springframework.data</groupId>
+	    <artifactId>spring-data-jpa</artifactId>
+	    <version>2.1.6.RELEASE</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
+	<dependency>
+	    <groupId>javax.mail</groupId>
+	    <artifactId>javax.mail-api</artifactId>
+	    <version>1.6.2</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-email</artifactId>
+	    <version>1.5</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2 -->
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-vfs2</artifactId>
+	    <version>2.3</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+	<dependency>
+	    <groupId>com.jcraft</groupId>
+	    <artifactId>jsch</artifactId>
+	    <version>0.1.55</version>
 	</dependency>
    </dependencies>
 </project>

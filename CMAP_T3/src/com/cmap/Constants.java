@@ -2,15 +2,17 @@ package com.cmap;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
 import com.cmap.comm.enums.ConnectionMode;
 
 public class Constants {
+
+    public static final String LOGIN_FROM_APP = "LOGIN_FROM_APP";
 
 	public static final String ADD_LINE = "[ADD]";
 	public static final String GROUP_DEVICE_MAP = "GROUP_DEVICE_MAP";
 	public static final String CHARSET_UTF8 = "UTF-8";
 	public static final String SYS = "SYS";
+	public static final String PREVIOUS_URL = "PREVIOUS_URL";
 	public static final String USERNAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String PASSHASH = "passhash";
@@ -23,10 +25,13 @@ public class Constants {
 	public static final String FIELD_NAME_UPDATE_BY = "updateBy";
 	public static final String UNKNOWN = "unknown";
 
+	public static final String VM_SWITCH_HOST_NAME = "vmSwitchHostName";
+
 	public static final String EXCEPTION_POLICY_CONTINUE = "CONTINUE";
 	public static final String EXCEPTION_POLICY_BREAK = "BREAK";
 
-	public static final String LOGIN_AUTH_MODE_OIDC = "OIDC";
+	public static final String LOGIN_AUTH_MODE_OIDC_MIAOLI = "OIDC_MAC";
+	public static final String LOGIN_AUTH_MODE_OIDC_NEW_TAIPEI = "OIDC_NTPC";
 	public static final String LOGIN_AUTH_MODE_PRTG = "PRTG";
 	public static final String LOGIN_AUTH_MODE_PRIME = "PRIME";
 	public static final String LOGIN_AUTH_MODE_DB = "DB";
@@ -42,8 +47,25 @@ public class Constants {
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	public static final SimpleDateFormat FORMAT_YYYYMMDD_HH24MI = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 	public static final SimpleDateFormat FORMAT_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat FORMAT_HH24_MI_SS = new SimpleDateFormat("HH:mm:ss");
 
 	public static final DecimalFormat NUMBER_FORMAT_THOUSAND_SIGN = new DecimalFormat("###,###,###,###.##");
+
+	public static final String FILE_PERMISSIONS_RWXRWXRWX = "rwxrwxrwx";
+	public static final String FILE_PERMISSIONS_RWXR__R__ = "rwxr--r--";
+	public static final String FILE_PERMISSIONS_RWXR_X___ = "rwxr-x---";
+
+	public static final String INTERVAL_DAY_OF_MONTH = "DAY_OF_MONTH";
+	public static final String INTERVAL_DAY_OF_YEAR = "DAY_OF_YEAR";
+	public static final String INTERVAL_WEEK = "WEEK";
+	public static final String INTERVAL_MONTH = "MONTH";
+
+	public static final String DOWNLOAD = "DOWNLOAD";
+	public static final String UPLOAD = "UPLOAD";
+	public static final String TOTAL = "TOTAL";
+
+	public static final String IPV4 = "IPv4";
+	public static final String IPV6 = "IPv6";
 
 	public static final String FTP = "FTP";
 	public static final String TFTP = "TFTP";
@@ -51,6 +73,9 @@ public class Constants {
 	public static final String SSH = "SSH";
 	public static final String WMI = "WMI";
 	public static final String SNMP = "SNMP";
+
+	public static final String ACTION_TYPE_BACKUP = "BACKUP";
+	public static final String ACTION_TYPE_RESTORE = "RESTORE";
 
 	public static final String CONTENT_SETTING_ACTION_ADD = "+";
 	public static final String CONTENT_SETTING_ACTION_SUBSTRACT = "-";
@@ -64,7 +89,10 @@ public class Constants {
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_FTP_FILE = "cleanUpFtpFile";
 	public static final String QUARTZ_SCHED_TYPE_CLEAN_UP_DB_DATA = "cleanUpDbData";
 	public static final String QUARTZ_SCHED_TYPE_DATA_POLLER = "dataPoller";
+	public static final String QUARTZ_SCHED_TYPE_DATA_POLLER_OPERATOR = "dataPollerOperator";
 	public static final String QUARTZ_SCHED_TYPE_LOCAL_FILE_OPERATION = "localFileOperation";
+	public static final String QUARTZ_SCHED_TYPE_MAIL_SENDER = "mailSender";
+	public static final String QUARTZ_SCHED_TYPE_IP_MAC_PORT_MAPPING_POLLER = "ipMacPortMappingPoller";
 
 	public static final String QUARTZ_PARA_JSON_STR = "paraJsonStr";
 	public static final String QUARTZ_PARA_DEVICE_LIST_ID = "deviceListIds";
@@ -80,8 +108,11 @@ public class Constants {
 	public static final String QUARTZ_PARA_SYS_CHECK_SQLS = "sysCheckSqls";
 	public static final String QUARTZ_PARA_DATA_POLLER_SETTING_ID = "dataPollerSettingId";
 	public static final String QUARTZ_PARA_JOB_FILE_OPERATION_SETTING_ID = "jobFileOperationSettingId";
+	public static final String QUARTZ_PARA_MAIL_LIST_SETTING_ID = "jobMailListSettingId";
+	public static final String QUARTZ_PARA_IP_MAC_PORT_MAPPING_POLLER_GROUP_ID = "jobIpMacPortMappingPollerGroupId";
 
 	public static final String DATA_POLLER_FILE_BY_FTP = "FTP";
+	public static final String DATA_POLLER_FILE_BY_SFTP = "SFTP";
 	public static final String DATA_POLLER_FILE_BY_LOCAL_DIR = "LOCAL_DIR";
 
 	public static final String JSON_FIELD_SETTING_IDS = "settingIds";
@@ -95,6 +126,20 @@ public class Constants {
 	public static final String DATA_N = "N";
 	public static final String DATA_STAR_SYMBOL = "*";
 
+	public static final String PROCESS_OPEN = "O";
+	public static final String PROCESS_ING = "*";
+	public static final String PROCESS_CLOSE = "C";
+	public static final String PROCESS_ERROR = "E";
+	public static final String PROCESS_RETRY = "R";
+
+	public static final String RESULT_READY = "O";
+	public static final String RESULT_FINISH = "C";
+    public static final String RESULT_ERROR = "E";
+    public static final String RESULT_PARTIAL = "P";
+
+    public static final String APP_DATA_KEY_TTL_TRAFFIC = "TTL_TRAFFIC";
+    public static final String APP_DATA_KEY_FILTERED_COUNT = "FILTERED_COUNT";
+
 	public static final String GROUP_ID = "GROUP_ID";
 	public static final String GROUP_NAME = "GROUP_NAME";
 	public static final String GROUP_ENG_NAME = "GROUP_ENG_NAME";
@@ -102,10 +147,16 @@ public class Constants {
 	public static final String DEVICE_NAME = "DEVICE_NAME";
 	public static final String DEVICE_ENG_NAME = "DEVICE_ENG_NAME";
 	public static final String DEVICE_IP = "DEVICE_IP";
+	public static final String DEVICE_PORT = "DEVICE_PORT";
 	public static final String DEVICE_SYSTEM = "DEVICE_SYSTEM";
+	public static final String DEVICE_MODEL = "DEVICE_MODEL";
+	public static final String DEVICE_LAYER = "DEVICE_LAYER";
 	public static final String DEVICE_LOGIN_ACCOUNT = "DEVICE_LOGIN_ACCOUNT";
 	public static final String DEVICE_LOGIN_PASSWORD = "DEVICE_LOGIN_PASSWORD";
 	public static final String DEVICE_ENABLE_PASSWORD = "DEVICE_ENABLE_PASSWORD";
+	public static final String THREAD_COUNT = "THREAD_COUNT";
+	public static final String TARGET_TABLE = "TARGET_TABLE";
+	public static final String SKIP_HEAD_LINES_COUNT = "SKIP_HEAD_LINES_COUNT";
 
 	public static final String DIR_PATH_GROUP_ID = "[gID]";
 	public static final String DIR_PATH_GROUP_NAME = "[gName]";
@@ -135,6 +186,8 @@ public class Constants {
 
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_FTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_SSH_TFTP = "STEP.TELNET+DEVICE.SSH+FILE_SERVER.TFTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_TELNET_TFTP = "STEP.TELNET+DEVICE.TELNET+FILE_SERVER.TFTP";
+	public static final String DEVICE_CONFIG_BACKUP_MODE_TELNET_TELNET_FTP = "STEP.TELNET+DEVICE.TELNET+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_SSH_FTP = "STEP.FTP+DEVICE.SSH+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_FTP_TELNET_FTP = "STEP.FTP+DEVICE.TELNET+FILE_SERVER.FTP";
 	public static final String DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP = "STEP.TFTP+DEVICE.SSH+FILE_SERVER.TFTP";
@@ -168,6 +221,7 @@ public class Constants {
 
 	public static final String DATA_TYPE_OF_NET_FLOW = "NET_FLOW";
 	public static final String DATA_TYPE_OF_FIREWALL_BLACK_LIST = "FW_BLACK_LIST";
+	public static final String DATA_TYPE_OF_FIREWALL_LOG = "FIREWALL_LOG";
 
 	public static final String STORE_METHOD_OF_FILE = "FILE";
 	public static final String STORE_METHOD_OF_DB = "DB";
@@ -216,17 +270,40 @@ public class Constants {
 	public static final String SYMBOL_GREATER_OR_EQUAL = ">=";
 	public static final String SYMBOL_LESS_OR_EQUAL = "<=";
 
+	public static final String VM_STATUS_FINE = "0";
+	public static final String VM_STATUS_SSH_FAILED = "1";
+	public static final String VM_STATUS_NO_SUBSCRIBER = "2";
+
 	public static final String RESTORE_METHOD_BY_FILE = "RECOVER_METHOD_BY_FILE";	//組態備份還原 BY檔案方式
 	public static final String RESTORE_METHOD_BY_CLI = "RECOVER_METHOD_BY_CLI";	//組態備份還原 BY Command Line(CLI)逐行派送
 
 	public static final String RESTORE_TYPE_VM_SWITCH = "VM_SWITCH";
 	public static final String RESTORE_TYPE_BACKUP_RESTORE = "BACKUP_RESTORE";
 
+	/*
+	 * Config_Content_Setting.Setting_Type
+	 */
+	public static final String CONFIG_CONTENT_SETTING_TYPE_VM_SWITCH = "VM_SWITCH";
+    public static final String CONFIG_CONTENT_SETTING_TYPE_BACKUP_RESTORE = "BACKUP_RESTORE";
+    public static final String CONFIG_CONTENT_SETTING_TYPE_CONFIG_DIFF_NOTIFY = "CONFIG_DIFF_NOTIFY";
+    public static final String CONFIG_CONTENT_SETTING_TYPE_CONFIG_BACKUP = "CONFIG_BACKUP";
+
 	public static final String MAP_URL_OF_INDEX = "INDEX";
 	public static final String MAP_URL_OF_DASHBOARD = "DASHBOARD";
+	public static final String MAP_URL_OF_TOPOGRAPHY = "TOPOGRAPHY";
+	public static final String MAP_URL_OF_ALARM_SUMMARY = "ALARM_SUMMARY";
 	public static final String MAP_URL_OF_NET_FLOW_SUMMARY = "NET_FLOW_SUMMARY";
+	public static final String MAP_URL_OF_NET_FLOW_OUTPUT = "NET_FLOW_OUTPUT";
 	public static final String MAP_URL_OF_DEVICE_FAILURE = "DEVICE_FAILURE";
 	public static final String MAP_URL_OF_ABNORMAL_TRAFFIC = "ABNORMAL_TRAFFIC";
+	public static final String MAP_URL_OF_EMAIL_UPDATE = "EMAIL_UPDATE";
+
+	public static final String FIREWALL_LOG_TYPE_ALL = "ALL";
+	public static final String FIREWALL_LOG_TYPE_APP = "APP";
+	public static final String FIREWALL_LOG_TYPE_FORWARDING = "FORWARDING";
+	public static final String FIREWALL_LOG_TYPE_INTRUSION = "INTRUSION";
+	public static final String FIREWALL_LOG_TYPE_SYSTEM = "SYSTEM";
+	public static final String FIREWALL_LOG_TYPE_WEBFILTER = "WEBFILTER";
 
 	/*
 	 * OIDC
@@ -258,11 +335,11 @@ public class Constants {
 	public static final String PRTG_LOGIN_PASSWORD = "PRTG_LOGIN_PASSWORD";
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION = new String[] {
-			"version_id", "group_id", "group_name", "device_id", "device_name", "system_version", "config_type", "config_version", "file_full_name", "create_time"
+			"version_id", "group_id", "group_name", "device_id", "device_name", "device_model", "config_type", "config_version", "file_full_name", "create_time"
 	};
 
 	public static final String[] HQL_FIELD_NAME_FOR_VERSION = new String[] {
-			"versionId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion", "configType", "configVersion", "fileFullName", "createTime"
+			"versionId", "groupId", "groupName", "deviceId", "deviceName", "deviceModel", "configType", "configVersion", "fileFullName", "createTime"
 	};
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_VERSION_2 = new String[] {
@@ -282,10 +359,10 @@ public class Constants {
 	};
 
 	public static final String[] NATIVE_FIELD_NAME_FOR_DEVICE_2 = new String[] {
-			"device_list_id", "group_id", "group_name", "device_id", "device_name", "system_version", "device_ip", "config_file_dir_path", "remote_file_dir_path"
+			"device_list_id", "group_id", "group_name", "device_id", "device_name", "device_model", "device_ip", "config_file_dir_path", "remote_file_dir_path"
 	};
 
 	public static final String[] HQL_FIELD_NAME_FOR_DEVICE_2 = new String[] {
-			"deviceListId", "groupId", "groupName", "deviceId", "deviceName", "systemVersion","deviceIp", "configFileDirPath", "remoteFileDirPath"
+			"deviceListId", "groupId", "groupName", "deviceId", "deviceName", "deviceModel","deviceIp", "configFileDirPath", "remoteFileDirPath"
 	};
 }

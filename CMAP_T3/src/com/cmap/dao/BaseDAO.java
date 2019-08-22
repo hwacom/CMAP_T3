@@ -5,9 +5,14 @@ import java.util.List;
 
 public interface BaseDAO {
 
+    public static final String TARGET_PRIMARY_DB = "PRIMARY";
+    public static final String TARGET_SECONDARY_DB = "SECONDARY";
+
 	public boolean insertEntity(Object entity);
 
-	public Integer loadDataInFile(String tableName, String filePath, String charset, String fieldsTerminatedBy, String linesTerminatedBy, String extraSetStr);
+	public Integer loadDataInFile(
+	        String targetDB, String tableName, String filePath, String charset,
+	        String fieldsTerminatedBy, String linesTerminatedBy, String extraSetStr);
 
 	public boolean insertEntities(List<? extends Object> entities);
 

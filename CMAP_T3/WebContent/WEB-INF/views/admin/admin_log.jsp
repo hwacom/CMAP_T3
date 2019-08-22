@@ -65,7 +65,7 @@
 	<!-- 查詢結果TABLE區塊 -->
 	<div class="row">
 	  <div id="divErrorLog" class="col-12 myTableSection" style="display:none;">
-		<table id="resutTable_errorLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+		<table id="resultTable_errorLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
@@ -80,7 +80,7 @@
 	  </div>
 	  
 	  <div id="divJobLog" class="col-sm-12 myTableSection" style="display:none;">
-		<table id="resutTable_jobLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+		<table id="resultTable_jobLog" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>

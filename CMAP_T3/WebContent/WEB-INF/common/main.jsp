@@ -18,13 +18,13 @@
     
     <!-- Favicon icon -->
     <!-- 桃機 -->
-    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/icon.ico">
-     -->
     
     <!-- 台鐵 -->
+    <!-- 
     <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/resources/images/taiwan_railway.ico">
-    
+     -->
+     
     <!-- Bootstrap Core CSS -->
     <!-- <link href="${pageContext.request.contextPath}/resources/css/bootstrap/bootstrap.min.css" rel="stylesheet"> -->
     <!-- JQuery-UI -->
@@ -39,12 +39,12 @@
     <link href="${pageContext.request.contextPath}/resources/css/fontawesome/all.css" rel="stylesheet">
     
     <!-- 桃機 -->
-    <!-- 
     <link href="${pageContext.request.contextPath}/resources/css/main_T3.css" rel="stylesheet">
-    -->
     
     <!-- 台鐵 -->
+    <!-- 
     <link href="${pageContext.request.contextPath}/resources/css/main_TRA.css" rel="stylesheet">
+	-->
 	
 	<!-- Core Javascript -->
 	<script src="${pageContext.request.contextPath}/resources/js/jquery/jquery-3.3.1.min.js"></script>
@@ -92,10 +92,15 @@
 				<!-- 
 				<img class="logo" src="${pageContext.request.contextPath}/resources/images/hwacom_white.png">
 				-->
-				
+				<!-- 桃機 -->
+	        	<img class="img" src="${pageContext.request.contextPath}/resources/images/logo_new_icon.png" width="auto" height="45" style="margin-top: 10px; margin-left: .5rem; float: left;" />
+	      		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/logo_new_word_short_white.png" width="auto" height="25" style="margin-top: 30px; margin-left: 5px; float: left" />
+	        	
 				<!-- 台鐵 -->
+				<!-- 
 		      	<img class="img" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_icon.png" width="auto" height="45" style="margin-top: 10px; margin-left: .5rem; float: left;" />
 		  		<img class="img web-only" src="${pageContext.request.contextPath}/resources/images/taiwan_railway_word.png" width="auto" height="40" style="margin-top: 15px; float: left" />
+				-->
 			</a>
 		</div>
 		<div class="nav system-title">

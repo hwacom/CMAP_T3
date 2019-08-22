@@ -10,14 +10,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.tftp.TFTP;
 import org.apache.commons.net.tftp.TFTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.cmap.Env;
 import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.utils.FileUtils;
@@ -274,4 +272,11 @@ public class TFtpFileUtils implements FileUtils {
 		// TODO 自動產生的方法 Stub
 		return false;
 	}
+
+    @Override
+    public boolean connectAndLogin(String hostIp, Integer hostPort, String account, String password)
+            throws Exception {
+        // TODO 自動產生的方法 Stub
+        return false;
+    }
 }

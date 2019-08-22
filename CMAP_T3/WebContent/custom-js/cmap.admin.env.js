@@ -60,21 +60,21 @@ function changeModifyView() {
 		$('input[name=chkbox]:checked:eq('+i+')').parents("tr").children().eq(2).html(
 			//切換「備註」欄位為輸入框
 			function() {
-				var html = '<input type="text" name="modifySettingRemark" value="' + $(this).attr("content") +'" class="form-control form-control-sm" style="min-width: 200px; width: 100%" />';
+				var html = '<input type="text" name="modifySettingRemark" value="' + $(this).attr("content") +'" class="form-control form-control-sm" style="min-width: 200px" />';
 				return html;
 			}
 		);
 		$('input[name=chkbox]:checked:eq('+i+')').parents("tr").children().eq(3).html(
 				//切換「參數名稱」欄位為輸入框
 				function() {
-					var html = '<input type="text" name="modifySettingName" value="' + $(this).text() +'" class="form-control form-control-sm" style="min-width: 200px; width: 100%" readonly/>';
+					var html = '<input type="text" name="modifySettingName" value="' + $(this).text() +'" class="form-control form-control-sm" style="min-width: 200px" readonly/>';
 					return html;
 				}
 			);
 		$('input[name=chkbox]:checked:eq('+i+')').parents("tr").children().eq(5).html(
 			//切換「參數值(DB)」欄位為輸入框
 			function() {
-				var html = '<input type="text" name="modifySettingValue" value="' + $(this).text() +'" class="form-control form-control-sm" style="min-width: 200px; width: 100%" />';
+				var html = '<input type="text" name="modifySettingValue" value="' + $(this).text() +'" class="form-control form-control-sm" style="min-width: 200px" />';
 				return html;
 			}
 		);
@@ -132,6 +132,12 @@ function envAction(action) {
 		type : "POST",
 		dataType : 'json',
 		async: true,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
 		success : function(resp) {
 			if (resp.code == '200') {
 				alert(resp.message);
@@ -159,14 +165,14 @@ function findData(from) {
 	
 	initActionBar();
 	
-	if (typeof resutTable !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $("#resutTable").DataTable(
+		resultTable = $("#resultTable").DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: false,
@@ -203,6 +209,8 @@ function findData(from) {
 				}
 			},
 			"order": [[3 , "asc" ]],
+			"initComplete": function(settings, json) {
+            },
 			"drawCallback" : function(settings) {
 				$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass("col-sm-12");

@@ -1,7 +1,6 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,8 +38,8 @@ public class DeviceDataPollerSetting {
 	@Column(name = "device_id", nullable = true)
 	private String deviceId;
 
-	@Column(name = "system_version", nullable = false)
-	private String systemVersion;
+	@Column(name = "device_model", nullable = false)
+	private String deviceModel;
 
 	@Column(name = "device_ip", nullable = true)
 	private String deviceIp;
@@ -76,163 +75,164 @@ public class DeviceDataPollerSetting {
 		super();
 	}
 
-	public DeviceDataPollerSetting(Integer settingId, String scriptSettingCode, String dataType, String remark,
-			String groupId, String deviceId, String systemVersion, String deviceIp, Integer devicePort,
-			String deviceProtocol, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
-			String createBy, Timestamp updateTime, String updateBy) {
-		super();
-		this.settingId = settingId;
-		this.scriptSettingCode = scriptSettingCode;
-		this.dataType = dataType;
-		this.remark = remark;
-		this.groupId = groupId;
-		this.deviceId = deviceId;
-		this.systemVersion = systemVersion;
-		this.deviceIp = deviceIp;
-		this.devicePort = devicePort;
-		this.deviceProtocol = deviceProtocol;
-		this.deleteFlag = deleteFlag;
-		this.deleteTime = deleteTime;
-		this.deleteBy = deleteBy;
-		this.createTime = createTime;
-		this.createBy = createBy;
-		this.updateTime = updateTime;
-		this.updateBy = updateBy;
-	}
+    public DeviceDataPollerSetting(Integer settingId, String scriptSettingCode, String dataType,
+            String remark, String groupId, String deviceId, String deviceModel, String deviceIp,
+            Integer devicePort, String deviceProtocol, String deleteFlag, Timestamp deleteTime,
+            String deleteBy, Timestamp createTime, String createBy, Timestamp updateTime,
+            String updateBy) {
+        super();
+        this.settingId = settingId;
+        this.scriptSettingCode = scriptSettingCode;
+        this.dataType = dataType;
+        this.remark = remark;
+        this.groupId = groupId;
+        this.deviceId = deviceId;
+        this.deviceModel = deviceModel;
+        this.deviceIp = deviceIp;
+        this.devicePort = devicePort;
+        this.deviceProtocol = deviceProtocol;
+        this.deleteFlag = deleteFlag;
+        this.deleteTime = deleteTime;
+        this.deleteBy = deleteBy;
+        this.createTime = createTime;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateBy = updateBy;
+    }
 
-	public Integer getSettingId() {
-		return settingId;
-	}
+    public Integer getSettingId() {
+        return settingId;
+    }
 
-	public void setSettingId(Integer settingId) {
-		this.settingId = settingId;
-	}
+    public void setSettingId(Integer settingId) {
+        this.settingId = settingId;
+    }
 
-	public String getScriptSettingCode() {
-		return scriptSettingCode;
-	}
+    public String getScriptSettingCode() {
+        return scriptSettingCode;
+    }
 
-	public void setScriptSettingCode(String scriptSettingCode) {
-		this.scriptSettingCode = scriptSettingCode;
-	}
+    public void setScriptSettingCode(String scriptSettingCode) {
+        this.scriptSettingCode = scriptSettingCode;
+    }
 
-	public String getDataType() {
-		return dataType;
-	}
+    public String getDataType() {
+        return dataType;
+    }
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
 
-	public String getRemark() {
-		return remark;
-	}
+    public String getRemark() {
+        return remark;
+    }
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
-	public String getGroupId() {
-		return groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
-	public String getDeviceId() {
-		return deviceId;
-	}
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
-	public String getSystemVersion() {
-		return systemVersion;
-	}
+    public String getDeviceModel() {
+        return deviceModel;
+    }
 
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
-	}
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
 
-	public String getDeviceIp() {
-		return deviceIp;
-	}
+    public String getDeviceIp() {
+        return deviceIp;
+    }
 
-	public void setDeviceIp(String deviceIp) {
-		this.deviceIp = deviceIp;
-	}
+    public void setDeviceIp(String deviceIp) {
+        this.deviceIp = deviceIp;
+    }
 
-	public Integer getDevicePort() {
-		return devicePort;
-	}
+    public Integer getDevicePort() {
+        return devicePort;
+    }
 
-	public void setDevicePort(Integer devicePort) {
-		this.devicePort = devicePort;
-	}
+    public void setDevicePort(Integer devicePort) {
+        this.devicePort = devicePort;
+    }
 
-	public String getDeviceProtocol() {
-		return deviceProtocol;
-	}
+    public String getDeviceProtocol() {
+        return deviceProtocol;
+    }
 
-	public void setDeviceProtocol(String deviceProtocol) {
-		this.deviceProtocol = deviceProtocol;
-	}
+    public void setDeviceProtocol(String deviceProtocol) {
+        this.deviceProtocol = deviceProtocol;
+    }
 
-	public String getDeleteFlag() {
-		return deleteFlag;
-	}
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
 
-	public void setDeleteFlag(String deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
-	public Timestamp getDeleteTime() {
-		return deleteTime;
-	}
+    public Timestamp getDeleteTime() {
+        return deleteTime;
+    }
 
-	public void setDeleteTime(Timestamp deleteTime) {
-		this.deleteTime = deleteTime;
-	}
+    public void setDeleteTime(Timestamp deleteTime) {
+        this.deleteTime = deleteTime;
+    }
 
-	public String getDeleteBy() {
-		return deleteBy;
-	}
+    public String getDeleteBy() {
+        return deleteBy;
+    }
 
-	public void setDeleteBy(String deleteBy) {
-		this.deleteBy = deleteBy;
-	}
+    public void setDeleteBy(String deleteBy) {
+        this.deleteBy = deleteBy;
+    }
 
-	public Timestamp getCreateTime() {
-		return createTime;
-	}
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
 
-	public void setCreateTime(Timestamp createTime) {
-		this.createTime = createTime;
-	}
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
 
-	public String getCreateBy() {
-		return createBy;
-	}
+    public String getCreateBy() {
+        return createBy;
+    }
 
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
-	public Timestamp getUpdateTime() {
-		return updateTime;
-	}
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
 
-	public void setUpdateTime(Timestamp updateTime) {
-		this.updateTime = updateTime;
-	}
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
-	public String getUpdateBy() {
-		return updateBy;
-	}
+    public String getUpdateBy() {
+        return updateBy;
+    }
 
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
 }

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,11 +31,16 @@ import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
+import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.PrtgAccountMapping;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.CommonService;
 import com.cmap.service.PrtgService;
+import com.cmap.service.UserService;
 import com.cmap.service.vo.PrtgServiceVO;
 import com.cmap.utils.impl.CloseableHttpClientUtils;
+import com.cmap.utils.impl.PrtgApiUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Controller
 @RequestMapping("/prtg")
@@ -47,6 +53,9 @@ public class PrtgController extends BaseController {
 
 	@Autowired
 	private PrtgService prtgService;
+
+	@Autowired
+	private UserService userService;
 
 	private void init(Model model) {
 		model.addAttribute("PRTG_IP_ADDR", Env.PRTG_SERVER_IP);
@@ -135,6 +144,86 @@ public class PrtgController extends BaseController {
 		return retVal;
 	}
 
+	/**
+	 * 取得 PRTG passhash
+	 * @param model
+	 * @param principal
+	 * @param request
+	 * @param response
+	 * @param jsonData
+	 * [範例]:
+     *     {
+              "groupId" : "019998",
+              "role": [
+                "教師",
+                "資訊教師"
+              ],
+              "account" : "test1234"
+            }
+	 * @return
+	 */
+    @RequestMapping(value = "/getPasshash", method = RequestMethod.POST, produces="application/json")
+    public @ResponseBody AppResponse getPasshash(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response,
+            @RequestBody JsonNode jsonData) {
+
+        try {
+            String groupId = jsonData.findValue("groupId") != null ? jsonData.findValue("groupId").asText() : "";
+
+            String[] roles;
+            JsonNode roleArr = jsonData.get("role");
+            if (roleArr.isArray()) {
+                roles = new String[roleArr.size()];
+
+                for (int i=0; i<roleArr.size(); i++) {
+                    roles[i] = roleArr.get(i).asText();
+                }
+            } else {
+                roles = new String[1];
+                roles[0] = roleArr.asText();
+            }
+
+            String account = jsonData.findValue("account") != null ? jsonData.findValue("account").asText() : "";
+
+            // Step 1. 判斷此 groupId + role + account 有無權限登入使用
+            boolean canLogin = userService.checkUserCanAccess(request, true, groupId, roles, account);
+
+            if (!canLogin) {
+                throw new ServiceLayerException("使用者無登入權限");
+            }
+
+            // Step 2. 取得 groupId 對應的 PRTG 登入帳密
+            PrtgAccountMapping mapping = prtgService.getMappingBySourceId(groupId);
+
+            String username = mapping.getPrtgAccount();
+            String password = mapping.getPrtgPassword();
+
+            // Step 3. 呼叫 PRTG API 取得 passhash
+            PrtgApiUtils prtgApiUtils = new PrtgApiUtils();
+            String passhash = prtgApiUtils.getPasshash(username, password);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "Success");
+            app.putData(Constants.USERNAME, username);
+            app.putData(Constants.PASSHASH, passhash);
+            return app;
+
+        } catch (ServiceLayerException sle) {
+            log.error(sle.getMessage());
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_EXPECTATION_FAILED, sle.getMessage());
+            app.putData(Constants.USERNAME, null);
+            app.putData(Constants.PASSHASH, null);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_EXPECTATION_FAILED, e.getMessage());
+            app.putData(Constants.USERNAME, null);
+            app.putData(Constants.PASSHASH, null);
+            return app;
+        }
+    }
+
 	@RequestMapping(value = "/welcomePage", method = RequestMethod.GET)
 	public String welcomePage(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -197,8 +286,10 @@ public class PrtgController extends BaseController {
 			String indexUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_INDEX);
 
 			if (StringUtils.isBlank(indexUrl)) {
-				indexUrl = Env.PRTG_DEFAULT_INDEX_URI;	//如果沒設定則取得預設MAP
-			}
+			    indexUrl = Env.PRTG_DEFAULT_INDEX_URI;   //如果沒設定則取得預設MAP
+            }
+
+			indexUrl = composePrtgUrl(request, indexUrl);
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", indexUrl);
@@ -210,6 +301,22 @@ public class PrtgController extends BaseController {
 
 		} finally {
 		}
+	}
+
+	/**
+	 * 組合最終 API URL for 設定的URL內是否有加上參數
+	 * @param request
+	 * @param oriUrl
+	 * @return
+	 */
+	private String composePrtgUrl(HttpServletRequest request, String oriUrl) {
+	    String username = Objects.toString(request.getSession().getAttribute(Constants.PRTG_LOGIN_ACCOUNT), null);
+	    String password = Objects.toString(request.getSession().getAttribute(Constants.PRTG_LOGIN_PASSWORD), null);
+	    String passhash = Objects.toString(request.getSession().getAttribute(Constants.PASSHASH), null);
+	    oriUrl = StringUtils.replace(oriUrl, "{username}", username);
+	    oriUrl = StringUtils.replace(oriUrl, "{password}", password);
+	    oriUrl = StringUtils.replace(oriUrl, "{passhash}", passhash);
+	    return oriUrl;
 	}
 
 	@RequestMapping(value = "getPrtgDashboardUri", method = RequestMethod.POST)
@@ -226,6 +333,8 @@ public class PrtgController extends BaseController {
 				dashboardMapUrl = Env.PRTG_DEFAULT_DASHBOARD_URI;	//如果沒設定則取得預設MAP
 			}
 
+			dashboardMapUrl = composePrtgUrl(request, dashboardMapUrl);
+
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", dashboardMapUrl);
 			return app;
@@ -237,6 +346,62 @@ public class PrtgController extends BaseController {
 		} finally {
 		}
 	}
+
+	@RequestMapping(value = "getPrtgTopographyUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgTopographyUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
+        try {
+            final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+            String topographyMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_TOPOGRAPHY);
+
+            if (StringUtils.isBlank(topographyMapUrl)) {
+                topographyMapUrl = Env.PRTG_DEFAULT_TOPOGRAPHY_URI;   //如果沒設定則取得預設MAP
+            }
+
+            topographyMapUrl = composePrtgUrl(request, topographyMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", topographyMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
+	@RequestMapping(value = "getPrtgAlarmSummaryUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgAlarmSummaryUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
+        try {
+            final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+            String alarmSummaryMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_ALARM_SUMMARY);
+
+            if (StringUtils.isBlank(alarmSummaryMapUrl)) {
+                alarmSummaryMapUrl = Env.PRTG_DEFAULT_ALARM_SUMMARY_URI;   //如果沒設定則取得預設MAP
+            }
+
+            alarmSummaryMapUrl = composePrtgUrl(request, alarmSummaryMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", alarmSummaryMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
 
 	@RequestMapping(value = "getPrtgNetFlowSummaryUri", method = RequestMethod.POST)
 	public @ResponseBody AppResponse getPrtgNetFlowSummaryUri(
@@ -252,6 +417,8 @@ public class PrtgController extends BaseController {
 				netFlowSummaryMapUrl = Env.PRTG_DEFAULT_NET_FLOW_SUMMARY_URI;	//如果沒設定則取得預設MAP
 			}
 
+			netFlowSummaryMapUrl = composePrtgUrl(request, netFlowSummaryMapUrl);
+
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", netFlowSummaryMapUrl);
 			return app;
@@ -264,20 +431,70 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "getPrtgNetFlowOutputUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgNetFlowOutputUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
+        try {
+            final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+
+            String netFlowOutputMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_NET_FLOW_OUTPUT);
+
+            if (StringUtils.isBlank(netFlowOutputMapUrl)) {
+                netFlowOutputMapUrl = Env.PRTG_DEFAULT_NET_FLOW_OUTPUT_URI;   //如果沒設定則取得預設MAP
+            }
+
+            netFlowOutputMapUrl = composePrtgUrl(request, netFlowOutputMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", netFlowOutputMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
+	@RequestMapping(value = "getPrtgNetFlowOutputCoreUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgNetFlowOutputCoreUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            String netFlowOutputMapCoreUrl = Env.PRTG_DEFAULT_NET_FLOW_OUTPUT_URI;   //如果沒設定則取得預設MAP
+            netFlowOutputMapCoreUrl = composePrtgUrl(request, netFlowOutputMapCoreUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", netFlowOutputMapCoreUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
 	@RequestMapping(value = "getPrtgDeviceFailureUri", method = RequestMethod.POST)
 	public @ResponseBody AppResponse getPrtgDeviceFailureUri(
 			Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		HttpSession session = request.getSession();
 		try {
-			//final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
-			final String schoolId = "054649";
+			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+			//final String schoolId = "054649";
 
 			String deviceFailureMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_DEVICE_FAILURE);
 
 			if (StringUtils.isBlank(deviceFailureMapUrl)) {
 				deviceFailureMapUrl = Env.PRTG_DEFAULT_DEVICE_FAILURE_URI;	//如果沒設定則取得預設MAP
 			}
+
+			deviceFailureMapUrl = composePrtgUrl(request, deviceFailureMapUrl);
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", deviceFailureMapUrl);
@@ -297,14 +514,16 @@ public class PrtgController extends BaseController {
 
 		HttpSession session = request.getSession();
 		try {
-			//final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
-			final String schoolId = "054649";
+			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+			//final String schoolId = "054649";
 
 			String abnormalTrafficMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_ABNORMAL_TRAFFIC);
 
 			if (StringUtils.isBlank(abnormalTrafficMapUrl)) {
 				abnormalTrafficMapUrl = Env.PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;	//如果沒設定則取得預設MAP
 			}
+
+			abnormalTrafficMapUrl = composePrtgUrl(request, abnormalTrafficMapUrl);
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
 			app.putData("uri", abnormalTrafficMapUrl);
@@ -317,6 +536,35 @@ public class PrtgController extends BaseController {
 		} finally {
 		}
 	}
+
+	@RequestMapping(value = "getEmailUpdateUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getEmailUpdateUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession();
+        try {
+            //final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
+            final String schoolId = "054649";
+
+            String emailUpdateMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_EMAIL_UPDATE);
+
+            if (StringUtils.isBlank(emailUpdateMapUrl)) {
+                emailUpdateMapUrl = Env.PRTG_DEFAULT_EMAIL_UPDATE_URI;  //如果沒設定則取得預設MAP
+            }
+
+            emailUpdateMapUrl = composePrtgUrl(request, emailUpdateMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", emailUpdateMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
 
 	@RequestMapping(value = "/index/login", method = RequestMethod.GET)
 	public String prtgIndexAndLogin(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
@@ -352,8 +600,30 @@ public class PrtgController extends BaseController {
 		return "prtg/dashboard";
 	}
 
+	@RequestMapping(value = "/topography", method = RequestMethod.GET)
+    public String prtgTopography(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/topography";
+    }
+
+	@RequestMapping(value = "/alarmSummary", method = RequestMethod.GET)
+    public String prtgAlarmSummary(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/alarm_summary";
+    }
+
 	@RequestMapping(value = "/netFlowSummary", method = RequestMethod.GET)
-	public String netFlowSummary(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+	public String prtgNetFlowSummary(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
 
@@ -363,8 +633,30 @@ public class PrtgController extends BaseController {
 		return "prtg/net_flow_summary";
 	}
 
+	@RequestMapping(value = "/netFlowOutput", method = RequestMethod.GET)
+    public String prtgNetFlowOutput(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/net_flow_output";
+    }
+
+	@RequestMapping(value = "/netFlowOutput/core", method = RequestMethod.GET)
+    public String prtgNetFlowOutputCore(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/net_flow_output_core";
+    }
+
 	@RequestMapping(value = "/deviceFailure", method = RequestMethod.GET)
-	public String deviceFailure(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+	public String prtgDeviceFailure(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
 
@@ -374,41 +666,8 @@ public class PrtgController extends BaseController {
 		return "prtg/device_failure";
 	}
 
-	@RequestMapping(value = "/performance", method = RequestMethod.GET)
-    public String performance(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            init(model);
-
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-        }
-        return "prtg/performance";
-    }
-
-	@RequestMapping(value = "/deviceFailure/report", method = RequestMethod.GET)
-    public String report(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            init(model);
-
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-        }
-        return "prtg/device_failure_report";
-    }
-
-	@RequestMapping(value = "/performance/report", method = RequestMethod.GET)
-    public String performanceReport(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            init(model);
-
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-        }
-        return "prtg/performance_report";
-    }
-
 	@RequestMapping(value = "/abnormalTraffic", method = RequestMethod.GET)
-	public String abnormalTraffic(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+	public String prtgAbnormalTraffic(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			init(model);
 
@@ -417,4 +676,15 @@ public class PrtgController extends BaseController {
 		}
 		return "prtg/abnormal_traffic";
 	}
+
+	@RequestMapping(value = "/email/update", method = RequestMethod.GET)
+    public String prtgEmailUpdate(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/email_update";
+    }
 }

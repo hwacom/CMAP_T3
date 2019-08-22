@@ -21,12 +21,15 @@ import com.cmap.DatatableResponse;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.plugin.module.ip.blocked.record.IpBlockedRecordService;
+import com.cmap.plugin.module.ip.blocked.record.IpBlockedRecordVO;
 import com.cmap.security.SecurityUtil;
 import com.cmap.service.DeliveryService;
 import com.cmap.service.vo.DeliveryParameterVO;
 import com.cmap.service.vo.DeliveryServiceVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.nimbusds.oauth2.sdk.util.StringUtils;
 
 @Controller
 @RequestMapping("/delivery")
@@ -35,15 +38,20 @@ public class DeliveryController extends BaseController {
 	private static Logger log;
 
 	private static final String[] UI_SEARCH_BY_SCRIPT_COLUMNS = new String[] {"","","scriptName","scriptType.scriptTypeName","systemVersion","","","",""};
-	private static final String[] UI_RECORD_COLUMNS = new String[] {"","plm.begin_time","plm.create_by","dl.group_name","dl.device_name","dl.system_version","si.script_name","plm.remark","pls.result"};
+	private static final String[] UI_RECORD_COLUMNS = new String[] {"","plm.begin_time","plm.create_by","dl.group_name","dl.device_name","dl.device_model","si.script_name","plm.remark","pls.result"};
+	private static final String[] UI_BLOCKED_IP_RECORD_COLUMNS = new String[] {"","","ipAddress","blockTime","blockReason","blockBy"};
 
 	@Autowired
 	private DeliveryService deliveryService;
 
+	@Autowired
+	private IpBlockedRecordService ipRecordService;
+
+	private Map<String, String> groupListMap = null;
+	private Map<String, String> deviceListMap = null;
+	private Map<String, String> scriptTypeMap = null;
+
 	private void initMenu(Model model, HttpServletRequest request) {
-		Map<String, String> groupListMap = null;
-		Map<String, String> deviceListMap = null;
-		Map<String, String> scriptTypeMap = null;
 		try {
 			groupListMap = getGroupList(request);
 			scriptTypeMap = getScriptTypeList(Constants.DEFAULT_FLAG_N);
@@ -110,6 +118,80 @@ public class DeliveryController extends BaseController {
 		return "plugin/module_ip_open_block";
 	}
 
+	/**
+	 * 查找被封鎖過的IP紀錄
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param groupId
+	 * @param ipAddress
+	 * @param startNum
+	 * @param pageLength
+	 * @param searchValue
+	 * @param orderColIdx
+	 * @param orderDirection
+	 * @return
+	 */
+	@RequestMapping(value = "getBlockedIpData.json", method = RequestMethod.POST)
+    public @ResponseBody DatatableResponse getBlockedIpData(
+            Model model, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam(name="queryGroupId", required=false, defaultValue="") String queryGroupId,
+            @RequestParam(name="queryDeviceId", required=false, defaultValue="") String queryDeviceId,
+            @RequestParam(name="queryIpAddress", required=false, defaultValue="") String queryIpAddress,
+            @RequestParam(name="queryStatusFlag", required=false, defaultValue="") String queryStatusFlag,
+            @RequestParam(name="queryBeginDate", required=false, defaultValue="") String queryBeginDate,
+            @RequestParam(name="queryEndDate", required=false, defaultValue="") String queryEndDate,
+            @RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
+            @RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
+            @RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
+            @RequestParam(name="order[0][column]", required=false, defaultValue="6") Integer orderColIdx,
+            @RequestParam(name="order[0][dir]", required=false, defaultValue="desc") String orderDirection) {
+
+        long total = 0;
+        long filterdTotal = 0;
+        List<IpBlockedRecordVO> dataList = new ArrayList<>();
+        IpBlockedRecordVO irVO;
+        try {
+            irVO = new IpBlockedRecordVO();
+            irVO.setQueryGroupId(queryGroupId);
+            irVO.setQueryDeviceId(queryDeviceId);
+            irVO.setQueryIpAddress(queryIpAddress);
+            irVO.setQueryStatusFlag(queryStatusFlag);
+            irVO.setQueryBeginDate(queryBeginDate);
+            irVO.setQueryEndDate(queryEndDate);
+            irVO.setPageLength(pageLength);
+            irVO.setSearchValue(searchValue);
+            irVO.setOrderColumn(UI_BLOCKED_IP_RECORD_COLUMNS[orderColIdx]);  //TODO
+            irVO.setOrderDirection(orderDirection);
+
+            filterdTotal = ipRecordService.countModuleBlockedIpList(irVO);
+
+            if (filterdTotal != 0) {
+                dataList = ipRecordService.findModuleBlockedIpList(irVO, startNum, pageLength);
+            }
+
+            if (StringUtils.isBlank(queryDeviceId) && StringUtils.isBlank(queryIpAddress)
+                    && StringUtils.isBlank(queryStatusFlag) && StringUtils.isBlank(queryBeginDate)
+                    && StringUtils.isBlank(queryEndDate)) {
+                //如果只有傳入GroupId條件，不需再另外查詢只有GroupId下的筆數 (即等於前面篩選的筆數)
+                total = filterdTotal;
+
+            } else {
+                irVO = new IpBlockedRecordVO();
+                irVO.setQueryGroupId(queryGroupId);
+                total = ipRecordService.countModuleBlockedIpList(irVO);
+            }
+
+        } catch (ServiceLayerException sle) {
+        } catch (Exception e) {
+
+        } finally {
+            //initMenu(model, request);
+        }
+
+        return new DatatableResponse(total, dataList, filterdTotal);
+    }
+
 	@RequestMapping(value = "macOpenBlock", method = RequestMethod.GET)
 	public String macOpenBlock(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
 		try {
@@ -159,6 +241,7 @@ public class DeliveryController extends BaseController {
 		} catch (Exception e) {
 
 		} finally {
+			//initMenu(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -315,6 +398,34 @@ public class DeliveryController extends BaseController {
 		}
 	}
 
+	/**
+	 * 執行IP開通 by 「IP開通/封鎖」功能中的「解鎖」按鈕
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param listId
+	 * @return
+	 */
+	@RequestMapping(value = "doIpOpenByBtn.json", method = RequestMethod.POST)
+    public @ResponseBody AppResponse doIpOpenByBtn(Model model, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam(name="listId", required=true) String[] listId) {
+
+        try {
+            //TODO
+
+
+            return new AppResponse(HttpServletResponse.SC_OK, null);
+
+        /*
+        } catch (ServiceLayerException sle) {
+            return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, sle.getMessage());
+        */
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        }
+    }
+
 	@RequestMapping(value = "getDeliveryRecordData.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse getDeliveryRecordData(
 			Model model, HttpServletRequest request, HttpServletResponse response,
@@ -356,6 +467,7 @@ public class DeliveryController extends BaseController {
 		} catch (Exception e) {
 
 		} finally {
+			//initMenu(model, request);
 		}
 
 		return new DatatableResponse(total, dataList, filterdTotal);
@@ -380,6 +492,7 @@ public class DeliveryController extends BaseController {
 			return new AppResponse(HttpServletResponse.SC_BAD_REQUEST, "查找供裝紀錄發生錯誤，請重新操作");
 
 		} finally {
+			//initMenu(model, request);
 		}
 	}
 }

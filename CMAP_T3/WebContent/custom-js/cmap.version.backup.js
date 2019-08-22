@@ -103,14 +103,14 @@ function findData(from) {
 		$('#collapseExample').collapse('hide');
 	}
 	
-	if (typeof resutTable !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $('#resutTable').DataTable(
+		resultTable = $('#resultTable').DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -171,8 +171,8 @@ function findData(from) {
 				$("div.dataTables_paginate").parent().removeClass('col-sm-12');
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
 				
-				bindTrEvent();
 				initCheckedItems();
+				bindTrEvent();
 			},
 			"columns" : [
 				{},{},

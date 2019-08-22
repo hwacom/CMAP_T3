@@ -2,7 +2,6 @@ package com.cmap.model;
 
 import java.sql.Timestamp;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,7 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -44,8 +42,8 @@ public class ScriptInfo {
 	@JoinColumn(name = "script_type_id")
 	private ScriptType scriptType;
 
-	@Column(name = "system_version", nullable = false)
-	private String systemVersion;
+	@Column(name = "device_model", nullable = false)
+	private String deviceModel;
 
 	@Column(name = "action_script", nullable = false)
 	private String actionScript;
@@ -99,210 +97,211 @@ public class ScriptInfo {
 		super();
 	}
 
-	public ScriptInfo(String scriptInfoId, String systemDefault, String scriptCode, String scriptName,
-			ScriptType scriptType, String systemVersion, String actionScript, String actionScriptVariable,
-			String actionScriptRemark, String checkScript, String checkScriptRemark, String checkKeyword,
-			String scriptDescription, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
-			String createBy, Timestamp updateTime, String updateBy, List<ScriptStepAction> scriptStepActions,
-			List<ScriptStepCheck> scriptStepChecks) {
-		super();
-		this.scriptInfoId = scriptInfoId;
-		this.systemDefault = systemDefault;
-		this.scriptCode = scriptCode;
-		this.scriptName = scriptName;
-		this.scriptType = scriptType;
-		this.systemVersion = systemVersion;
-		this.actionScript = actionScript;
-		this.actionScriptVariable = actionScriptVariable;
-		this.actionScriptRemark = actionScriptRemark;
-		this.checkScript = checkScript;
-		this.checkScriptRemark = checkScriptRemark;
-		this.checkKeyword = checkKeyword;
-		this.scriptDescription = scriptDescription;
-		this.deleteFlag = deleteFlag;
-		this.deleteTime = deleteTime;
-		this.deleteBy = deleteBy;
-		this.createTime = createTime;
-		this.createBy = createBy;
-		this.updateTime = updateTime;
-		this.updateBy = updateBy;
-		this.scriptStepActions = scriptStepActions;
-		this.scriptStepChecks = scriptStepChecks;
-	}
+    public ScriptInfo(String scriptInfoId, String systemDefault, String scriptCode,
+            String scriptName, ScriptType scriptType, String deviceModel, String actionScript,
+            String actionScriptVariable, String actionScriptRemark, String checkScript,
+            String checkScriptRemark, String checkKeyword, String scriptDescription,
+            String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
+            String createBy, Timestamp updateTime, String updateBy,
+            List<ScriptStepAction> scriptStepActions, List<ScriptStepCheck> scriptStepChecks) {
+        super();
+        this.scriptInfoId = scriptInfoId;
+        this.systemDefault = systemDefault;
+        this.scriptCode = scriptCode;
+        this.scriptName = scriptName;
+        this.scriptType = scriptType;
+        this.deviceModel = deviceModel;
+        this.actionScript = actionScript;
+        this.actionScriptVariable = actionScriptVariable;
+        this.actionScriptRemark = actionScriptRemark;
+        this.checkScript = checkScript;
+        this.checkScriptRemark = checkScriptRemark;
+        this.checkKeyword = checkKeyword;
+        this.scriptDescription = scriptDescription;
+        this.deleteFlag = deleteFlag;
+        this.deleteTime = deleteTime;
+        this.deleteBy = deleteBy;
+        this.createTime = createTime;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateBy = updateBy;
+        this.scriptStepActions = scriptStepActions;
+        this.scriptStepChecks = scriptStepChecks;
+    }
 
-	public String getScriptInfoId() {
-		return scriptInfoId;
-	}
+    public String getScriptInfoId() {
+        return scriptInfoId;
+    }
 
-	public void setScriptInfoId(String scriptInfoId) {
-		this.scriptInfoId = scriptInfoId;
-	}
+    public void setScriptInfoId(String scriptInfoId) {
+        this.scriptInfoId = scriptInfoId;
+    }
 
-	public String getSystemDefault() {
-		return systemDefault;
-	}
+    public String getSystemDefault() {
+        return systemDefault;
+    }
 
-	public void setSystemDefault(String systemDefault) {
-		this.systemDefault = systemDefault;
-	}
+    public void setSystemDefault(String systemDefault) {
+        this.systemDefault = systemDefault;
+    }
 
-	public String getScriptCode() {
-		return scriptCode;
-	}
+    public String getScriptCode() {
+        return scriptCode;
+    }
 
-	public void setScriptCode(String scriptCode) {
-		this.scriptCode = scriptCode;
-	}
+    public void setScriptCode(String scriptCode) {
+        this.scriptCode = scriptCode;
+    }
 
-	public String getScriptName() {
-		return scriptName;
-	}
+    public String getScriptName() {
+        return scriptName;
+    }
 
-	public void setScriptName(String scriptName) {
-		this.scriptName = scriptName;
-	}
+    public void setScriptName(String scriptName) {
+        this.scriptName = scriptName;
+    }
 
-	public ScriptType getScriptType() {
-		return scriptType;
-	}
+    public ScriptType getScriptType() {
+        return scriptType;
+    }
 
-	public void setScriptType(ScriptType scriptType) {
-		this.scriptType = scriptType;
-	}
+    public void setScriptType(ScriptType scriptType) {
+        this.scriptType = scriptType;
+    }
 
-	public String getSystemVersion() {
-		return systemVersion;
-	}
+    public String getDeviceModel() {
+        return deviceModel;
+    }
 
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
-	}
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
 
-	public String getActionScript() {
-		return actionScript;
-	}
+    public String getActionScript() {
+        return actionScript;
+    }
 
-	public void setActionScript(String actionScript) {
-		this.actionScript = actionScript;
-	}
+    public void setActionScript(String actionScript) {
+        this.actionScript = actionScript;
+    }
 
-	public String getActionScriptVariable() {
-		return actionScriptVariable;
-	}
+    public String getActionScriptVariable() {
+        return actionScriptVariable;
+    }
 
-	public void setActionScriptVariable(String actionScriptVariable) {
-		this.actionScriptVariable = actionScriptVariable;
-	}
+    public void setActionScriptVariable(String actionScriptVariable) {
+        this.actionScriptVariable = actionScriptVariable;
+    }
 
-	public String getActionScriptRemark() {
-		return actionScriptRemark;
-	}
+    public String getActionScriptRemark() {
+        return actionScriptRemark;
+    }
 
-	public void setActionScriptRemark(String actionScriptRemark) {
-		this.actionScriptRemark = actionScriptRemark;
-	}
+    public void setActionScriptRemark(String actionScriptRemark) {
+        this.actionScriptRemark = actionScriptRemark;
+    }
 
-	public String getCheckScript() {
-		return checkScript;
-	}
+    public String getCheckScript() {
+        return checkScript;
+    }
 
-	public void setCheckScript(String checkScript) {
-		this.checkScript = checkScript;
-	}
+    public void setCheckScript(String checkScript) {
+        this.checkScript = checkScript;
+    }
 
-	public String getCheckScriptRemark() {
-		return checkScriptRemark;
-	}
+    public String getCheckScriptRemark() {
+        return checkScriptRemark;
+    }
 
-	public void setCheckScriptRemark(String checkScriptRemark) {
-		this.checkScriptRemark = checkScriptRemark;
-	}
+    public void setCheckScriptRemark(String checkScriptRemark) {
+        this.checkScriptRemark = checkScriptRemark;
+    }
 
-	public String getCheckKeyword() {
-		return checkKeyword;
-	}
+    public String getCheckKeyword() {
+        return checkKeyword;
+    }
 
-	public void setCheckKeyword(String checkKeyword) {
-		this.checkKeyword = checkKeyword;
-	}
+    public void setCheckKeyword(String checkKeyword) {
+        this.checkKeyword = checkKeyword;
+    }
 
-	public String getScriptDescription() {
-		return scriptDescription;
-	}
+    public String getScriptDescription() {
+        return scriptDescription;
+    }
 
-	public void setScriptDescription(String scriptDescription) {
-		this.scriptDescription = scriptDescription;
-	}
+    public void setScriptDescription(String scriptDescription) {
+        this.scriptDescription = scriptDescription;
+    }
 
-	public String getDeleteFlag() {
-		return deleteFlag;
-	}
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
 
-	public void setDeleteFlag(String deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
-	public Timestamp getDeleteTime() {
-		return deleteTime;
-	}
+    public Timestamp getDeleteTime() {
+        return deleteTime;
+    }
 
-	public void setDeleteTime(Timestamp deleteTime) {
-		this.deleteTime = deleteTime;
-	}
+    public void setDeleteTime(Timestamp deleteTime) {
+        this.deleteTime = deleteTime;
+    }
 
-	public String getDeleteBy() {
-		return deleteBy;
-	}
+    public String getDeleteBy() {
+        return deleteBy;
+    }
 
-	public void setDeleteBy(String deleteBy) {
-		this.deleteBy = deleteBy;
-	}
+    public void setDeleteBy(String deleteBy) {
+        this.deleteBy = deleteBy;
+    }
 
-	public Timestamp getCreateTime() {
-		return createTime;
-	}
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
 
-	public void setCreateTime(Timestamp createTime) {
-		this.createTime = createTime;
-	}
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
 
-	public String getCreateBy() {
-		return createBy;
-	}
+    public String getCreateBy() {
+        return createBy;
+    }
 
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
-	public Timestamp getUpdateTime() {
-		return updateTime;
-	}
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
 
-	public void setUpdateTime(Timestamp updateTime) {
-		this.updateTime = updateTime;
-	}
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
-	public String getUpdateBy() {
-		return updateBy;
-	}
+    public String getUpdateBy() {
+        return updateBy;
+    }
 
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
 
-	public List<ScriptStepAction> getScriptStepActions() {
-		return scriptStepActions;
-	}
+    public List<ScriptStepAction> getScriptStepActions() {
+        return scriptStepActions;
+    }
 
-	public void setScriptStepActions(List<ScriptStepAction> scriptStepActions) {
-		this.scriptStepActions = scriptStepActions;
-	}
+    public void setScriptStepActions(List<ScriptStepAction> scriptStepActions) {
+        this.scriptStepActions = scriptStepActions;
+    }
 
-	public List<ScriptStepCheck> getScriptStepChecks() {
-		return scriptStepChecks;
-	}
+    public List<ScriptStepCheck> getScriptStepChecks() {
+        return scriptStepChecks;
+    }
 
-	public void setScriptStepChecks(List<ScriptStepCheck> scriptStepChecks) {
-		this.scriptStepChecks = scriptStepChecks;
-	}
+    public void setScriptStepChecks(List<ScriptStepCheck> scriptStepChecks) {
+        this.scriptStepChecks = scriptStepChecks;
+    }
 }

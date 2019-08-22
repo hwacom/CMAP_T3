@@ -25,8 +25,8 @@ public class ConfigContentSetting {
 	@Column(name = "setting_type", nullable = false)
 	private String settingType;
 
-	@Column(name = "system_version", nullable = false)
-	private String systemVersion;
+	@Column(name = "device_model", nullable = false)
+	private String deviceModel;
 
 	@Column(name = "device_name_like", nullable = false)
 	private String deviceNameLike;
@@ -56,108 +56,109 @@ public class ConfigContentSetting {
 		super();
 	}
 
-	public ConfigContentSetting(Integer settingId, String settingType, String systemVersion, String deviceNameLike,
-			String deviceListId, Integer contentLayer, String contentStartRegex, String contentEndRegex, String action,
-			String remark, String description) {
-		super();
-		this.settingId = settingId;
-		this.settingType = settingType;
-		this.systemVersion = systemVersion;
-		this.deviceNameLike = deviceNameLike;
-		this.deviceListId = deviceListId;
-		this.contentLayer = contentLayer;
-		this.contentStartRegex = contentStartRegex;
-		this.contentEndRegex = contentEndRegex;
-		this.action = action;
-		this.remark = remark;
-		this.description = description;
-	}
+    public ConfigContentSetting(Integer settingId, String settingType, String deviceModel,
+            String deviceNameLike, String deviceListId, Integer contentLayer,
+            String contentStartRegex, String contentEndRegex, String action, String remark,
+            String description) {
+        super();
+        this.settingId = settingId;
+        this.settingType = settingType;
+        this.deviceModel = deviceModel;
+        this.deviceNameLike = deviceNameLike;
+        this.deviceListId = deviceListId;
+        this.contentLayer = contentLayer;
+        this.contentStartRegex = contentStartRegex;
+        this.contentEndRegex = contentEndRegex;
+        this.action = action;
+        this.remark = remark;
+        this.description = description;
+    }
 
-	public Integer getSettingId() {
-		return settingId;
-	}
+    public Integer getSettingId() {
+        return settingId;
+    }
 
-	public void setSettingId(Integer settingId) {
-		this.settingId = settingId;
-	}
+    public void setSettingId(Integer settingId) {
+        this.settingId = settingId;
+    }
 
-	public String getSettingType() {
-		return settingType;
-	}
+    public String getSettingType() {
+        return settingType;
+    }
 
-	public void setSettingType(String settingType) {
-		this.settingType = settingType;
-	}
+    public void setSettingType(String settingType) {
+        this.settingType = settingType;
+    }
 
-	public String getSystemVersion() {
-		return systemVersion;
-	}
+    public String getDeviceModel() {
+        return deviceModel;
+    }
 
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
-	}
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
 
-	public String getDeviceNameLike() {
-		return deviceNameLike;
-	}
+    public String getDeviceNameLike() {
+        return deviceNameLike;
+    }
 
-	public void setDeviceNameLike(String deviceNameLike) {
-		this.deviceNameLike = deviceNameLike;
-	}
+    public void setDeviceNameLike(String deviceNameLike) {
+        this.deviceNameLike = deviceNameLike;
+    }
 
-	public String getDeviceListId() {
-		return deviceListId;
-	}
+    public String getDeviceListId() {
+        return deviceListId;
+    }
 
-	public void setDeviceListId(String deviceListId) {
-		this.deviceListId = deviceListId;
-	}
+    public void setDeviceListId(String deviceListId) {
+        this.deviceListId = deviceListId;
+    }
 
-	public Integer getContentLayer() {
-		return contentLayer;
-	}
+    public Integer getContentLayer() {
+        return contentLayer;
+    }
 
-	public void setContentLayer(Integer contentLayer) {
-		this.contentLayer = contentLayer;
-	}
+    public void setContentLayer(Integer contentLayer) {
+        this.contentLayer = contentLayer;
+    }
 
-	public String getContentStartRegex() {
-		return contentStartRegex;
-	}
+    public String getContentStartRegex() {
+        return contentStartRegex;
+    }
 
-	public void setContentStartRegex(String contentStartRegex) {
-		this.contentStartRegex = contentStartRegex;
-	}
+    public void setContentStartRegex(String contentStartRegex) {
+        this.contentStartRegex = contentStartRegex;
+    }
 
-	public String getContentEndRegex() {
-		return contentEndRegex;
-	}
+    public String getContentEndRegex() {
+        return contentEndRegex;
+    }
 
-	public void setContentEndRegex(String contentEndRegex) {
-		this.contentEndRegex = contentEndRegex;
-	}
+    public void setContentEndRegex(String contentEndRegex) {
+        this.contentEndRegex = contentEndRegex;
+    }
 
-	public String getAction() {
-		return action;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public void setAction(String action) {
+        this.action = action;
+    }
 
-	public String getRemark() {
-		return remark;
-	}
+    public String getRemark() {
+        return remark;
+    }
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

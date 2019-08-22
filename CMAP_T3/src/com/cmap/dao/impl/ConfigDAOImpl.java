@@ -3,18 +3,17 @@ package com.cmap.dao.impl;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.dao.ConfigDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.model.ConfigContentSetting;
+import com.cmap.model.ConfigVersionDiffLog;
 import com.cmap.model.ConfigVersionInfo;
 
 @Repository
@@ -89,7 +88,7 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 			  .append("       or ")
 			  .append("       cvi.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       cvi.system_version like :searchValue ")
+			  .append("       cvi.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
 			  .append("		  or ")
@@ -230,7 +229,7 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 			  .append("       or ")
 			  .append("       cvi.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       cvi.system_version like :searchValue ")
+			  .append("       cvi.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
 			  .append("       or ")
@@ -357,7 +356,7 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 			  .append("       or ")
 			  .append("       cvi.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       cvi.system_version like :searchValue ")
+			  .append("       cvi.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
 			  .append("       or ")
@@ -533,7 +532,7 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 			  .append("       or ")
 			  .append("       cvi.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       cvi.system_version like :searchValue ")
+			  .append("       cvi.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.config_version like :searchValue ")
 			  .append("       or ")
@@ -644,12 +643,31 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 	}
 
 	@Override
+    public ConfigVersionInfo getConfigVersionInfoByUK(String groupId, String deviceId, String configVersion) {
+	    StringBuffer sb = new StringBuffer();
+        sb.append(" select cvi ")
+          .append(" from ConfigVersionInfo cvi ")
+          .append(" where 1=1 ")
+          .append(" and cvi.groupId = :groupId ")
+          .append(" and cvi.deviceId = :deviceId ")
+          .append(" and cvi.configVersion = :configVersion ");
+
+        Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("groupId", groupId);
+        q.setParameter("deviceId", deviceId);
+        q.setParameter("configVersion", configVersion);
+
+        return (ConfigVersionInfo)q.uniqueResult();
+    }
+
+	@Override
 	public void insertConfigVersionInfo(ConfigVersionInfo configVersionInfo) {
 		getHibernateTemplate().save(configVersionInfo);
 	}
 
 	@Override
-	public List<ConfigContentSetting> findConfigContentSetting(String settingType, String systemVersion, String deviceNameLike, String deviceListId) {
+	public List<ConfigContentSetting> findConfigContentSetting(String settingType, String deviceModel, String deviceNameLike, String deviceListId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" from ConfigContentSetting ccs ")
 		  .append(" where 1=1 ");
@@ -657,8 +675,8 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 		if (StringUtils.isNotBlank(settingType)) {
 			sb.append(" and settingType = :settingType ");
 		}
-		if (StringUtils.isNotBlank(systemVersion)) {
-			sb.append(" and systemVersion = :systemVersion ");
+		if (StringUtils.isNotBlank(deviceModel)) {
+			sb.append(" and deviceModel = :deviceModel ");
 		}
 		if (StringUtils.isNotBlank(deviceNameLike)) {
 			sb.append(" and deviceNameLike like :deviceNameLike ");
@@ -672,11 +690,11 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 	    if (StringUtils.isNotBlank(settingType)) {
 			q.setParameter("settingType", settingType);
 		}
-		if (StringUtils.isNotBlank(systemVersion)) {
-			q.setParameter("systemVersion", systemVersion);
+		if (StringUtils.isNotBlank(deviceModel)) {
+			q.setParameter("deviceModel", deviceModel);
 		}
 		if (StringUtils.isNotBlank(deviceNameLike)) {
-			q.setParameter("deviceNameLike", deviceNameLike);
+			q.setParameter("deviceNameLike", "%"+deviceNameLike+"%");
 		}
 		if (StringUtils.isNotBlank(deviceListId)) {
 			q.setParameter("deviceListId", deviceListId);
@@ -684,4 +702,19 @@ public class ConfigDAOImpl extends BaseDaoHibernate implements ConfigDAO {
 
 		return (List<ConfigContentSetting>)q.list();
 	}
+
+    @Override
+    public ConfigVersionDiffLog findConfigVersionDiffLogById(String diffLogId) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select cvdl ")
+          .append(" from ConfigVersionDiffLog cvdl ")
+          .append(" where 1=1 ")
+          .append(" and cvdl.diffLogId = :diffLogId ");
+
+        Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("diffLogId", diffLogId);
+
+        return (ConfigVersionDiffLog)q.uniqueResult();
+    }
 }

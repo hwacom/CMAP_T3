@@ -24,6 +24,6 @@ $(document).ready(function() {
 		getPrtgUri(URI_LOGIN, OPEN_METHOD_WINDOW);
 		
 	} else {
-		getPrtgUri(URI_INDEX, OPEN_METHOD_WINDOW);
+		getPrtgUri(URI_INDEX, OPEN_METHOD_IFRAME);
 	}
 });

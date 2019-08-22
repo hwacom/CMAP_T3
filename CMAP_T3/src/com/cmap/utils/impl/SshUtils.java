@@ -3,17 +3,15 @@ package com.cmap.utils.impl;
 import static net.sf.expectit.filter.Filters.removeColors;
 import static net.sf.expectit.filter.Filters.removeNonPrintable;
 import static net.sf.expectit.matcher.Matchers.contains;
-import static net.sf.expectit.matcher.Matchers.eof;
-
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.snmp4j.smi.VariableBinding;
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.CommandExecuteException;
@@ -23,7 +21,6 @@ import com.cmap.service.vo.ConfigInfoVO;
 import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.utils.ConnectUtils;
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Shell;
@@ -93,6 +90,7 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		try {
 			checkSshStatus();
 
+//			ssh.authPublickey(account); //TODO
 			ssh.authPassword(account, password);
 			log.info("SSH login success!! >>> [ account: " + account + " , password: " + password + " ]");
 
@@ -162,8 +160,14 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 				}
 
 			} else if (StringUtils.equals(cmdRemark, Constants.SCRIPT_REMARK_OF_EXIT)) {
-				expect.sendLine(sendCli)
-						.expect(eof());
+			    try {
+			        expect.sendLine(sendCli);
+                    //.expect(eof());
+
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			        //csVO.setNeedCloseSession(false);
+			    }
 
 			} else {
 				output = expect.sendLine(sendCli)
@@ -224,9 +228,12 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 			CommonServiceVO csVO = new CommonServiceVO();
 			StringBuilder processLog = new StringBuilder();
 			try {
+			    long sleepTime = Env.SEND_COMMAND_SLEEP_TIME != null ? Env.SEND_COMMAND_SLEEP_TIME : 1000;
+
 				for (ScriptServiceVO scriptVO : scriptList) {
 					// 送出命令
 					csVO = sendCommand(csVO, expect, configInfoVO, scriptVO, processLog, cmdOutputs);
+					Thread.sleep(sleepTime); // 執行命令間格時間
 				}
 
 				/*
@@ -246,10 +253,16 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 				//log.info(processLog.toString());
 				ssVO.setCmdProcessLog(processLog.toString());
 
-				expect.close();
+				try {
+				    expect.close();
 
-				if (csVO.isNeedCloseSession()) {
-					session.close();
+	                if (csVO.isNeedCloseSession()) {
+	                    session.close();
+	                }
+
+				} catch (Exception e) {
+				    // 關閉失敗僅做log，不處理
+				    log.error(e.toString(), e);
 				}
 			}
 
@@ -288,4 +301,21 @@ public class SshUtils extends CommonUtils implements ConnectUtils {
 		return true;
 	}
 
+	@Override
+    public boolean connect(String udpAddress, String community) throws Exception {
+        // TODO 自動產生的方法 Stub
+        return false;
+    }
+
+    @Override
+    public Map<String, List<VariableBinding>> pollData(List<String> oids, SNMP pollMethod) throws Exception {
+        // TODO 自動產生的方法 Stub
+        return null;
+    }
+
+	@Override
+	public Map<String, Map<String, String>> pollTableView(String oid, Map<String, String> entryMap) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

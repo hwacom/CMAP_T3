@@ -3,7 +3,6 @@ package com.cmap.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -11,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.comm.enums.ScriptType;
+import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.ScriptInfoDAO;
 import com.cmap.dao.ScriptStepDAO;
@@ -32,6 +31,9 @@ import com.cmap.service.vo.ScriptServiceVO;
 public class ScriptServiceImpl extends CommonServiceImpl implements ScriptService {
 	@Log
 	private static Logger log;
+
+	@Autowired
+    private DeviceDAO deviceDAO;
 
 	@Autowired
 	private ScriptInfoDAO scriptInfoDAO;
@@ -61,13 +63,13 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 			device = deviceDAO.findDeviceListByDeviceListId(deviceListId);
 		}
 
-		String systemVersion = device != null ? device.getSystemVersion() : Env.MEANS_ALL_SYMBOL;
-		final String scriptCode = scriptListDefaultDAO.findDefaultScriptCodeBySystemVersion(type, systemVersion);
+		String deviceModel = device != null ? device.getDeviceModel() : Env.MEANS_ALL_SYMBOL;
+		final String scriptCode = scriptListDefaultDAO.findDefaultScriptCodeBySystemVersion(type, deviceModel);
 
 		List<ScriptDAOVO> daovoList = scriptStepActionDAO.findScriptStepByScriptInfoIdOrScriptCode(null, scriptCode);
 
 		if (daovoList == null || (daovoList != null && daovoList.isEmpty())) {
-			if (!StringUtils.equals(systemVersion, Env.MEANS_ALL_SYMBOL)) {
+			if (!StringUtils.equals(deviceModel, Env.MEANS_ALL_SYMBOL)) {
 				script = loadDefaultScript("*", script, type);	//帶入機器系統版本號查不到腳本時，將版本調整為*號後再查找一次預設腳本
 
 			} else {
@@ -93,7 +95,7 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 
 	@Override
 	public List<ScriptServiceVO> loadSpecifiedScript(String scriptInfoId, String scriptCode, List<Map<String, String>> varMapList, List<ScriptServiceVO> scripts) throws ServiceLayerException {
-		List<ScriptServiceVO> retScriptList = new ArrayList<>();
+		List<ScriptServiceVO> retScriptList = null;
 
 		if (scripts != null && !scripts.isEmpty()) {
 			return scripts;
@@ -119,6 +121,8 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 
 		// 有傳入參數MAP才需跑替換參數值流程
 		if (varMapList != null && !varMapList.isEmpty()) {
+
+		    retScriptList = new ArrayList<>();
 
 			for (Map<String, String> varMap : varMapList) {
 				for (ScriptServiceVO script : scripts) {
@@ -151,9 +155,12 @@ public class ScriptServiceImpl extends CommonServiceImpl implements ScriptServic
 					retScriptList.add(newVO);
 				}
 			}
-		}
 
-		return retScriptList;
+			return retScriptList;
+
+		} else {
+		    return scripts;
+		}
 	}
 
 	@Override

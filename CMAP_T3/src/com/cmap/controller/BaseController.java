@@ -19,13 +19,18 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.TreeMap;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +46,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-
 import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.Env;
+import com.cmap.comm.BaseAuthentication;
+import com.cmap.exception.AuthenticateException;
 import com.cmap.model.User;
 import com.cmap.security.SecurityUser;
 import com.cmap.service.CommonService;
 import com.cmap.service.UserService;
+import com.cmap.service.vo.PrtgServiceVO;
+import com.cmap.utils.ApiUtils;
+import com.cmap.utils.impl.CloseableHttpClientUtils;
+import com.cmap.utils.impl.PrtgApiUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -85,6 +95,53 @@ public class BaseController {
 			return null;
 		}
 	}
+
+	protected String loginAuthByPRTG(Model model, Principal principal, HttpServletRequest request, String sourceId) {
+        HttpSession session = request.getSession();
+        PrtgServiceVO prtgVO = null;
+
+        try {
+            prtgVO = commonService.findPrtgLoginInfo(sourceId);
+
+            if (prtgVO == null ||
+                    (prtgVO != null && StringUtils.isBlank(prtgVO.getAccount()) && StringUtils.isBlank(prtgVO.getPassword()))) {
+                throw new AuthenticateException("PRTG登入失敗 >> 取不到 Prtg_Account_Mapping 資料 (sourceId: " + sourceId + " )");
+            }
+
+            ApiUtils prtgApiUtils = new PrtgApiUtils();
+            boolean loginSuccess = prtgApiUtils.login(request, prtgVO.getAccount(), prtgVO.getPassword());
+
+            if (!loginSuccess) {
+                throw new AuthenticateException("PRTG登入失敗 >> prtgApiUtils.login return false");
+            }
+
+            String role = Objects.toString(session.getAttribute(Constants.USERROLE), null);
+
+            if (StringUtils.isBlank(role)) {
+                request.getSession().setAttribute(Constants.USERROLE, Constants.USERROLE_USER);
+
+            } else {
+                if (role.indexOf(Constants.USERROLE_USER) == -1) {
+                    role = role.concat(Env.COMM_SEPARATE_SYMBOL).concat(Constants.USERROLE_USER);
+                    request.getSession().setAttribute(Constants.USERROLE, role);
+                }
+            }
+
+            String userOIDCSub = Objects.toString(request.getSession().getAttribute(Constants.OIDC_SUB), null);
+
+            if (StringUtils.isNotBlank(userOIDCSub)) {
+                BaseAuthentication.authAdminRole(request, userOIDCSub);
+            }
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+
+            session.setAttribute(Constants.MODEL_ATTR_LOGIN_ERROR, "PRTG登入失敗，請重新操作或聯絡系統管理員");
+            return "redirect:/login";
+        }
+
+        return manualAuthenticatd4EduOIDC(model, principal, request);
+    }
 
 	protected String manualAuthenticatd4EduOIDC(Model model, Principal principal, HttpServletRequest request) {
 		try {
@@ -130,7 +187,18 @@ public class BaseController {
 	        Authentication authentication =  new UsernamePasswordAuthenticationToken(securityUser, USER_NAME, authorities);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-	        return "redirect:" + Env.HOME_PAGE;
+	        final String loginFromApp = Objects.toString(session.getAttribute(Constants.LOGIN_FROM_APP), Constants.DATA_N);
+
+	        if (StringUtils.equals(loginFromApp, Constants.DATA_Y)) {
+	            return "redirect:/login/returnApp";
+
+	        } else {
+	            if (Env.ENABLE_PRTG_SSH_CONFIRM_PAGE) {
+	                return "redirect:" + Env.PRTG_SSH_CONFIRM_PAGE;
+	            } else {
+	                return "redirect:" + Env.HOME_PAGE;
+	            }
+	        }
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -139,7 +207,7 @@ public class BaseController {
 	}
 
 	protected boolean checkUserCanOrNotAccess(HttpServletRequest request, String belongGroup, String[] roles, String account) {
-		return userService.checkUserCanAccess(request, belongGroup, roles, account);
+		return userService.checkUserCanAccess(request, true, belongGroup, roles, account);
 	}
 
 	protected void setQueryGroupList(HttpServletRequest request, Object obj, String fieldName, String queryGroup) throws Exception {
@@ -601,4 +669,39 @@ public class BaseController {
         }
         return mac;
     }
+
+	protected String getIpFromInfo(String ipAddress) {
+	    String resultStr = null;
+
+	    try {
+	        CloseableHttpClient httpclient = CloseableHttpClientUtils.prepare();
+
+	        HttpGet httpGet = new HttpGet(Env.GET_IP_FROM_INFO_API_URL + ipAddress);
+
+	        RequestConfig requestConfig = RequestConfig.custom()
+	                .setConnectTimeout(Env.HTTP_CONNECTION_TIME_OUT)            //設置連接逾時時間，單位毫秒。
+	                .setConnectionRequestTimeout(Env.HTTP_CONNECTION_TIME_OUT)  //設置從connect Manager獲取Connection 超時時間，單位毫秒。這個屬性是新加的屬性，因為目前版本是可以共用連接池的。
+	                .setSocketTimeout(Env.HTTP_SOCKET_TIME_OUT)                 //請求獲取資料的超時時間，單位毫秒。 如果訪問一個介面，多少時間內無法返回資料，就直接放棄此次調用。
+	                .build();
+	        httpGet.setConfig(requestConfig);
+
+	        log.info("Executing request " + httpGet.getRequestLine());
+
+	        // Create a custom response handler
+	        ResponseHandler<String> responseHandler = response -> {
+	            int statusCode = response.getStatusLine().getStatusCode();
+	            if (statusCode >= 200 && statusCode < 300) {
+	                HttpEntity entity = response.getEntity();
+	                return entity != null ? EntityUtils.toString(entity) : null;
+	            } else {
+	                throw new ClientProtocolException("Unexpected response status: " + statusCode);
+	            }
+	        };
+	        resultStr = httpclient.execute(httpGet, responseHandler);
+
+	    } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+	    return resultStr;
+	}
 }

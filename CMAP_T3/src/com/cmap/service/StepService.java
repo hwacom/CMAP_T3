@@ -2,11 +2,13 @@ package com.cmap.service;
 
 import java.util.List;
 import java.util.Map;
-
 import com.cmap.comm.enums.ConnectionMode;
 import com.cmap.comm.enums.RestoreMethod;
+import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.ScriptInfo;
 import com.cmap.service.vo.ConfigInfoVO;
+import com.cmap.service.vo.ConfigVO;
+import com.cmap.service.vo.ScriptServiceVO;
 import com.cmap.service.vo.StepServiceVO;
 import com.cmap.service.vo.VersionServiceVO;
 
@@ -48,7 +50,7 @@ public interface StepService {
 	public StepServiceVO doRestoreStep(RestoreMethod restoreMethod, String restoreType, StepServiceVO stepServiceVO, String triggerBy, String reason);
 
 	/**
-	 * 供裝派送流程
+	 * 供裝派送流程 by 指定腳本
 	 * @param connectionMode
 	 * @param deviceListId
 	 * @param deviceInfo
@@ -68,4 +70,42 @@ public interface StepService {
 			boolean sysTrigger,
 			String triggerBy,
 			String triggerRemark);
+
+	/**
+	 * 供裝派送流程 (不指定腳本，由呼叫端傳入要供裝的命令集)
+	 * @param connectionMode
+	 * @param deviceListId
+	 * @param deviceInfo
+	 * @param cmdList
+	 * @param sysTrigger
+	 * @param triggerBy
+	 * @param triggerRemark
+	 * @return
+	 */
+	public StepServiceVO doCommands(
+	        ConnectionMode connectionMode,
+            String deviceListId,
+            Map<String, String> deviceInfo,
+            List<ScriptServiceVO> cmdList,
+            boolean sysTrigger,
+            String triggerBy,
+            String triggerRemark);
+
+	/**
+	 * 確認目標物件當前的SSH連線是否可通
+	 * @param ciVO
+	 * @return
+	 */
+	public boolean chkSSHIsEnable(ConfigInfoVO ciVO);
+
+	/**
+	 * 依照【Config_Content_Setting】設定處理，取得實際需要派送的Config片段
+	 * @param configVO
+	 * @param settingType
+	 * @param configInfoVO
+	 * @return
+	 * @throws ServiceLayerException
+	 */
+	public List<String> processConfigContentSetting(ConfigVO configVO, String settingType, ConfigInfoVO configInfoVO)
+	        throws ServiceLayerException;
 }

@@ -1,18 +1,16 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * 系統環境變數Entity
+ * SYS_JOB_LOG Entity
  * @author Ken Lin
  *
  */

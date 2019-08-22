@@ -26,11 +26,12 @@ import com.cmap.dao.ScriptDefaultMappingDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.dao.vo.DeviceDAOVO;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.ConfigVersionDiffLog;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceList;
 import com.cmap.security.SecurityUtil;
+import com.cmap.service.ConfigService;
 import com.cmap.service.ProvisionService;
-import com.cmap.service.ScriptService;
 import com.cmap.service.StepService;
 import com.cmap.service.StepService.Result;
 import com.cmap.service.VersionService;
@@ -58,7 +59,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	private StepService stepService;
 
 	@Autowired
-	private ConfigDAO configVersionInfoDAO;
+	private ConfigDAO configDAO;
 
 	@Autowired
 	private DeviceDAO deviceDAO;
@@ -71,7 +72,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	private ProvisionService provisionService;
 
 	@Autowired
-	private ScriptService scriptService;
+	private ConfigService configService;
 
 	/**
 	 * 查找使用者有權限之群組+設備的資料筆數 for UI分頁區塊中的total使用
@@ -86,7 +87,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			cviDAOVO.setQueryDevice1List(deviceList);
 			cviDAOVO.setQueryConfigType(configType);
 
-			retCount = configVersionInfoDAO.countConfigVersionInfoByDAOVO(cviDAOVO);
+			retCount = configDAO.countConfigVersionInfoByDAOVO(cviDAOVO);
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -107,9 +108,9 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			cviDAOVO = transServiceVO2ConfigVersionInfoDAOVO(vsVO);
 
 			if (vsVO.isQueryNewChkbox()) {
-				retCount = configVersionInfoDAO.countConfigVersionInfoByDAOVO4New(cviDAOVO);
+				retCount = configDAO.countConfigVersionInfoByDAOVO4New(cviDAOVO);
 			} else {
-				retCount = configVersionInfoDAO.countConfigVersionInfoByDAOVO(cviDAOVO);
+				retCount = configDAO.countConfigVersionInfoByDAOVO(cviDAOVO);
 			}
 
 		} catch (Exception e) {
@@ -149,9 +150,9 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			cviDAOVO = transServiceVO2ConfigVersionInfoDAOVO(vsVO);
 
 			if (vsVO.isQueryNewChkbox()) {
-				modelList = configVersionInfoDAO.findConfigVersionInfoByDAOVO4New(cviDAOVO, startRow, pageLength);
+				modelList = configDAO.findConfigVersionInfoByDAOVO4New(cviDAOVO, startRow, pageLength);
 			} else {
-				modelList = configVersionInfoDAO.findConfigVersionInfoByDAOVO(cviDAOVO, startRow, pageLength);
+				modelList = configDAO.findConfigVersionInfoByDAOVO(cviDAOVO, startRow, pageLength);
 			}
 
 			if (modelList != null && !modelList.isEmpty()) {
@@ -193,7 +194,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	@Override
 	public boolean deleteVersionInfo(List<String> versionIDs) throws ServiceLayerException {
 		try {
-			configVersionInfoDAO.deleteConfigVersionInfoByVersionIds(versionIDs, SecurityUtil.getSecurityUser().getUsername());
+			configDAO.deleteConfigVersionInfoByVersionIds(versionIDs, SecurityUtil.getSecurityUser().getUsername());
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
@@ -292,7 +293,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	public List<VersionServiceVO> findConfigFilesInfo(List<String> versionIDs) throws ServiceLayerException {
 		List<VersionServiceVO> retList = null;
 		try {
-			List<ConfigVersionInfo> cviList = configVersionInfoDAO.findConfigVersionInfoByVersionIDs(versionIDs);
+			List<ConfigVersionInfo> cviList = configDAO.findConfigVersionInfoByVersionIDs(versionIDs);
 
 			if (cviList != null && !cviList.isEmpty()) {
 				retList = new ArrayList<>();
@@ -333,7 +334,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 	}
 
 	@Override
-	public VersionServiceVO getConfigFileContent(VersionServiceVO vsVO) throws ServiceLayerException {
+	public VersionServiceVO getConfigFileContent(VersionServiceVO vsVO, boolean transHtmlFormat) throws ServiceLayerException {
 		try {
 			FileUtils fileUtils = null;
 			List<String> contentList = null;
@@ -377,10 +378,10 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 					// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
 					String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
 					fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
-					vsVO.setRemoteFileDirPath(date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(vsVO.getRemoteFileDirPath()));
 				}
 
-				//fileUtils.changeDir(fileDir, false);
+				vsVO.setRemoteFileDirPath(fileDir);
+//				fileUtils.changeDir(fileDir, false);
 
 				// Step4. 下載指定的Config落地檔
 				ConfigInfoVO ciVO = new ConfigInfoVO();
@@ -388,17 +389,19 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 				contentList = fileUtils.downloadFiles(ciVO);
 
 				// Step5. 轉換為String for UI輸出
-				if (contentList != null && !contentList.isEmpty()) {
-					vsVO.setConfigContentList(contentList);
+			    if (contentList != null && !contentList.isEmpty()) {
+                    vsVO.setConfigContentList(contentList);
 
-					sb = new StringBuffer();
+                    if (transHtmlFormat) {
+                        sb = new StringBuffer();
 
-					for (String content : contentList) {
-						sb.append(content).append("<br />");
-					}
+                        for (String content : contentList) {
+                            sb.append(content).append("<br />");
+                        }
 
-					vsVO.setConfigFileContent(sb.toString());
-				}
+                        vsVO.setConfigFileContent(sb.toString());
+                    }
+                }
 
 				// Step6. 關閉FTP連線
 				if (fileUtils != null) {
@@ -493,6 +496,28 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 		return retVal;
 	}
 
+	@Override
+    public boolean compareConfigList(List<String> preConfigList, List<String> newConfigList) throws ServiceLayerException {
+	    try {
+	        if (preConfigList == null || newConfigList == null) {
+	            throw new ServiceLayerException("要比對的組態內容為空");
+	        }
+
+	        Patch patch = DiffUtils.diff(preConfigList, newConfigList);
+            List<Delta> deltaList = patch.getDeltas();
+
+            if (deltaList != null && !deltaList.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
+
+	    } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServiceLayerException(e);
+        }
+    }
+
 	/**
 	 * 版本比對
 	 */
@@ -548,16 +573,25 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 							// 依照要查看的組態檔Create_date決定要到哪個日期目錄下取得檔案
 							String date_yyyyMMdd = vsVO.getCreateDate() != null ? sdf.format(vsVO.getCreateDate()) : sdf.format(new Date());
 							fileDir = date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(fileDir);
-							vsVO.setRemoteFileDirPath(date_yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(vsVO.getRemoteFileDirPath()));
 						}
 					}
 
-					//fileUtils.changeDir(fileDir, false);
+					fileUtils.changeDir(fileDir, false);
 
 					// Step4. 下載指定的Config落地檔
 					ConfigInfoVO ciVO = new ConfigInfoVO();
 					BeanUtils.copyProperties(vsVO, ciVO);
 					List<String> cList = fileUtils.downloadFiles(ciVO);
+
+					/*
+		             * TODO: 組態備份版本比對，依設定開關是否參照比對模板
+		             * 若[On]  >> 參照模板設定區塊進行比對，區塊內有差異才做備份
+		             * 若[Off] >> 不參照，採全部比對
+		             */
+		            if (Env.ENABLE_CONFIG_BACKUP_REFER_TEMPLATE) {
+		                ciVO.setConfigContentList(cList);
+		                cList = stepService.processConfigContentSetting(null, Constants.CONFIG_CONTENT_SETTING_TYPE_CONFIG_BACKUP, ciVO);
+		            }
 
 					if (cList != null && !cList.isEmpty()) {
 						if (contentOriList == null) {
@@ -635,7 +669,7 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			throw new ServiceLayerException("版本比對發生異常，請重新操作");
+			throw new ServiceLayerException(e);
 
 		}
 		return retVO;
@@ -660,20 +694,16 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			diff = vo.isLineDiff();
 
 			if (vo.getLine().equals(Constants.ADD_LINE)) {
-			    /*
 				sb.append("<div class=\"progress\" style=\"margin-top: 5px; background-color: #637381; height: 1.1rem;\">")
 				.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
 				.append("</div>")
 				.append("</span>");
-				*/
-			    sb.append("<div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div>")
-                  .append("</span>");
 
 			} else {
-				sb.append(diff ? "<span style=\"color:red;white-space:pre;\">" : "<span style=\"white-space:pre;\">")
-				  .append(vo.getLine())
-				  .append(diff ? "</span>" : "</span>")
-				  .append("<br />");
+				sb.append(diff ? "<span style=\"color:red\">" : "<span>")
+				.append(vo.getLine())
+				.append(diff ? "</span>" : "</span>")
+				.append("<br />");
 			}
 
 			if (genLineNum) {
@@ -682,18 +712,15 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 				if (!diffList.isEmpty()) {
 					for (String dp : diffList) {
 						if ((lineNo-1) == Integer.valueOf(dp)) {
-							ln.append(" class=\"diffPos\" style=\"color:red;white-space:pre;\"");
+							ln.append(" class=\"diffPos\" style=\"color:red\"");
 						}
 					}
-
-				} else {
-				    ln.append(" style=\"white-space:pre;\"");
 				}
 
 				ln.append(">")
-				  .append(lineNo)
-				  .append("</span>")
-				  .append("<br />");
+				.append(lineNo)
+				.append("</span>")
+				.append("<br />");
 			}
 
 			lineNo++;
@@ -798,9 +825,12 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 			masterVO.setUserName(triggerBy);
 
 			StepServiceVO stepServiceVO = new StepServiceVO();
+			BeanUtils.copyProperties(vsVO, stepServiceVO);
+			/*
 			stepServiceVO.setDeviceListId(vsVO.getDeviceListId());
 			stepServiceVO.setRestoreVersionId(vsVO.getRestoreVersionId());
 			stepServiceVO.setRestoreContentList(vsVO.getRestoreContentList());
+			*/
 
 			StepServiceVO ssVO = stepService.doRestoreStep(restoreMethod, restoreType, stepServiceVO, triggerBy, reason);
 
@@ -841,4 +871,46 @@ public class VersionServiceImpl extends CommonServiceImpl implements VersionServ
 
 		return retVO;
 	}
+
+    @Override
+    public VersionServiceVO viewCompareResult(String diffLogId) throws ServiceLayerException {
+        VersionServiceVO retVO = null;
+        try {
+            // Step 1. 查找比對來源版本號
+            ConfigVersionDiffLog diffLogEntity = configDAO.findConfigVersionDiffLogById(diffLogId);
+
+            if (diffLogEntity == null) {
+                throw new ServiceLayerException("查無版本比對差異紀錄 (ID:" + diffLogId + ")");
+            }
+
+            final String preVersionId = diffLogEntity.getPreVersionId();
+            final String newVersionId = diffLogEntity.getNewVersionId();
+
+            // Step 2. 執行版本比對
+            List<String> versionIDs = new ArrayList<>();
+            versionIDs.add(preVersionId);
+            versionIDs.add(newVersionId);
+
+            List<VersionServiceVO> vsVOList = findConfigFilesInfo(versionIDs);
+
+            for (VersionServiceVO vsVO : vsVOList) {
+                vsVO.setCheckEnableCurrentDateSetting(true);
+            }
+
+            if (vsVOList != null && !vsVOList.isEmpty() && vsVOList.size() == 2) {
+                retVO = compareConfigFiles(vsVOList);
+
+            } else {
+                throw new ServiceLayerException("資料取得異常");
+            }
+
+        } catch (ServiceLayerException sle) {
+            throw sle;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServiceLayerException("非預期異常 (" + e.getMessage() + ")");
+        }
+        return retVO;
+    }
 }

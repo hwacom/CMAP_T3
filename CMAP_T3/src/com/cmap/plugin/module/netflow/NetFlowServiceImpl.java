@@ -1,8 +1,8 @@
 package com.cmap.plugin.module.netflow;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,14 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -27,14 +24,13 @@ import com.cmap.exception.ServiceLayerException;
 import com.cmap.model.DataPollerMapping;
 import com.cmap.model.DataPollerSetting;
 import com.cmap.model.DeviceList;
-import com.cmap.service.CommonService;
 import com.cmap.service.DataPollerService;
+import com.cmap.service.impl.CommonServiceImpl;
 import com.cmap.service.vo.CommonServiceVO;
 import com.cmap.service.vo.DataPollerServiceVO;
 
 @Service("netFlowService")
-@Transactional
-public class NetFlowServiceImpl implements NetFlowService {
+public class NetFlowServiceImpl extends CommonServiceImpl implements NetFlowService {
 	@Log
 	private static Logger log;
 
@@ -50,9 +46,6 @@ public class NetFlowServiceImpl implements NetFlowService {
 	@Autowired
 	private DeviceDAO deviceDAO;
 
-	@Autowired
-	private CommonService commonService;
-
 	private String getTodayTableName() {
 		String tableName = Env.DATA_POLLER_NET_FLOW_TABLE_BASE_NAME;
 		/*
@@ -61,7 +54,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 		 */
 		Calendar cal = Calendar.getInstance();
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);	//取得當前系統時間是星期幾 (Sunday=1、Monday=2、...)
-		tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, '0'); //TABLE流水編碼部分補0成3碼(ex:1→001)
+		tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, "0"); //TABLE流水編碼部分補0成3碼(ex:1→001)
 
 		return tableName;
 	}
@@ -78,7 +71,7 @@ public class NetFlowServiceImpl implements NetFlowService {
 			cal.setTime(queryDate);
 
 			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);	//取得當前系統時間是星期幾 (Sunday=1、Monday=2、...)
-			tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, '0'); //TABLE流水編碼部分補0成3碼(ex:1→001)
+			tableName += "_" + StringUtils.leftPad(String.valueOf(dayOfWeek), 3, "0"); //TABLE流水編碼部分補0成3碼(ex:1→001)
 
 		} catch (ParseException e) {
 			log.error(e.toString(), e);
@@ -149,14 +142,17 @@ public class NetFlowServiceImpl implements NetFlowService {
 
 			for (int i=0; i<tableTitleField.size(); i++) {
 				String fieldName = tableTitleField.get(i);
-				queryFieldsSQL.append("`").append(fieldName).append("`");
+				queryFieldsSQL.append("`").append(fieldName).append("`, ");
 
+				/*
 				if (i < tableTitleField.size() - 1) {
 					queryFieldsSQL.append(", ");
 				}
+				*/
 			}
+			queryFieldsSQL.append("data_id");
 
-			Map<Integer, CommonServiceVO> protocolMap = commonService.getProtoclSpecMap();
+			Map<Integer, CommonServiceVO> protocolMap = getProtoclSpecMap();
 
 			final String queryTable = getQueryTableName(nfVO);
 			List<Object[]> dataList = netFlowDAO.findNetFlowDataFromDB(nfVO, startRow, pageLength, searchLikeField, queryTable, queryFieldsSQL.toString());
@@ -168,7 +164,12 @@ public class NetFlowServiceImpl implements NetFlowService {
 					throw new ServiceLayerException("查無欄位標題設定 >> Setting_Id: " + Env.SETTING_ID_OF_NET_FLOW);
 
 				} else {
+				    String groupId = nfVO.getQueryGroupId();
+				    String groupSubnet = getGroupSubnetSetting(groupId, Constants.IPV4);
+
 					// fieldList.add(0, "GroupId");
+				    boolean hasGetDevice = false;
+                    DeviceList device = null;
 
 					NetFlowVO vo;
 					for (Object[] data : dataList) {
@@ -213,8 +214,18 @@ public class NetFlowServiceImpl implements NetFlowService {
 								fValue = convertByteSizeUnit(sizeByte, Env.NET_FLOW_SHOW_UNIT_OF_RESULT_DATA_SIZE);
 
 							} else if (oriName.equals("GroupId")) {
-								String groupId = Objects.toString(data[dataIdx]);
-								DeviceList device = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, null);
+								groupId = Objects.toString(data[dataIdx]);
+
+								if (hasGetDevice == false && device == null) {
+								    /*
+								     * 查詢條件已限制只能查一所學校，因此不需要每一筆查詢結果都再做一次學校查詢
+								     */
+								    device = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, null);
+
+								    if (!hasGetDevice) {
+								        hasGetDevice = true;
+								    }
+								}
 
 								if (device == null) {
 									fValue = groupId;
@@ -223,6 +234,13 @@ public class NetFlowServiceImpl implements NetFlowService {
 									fName = "groupName";
 									fValue = device.getGroupName();
 								}
+
+							} else if (oriName.equals("SourceIP") || oriName.equals("DestinationIP")) {
+							    fValue = Objects.toString(data[dataIdx]);
+							    boolean ipInGroup = chkIpInGroupSubnet(groupSubnet, fValue, Constants.IPV4);
+
+							    String fNameFlag = fName.concat("InGroup");
+							    BeanUtils.setProperty(vo, fNameFlag, ipInGroup ? Constants.DATA_Y : Constants.DATA_N); // 塞入SourceIPInGroup or DestinationIPInGroup
 
 							} else if (oriName.equals("Protocol")) {
 								String tmpStr = Objects.toString(data[dataIdx]);
@@ -238,12 +256,17 @@ public class NetFlowServiceImpl implements NetFlowService {
 							BeanUtils.setProperty(vo, fName, fValue);
 						}
 
+						vo.setDataId(Objects.toString(data[data.length - 1]));
+						vo.setGroupId(nfVO.getQueryGroupId());
 						retList.add(vo);
 					}
 
+					/*
+					 * Y190729, 總流量透過另一個AJAX查詢，提升查詢效率
 					BigDecimal flowSum = netFlowDAO.getTotalFlowOfQueryConditionsFromDB(nfVO, searchLikeField, queryTable);
 					String totalFlow = (flowSum == null) ? "N/A" : convertByteSizeUnit(flowSum, Env.NET_FLOW_SHOW_UNIT_OF_TOTOAL_FLOW);
 					retList.get(0).setTotalFlow(totalFlow);	// 塞入總流量至第一筆VO內
+					*/
 				}
 			}
 
@@ -252,39 +275,6 @@ public class NetFlowServiceImpl implements NetFlowService {
 			throw new ServiceLayerException("查詢失敗，請重新操作");
 		}
 		return retList;
-	}
-
-	private String convertByteSizeUnit(BigDecimal sizeByte, Integer targetUnit) {
-		int scale = Env.NET_FLOW_SIZE_SCALE;
-		BigDecimal unitSize = new BigDecimal("1024");
-		BigDecimal sizeKb = sizeByte.divide(unitSize, scale, RoundingMode.HALF_UP);
-		BigDecimal sizeMb = (sizeByte.divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
-		BigDecimal sizeGb = (sizeByte.divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
-		BigDecimal sizeTb = (sizeByte.divide(unitSize).divide(unitSize).divide(unitSize)).divide(unitSize, scale, RoundingMode.HALF_UP);
-		BigDecimal unitBaseSize = new BigDecimal("1.00"); //有超過下一單位的數量1時再轉換 (e.g. 100MB不到1GB，不轉換成0.1GB；1120MB有超過1GB，轉換成1.xxGB)
-
-		/*
-		 * targetUnit : 目標最高轉換至哪個單位
-		 * 1=B / 2=KB / 3=MB / 4=GB / 5=TB
-		 */
-		String convertedSize = "";
-		if (targetUnit >= 5 && sizeTb.compareTo(unitBaseSize) == 1) {
-			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeTb) + " TB";
-
-		} else if (targetUnit >= 4 && sizeGb.compareTo(unitBaseSize) == 1) {
-			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeGb) + " GB";
-
-		} else if (targetUnit >= 3 && sizeMb.compareTo(unitBaseSize) == 1) {
-			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeMb) + " MB";
-
-		} else if (targetUnit >= 2 && sizeKb.compareTo(unitBaseSize) == 1) {
-			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeKb) + " KB";
-
-		} else if (targetUnit >= 1){
-			convertedSize = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(sizeByte) + " B";
-		}
-
-		return convertedSize;
 	}
 
 	private Map<String, NetFlowVO> composeQueryMap(NetFlowVO nfVO) {
@@ -389,4 +379,59 @@ public class NetFlowServiceImpl implements NetFlowService {
 		return retVO;
 	}
 
+    @Override
+    public String getTotalTraffic(NetFlowVO nfVO, List<String> searchLikeField)
+            throws ServiceLayerException {
+
+        String totalFlow = "N/A";
+        try {
+            final String queryTable = getQueryTableName(nfVO);
+            BigDecimal flowSum = netFlowDAO.getTotalFlowOfQueryConditionsFromDB(nfVO, searchLikeField, queryTable);
+
+            if (flowSum != null) {
+                totalFlow = convertByteSizeUnit(flowSum, Env.NET_FLOW_SHOW_UNIT_OF_TOTOAL_FLOW);
+
+            } else {
+                totalFlow = "EMPTY";
+            }
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return totalFlow;
+    }
+
+	@Override
+	public NetFlowVO findNetFlowRecordByGroupIdAndDataId(String groupId, String dataId, String fromDateTime) throws ServiceLayerException {
+		NetFlowVO retVO = null;
+		try {
+			String storeMethod = dataPollerService.getStoreMethodByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
+
+			if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_FILE)) {
+				/*
+				 * Option 1. 走 FILE 模式查詢
+				 */
+				//TODO
+
+			} else if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_DB)) {
+			    SimpleDateFormat FORMAT_YYYYMMDD_HH24MISS = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			    SimpleDateFormat FORMAT_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
+			    String dateBegin = FORMAT_YYYY_MM_DD.format(FORMAT_YYYYMMDD_HH24MISS.parse(fromDateTime));
+
+				NetFlowVO nfVO = new NetFlowVO();
+				nfVO.setQueryDataId(dataId);
+				nfVO.setQueryGroupId(groupId);
+				nfVO.setQueryDateBegin(dateBegin);
+				List<NetFlowVO> dataList = findNetFlowRecordFromDB(nfVO, null, null, null);
+
+				if (dataList != null && !dataList.isEmpty()) {
+					retVO = dataList.get(0);
+				}
+			}
+
+		} catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+		return retVO;
+	}
 }

@@ -2,7 +2,6 @@ package com.cmap.dao;
 
 import java.sql.Timestamp;
 import java.util.List;
-
 import com.cmap.dao.vo.DeviceDAOVO;
 import com.cmap.model.DeviceDetailInfo;
 import com.cmap.model.DeviceDetailMapping;
@@ -13,7 +12,11 @@ public interface DeviceDAO extends BaseDAO {
 
 	public DeviceList findDeviceListByDeviceListId(String deviceListId);
 
+	public DeviceList findDeviceListByDeviceIp(String deviceIp);
+
 	public DeviceList findDeviceListByGroupAndDeviceId(String groupId, String deviceId);
+
+	public List<DeviceList> findDeviceListByDAOVO(DeviceDAOVO dlDAOVO);
 
 	public long countDeviceListAndLastestVersionByDAOVO(DeviceDAOVO dlDAOVO);
 

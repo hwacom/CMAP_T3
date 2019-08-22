@@ -7,11 +7,20 @@
 	<decorator name="login" page="views/login.jsp">
 		<pattern>/login</pattern>
 	</decorator>
-	<decorator name="loginOIDC" page="views/login_openid.jsp">
+	<decorator name="loginOIDC_MLC" page="views/login_openid_mlc.jsp">
 		<pattern>/loginOIDC</pattern>
+	</decorator>
+	<decorator name="loginOIDC_NTPC" page="views/login_openid_ntpc.jsp">
+		<pattern>/loginOIDC_NTPC</pattern>
+	</decorator>
+	<decorator name="formredirection" page="views/formredirection.jsp">
+		<pattern>/login/authByOIDC_NTPC</pattern>
 	</decorator>
 	<decorator name="accessDenied" page="views/access_denied.jsp">
 		<pattern>/accessDenied*</pattern>
+	</decorator>
+	<decorator name="test" page="views/test/test.jsp">
+		<pattern>/___test___</pattern>
 	</decorator>
 	<decorator name="outsite" page="common/blank.jsp">
 		<pattern>/outsite*</pattern>
@@ -22,5 +31,7 @@
 	<decorator name="vm_switch" page="views/plugin/module_vm_switch.jsp">
 		<pattern>/plugin/module/vmswitch*</pattern>
 	</decorator>
-	
+	<decorator name="version_diff_view" page="views/version/version_diff_view.jsp">
+		<pattern>/version/diff/view*</pattern>
+	</decorator>
 </decorators>

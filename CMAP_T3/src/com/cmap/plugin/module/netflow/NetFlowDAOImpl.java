@@ -16,16 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -40,222 +42,246 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 	@Log
 	private static Logger log;
 
+	@Autowired
+	@Qualifier("secondSessionFactory")
+	private SessionFactory secondSessionFactory;
+
 	@Override
 	public long countNetFlowDataFromDB(NetFlowVO nfVO, List<String> searchLikeField, String tableName) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(" select count(data_id) ")
-		  .append(" from ").append(tableName).append(" nfrd ")
-		  .append(" where 1=1 ");
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select count(data_id) ")
+          .append(" from ").append(tableName).append(" nfrd ")
+          .append(" where 1=1 ");
 
-		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-			sb.append(" and nfrd.group_id = :groupId ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			sb.append(" and nfrd.source_ip = :querySourceIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			sb.append(" and nfrd.source_port = :querySourcePort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			sb.append(" and nfrd.sender_ip = :querySenderIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			sb.append(" and ( nfrd.source_MAC = :queryMac ")
-			  .append("       or nfrd.destination_MAC = :queryMac ) ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
-			sb.append(" and nfrd.from_date_str = :queryDateStr ")
-			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
-		}
-		/*
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
-		}
-		*/
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            sb.append(" and nfrd.group_id = :groupId ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            sb.append(" and nfrd.source_ip = :querySourceIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            sb.append(" and nfrd.source_port = :querySourcePort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            sb.append(" and nfrd.sender_ip = :querySenderIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            sb.append(" and ( nfrd.source_MAC = :queryMac ")
+              .append("       or nfrd.destination_MAC = :queryMac ) ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            //sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+            sb.append(" and nfrd.from_date = :queryDateStr ")
+              .append(" and (nfrd.from_time >= :queryTimeBeginStr and nfrd.from_time < :queryTimeEndStr) ");
+        }
+        /*
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
+        }
+        */
 
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			StringBuffer sfb = new StringBuffer();
-			sfb.append(" and ( ");
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            StringBuffer sfb = new StringBuffer();
+            sfb.append(" and ( ");
 
-			int i = 0;
-			for (String sField : searchLikeField) {
-				sfb.append(sField).append(" like :searchValue ");
+            int i = 0;
+            for (String sField : searchLikeField) {
+                sfb.append(sField).append(" like :searchValue ");
 
-				if (i < searchLikeField.size() - 1) {
-					sfb.append(" or ");
-				}
+                if (i < searchLikeField.size() - 1) {
+                    sfb.append(" or ");
+                }
 
-				i++;
-			}
+                i++;
+            }
 
-			sfb.append(" ) ");
-			sb.append(sfb);
-		}
+            sfb.append(" ) ");
+            sb.append(sfb);
+        }
 
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-	    Query<?> q = session.createNativeQuery(sb.toString());
+        Session session = secondSessionFactory.getCurrentSession();
 
-	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-	    	q.setParameter("groupId", nfVO.getQueryGroupId());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			q.setParameter("queryMac", nfVO.getQueryMac());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
-			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
-			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			q.setParameter("endDate", nfVO.getQueryDateEnd());
-		}
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
-		}
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
 
-	    return DataAccessUtils.longResult(q.list());
+        Query<?> q = session.createNativeQuery(sb.toString());
+
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            q.setParameter("groupId", nfVO.getQueryGroupId());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            q.setParameter("queryMac", nfVO.getQueryMac());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            q.setParameter("queryDateStr", nfVO.getQueryDateBegin());
+            q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBegin());
+            q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            q.setParameter("endDate", nfVO.getQueryDateEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
+        }
+
+        return DataAccessUtils.longResult(q.list());
 	}
 
 	@Override
 	public List<Object[]> findNetFlowDataFromDB(NetFlowVO nfVO, Integer startRow, Integer pageLength, List<String> searchLikeField, String tableName, String selectSql) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(" select ");
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select ");
 
-		if (StringUtils.isNotBlank(selectSql)) {
-			sb.append(selectSql);
-		} else {
-			sb.append("*");
-		}
+        if (StringUtils.isNotBlank(selectSql)) {
+            sb.append(selectSql);
+        } else {
+            sb.append("*");
+        }
 
-		sb.append(" from ").append(tableName).append(" nfrd ")
-		  .append(" where 1=1 ");
+        sb.append(" from ").append(tableName).append(" nfrd ")
+          .append(" where 1=1 ");
 
-		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-			sb.append(" and nfrd.group_id = :groupId ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			sb.append(" and nfrd.source_ip = :querySourceIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			sb.append(" and nfrd.source_port = :querySourcePort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			sb.append(" and nfrd.sender_ip = :querySenderIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			sb.append(" and ( nfrd.source_MAC = :queryMac ")
-			  .append("       or nfrd.destination_MAC = :queryMac ) ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
-			sb.append(" and nfrd.from_date_str = :queryDateStr ")
-			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
-		}
-		/*
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
-		}
-		*/
+        if (StringUtils.isNotBlank(nfVO.getQueryDataId())) {
+            sb.append(" and nfrd.data_id = :dataId ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            sb.append(" and nfrd.group_id = :groupId ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            sb.append(" and nfrd.source_ip = :querySourceIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            sb.append(" and nfrd.source_port = :querySourcePort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            sb.append(" and nfrd.sender_ip = :querySenderIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            sb.append(" and ( nfrd.source_MAC = :queryMac ")
+              .append("       or nfrd.destination_MAC = :queryMac ) ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            //sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+            sb.append(" and nfrd.from_date = :queryDateStr ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryTimeBegin()) && StringUtils.isNotBlank(nfVO.getQueryTimeEnd())) {
+            sb.append(" and (nfrd.from_time >= :queryTimeBeginStr and nfrd.from_time < :queryTimeEndStr) ");
+        }
+        /*
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
+        }
+        */
 
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			StringBuffer sfb = new StringBuffer();
-			sfb.append(" and ( ");
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            StringBuffer sfb = new StringBuffer();
+            sfb.append(" and ( ");
 
-			int i = 0;
-			for (String sField : searchLikeField) {
-				sfb.append(sField).append(" like :searchValue ");
+            int i = 0;
+            for (String sField : searchLikeField) {
+                sfb.append(sField).append(" like :searchValue ");
 
-				if (i < searchLikeField.size() - 1) {
-					sfb.append(" or ");
-				}
+                if (i < searchLikeField.size() - 1) {
+                    sfb.append(" or ");
+                }
 
-				i++;
-			}
+                i++;
+            }
 
-			sfb.append(" ) ");
-			sb.append(sfb);
-		}
+            sfb.append(" ) ");
+            sb.append(sfb);
+        }
 
-		if (StringUtils.isNotBlank(nfVO.getOrderColumn())) {
-			sb.append(" order by nfrd.").append(nfVO.getOrderColumn()).append(" ").append(nfVO.getOrderDirection());
+        if (StringUtils.isNotBlank(nfVO.getOrderColumn())) {
+            sb.append(" order by nfrd.").append(nfVO.getOrderColumn()).append(" ").append(nfVO.getOrderDirection());
 
-		} else {
-			sb.append(" order by nfrd.size desc ");
-		}
+        } else {
+            sb.append(" order by nfrd.from_time desc ");
+        }
 
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-	    Query<?> q = session.createNativeQuery(sb.toString());
+        Session session = secondSessionFactory.getCurrentSession();
 
-	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-	    	q.setParameter("groupId", nfVO.getQueryGroupId());
-		}
-	    if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			q.setParameter("queryMac", nfVO.getQueryMac());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
-			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
-			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			q.setParameter("endDate", nfVO.getQueryDateEnd());
-		}
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
-		}
-		if (startRow != null && pageLength != null) {
-		    q.setFirstResult(startRow);
-			q.setMaxResults(pageLength);
-		}
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
 
-	    return (List<Object[]>)q.list();
+        Query<?> q = session.createNativeQuery(sb.toString());
+
+        if (StringUtils.isNotBlank(nfVO.getQueryDataId())) {
+            q.setParameter("dataId", nfVO.getQueryDataId());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            q.setParameter("groupId", nfVO.getQueryGroupId());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            q.setParameter("queryMac", nfVO.getQueryMac());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            q.setParameter("queryDateStr", nfVO.getQueryDateBegin());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryTimeBegin()) && StringUtils.isNotBlank(nfVO.getQueryTimeEnd())) {
+            q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBegin());
+            q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            q.setParameter("endDate", nfVO.getQueryDateEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
+        }
+        if (startRow != null && pageLength != null) {
+            q.setFirstResult(startRow);
+            q.setMaxResults(pageLength);
+        }
+
+        return (List<Object[]>)q.list();
 	}
 
 	private String analyzeFileFormat(String format, Map<String, String> varMap) {
@@ -525,124 +551,292 @@ public class NetFlowDAOImpl extends BaseDaoHibernate implements NetFlowDAO {
 
 	@Override
 	public String findTargetTableNameByGroupId(String groupId) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(" select table_name ")
-		  .append(" from Net_Flow_Table_Mapping ")
-		  .append(" where 1=1 ")
-		  .append(" and group_id = :groupId ");
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select table_name ")
+          .append(" from Net_Flow_Table_Mapping ")
+          .append(" where 1=1 ")
+          .append(" and group_id = :groupId ");
 
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-	    Query<?> q = session.createNativeQuery(sb.toString());
-	    q.setParameter("groupId", groupId);
+        Session session = secondSessionFactory.getCurrentSession();
 
-	    List<Object> retList = (List<Object>)q.list();
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
 
-	    if (retList != null && !retList.isEmpty()) {
-	    	return Objects.toString(retList.get(0), null);
+        Query<?> q = session.createNativeQuery(sb.toString());
+        q.setParameter("groupId", groupId);
 
-	    } else {
-	    	return null;
-	    }
+        List<Object> retList = (List<Object>)q.list();
+
+        if (retList != null && !retList.isEmpty()) {
+            return Objects.toString(retList.get(0), null);
+
+        } else {
+            return null;
+        }
 	}
 
 	@Override
 	public BigDecimal getTotalFlowOfQueryConditionsFromDB(NetFlowVO nfVO, List<String> searchLikeField, String tableName) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(" select sum(size) ")
-		  .append(" from ").append(tableName).append(" nfrd ")
-		  .append(" where 1=1 ");
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select sum(size) ")
+          .append(" from ").append(tableName).append(" nfrd ")
+          .append(" where 1=1 ");
 
-		if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-			sb.append(" and nfrd.group_id = :groupId ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			sb.append(" and nfrd.source_ip = :querySourceIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			sb.append(" and nfrd.source_port = :querySourcePort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			sb.append(" and nfrd.destination_port = :queryDestinationPort ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			sb.append(" and nfrd.sender_ip = :querySenderIp ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			sb.append(" and ( nfrd.source_MAC = :queryMac ")
-			  .append("       or nfrd.destination_MAC = :queryMac ) ");
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			//sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
-			sb.append(" and nfrd.from_date_str = :queryDateStr ")
-			  .append(" and (nfrd.from_date_time_str >= :queryTimeBeginStr and nfrd.from_date_time_str < :queryTimeEndStr) ");
-		}
-		/*
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
-			  .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
-		}
-		*/
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            sb.append(" and nfrd.group_id = :groupId ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            sb.append(" and nfrd.source_ip = :querySourceIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            sb.append(" and nfrd.source_port = :querySourcePort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            sb.append(" and nfrd.destination_ip = :queryDestinationIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            sb.append(" and nfrd.destination_port = :queryDestinationPort ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            sb.append(" and nfrd.sender_ip = :querySenderIp ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            sb.append(" and ( nfrd.source_MAC = :queryMac ")
+              .append("       or nfrd.destination_MAC = :queryMac ) ");
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            //sb.append(" and (nfrd.now >= DATE_FORMAT(:beginDate, '%Y-%m-%d') and nfrd.now < DATE_ADD(:beginDate, INTERVAL 1 DAY)) ");
+            sb.append(" and nfrd.from_date = :queryDateStr ")
+              .append(" and (nfrd.from_time >= :queryTimeBeginStr and nfrd.from_time < :queryTimeEndStr) ");
+        }
+        /*
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            sb.append(" and ( nfrd.now < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.from_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ")
+              .append("       or nfrd.to_date_time < DATE_ADD(:endDate, INTERVAL 1 DAY) ) ");
+        }
+        */
 
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			StringBuffer sfb = new StringBuffer();
-			sfb.append(" and ( ");
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            StringBuffer sfb = new StringBuffer();
+            sfb.append(" and ( ");
 
-			int i = 0;
-			for (String sField : searchLikeField) {
-				sfb.append(sField).append(" like :searchValue ");
+            int i = 0;
+            for (String sField : searchLikeField) {
+                sfb.append(sField).append(" like :searchValue ");
 
-				if (i < searchLikeField.size() - 1) {
-					sfb.append(" or ");
-				}
+                if (i < searchLikeField.size() - 1) {
+                    sfb.append(" or ");
+                }
 
-				i++;
-			}
+                i++;
+            }
 
-			sfb.append(" ) ");
-			sb.append(sfb);
-		}
+            sfb.append(" ) ");
+            sb.append(sfb);
+        }
 
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-	    Query<?> q = session.createNativeQuery(sb.toString());
+        Session session = secondSessionFactory.getCurrentSession();
 
-	    if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
-	    	q.setParameter("groupId", nfVO.getQueryGroupId());
-		}
-	    if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
-			q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
-			q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
-			q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
-			q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
-			q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
-			q.setParameter("queryMac", nfVO.getQueryMac());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
-			q.setParameter("queryDateStr", nfVO.getQueryDateStr());
-			q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBeginStr());
-			q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEndStr());
-		}
-		if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
-			q.setParameter("endDate", nfVO.getQueryDateEnd());
-		}
-		if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
-			q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
-		}
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
 
-		List<BigDecimal> retList = (List<BigDecimal>)q.list();
-	    return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;
+        Query<?> q = session.createNativeQuery(sb.toString());
+
+        if (StringUtils.isNotBlank(nfVO.getQueryGroupId())) {
+            q.setParameter("groupId", nfVO.getQueryGroupId());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourceIp())) {
+            q.setParameter("querySourceIp", nfVO.getQuerySourceIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySourcePort())) {
+            q.setParameter("querySourcePort", nfVO.getQuerySourcePort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationIp())) {
+            q.setParameter("queryDestinationIp", nfVO.getQueryDestinationIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDestinationPort())) {
+            q.setParameter("queryDestinationPort", nfVO.getQueryDestinationPort());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQuerySenderIp())) {
+            q.setParameter("querySenderIp", nfVO.getQuerySenderIp());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryMac())) {
+            q.setParameter("queryMac", nfVO.getQueryMac());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateBegin())) {
+            q.setParameter("queryDateStr", nfVO.getQueryDateBegin());
+            q.setParameter("queryTimeBeginStr", nfVO.getQueryTimeBegin());
+            q.setParameter("queryTimeEndStr", nfVO.getQueryTimeEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getQueryDateEnd())) {
+            q.setParameter("endDate", nfVO.getQueryDateEnd());
+        }
+        if (StringUtils.isNotBlank(nfVO.getSearchValue())) {
+            q.setParameter("searchValue", "%".concat(nfVO.getSearchValue()).concat("%"));
+        }
+
+        List<BigDecimal> retList = (List<BigDecimal>)q.list();
+        return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;
 	}
+
+    @Override
+    public List<DataPollerSetting> getHasAlreadySetUpNetFlowDataPollerInfo() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select dps ")
+          .append(" from DataPollerSetting dps ")
+          .append(" where 1=1 ")
+          .append(" and dps.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+          .append(" and dps.fileNameRegex <> :fileNameRegex ")
+          .append(" and dps.dataType = :dataType ");
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("fileNameRegex", Env.DEFAULT_NET_FLOW_FILE_NAME_REGEX);
+        q.setParameter("dataType", Env.DEFAULT_NET_FLOW_DATA_TYPE);
+
+        return (List<DataPollerSetting>)q.list();
+    }
+
+    @Override
+    public List<Object[]> getUploadFlowExceedLimitSizeIpData(String tableName, String nowDateStr, String limitSize) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select 'UPLOAD', nfrd.source_ip, sum(nfrd.size) ")
+          .append(" from ").append(tableName).append(" nfrd ")
+          .append(" where 1=1 ")
+          .append(" and nfrd.now_date_str = '").append(nowDateStr).append("' ")
+          .append(" group by nfrd.source_ip ")
+          .append(" having sum(nfrd.size) > ").append(limitSize);
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createNativeQuery(sb.toString());
+        return (List<Object[]>)q.list();
+    }
+
+    @Override
+    public List<Object[]> getDownloadFlowExceedLimitSizeIpData(String tableName, String nowDateStr, String limitSize) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select 'DOWNLOAD', nfrd.destination_ip, sum(nfrd.size) ")
+          .append(" from ").append(tableName).append(" nfrd ")
+          .append(" where 1=1 ")
+          .append(" and nfrd.now_date_str = '").append(nowDateStr).append("' ")
+          .append(" group by nfrd.destination_ip ")
+          .append(" having sum(nfrd.size) > ").append(limitSize);
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createNativeQuery(sb.toString());
+        return (List<Object[]>)q.list();
+    }
+
+    @Override
+    public boolean chkFlowExceedIpHasAlreadyExistsInStatToday(String groupId, String nowDateStr,
+        String direction, String ipAddr) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select count(statId) ")
+          .append(" from NetFlowIpStat nfis ")
+          .append(" where 1=1 ")
+          .append(" and nfis.statDate = :nowDateStr ")
+          .append(" and nfis.groupId = :groupId ")
+          .append(" and nfis.ipAddr = :ipAddr ")
+          .append(" and nfis.direction = :direction ");
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("nowDateStr", nowDateStr);
+        q.setParameter("groupId", groupId);
+        q.setParameter("ipAddr", ipAddr);
+        q.setParameter("direction", direction);
+
+        int size = ((Number)q.uniqueResult()).intValue();
+        return (size == 0) ? false : true;
+    }
+
+    @Override
+    public NetFlowIpStat saveNetFlowIpStat(NetFlowIpStat netFlowIpStat) {
+        netFlowIpStat = (NetFlowIpStat)secondSessionFactory.getCurrentSession().merge(netFlowIpStat);
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        session.save(netFlowIpStat);
+
+        return netFlowIpStat;
+    }
+
+    @Override
+    public void updateNetFlowIpStat(NetFlowIpStat netFlowIpStat) {
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        session.update(netFlowIpStat);
+    }
+
+    @Override
+    public List<NetFlowIpStat> findNetFlowIpStat4Resend(String nowDateStr, String sendPRTGFlag) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select nfis ")
+          .append(" from NetFlowIpStat nfis ")
+          .append(" where 1=1 ")
+          .append(" and nfis.statDate = :nowDateStr ")
+          .append(" and nfis.sendPrtgFlag = :sendPrtgFlag ");
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("nowDateStr", nowDateStr);
+        q.setParameter("sendPrtgFlag", sendPRTGFlag);
+
+        return (List<NetFlowIpStat>)q.list();
+    }
+
+    @Override
+    public NetFlowIpStat findNetFlowIpStatByStatId(String statId) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select nfis ")
+          .append(" from NetFlowIpStat nfis ")
+          .append(" where 1=1 ")
+          .append(" and nfis.statId = :statId ");
+
+        Session session = secondSessionFactory.getCurrentSession();
+
+        if (session.getTransaction().getStatus() == TransactionStatus.NOT_ACTIVE) {
+            session.beginTransaction();
+        }
+
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("statId", statId);
+
+        return (NetFlowIpStat)q.uniqueResult();
+    }
 }

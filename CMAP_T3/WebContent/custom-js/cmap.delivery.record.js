@@ -22,14 +22,14 @@ $(document).ready(function() {
 function findData(from) {
 	$('#queryFrom').val(from);
 	
-	if (typeof resutTable !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $('#resutTable').DataTable(
+		resultTable = $('#resultTable').DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -48,7 +48,7 @@ function findData(from) {
 	        },
 	        "createdRow": function( row, data, dataIndex ) {
 	        	   if(data.deliveryReason != null && data.deliveryReason.length > reasonShowLength) { //當內容長度超出設定值，加上onclick事件(切換顯示部分or全部)
-	        	      $(row).children('td').eq(7).attr('onclick','javascript:changeShowContent($(this));');
+	        	      $(row).children('td').eq(7).attr('onclick','javascript:changeShowContent(this, '+reasonShowLength+');');
 	        	      $(row).children('td').eq(7).addClass('cursor_zoom_in');
 	        	   }
 	        	   $(row).children('td').eq(7).attr('content', data.deliveryReason);
@@ -94,9 +94,9 @@ function findData(from) {
 				$("div.dataTables_paginate").parent().removeClass('col-sm-12');
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
 				
-				bindTrEvent();
 				initCheckedItems();
 				unfoldMobileMenu();
+				bindTrEvent();
 			},
 			"columns" : [
 				{},
@@ -168,7 +168,7 @@ function viewProvisionLog(obj) {
 	var deviceName = $(obj).closest("tr").find("td").eq(4).text();
 	var systemVersion = $(obj).closest("tr").find("td").eq(5).text();
 	var scriptName = $(obj).closest("tr").find("td").eq(6).text();
-	var reason = $(obj).closest("tr").find("td").eq(7).attr("content");
+	var reason = $(obj).closest("tr").find("td").eq(7).text();
 	var result = $(obj).text();
 	
 	$.ajax({

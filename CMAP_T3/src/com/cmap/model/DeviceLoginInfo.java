@@ -44,6 +44,12 @@ public class DeviceLoginInfo {
 
 	@Column(name = "enable_password", nullable = true)
 	private String enablePassword;
+	
+	@Column(name = "community_string", nullable = true)
+	private String communityString;
+	
+	@Column(name = "udp_port", nullable = true)
+	private Integer udpPort;
 
 	@Column(name = "remark", nullable = true)
 	private String remark;
@@ -65,8 +71,8 @@ public class DeviceLoginInfo {
 	}
 
 	public DeviceLoginInfo(String infoId, String deviceListId, String groupId, String deviceId, String connectionMode,
-			String loginAccount, String loginPassword, String enablePassword, String remark, Timestamp createTime,
-			String createBy, Timestamp updateTime, String updateBy) {
+			String loginAccount, String loginPassword, String enablePassword, String communityString, Integer udpPort,
+			String remark, Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
 		super();
 		this.infoId = infoId;
 		this.deviceListId = deviceListId;
@@ -76,6 +82,8 @@ public class DeviceLoginInfo {
 		this.loginAccount = loginAccount;
 		this.loginPassword = loginPassword;
 		this.enablePassword = enablePassword;
+		this.communityString = communityString;
+		this.udpPort = udpPort;
 		this.remark = remark;
 		this.createTime = createTime;
 		this.createBy = createBy;
@@ -145,6 +153,22 @@ public class DeviceLoginInfo {
 
 	public void setEnablePassword(String enablePassword) {
 		this.enablePassword = enablePassword;
+	}
+
+	public String getCommunityString() {
+		return communityString;
+	}
+
+	public void setCommunityString(String communityString) {
+		this.communityString = communityString;
+	}
+
+	public Integer getUdpPort() {
+		return udpPort;
+	}
+
+	public void setUdpPort(Integer udpPort) {
+		this.udpPort = udpPort;
 	}
 
 	public String getRemark() {

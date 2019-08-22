@@ -8,15 +8,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -27,6 +27,9 @@ import com.cmap.model.DeviceList;
 public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 	@Log
 	private static Logger log;
+
+	@Autowired
+    private SessionFactory secondSessionFactory;
 
 	protected static final String MARK_AS_DELETE = "Y";
 
@@ -175,8 +178,9 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 
 	@Override
 	public boolean deleteEntity(Object entity) {
-		// TODO 自動產生的方法 Stub
-		return false;
+	    boolean success = true;
+	    getHibernateTemplate().delete(entity);
+        return success;
 	}
 
 	@Override
@@ -218,52 +222,93 @@ public class BaseDaoHibernate extends HibernateDaoSupport implements BaseDAO {
 	}
 
 	@Override
-	public Integer loadDataInFile(String tableName, String filePath, String charset, String fieldsTerminatedBy,
+	public Integer loadDataInFile(String targetDB, String tableName, String filePath, String charset, String fieldsTerminatedBy,
 			String linesTerminatedBy, String extraSetStr) {
-		// LOAD DATA LOCAL INFILE 'D:\\Net_Flow_Log\\Streams Sensor_20181220164000_20181220164011.csv' INTO TABLE cmap.net_flow_raw_data_3 CHARACTER SET big5 FIELDS TERMINATED BY ','  LINES TERMINATED BY '\r\n';
-		StringBuffer sql = new StringBuffer();
-		sql.append(" LOAD DATA LOCAL INFILE ")
-		   //.append(" :filePath ")
-		   .append(" '").append(filePath).append("' ")
-		   //.append(" INTO TABLE :tableName ");
-		   .append(" INTO TABLE ").append(tableName).append(" ");
+	    Session session = null;
+	    Transaction tx = null;
+	    try {
+	     // LOAD DATA LOCAL INFILE 'D:\\Net_Flow_Log\\Streams Sensor_20181220164000_20181220164011.csv' INTO TABLE cmap.net_flow_raw_data_3 CHARACTER SET big5 FIELDS TERMINATED BY ','  LINES TERMINATED BY '\r\n';
+	        StringBuffer sql = new StringBuffer();
+	        sql.append(" LOAD DATA LOCAL INFILE ")
+	           //.append(" :filePath ")
+	           .append(" '").append(filePath).append("' ")
+	           //.append(" INTO TABLE :tableName ");
+	           .append(" INTO TABLE ").append(tableName).append(" ");
 
-		if (StringUtils.isNotBlank(charset)) {
-			//sql.append(" CHARACTER SET :charset ");
-			sql.append(" CHARACTER SET ").append(charset).append(" ");
-		}
-		if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
-			//sql.append(" FIELDS TERMINATED BY :fieldsTerminatedBy ");
-			sql.append(" FIELDS TERMINATED BY '").append(fieldsTerminatedBy).append("' ");
-		}
-		if (StringUtils.isNotBlank(linesTerminatedBy)) {
-			//sql.append(" LINES TERMINATED BY :linesTerminatedBy ");
-			sql.append(" LINES TERMINATED BY '").append(linesTerminatedBy).append("' ");
-		}
-		if (StringUtils.isNotBlank(extraSetStr)) {
-			sql.append(extraSetStr);
-		}
+	        if (StringUtils.isNotBlank(charset)) {
+	            //sql.append(" CHARACTER SET :charset ");
+	            sql.append(" CHARACTER SET ").append(charset).append(" ");
+	        }
+	        if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
+	            //sql.append(" FIELDS TERMINATED BY :fieldsTerminatedBy ");
+	            sql.append(" FIELDS TERMINATED BY '").append(fieldsTerminatedBy).append("' ");
+	        }
+	        if (StringUtils.isNotBlank(linesTerminatedBy)) {
+	            //sql.append(" LINES TERMINATED BY :linesTerminatedBy ");
+	            sql.append(" LINES TERMINATED BY '").append(linesTerminatedBy).append("' ");
+	        }
+	        if (StringUtils.isNotBlank(extraSetStr)) {
+	            sql.append(extraSetStr);
+	        }
 
-		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-		Query<?> q = session.createNativeQuery(sql.toString());
-		/*
-		q.setParameter("filePath", filePath);
-		q.setParameter("tableName", tableName);
-		if (StringUtils.isNotBlank(charset)) {
-			q.setParameter("charset", charset);
-		}
-		if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
-			q.setParameter("fieldsTerminatedBy", fieldsTerminatedBy);
-		}
-		if (StringUtils.isNotBlank(linesTerminatedBy)) {
-			q.setParameter("linesTerminatedBy", linesTerminatedBy);
-		}
-		if (StringUtils.isNotBlank(extraSetStr)) {
-			q.setParameter("extraSetStr", extraSetStr);
-		}
-		*/
+	        if (StringUtils.equals(targetDB, TARGET_PRIMARY_DB)) {
+	            try {
+	                session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+	            } catch (HibernateException e) {
+	                session = getHibernateTemplate().getSessionFactory().openSession();
+	            }
 
-		return q.executeUpdate();
+	        } else if (StringUtils.equals(targetDB, TARGET_SECONDARY_DB)) {
+	            try {
+	                session = secondSessionFactory.getCurrentSession();
+	            } catch (HibernateException e) {
+	                session = secondSessionFactory.openSession();
+	            }
+	        }
+
+	        if (session != null) {
+	            tx = session.beginTransaction();
+	            Query<?> q = session.createNativeQuery(sql.toString());
+	            /*
+	            q.setParameter("filePath", filePath);
+	            q.setParameter("tableName", tableName);
+	            if (StringUtils.isNotBlank(charset)) {
+	                q.setParameter("charset", charset);
+	            }
+	            if (StringUtils.isNotBlank(fieldsTerminatedBy)) {
+	                q.setParameter("fieldsTerminatedBy", fieldsTerminatedBy);
+	            }
+	            if (StringUtils.isNotBlank(linesTerminatedBy)) {
+	                q.setParameter("linesTerminatedBy", linesTerminatedBy);
+	            }
+	            if (StringUtils.isNotBlank(extraSetStr)) {
+	                q.setParameter("extraSetStr", extraSetStr);
+	            }
+	            */
+
+	            return q.executeUpdate();
+
+	        } else {
+	            return null;
+	        }
+
+	    } catch (Exception e) {
+	        log.error(e.toString(), e);
+
+	        if (tx != null) {
+	            tx.rollback();
+	            session.close();
+	        }
+	        return null;
+
+	    } finally {
+	        if (tx != null) {
+	            tx.commit();
+	        }
+	        if (session != null) {
+	            session.close();
+	        }
+	    }
 	}
 
 	@Override

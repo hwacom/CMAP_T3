@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.annotation.Log;
@@ -41,6 +39,7 @@ import com.cmap.dao.ScriptStepDAO;
 import com.cmap.dao.vo.ConfigVersionInfoDAOVO;
 import com.cmap.exception.FileOperationException;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.model.ConfigVersionDiffLog;
 import com.cmap.model.ConfigVersionInfo;
 import com.cmap.model.DeviceDetailInfo;
 import com.cmap.model.DeviceDetailMapping;
@@ -151,6 +150,18 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						fileServerMode = ConnectionMode.TFTP;
 						break;
 
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TELNET_TELNET_TFTP:
+                        steps = Env.BACKUP_BY_TELNET;
+                        deviceMode = ConnectionMode.TELNET;
+                        fileServerMode = ConnectionMode.TFTP;
+                        break;
+
+					case Constants.DEVICE_CONFIG_BACKUP_MODE_TELNET_TELNET_FTP:
+                        steps = Env.BACKUP_BY_TELNET;
+                        deviceMode = ConnectionMode.TELNET;
+                        fileServerMode = ConnectionMode.FTP;
+                        break;
+
 					case Constants.DEVICE_CONFIG_BACKUP_MODE_TFTP_SSH_TFTP:
 						steps = Env.BACKUP_BY_TFTP;
 						deviceMode = ConnectionMode.SSH;
@@ -210,7 +221,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case FIND_DEVICE_CONNECT_INFO:
 							try {
-								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null);
+								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null, deviceMode);
 								ciVO.setTimes(String.valueOf(round));
 
 								/*
@@ -245,7 +256,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case CONNECT_DEVICE:
 							try {
-								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+								connectUtils = connect2Device(connectUtils, ciVO);
 								break;
 
 							} catch (Exception e) {
@@ -290,7 +301,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 							} catch (Exception e) {
 								log.error(e.toString(), e);
-								throw new ServiceLayerException("分析取得設備明細內容時失敗 [ 錯誤代碼: ANALYZE_CONFIG_INFO] ");
+								throw new ServiceLayerException("分析取得設備明細內容時失敗 [ 錯誤代碼: ANALYZE_CONFIG_INFO ] ");
 							}
 
 						case DEFINE_OUTPUT_FILE_NAME:
@@ -373,13 +384,33 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("關閉與 File Server 間連線時失敗 [ 錯誤代碼: CLOSE_FILE_SERVER_CONNECTION ]");
 							}
 
+						case VERSION_DIFF_NOTIFY:
+                            try {
+                                // 有啟用版本異常通知時才執行
+                                if (Env.ENABLE_CONFIG_DIFF_NOTIFY) {
+                                    // 若先前比對步驟結果已無差異，此步驟就不需執行
+                                    if (retVO.getResult() != Result.NO_DIFFERENT) {
+                                        versionDiffNotify(ciVO, retVO, outputVOList);
+                                    }
+                                }
+
+                            } catch (Exception e) {
+                                String msg = "組態檔內容模板比對差異通知失敗 [ 錯誤代碼: VERSION_DIFF_NOTIFY ]";
+                                retVO.setMessage(msg);
+                                log.error(msg);
+                            }
+
 						default:
 							break;
 					}
 				}
 
 				retVO.setSuccess(true);
-				retVO.setResult(Result.SUCCESS);
+
+				if (retVO.getResult() == null) {
+				    retVO.setResult(Result.SUCCESS);
+				}
+
 				break;
 
 			} catch (ServiceLayerException sle) {
@@ -501,7 +532,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 							break;
 
 						case DOWNLOAD_FILE:
-							outputVOList = downloadFile(fileUtils, vsVOs, ciVO, true);
+							outputVOList = downloadFile(Constants.ACTION_TYPE_BACKUP, fileUtils, vsVOs, ciVO, true);
 							break;
 
 						case CONNECT_FILE_SERVER_4_UPLOAD:
@@ -606,7 +637,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	private ConfigInfoVO findDeviceConfigInfo(ConfigInfoVO configInfoVO, String deviceListId, Map<String, String> deviceInfo) throws ServiceLayerException {
+	private ConfigInfoVO findDeviceConfigInfo(ConfigInfoVO configInfoVO, String deviceListId, Map<String, String> deviceInfo, ConnectionMode connectionMode) throws ServiceLayerException {
 		configInfoVO = new ConfigInfoVO();
 
 		if (deviceListId != null) {
@@ -630,7 +661,13 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			 * deviceListId 為空表示是直接指定要供裝的設備(可能不在CMAP組態備份名單內的設備)
 			 * 因此相關連線資訊直接從 deviceInfo MAP 中取得
 			 */
+		    if (deviceInfo == null || (deviceInfo != null && deviceInfo.isEmpty())) {
+		        log.error("取得要供裝的設備連線相關資訊失敗 >> 未傳入 deviceListId 且 deviceInfo 也為空");
+		        throw new ServiceLayerException("取得要供裝的設備連線相關資訊失敗");
+		    }
+
 			String deviceIp = deviceInfo.containsKey(Constants.DEVICE_IP) ? deviceInfo.get(Constants.DEVICE_IP) : null;
+			String devicePort = deviceInfo.containsKey(Constants.DEVICE_PORT) ? deviceInfo.get(Constants.DEVICE_PORT) : null;
 			String deviceName = deviceInfo.containsKey(Constants.DEVICE_NAME) ? deviceInfo.get(Constants.DEVICE_NAME) : null;
 			String loginAccount = deviceInfo.containsKey(Constants.DEVICE_LOGIN_ACCOUNT)
 															? deviceInfo.get(Constants.DEVICE_LOGIN_ACCOUNT) : Env.DEFAULT_DEVICE_LOGIN_ACCOUNT;
@@ -640,6 +677,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 															? deviceInfo.get(Constants.DEVICE_ENABLE_PASSWORD) : Env.DEFAULT_DEVICE_ENABLE_PASSWORD;
 
 			configInfoVO.setDeviceIp(deviceIp);
+			configInfoVO.setDevicePort(StringUtils.isNotBlank(devicePort) ? Integer.parseInt(devicePort) : null);
 			configInfoVO.setDeviceName(deviceName);
 			configInfoVO.setAccount(loginAccount);
 			configInfoVO.setPassword(loginPassword);
@@ -658,6 +696,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		configInfoVO.settFtpIP(Env.TFTP_HOST_IP);
 		configInfoVO.settFtpPort(Env.TFTP_HOST_PORT);
 
+		configInfoVO.setConnectionMode(connectionMode);
+
 		return configInfoVO;
 	}
 
@@ -666,16 +706,14 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @throws ServiceLayerException
 	 */
 	private void findDeviceLoginInfo(ConfigInfoVO ciVO, String deviceListId, String groupId, String deviceId) throws ServiceLayerException {
-		DeviceLoginInfo loginInfo = deviceDAO.findDeviceLoginInfo(deviceListId, groupId, deviceId);
+	    if (StringUtils.isBlank(deviceListId) && StringUtils.isBlank(groupId) && StringUtils.isBlank(deviceId)) {
+	        // 若這三個參數都未傳值則不處理
+	        return;
+	    }
 
-		if (loginInfo == null) {
-			if (!StringUtils.equals(deviceListId, Constants.DATA_STAR_SYMBOL)
-					|| !(StringUtils.equals(deviceId, Constants.DATA_STAR_SYMBOL))) {
-				// 若by設備查找不到，則再往上一層by群組查找
-				findDeviceLoginInfo(ciVO, Constants.DATA_STAR_SYMBOL, groupId, Constants.DATA_STAR_SYMBOL);
-			}
+		DeviceLoginInfo loginInfo = findDeviceLoginInfo(deviceListId, groupId, deviceId);
 
-		} else if (loginInfo != null) {
+		if (loginInfo != null) {
 			if (StringUtils.isNotBlank(loginInfo.getLoginAccount())) {
 				ciVO.setAccount(loginInfo.getLoginAccount());
 			}
@@ -686,6 +724,18 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				ciVO.setEnablePassword(loginInfo.getEnablePassword());
 			}
 
+			/**
+             * 判斷該設備是否有指定連線模式(Connection_Mode)，有的話則替換掉廣域設定
+             */
+			String deviceConnectionMode = loginInfo.getConnectionMode();
+			if (StringUtils.isNotBlank(deviceConnectionMode)) {
+			    if (StringUtils.equals(deviceConnectionMode, Constants.SSH)) {
+			        ciVO.setConnectionMode(ConnectionMode.SSH);
+
+                } else if (StringUtils.equals(deviceConnectionMode, Constants.TELNET)) {
+                    ciVO.setConnectionMode(ConnectionMode.TELNET);
+                }
+			}
 		}
 	}
 
@@ -697,16 +747,20 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @return
 	 * @throws Exception
 	 */
-	private ConnectUtils connect2Device(ConnectUtils connectUtils, ConnectionMode _mode, ConfigInfoVO ciVO) throws Exception {
+	private ConnectUtils connect2Device(ConnectUtils connectUtils, ConfigInfoVO ciVO) throws Exception {
+	    final String deviceIp = ciVO.getDeviceIp();
+	    final Integer devicePort = ciVO.getDevicePort();
+
+	    ConnectionMode _mode = ciVO.getConnectionMode();
 		switch (_mode) {
 			case TELNET:
 				connectUtils = new TelnetUtils();
-				connectUtils.connect(ciVO.getDeviceIp(), null);
+				connectUtils.connect(deviceIp, devicePort);
 				break;
 
 			case SSH:
 				connectUtils = new SshUtils();
-				connectUtils.connect(ciVO.getDeviceIp(), null);
+				connectUtils.connect(deviceIp, devicePort);
 				break;
 
 			default:
@@ -760,13 +814,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> compareContents(ConfigInfoVO ciVO, List<String> outputList, FileUtils fileUtils, ConnectionMode _mode, StepServiceVO ssVO) throws Exception {
+	private List<String> compareContents(ConfigInfoVO ciVO, List<String> outputList, FileUtils fileUtils, ConnectionMode _mode, StepServiceVO ssVO)
+	        throws Exception {
 		String type = "";
 
+		List<List<VersionServiceVO>> allVersionList = new ArrayList<>();  // 存放 Running & Startup 各自的前後版本 config 內容
 		boolean haveDiffVersion = false;
 		List<String> tmpList = outputList.stream().collect(Collectors.toList());
 		ConfigVersionInfoDAOVO daovo;
 		for (final String output : tmpList) {
+
 			if (output.indexOf(Env.COMM_SEPARATE_SYMBOL) != -1) {
 				type = output.split(Env.COMM_SEPARATE_SYMBOL)[0];
 			}
@@ -813,6 +870,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				preVersionVO.setConfigFileDirPath(dlEntity.getConfigFileDirPath());
 				preVersionVO.setFileFullName(cviEntity.getFileFullName());
 				preVersionVO.setCreateDate(cviEntity.getCreateTime() != null ? new Date(cviEntity.getCreateTime().getTime()) : null);
+				preVersionVO.setFileFullName(cviEntity.getFileFullName());
 				vsVOs.add(preVersionVO);
 
 				//當下備份上傳版本VO
@@ -837,6 +895,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				}
 
 				vsVOs.add(nowVersionVO);
+				allVersionList.add(vsVOs);
 
 				VersionServiceVO compareRetVO = versionService.compareConfigFiles(vsVOs);
 
@@ -891,6 +950,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 			}
 		}
 
+		ssVO.setVersionList(allVersionList);
+
 		if (!haveDiffVersion) {
 			ssVO.setResult(Result.NO_DIFFERENT);
 			ssVO.setMessage("版本無差異");
@@ -899,6 +960,108 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		}
 
 		return outputList;
+	}
+
+	/**
+	 * 比對前後版本是否有差異 & 發信通知
+	 * @param ciVO
+	 * @param ssVO
+	 * @throws Exception
+	 */
+	private void versionDiffNotify(ConfigInfoVO ciVO, StepServiceVO ssVO, List<ConfigInfoVO> ciVOList) throws Exception {
+	    String retMsg = null;
+	    try {
+	        final String CONFIG_DIFF_NOTIFY = Constants.CONFIG_CONTENT_SETTING_TYPE_CONFIG_DIFF_NOTIFY;
+	        final List<List<VersionServiceVO>> versionList = ssVO.getVersionList();
+	        final String groupId = ciVO.getGroupId();
+	        final String deviceId = ciVO.getDeviceId();
+
+	        ConfigVersionInfo cviEntity = null;
+	        for (List<VersionServiceVO> typeConfig : versionList) {
+	            try {
+	                // Step 1. 取得兩個版本的Config內容
+	                VersionServiceVO preVersionVO = typeConfig.get(0);
+	                VersionServiceVO newVersionVO = typeConfig.get(1);
+
+	                List<String> oriPreContentList = versionService.getConfigFileContent(preVersionVO, false).getConfigContentList();
+	                List<String> oriNewContentList = versionService.getConfigFileContent(newVersionVO, false).getConfigContentList();
+
+	                if ((oriPreContentList == null || (oriPreContentList != null && oriPreContentList.isEmpty()))
+	                        || (oriNewContentList == null || (oriNewContentList != null && oriNewContentList.isEmpty()))) {
+	                    throw new ServiceLayerException(
+	                            "[versionDiffNotify] 版本內容為空 >> preVersion: " + preVersionVO.getFileFullName() +
+	                            ", newVersion: " + newVersionVO.getFileFullName());
+	                }
+
+	                // Step 2. 依設定的比對模板，取出符合設定的Config內容片段
+	                ConfigVO configVO = null;
+	                ciVO.setConfigContentList(oriPreContentList);
+	                List<String> preContentList = processConfigContentSetting(configVO, CONFIG_DIFF_NOTIFY, ciVO);
+
+	                ciVO.setConfigContentList(oriNewContentList);
+	                List<String> newContentList = processConfigContentSetting(configVO, CONFIG_DIFF_NOTIFY, ciVO);
+
+	                boolean isDiff = versionService.compareConfigList(preContentList, newContentList);
+
+	                if (isDiff) {
+	                    // Step 3. 比對結果有差異，寫入差異LOG & 發信通知
+	                    final String endPosSympol = "." + Env.CONFIG_FILE_EXTENSION_NAME;
+	                    final String preVersion = subStr(preVersionVO.getFileFullName(), 0, endPosSympol);
+	                    final String newVersion = subStr(newVersionVO.getFileFullName(), 0, endPosSympol);
+
+	                    cviEntity = configDAO.getConfigVersionInfoByUK(groupId, deviceId, preVersion);
+	                    final String preVersionId = cviEntity.getVersionId();
+
+	                    cviEntity = configDAO.getConfigVersionInfoByUK(groupId, deviceId, newVersion);
+	                    final String newVersionId = cviEntity.getVersionId();
+
+	                    ConfigVersionDiffLog diffLogEntity = new ConfigVersionDiffLog(
+	                            null
+	                           ,groupId
+	                           ,deviceId
+	                           ,preVersionId
+	                           ,preVersion
+	                           ,newVersionId
+	                           ,newVersion
+	                           ,currentTimestamp()
+	                           ,currentUserName()
+	                           ,currentTimestamp()
+	                           ,currentUserName()
+	                    );
+
+	                    configDAO.insertEntity(diffLogEntity);
+
+	                    // 發信
+	                    //TODO
+	                }
+
+	            } catch (Exception e) {
+	                retMsg += "[" + e.toString() + "]";
+	                log.error(e.toString(), e);
+	            }
+	        }
+
+	        if (StringUtils.isNotBlank(retMsg)) {
+	            throw new ServiceLayerException(retMsg);
+	        }
+
+	    } catch (ServiceLayerException sle) {
+	        throw sle;
+
+	    } catch (Exception e) {
+	        log.error(e.toString(), e);
+	        throw new ServiceLayerException(e.toString());
+	    }
+	}
+
+	private String subStr(String text, int beginIndex, String endPosSymbol) {
+	    int endIndex = text.indexOf(endPosSymbol);
+
+	    if (endIndex != -1) {
+	        return text.substring(beginIndex, endIndex);
+	    } else {
+	        return text;
+	    }
 	}
 
 	private List<String> getConfigContent(ConfigInfoVO configInfoVO) {
@@ -988,7 +1151,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						DeviceDetailInfo ddi = null;
 						for (DeviceDetailMapping entity : entities) {
-							final String sourceStrng = entity.getSourceString();
+							final String sourceString = entity.getSourceString();
 							final String splitBy = entity.getSplitBy();
 							final Integer getValueIndex = entity.getGetValueIndex();
 							final String targetInfoName = entity.getTargetInfoName();
@@ -998,7 +1161,37 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 							final String deviceId = configInfoVO.getDeviceId();
 							final Timestamp updateTime = currentTimestamp();
 
-							if (StringUtils.startsWith(configStr, sourceStrng)) {
+							/*
+							 * Y190424, Ken Lin
+							 * 若Mapping設定中，target_info_remark欄位有設定要排除的比對字樣 (以[-]開頭標示，若有多組排除字樣以「@~」區隔)
+							 * 則判斷當前config字串內容是否符合排除字樣開頭，若符合則跳過此Mapping比對
+							 * e.g.: VM切換中，關Port時需跳過管理Port (port ethernet 1/1)
+							 */
+							String[] excludeStrArray = null;
+                            if (StringUtils.isNotBlank(targetInfoRemark)) {
+                                final String excludeSymbol = "[-]";
+
+                                if (StringUtils.contains(targetInfoRemark, excludeSymbol)) {
+                                    String excludeStr = StringUtils.split(targetInfoRemark, excludeSymbol)[0];
+                                    excludeStrArray = StringUtils.split(excludeStr, Env.COMM_SEPARATE_SYMBOL);
+                                }
+                            }
+
+                            boolean excludeThisMapping = false;
+                            if (excludeStrArray != null) {
+                                for (String exStr : excludeStrArray) {
+                                    if (StringUtils.contains(configStr, exStr)) {
+                                        excludeThisMapping = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (excludeThisMapping) {
+                                continue;
+                            }
+
+							if (StringUtils.startsWith(configStr, sourceString)) {
 								String[] tmpArray = StringUtils.split(configStr, splitBy);
 
 								String getTargetValue = null;
@@ -1299,7 +1492,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<ConfigInfoVO> downloadFile(FileUtils fileUtils, List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean returnFileString) throws Exception {
+	private List<ConfigInfoVO> downloadFile(String actionType, FileUtils fileUtils, List<VersionServiceVO> vsVOs, ConfigInfoVO ciVO, boolean returnFileString) throws Exception {
 		List<ConfigInfoVO> ciVOList = new ArrayList<>();
 
 		ConfigInfoVO tmpVO = null;
@@ -1309,15 +1502,17 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 			String remoteFileDirPath = vsVO.getRemoteFileDirPath();
 
-			if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
-				String yyyyMMdd = vsVO.getCreateYyyyMMdd();
+			if (StringUtils.equals(actionType, Constants.ACTION_TYPE_RESTORE)) {
+			  if (Env.ENABLE_LOCAL_BACKUP_USE_TODAY_ROOT_DIR) {
+                  String yyyyMMdd = vsVO.getCreateYyyyMMdd();
 
-				if (StringUtils.isBlank(yyyyMMdd)) {
-					SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
-					yyyyMMdd = sdf.format(new Date());
-				}
+                  if (StringUtils.isBlank(yyyyMMdd)) {
+                      SimpleDateFormat sdf = new SimpleDateFormat(Env.DIR_PATH_OF_CURRENT_DATE_FORMAT);
+                      yyyyMMdd = sdf.format(new Date());
+                  }
 
-				remoteFileDirPath = yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+                  remoteFileDirPath = yyyyMMdd.concat(Env.FTP_DIR_SEPARATE_SYMBOL).concat(remoteFileDirPath);
+              }
 			}
 
 			tmpVO.setRemoteFileDirPath(remoteFileDirPath);
@@ -1340,7 +1535,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	}
 
 	@Override
-	public StepServiceVO doScript(ConnectionMode connectionMode, String deviceListId, Map<String, String> deviceInfo, ScriptInfo scriptInfo, List<Map<String, String>> varMapList, boolean sysTrigger, String triggerBy, String triggerRemark) {
+	public StepServiceVO doScript(ConnectionMode connectionMode, String deviceListId,
+	        Map<String, String> deviceInfo, ScriptInfo scriptInfo, List<Map<String, String>> varMapList,
+	        boolean sysTrigger, String triggerBy, String triggerRemark) {
+
 		StepServiceVO processVO = new StepServiceVO();
 
 		ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
@@ -1355,8 +1553,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		/*
 		 * Provision_Log_Master & Step
 		 */
-		final String userName = sysTrigger ? triggerBy : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUsername() : Constants.SYS;
-		final String userIp = sysTrigger ? Env.USER_IP_JOB : SecurityUtil.getSecurityUser() != null ? SecurityUtil.getSecurityUser().getUser().getIp() : Constants.UNKNOWN;
+		final String userName = sysTrigger ? triggerBy : SecurityUtil.getSecurityUser() != null
+		                                                       ? SecurityUtil.getSecurityUser().getUsername() : Constants.SYS;
+		final String userIp = sysTrigger ? Env.USER_IP_JOB : SecurityUtil.getSecurityUser() != null
+		                                                        ? SecurityUtil.getSecurityUser().getUser().getIp() : Constants.UNKNOWN;
 
 		psDetailVO.setUserName(userName);
 		psDetailVO.setUserIp(userIp);
@@ -1424,7 +1624,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case FIND_DEVICE_CONNECT_INFO:
 							try {
-								ciVO = findDeviceConfigInfo(ciVO, deviceListId, deviceInfo);
+								ciVO = findDeviceConfigInfo(ciVO, deviceListId, deviceInfo, deviceMode);
 								ciVO.setTimes(String.valueOf(round));
 
 								/*
@@ -1465,7 +1665,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 						case CONNECT_DEVICE:
 							try {
-								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+								connectUtils = connect2Device(connectUtils, ciVO);
 								break;
 
 							} catch (Exception e) {
@@ -1603,6 +1803,237 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		return processVO;
 	}
 
+	@Override
+    public StepServiceVO doCommands(ConnectionMode connectionMode, String deviceListId,
+            Map<String, String> deviceInfo, List<ScriptServiceVO> cmdList, boolean sysTrigger,
+            String triggerBy, String triggerRemark) {
+
+	    StepServiceVO processVO = new StepServiceVO();
+
+        ProvisionServiceVO psMasterVO = new ProvisionServiceVO();
+        ProvisionServiceVO psDetailVO = new ProvisionServiceVO();
+        ProvisionServiceVO psStepVO = new ProvisionServiceVO();
+        ProvisionServiceVO psRetryVO;
+        ProvisionServiceVO psDeviceVO;
+
+        final int RETRY_TIMES = StringUtils.isNotBlank(Env.RETRY_TIMES) ? Integer.parseInt(Env.RETRY_TIMES) : 1;
+        int round = 1;
+
+        /*
+         * Provision_Log_Master & Step
+         */
+        final String userName = sysTrigger ? triggerBy : SecurityUtil.getSecurityUser() != null
+                                                            ? SecurityUtil.getSecurityUser().getUsername() : Constants.SYS;
+        final String userIp = sysTrigger ? Env.USER_IP_JOB : SecurityUtil.getSecurityUser() != null
+                                                                ? SecurityUtil.getSecurityUser().getUser().getIp() : Constants.UNKNOWN;
+
+        psDetailVO.setUserName(userName);
+        psDetailVO.setUserIp(userIp);
+        psDetailVO.setBeginTime(new Date());
+        psDetailVO.setRemark(sysTrigger ? triggerRemark : null);
+        psStepVO.setBeginTime(new Date());
+
+        processVO.setActionBy(userName);
+        processVO.setActionFromIp(userIp);
+        processVO.setBeginTime(new Date());
+
+        ConnectUtils connectUtils = null;           // 連線裝置物件
+        List<String> outputList = null;
+
+        boolean retryRound = false;
+        while (round <= RETRY_TIMES) {
+            try {
+                Step[] steps = null;
+                ConnectionMode deviceMode = connectionMode;
+
+                steps = Env.SEND_COMMANDS;
+
+                List<ScriptServiceVO> scripts = cmdList;
+                ConfigInfoVO ciVO = null;                   // 裝置相關設定資訊VO
+
+                for (Step _step : steps) {
+                    switch (_step) {
+                        case FIND_DEVICE_CONNECT_INFO:
+                            try {
+                                ciVO = findDeviceConfigInfo(ciVO, deviceListId, deviceInfo, deviceMode);
+                                ciVO.setTimes(String.valueOf(round));
+
+                                /*
+                                 * Provision_Log_Device
+                                 */
+                                if (!retryRound) {
+                                    psDeviceVO = new ProvisionServiceVO();
+                                    psDeviceVO.setDeviceListId(deviceListId);
+
+                                    if (deviceInfo != null) {
+                                        String deviceInfoStr = deviceInfo.get(Constants.DEVICE_IP) + Env.COMM_SEPARATE_SYMBOL + Constants.DEVICE_NAME;
+                                        psDeviceVO.setDeviceInfoStr(deviceInfoStr);
+                                    }
+
+                                    psDeviceVO.setOrderNum(1);
+                                    psStepVO.getDeviceVO().add(psDeviceVO); // add DeviceVO to StepVO
+
+                                    processVO.setDeviceName(ciVO.getDeviceName());
+                                    processVO.setDeviceIp(ciVO.getDeviceIp());
+                                }
+
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("取得設備資訊時失敗 [ 錯誤代碼: FIND_DEVICE_CONNECT_INFO ]");
+                            }
+
+                        case FIND_DEVICE_LOGIN_INFO:
+                            try {
+                                findDeviceLoginInfo(ciVO, deviceListId, null, null);
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("取得設備登入帳密設定時失敗 [ 錯誤代碼: FIND_DEVICE_LOGIN_INFO]");
+                            }
+
+                        case CONNECT_DEVICE:
+                            try {
+                                connectUtils = connect2Device(connectUtils, ciVO);
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("設備連線失敗 [ 錯誤代碼: CONNECT_DEVICE ]");
+                            }
+
+                        case LOGIN_DEVICE:
+                            try {
+                                login2Device(connectUtils, ciVO);
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("登入設備失敗 [ 錯誤代碼: LOGIN_DEVICE ]");
+                            }
+
+                        case SEND_COMMANDS:
+                            try {
+                                outputList = sendCmds(connectUtils, scripts, ciVO, processVO);
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("派送設備命令失敗 [ 錯誤代碼: SEND_COMMANDS ]");
+                            }
+
+                        case CHECK_PROVISION_RESULT:
+                            try {
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("檢核供裝派送結果時失敗 [ 錯誤代碼: CHECK_PROVISION_RESULT ]");
+                            }
+
+                        case CLOSE_DEVICE_CONNECTION:
+                            try {
+                                closeDeviceConnection(connectUtils);
+                                break;
+
+                            } catch (Exception e) {
+                                log.error(e.toString(), e);
+                                throw new ServiceLayerException("關閉與設備間連線時失敗 [ 錯誤代碼: CLOSE_DEVICE_CONNECTION ]");
+                            }
+
+                        default:
+                            break;
+                    }
+                }
+
+                processVO.setCmdOutputList(outputList);
+                processVO.setSuccess(true);
+                processVO.setResult(Result.SUCCESS);
+                break;
+
+            } catch (ServiceLayerException sle) {
+                /*
+                 * Provision_Log_Retry
+                 */
+                psRetryVO = new ProvisionServiceVO();
+                psRetryVO.setResult(Result.ERROR.toString());
+                psRetryVO.setMessage(sle.toString());
+                psRetryVO.setRetryOrder(round);
+                psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
+
+                processVO.setSuccess(false);
+                processVO.setResult(Result.ERROR);
+                processVO.setMessage(sle.toString());
+                processVO.setCmdProcessLog(sle.getMessage());
+
+                retryRound = true;
+                round++;
+
+                if (connectUtils != null) {
+                    try {
+                        connectUtils.disconnect();
+                    } catch (Exception e1) {
+                        log.error(e1.toString(), e1);
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+
+                /*
+                 * Provision_Log_Retry
+                 */
+                psRetryVO = new ProvisionServiceVO();
+                psRetryVO.setResult(Result.ERROR.toString());
+                psRetryVO.setMessage(e.toString());
+                psRetryVO.setRetryOrder(round);
+                psStepVO.getRetryVO().add(psRetryVO); // add RetryVO to StepVO
+
+                processVO.setSuccess(false);
+                processVO.setResult(Result.ERROR);
+                processVO.setMessage(e.toString());
+                processVO.setCmdProcessLog(e.getMessage());
+
+                retryRound = true;
+                round++;
+
+                if (connectUtils != null) {
+                    try {
+                        connectUtils.disconnect();
+                    } catch (Exception e1) {
+                        log.error(e1.toString(), e1);
+                    }
+                }
+            }
+        }
+
+        /*
+         * Provision_Log_Step
+         */
+        psStepVO.setEndTime(new Date());
+        psStepVO.setResult(processVO.getResult().toString());
+        psStepVO.setMessage(processVO.getMessage());
+        psStepVO.setRetryTimes(round-1);
+        psStepVO.setProcessLog(processVO.getCmdProcessLog());
+
+        /*
+         * Provision_Log_Detail
+         */
+        psDetailVO.setEndTime(new Date());
+        psDetailVO.setResult(processVO.getResult().toString());
+        psDetailVO.setMessage(processVO.getMessage());
+        psDetailVO.getStepVO().add(psStepVO); // add StepVO to DetailVO
+
+        psMasterVO.getDetailVO().add(psDetailVO); // add DetailVO to MasterVO
+        processVO.setPsVO(psMasterVO);
+
+        processVO.setEndTime(new Date());
+        processVO.setRetryTimes(round);
+
+        return processVO;
+    }
+
 	/**
 	 * 組態還原流程
 	 */
@@ -1641,7 +2072,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		ConnectUtils connectUtils = null;													// 連線裝置物件
 		final String deviceListId = stepServiceVO.getDeviceListId();						// 要還原的設備 Device_List.device_list_id
 		final String restoreVersionId = stepServiceVO.getRestoreVersionId();				// 要還原的版本號 Config_Version_Info.version_id
-		List<String> restoreContentList = stepServiceVO.getRestoreContentList();		// 要還原的腳本內容，若此參數有給值則只還原給定的內容部分；否則則依照給定的版本號內容做還原
+		List<String> restoreContentList = stepServiceVO.getRestoreContentList();		    // 要還原的腳本內容，若此參數有給值則只還原給定的內容部分；否則則依照給定的版本號內容做還原
 		final boolean __NEED_DOWNLOAD_RESTORE_FILE__ = restoreContentList != null ? true : false;	// 依照是否有傳入要還原的內容(restoreContentList)，決定是否需要下載要還原的組態備份檔
 
 		boolean retryRound = false;
@@ -1691,6 +2122,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					case TFTP:
 						steps = Env.RESTORE_BY_TFTP;
 						break;
+
+					case LOCAL:
+					    steps = Env.RESTORE_BY_LOCAL;
+					    break;
 				}
 
 				List<ScriptServiceVO> scripts = null;
@@ -1749,6 +2184,22 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 								throw new ServiceLayerException("取得要還原的組態版本資訊時失敗 [ 錯誤代碼: GET_VERSION_INFO ]");
 							}
 
+						// 依照前面傳入的資訊設定要還原的版本號
+						case SET_LOCAL_VERSION_INFO:
+						    try {
+						        final String configPath = stepServiceVO.getRestoreVersionConfigPath();
+						        final String imagePath = stepServiceVO.getRestoreVersionImagePath();
+
+                                ciVO.setDeviceFlashConfigPath(configPath);   // 要還原的組態檔案在設備的儲存路徑
+                                ciVO.setDeviceFlashImagePath(imagePath);     // 要還原的Image檔案在設備的儲存路徑
+
+						    } catch (Exception e) {
+						        log.error(e.toString(), e);
+                                throw new ServiceLayerException("設定要還原的組態版本資訊時失敗 [ 錯誤代碼: SET_LOCAL_VERSION_INFO ]");
+						    }
+
+						    break;
+
 						// 連線至組態檔放置的 FTP / TFTP
 						case CONNECT_FILE_SERVER_4_DOWNLOAD:
 							try {
@@ -1786,7 +2237,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 									break;
 								}
 
-								configInfoList = downloadFile(fileUtils, vsVOs, ciVO, false);
+								configInfoList = downloadFile(Constants.ACTION_TYPE_RESTORE, fileUtils, vsVOs, ciVO, false);
 								ciVO.setConfigContentList(
 										configInfoList.get(0).getConfigContentList());
 								break;
@@ -1813,7 +2264,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						// 依組態內容設定(Config_Content_Setting)處理要還原的版本內容
 						case PROCESS_CONFIG_CONTENT_SETTING:
 							try {
-								restoreContentList = processConfigContentSetting(restoreType, ciVO);
+								restoreContentList = processConfigContentSetting(null, restoreType, ciVO);
 								ciVO.setConfigContentList(restoreContentList);
 								break;
 
@@ -1828,7 +2279,18 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						// 取得組態還原預設腳本
 						case LOAD_DEFAULT_SCRIPT:
 							try {
-								scripts = loadDefaultScript(deviceListId, scripts, ScriptType.RESTORE);
+							    switch (restoreMethod) {
+				                    case FTP:
+				                        scripts = loadDefaultScript(deviceListId, scripts, ScriptType.RESTORE_WITH_COPY_CONFIG);
+				                        break;
+
+				                    case LOCAL:
+				                        scripts = loadDefaultScript(deviceListId, scripts, ScriptType.RESTORE_WITHOUT_COPY_CONFIG);
+				                        break;
+
+                                    default:
+                                        break;
+				                }
 
 								/*
 								 * Provision_Log_Step
@@ -1854,7 +2316,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						// 取得要還原的目標設備相關連線資訊
 						case FIND_DEVICE_CONNECT_INFO:
 							try {
-								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null);
+								ciVO = findDeviceConfigInfo(ciVO, deviceListId, null, deviceMode);
 								ciVO.setTimes(String.valueOf(round));
 
 								/*
@@ -1894,7 +2356,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						// 連線至要還原的目標設備
 						case CONNECT_DEVICE:
 							try {
-								connectUtils = connect2Device(connectUtils, deviceMode, ciVO);
+								connectUtils = connect2Device(connectUtils, ciVO);
 								break;
 
 							} catch (Exception e) {
@@ -2018,7 +2480,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 	 * @param configInfoVO
 	 * @return
 	 */
-	private List<String> processConfigContentSetting(String settingType, ConfigInfoVO configInfoVO) throws ServiceLayerException {
+	@Override
+    public List<String> processConfigContentSetting(ConfigVO configVO, String settingType, ConfigInfoVO configInfoVO) throws ServiceLayerException {
 		final String systemVersion = configInfoVO.getSystemVersion();
 		final String deviceName = configInfoVO.getDeviceEngName();
 		final String deviceListId = configInfoVO.getDeviceListId();
@@ -2029,7 +2492,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		List<ConfigVO> settings = null;
 		try {
 			// Step 1. 取得設定
-			ConfigVO configVO = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+		    if (configVO == null) {
+		        configVO = configService.findConfigContentSetting(null, settingType, systemVersion, deviceName, deviceListId);
+		    }
+
 			settings = configVO.getConfigVOList();
 
 			// 確認有無正向設定
@@ -2057,7 +2523,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			throw new ServiceLayerException("processConfigContentSetting EXCEPTION!!!");
+			throw new ServiceLayerException(e.toString());
 		}
 	}
 
@@ -2077,6 +2543,10 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 				content = new String(content.getBytes("UTF-8"));
 				int currentLayer = chkCurrentContentLineLayer(content);	// 當前行的層級
 
+				if (content.startsWith("interface")) {
+				    System.out.println("COME ON, LET's GO !!");
+				}
+
 				/*
 				 * Step 1. 判斷此行層級，確認是否為同一區塊內容&是否納入 OR 是新的區塊開始
 				 */
@@ -2087,14 +2557,16 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 					 * (2) 若當前行內容不是 exit，表示是新的內容 >> 需做後續比對
 					 */
 					String trimContent = content.trim();
-					if (trimContent.equalsIgnoreCase("#exit") || trimContent.equalsIgnoreCase("exit")) {
+					if (trimContent.equalsIgnoreCase("#exit") || trimContent.equalsIgnoreCase("exit") || trimContent.equals("!")) {
 						MatchVO currentLayerMatchVO = layerMatchMap.get(currentLayer);
 
 						if (currentLayerMatchVO.isSkip()) {
 							continue;
 
 						} else {
-							retList.add("exit"); // 區塊結束需下exit指令
+						    if (!trimContent.equals("!")) {
+						        retList.add("exit"); // 區塊結束需下exit指令
+						    }
 							layerMatchMap.remove(currentLayer);	// 區塊已結束，將MAP紀錄清除
 							continue;
 						}
@@ -2136,7 +2608,6 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 						}
 					}
 
-					System.out.println(content);
 					/*
 					 * Step 3. 針對此行內容進行設定比對，確認是否納入或跳過
 					 */
@@ -2164,6 +2635,8 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 								matcher.reset();
 								match = matcher.find();
+
+								matcher.reset();
 
 						        if (match) {
 						        	break;
@@ -2230,7 +2703,7 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			throw new ServiceLayerException("runConfigAndSettingCheck EXCEPTION!!!");
+			throw new ServiceLayerException(e.toString());
 		}
 
 		return retList;
@@ -2256,4 +2729,34 @@ public class StepServiceImpl extends CommonServiceImpl implements StepService {
 		int layer = whiteSpaceCount / oneLayerWhiteSpaceCount;
 		return layer;
 	}
+
+    @Override
+    public boolean chkSSHIsEnable(ConfigInfoVO ciVO) {
+        boolean sshEnable = false;
+
+        ConnectUtils connectUtils = null; // 連線裝置物件
+        try {
+            ciVO.setConnectionMode(ConnectionMode.SSH);
+            connectUtils = connect2Device(connectUtils, ciVO);
+            sshEnable = true;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+
+            sshEnable = false;
+
+        } finally {
+            try {
+                if (connectUtils != null) {
+                    connectUtils.disconnect();
+                }
+
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+            }
+
+            connectUtils = null;
+        }
+        return sshEnable;
+    }
 }

@@ -59,7 +59,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 			  .append("       or ")
 			  .append("       dl.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       dl.system_version like :searchValue ")
+			  .append("       dl.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       si.script_name like :searchValue ")
 			  .append("       or ")
@@ -98,7 +98,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 		  .append("   pld.create_by, ")			//index: 5
 		  .append("   dl.group_name, ")			//index: 6
 		  .append("   dl.device_name, ")		//index: 7
-		  .append("   dl.system_version, ")		//index: 8
+		  .append("   dl.device_model, ")		//index: 8
 		  .append("   si.script_name, ")		//index: 9
 		  .append("   plm.reason, ")			//index: 10
 		  .append("   pls.result, ")			//index: 11
@@ -138,7 +138,7 @@ public class ProvisionLogDAOImpl extends BaseDaoHibernate implements ProvisionLo
 			  .append("       or ")
 			  .append("       dl.device_name like :searchValue ")
 			  .append("       or ")
-			  .append("       dl.system_version like :searchValue ")
+			  .append("       dl.device_model like :searchValue ")
 			  .append("       or ")
 			  .append("       si.script_name like :searchValue ")
 			  .append("       or ")

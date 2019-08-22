@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.cmap.configuration.filter.RequestBodyReaderAuthenticationFilter;
 import com.cmap.security.AuthSuccessHandler;
@@ -113,9 +112,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	*/
 
 	@Bean
-    public AccessDeniedHandler accessDeniedHandler(){
-        return new CustomAccessDeniedHandler();
-    }
+	public AccessDeniedHandler accessDeniedHandler(){
+	    return new CustomAccessDeniedHandler();
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -123,11 +122,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/resources/**").permitAll()
 			.antMatchers("/login").permitAll()
 			.antMatchers("/loginOIDC").permitAll()
+			.antMatchers("/loginOIDC_NTPC").permitAll()
 			.antMatchers("/login/code/**").permitAll()
 			.antMatchers("/login/authByOIDC/**").permitAll()
-			//.antMatchers("/admin/env/refreshAll").permitAll()
+			.antMatchers("/login/authByOIDC_NTPC/**").permitAll()
+			.antMatchers("/login/app").permitAll()                                       // 提供給APP呼叫的登入入口 (Y190603, Case No.C46001804008 >> 新北前瞻計畫-教育網路基礎建設 (網管支援))
+			.antMatchers("/prtg/getPasshash/**").permitAll()                             // 提供給APP呼叫取得PRTG passhash (Y190603, Case No.C46001804008 >> 新北前瞻計畫-教育網路基礎建設 (網管支援))
+			.antMatchers("/admin/env/refreshAll").permitAll()
 			.antMatchers("/admin/**").hasAnyRole("ADMIN")
-			.antMatchers("/plugin/module/vmswitch/**").permitAll()	//提供PRTG呼叫切換VM備援 (Y190117, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
+			.antMatchers("/i18n/reload").permitAll()
+			.antMatchers("/___test___/**").permitAll()
+			.antMatchers("/plugin/module/vmswitch/chkVmStatus/**").permitAll()           // 提供PRTG呼叫切換VM備援 (Y190117, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
+			                                                                             // Y190409, VM切換須先進行登入驗證，登入後自動跳轉到VM切換UI
+			.antMatchers("/plugin/module/clustermigrate/setting/**").permitAll()         // 提供PRTG呼叫設定cluster migrate (Y190426, 同欣電子-POC)
+			.antMatchers("/plugin/module/clustermigrate/service/restart/**").permitAll() // 提供PRTG呼叫設定cluster migrate (Y190426, 同欣電子-POC)
+			.antMatchers("/plugin/module/clustermigrate/cluster/migrate/**").permitAll() // 提供PRTG呼叫設定cluster migrate (Y190426, 同欣電子-POC)
+			.antMatchers("/plugin/module/clustermigrate/server/reboot/**").permitAll()   // 提供PRTG呼叫設定cluster migrate (Y190426, 同欣電子-POC)
+			.antMatchers("/version/diff/view/**").permitAll()                            // 提供版本比對差異內容查看 (Y190515, Case No.C31001704016 >> APT HeNBGW & ePDG-LI Expansion)
 			.anyRequest().hasAnyRole("ADMIN", "USER")
 			.and()
 			.addFilterBefore(authenticationFilter(),
@@ -137,7 +148,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //			.failureHandler(authUnsuccessHandler())
 			.and()
 			.exceptionHandling().accessDeniedHandler(accessDeniedHandler())
-		    .and()
+            .and()
 		.logout()
 		.addLogoutHandler(customLogoutHandler())
 	    .permitAll()
@@ -147,8 +158,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			//.and()
 			.frameOptions()
 			.disable()
-			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170"))
-			.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170:1443"))
+			//.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170"))
+			//.addHeaderWriter(new StaticHeadersWriter("X-FRAME-OPTIONS", "ALLOW-FROM https://163.19.163.170:1443"))
 			.and()
 		.csrf().disable();
 	}

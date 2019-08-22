@@ -3,7 +3,6 @@ package com.cmap.service.vo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import com.cmap.Constants;
 
 public class VersionServiceVO extends CommonServiceVO {
@@ -83,6 +82,10 @@ public class VersionServiceVO extends CommonServiceVO {
 	//--------- Restore ----------//
 	private String restoreVersionId;
 	private List<String> restoreContentList = new ArrayList<>();
+
+	//--------- VM Switch ----------//
+	private String restoreVersionConfigPath;    // 要還原的組態版本在設備的哪個路徑 (for VM切換，ePDG config已先放在設備內)
+    private String restoreVersionImagePath;     // 要還原的image版本在設備的哪個路徑 (for VM切換，ePDG需指定image)
 
 	public String getQueryGroup() {
 		return queryGroup;
@@ -450,4 +453,16 @@ public class VersionServiceVO extends CommonServiceVO {
 	public void setCheckEnableCurrentDateSetting(boolean checkEnableCurrentDateSetting) {
 		this.checkEnableCurrentDateSetting = checkEnableCurrentDateSetting;
 	}
+    public String getRestoreVersionConfigPath() {
+        return restoreVersionConfigPath;
+    }
+    public void setRestoreVersionConfigPath(String restoreVersionConfigPath) {
+        this.restoreVersionConfigPath = restoreVersionConfigPath;
+    }
+    public String getRestoreVersionImagePath() {
+        return restoreVersionImagePath;
+    }
+    public void setRestoreVersionImagePath(String restoreVersionImagePath) {
+        this.restoreVersionImagePath = restoreVersionImagePath;
+    }
 }

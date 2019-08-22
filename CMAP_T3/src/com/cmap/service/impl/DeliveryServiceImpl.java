@@ -62,6 +62,197 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 	private ProvisionService provisionService;
 
 	@Override
+    public DeliveryServiceVO doDelivery(ConnectionMode connectionMode, DeliveryParameterVO dpVO,
+            boolean sysTrigger, String triggerBy, String triggerRemark, boolean chkParameters) throws ServiceLayerException {
+
+        DeliveryServiceVO retVO = new DeliveryServiceVO();
+        try {
+            /*
+             * Step 1.再次驗證傳入的參數值合法性
+             */
+            boolean chkSuccess = false;
+
+            if (chkParameters) {
+                chkSuccess = checkDeliveryParameter(dpVO);
+
+            } else {
+                chkSuccess = true;
+            }
+
+            if (!chkSuccess) {
+                throw new ServiceLayerException("供裝前系統檢核不通過，請重新操作；若仍再次出現此訊息，請與系統維護商聯繫");
+
+            } else {
+                retVO = goDelivery(connectionMode, dpVO, sysTrigger, triggerBy, triggerRemark);
+            }
+
+        } catch (ServiceLayerException sle) {
+            log.error(sle.toString(), sle);
+            throw sle;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            throw new ServiceLayerException(e);
+        }
+        return retVO;
+    }
+
+    private DeliveryServiceVO goDelivery(ConnectionMode connectionMode, DeliveryParameterVO dpVO, boolean sysTrigger, String triggerBy, String triggerRemark) throws ServiceLayerException {
+        DeliveryServiceVO retVO = new DeliveryServiceVO();
+        String retMsg = "";
+
+        //Step 1.取得腳本資料
+        final String scriptInfoId = dpVO.getScriptInfoId();
+        final String scriptCode = dpVO.getScriptCode();
+        ScriptInfo scriptInfo = scriptInfoDAO.findScriptInfoByIdOrCode(scriptInfoId, scriptCode);
+
+        if (scriptInfo == null) {
+            throw new ServiceLayerException("無法取得腳本資料，請重新操作");
+        }
+
+        //Step 2.替換腳本參數值
+        final List<String> varKeyList = dpVO.getVarKey();
+        final List<List<String>> deviceVarValueList = dpVO.getVarValue();
+        final String actionScript = scriptInfo.getActionScript();
+
+        final Map<String, String> deviceInfo = dpVO.getDeviceInfo();
+        final List<String> groupIdList = dpVO.getGroupId();
+        final List<String> deviceIdList = dpVO.getDeviceId();
+
+        ProvisionServiceVO masterVO = new ProvisionServiceVO();
+        masterVO.setLogMasterId(UUID.randomUUID().toString());
+        masterVO.setBeginTime(new Date());
+        masterVO.setUserName(sysTrigger ? triggerBy : SecurityUtil.getSecurityUser().getUsername());
+
+        StringBuffer errorSb = new StringBuffer();
+        int deviceCount = deviceIdList != null ? deviceIdList.size() : 1;
+        int successCount = 0;
+        int failedCount = 0;
+        for (int idx=0; idx<deviceCount; idx++) {
+
+            final String groupId = groupIdList != null ? groupIdList.get(idx) : "N/A";
+            final String deviceId = deviceIdList != null ? deviceIdList.get(idx) : "N/A";
+
+            try {
+                String groupName;
+                String deviceName;
+                String deviceListId;
+
+                if (deviceInfo == null || (deviceInfo != null && deviceInfo.isEmpty())) {
+                    DeviceList deviceList = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
+
+                    if (deviceList == null) {
+                        throw new ServiceLayerException("查無設備資料 >> groupId: " + groupId + " , deviceId: " + deviceId);
+                    }
+
+                    groupName = deviceList.getGroupName();
+                    deviceName = deviceList.getDeviceName();
+                    deviceListId = deviceList.getDeviceListId();
+
+                } else {
+                    groupName = "N/A";
+                    deviceName = deviceInfo.get(Constants.DEVICE_NAME);
+                    deviceListId = null;
+                }
+
+                String script = actionScript;
+
+                List<Map<String, String>> varMapList = null;
+                if (varKeyList != null && !varKeyList.isEmpty()) {
+                    varMapList = new ArrayList<>();
+
+                    /*
+                     * Case 1. deviceCount == 1 但 deviceVarValueList.size > 1
+                     * ==>> 表示同1腳本要做多組設定對同1台設備 (e.g.: 防火牆黑名單設定，一次要設定多筆IP)
+                     *      << 1對多 >>
+                     *
+                     * Case 2. deviceCount > 1
+                     * ==>> 預設為1腳本做1組設定對1台設備 (e.g.: 一次對多台設備做供裝)
+                     *      << 1對1 >>
+                     *
+                     * (目前不支援一次針對多台設備且每1台設備都做多組設定，須調整作法為一次針對1台設備做多組設定)
+                     * << 多對多>>
+                     */
+                    if (deviceCount > 1) {
+                        final List<String> valueList = deviceVarValueList.get(idx);
+                        varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
+
+                    } else if (deviceCount == 1) {
+                        for (List<String> valueList : deviceVarValueList) {
+                            varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
+                        }
+                    }
+                }
+
+                //Step 3.呼叫共用執行腳本
+                StepServiceVO processVO = null;
+                try {
+                    processVO = stepService.doScript(connectionMode, deviceListId, deviceInfo, scriptInfo, varMapList, sysTrigger, triggerBy, triggerRemark);
+
+                    masterVO.getDetailVO().addAll(processVO.getPsVO().getDetailVO());
+
+                } catch (Exception e) {
+                    log.error(e.toString(), e);
+                }
+
+                if (processVO == null || (processVO != null && !processVO.isSuccess())) {
+                    errorSb.append("[" + (idx+1) + "] >> 群組名稱:【" + groupName + "】/設備名稱:【" + deviceName + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
+                    failedCount++;
+                    continue;
+                }
+
+                if (processVO.getCmdOutputList() != null && !processVO.getCmdOutputList().isEmpty()) {
+                    retVO.setCmdOutputList(processVO.getCmdOutputList());
+                }
+
+            } catch (ServiceLayerException sle) {
+                log.error(sle.toString(), sle);
+                errorSb.append("[" + (idx+1) + "] >> 群組ID:【" + groupId + "】/設備ID:【" + deviceId + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
+                failedCount++;
+                continue;
+
+            } catch (Exception e) {
+                log.error(e.toString(), e);
+                errorSb.append("[" + (idx+1) + "] >> 群組ID:【" + groupId + "】/設備ID:【" + deviceId + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
+                failedCount++;
+                continue;
+            }
+
+            successCount++;
+        }
+
+        String msg = "";
+        String[] args = null;
+        if (deviceCount == 1) {
+            if (failedCount == 0) {
+                msg = "供裝成功";
+
+            } else if (failedCount == 1) {
+                msg = "供裝失敗";
+            }
+
+        } else {
+            msg = "選定供裝 {0} 筆設備: 成功 {1} 筆；失敗 {2} 筆";
+            args = new String[] {
+                    String.valueOf(deviceCount),
+                    String.valueOf(successCount),
+                    String.valueOf(failedCount)
+            };
+        }
+
+        masterVO.setEndTime(new Date());
+        masterVO.setResult(CommonUtils.converMsg(msg, args));
+        masterVO.setReason(dpVO.getReason());
+
+        provisionService.insertProvisionLog(masterVO);
+
+        retMsg += CommonUtils.converMsg(msg, args) + Constants.HTML_BREAK_LINE_SYMBOL + Constants.HTML_SEPARATION_LINE_SYMBOL + errorSb.toString();
+        retVO.setRetMsg(retMsg);
+
+        return retVO;
+    }
+
+	@Override
 	public long countDeviceList(DeliveryServiceVO dsVO) throws ServiceLayerException {
 		// TODO 自動產生的方法 Stub
 		return 0;
@@ -214,12 +405,12 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 	}
 
 
-	private boolean checkDeliveryParameter(DeliveryParameterVO pVO) {
+	private boolean checkDeliveryParameter(DeliveryParameterVO dpVO) {
 		try {
 			//Step 1.檢核腳本是否存在
 			ScriptInfoDAOVO siDAOVO = new ScriptInfoDAOVO();
-			siDAOVO.setQueryScriptInfoId(pVO.getScriptInfoId());
-			siDAOVO.setQueryScriptCode(pVO.getScriptCode());
+			siDAOVO.setQueryScriptInfoId(dpVO.getScriptInfoId());
+			siDAOVO.setQueryScriptCode(dpVO.getScriptCode());
 
 			List<ScriptInfo> scriptList = scriptInfoDAO.findScriptInfo(siDAOVO, null, null);
 
@@ -231,7 +422,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 			//Step 2.檢核JSON內Script_Info_Id與Script_Code是否匹配
 			final String dbScriptCode = dbEntity.getScriptCode();
-			final String jsonScriptCode = pVO.getScriptCode();
+			final String jsonScriptCode = dpVO.getScriptCode();
 
 			if (!dbScriptCode.equals(jsonScriptCode)) {
 				return false;
@@ -240,7 +431,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			//Step 3.檢核JSON內VarKey與系統內設定的腳本變數欄位是否相符
 			final String dbVarKeyJSON = dbEntity.getActionScriptVariable();
 			final List<String> dbVarKeyList = (List<String>)transJSON2Object(dbVarKeyJSON, ArrayList.class);
-			final List<String> jsonVarKeyList = pVO.getVarKey();
+			final List<String> jsonVarKeyList = dpVO.getVarKey();
 
 			if (dbVarKeyList.size() != jsonVarKeyList.size()) {
 				return false;
@@ -253,8 +444,8 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 
 			//Step 4.檢核變數值(VarValue)是否有缺
 			//VarValue資料結構: List(設備)<List(VarValue)>
-			final List<List<String>> jsonVarValueList = pVO.getVarValue();
-			final List<String> jsonDeviceIdList = pVO.getDeviceId();
+			final List<List<String>> jsonVarValueList = dpVO.getVarValue();
+			final List<String> jsonDeviceIdList = dpVO.getDeviceId();
 
 			if (jsonDeviceIdList.size() != jsonVarValueList.size()) {
 				return false;
@@ -274,7 +465,7 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 			}
 
 			//Step 5.檢核設備是否皆存在 且 是否與JSON內設備ID相符
-			final List<String> jsonGroupIdList = pVO.getGroupId();
+			final List<String> jsonGroupIdList = dpVO.getGroupId();
 
 			if (jsonGroupIdList.size() != jsonDeviceIdList.size()) {
 				return false;
@@ -300,195 +491,6 @@ public class DeliveryServiceImpl extends CommonServiceImpl implements DeliverySe
 		}
 
 		return true;
-	}
-
-	@Override
-	public DeliveryServiceVO doDelivery(ConnectionMode connectionMode, DeliveryParameterVO dpVO, boolean sysTrigger, String triggerBy, String triggerRemark, boolean chkParameters) throws ServiceLayerException {
-		DeliveryServiceVO retVO = new DeliveryServiceVO();
-		try {
-			/*
-			 * Step 1.再次驗證傳入的參數值合法性
-			 */
-			boolean chkSuccess = false;
-
-			if (chkParameters) {
-				chkSuccess = checkDeliveryParameter(dpVO);
-
-			} else {
-				chkSuccess = true;
-			}
-
-			if (!chkSuccess) {
-				throw new ServiceLayerException("供裝前系統檢核不通過，請重新操作；若仍再次出現此訊息，請與系統維護商聯繫");
-
-			} else {
-				retVO = goDelivery(connectionMode, dpVO, sysTrigger, triggerBy, triggerRemark);
-			}
-
-		} catch (ServiceLayerException sle) {
-			log.error(sle.toString(), sle);
-			throw sle;
-
-		} catch (Exception e) {
-			log.error(e.toString(), e);
-			throw new ServiceLayerException(e);
-		}
-		return retVO;
-	}
-
-	private DeliveryServiceVO goDelivery(ConnectionMode connectionMode, DeliveryParameterVO psVO, boolean sysTrigger, String triggerBy, String triggerRemark) throws ServiceLayerException {
-		DeliveryServiceVO retVO = new DeliveryServiceVO();
-		String retMsg = "";
-
-		//Step 1.取得腳本資料
-		final String scriptInfoId = psVO.getScriptInfoId();
-		final String scriptCode = psVO.getScriptCode();
-		ScriptInfo scriptInfo = scriptInfoDAO.findScriptInfoByIdOrCode(scriptInfoId, scriptCode);
-
-		if (scriptInfo == null) {
-			throw new ServiceLayerException("無法取得腳本資料，請重新操作");
-		}
-
-		//Step 2.替換腳本參數值
-		final List<String> varKeyList = psVO.getVarKey();
-		final List<List<String>> deviceVarValueList = psVO.getVarValue();
-		final String actionScript = scriptInfo.getActionScript();
-
-		final Map<String, String> deviceInfo = psVO.getDeviceInfo();
-		final List<String> groupIdList = psVO.getGroupId();
-		final List<String> deviceIdList = psVO.getDeviceId();
-
-		ProvisionServiceVO masterVO = new ProvisionServiceVO();
-		masterVO.setLogMasterId(UUID.randomUUID().toString());
-		masterVO.setBeginTime(new Date());
-		masterVO.setUserName(sysTrigger ? triggerBy : SecurityUtil.getSecurityUser().getUsername());
-
-		StringBuffer errorSb = new StringBuffer();
-		int deviceCount = deviceIdList != null ? deviceIdList.size() : 1;
-		int successCount = 0;
-		int failedCount = 0;
-		for (int idx=0; idx<deviceCount; idx++) {
-
-			final String groupId = groupIdList != null ? groupIdList.get(idx) : "N/A";
-			final String deviceId = deviceIdList != null ? deviceIdList.get(idx) : "N/A";
-
-			try {
-				String groupName;
-				String deviceName;
-				String deviceListId;
-
-				if (deviceInfo == null || (deviceInfo != null && deviceInfo.isEmpty())) {
-					DeviceList deviceList = deviceDAO.findDeviceListByGroupAndDeviceId(groupId, deviceId);
-
-					if (deviceList == null) {
-						throw new ServiceLayerException("查無設備資料 >> groupId: " + groupId + " , deviceId: " + deviceId);
-					}
-
-					groupName = deviceList.getGroupName();
-					deviceName = deviceList.getDeviceName();
-					deviceListId = deviceList.getDeviceListId();
-
-				} else {
-					groupName = "N/A";
-					deviceName = deviceInfo.get(Constants.DEVICE_NAME);
-					deviceListId = null;
-				}
-
-				String script = actionScript;
-
-				List<Map<String, String>> varMapList = null;
-				if (varKeyList != null && !varKeyList.isEmpty()) {
-					varMapList = new ArrayList<>();
-
-					/*
-					 * Case 1. deviceCount == 1 但 deviceVarValueList.size > 1
-					 * ==>> 表示同1腳本要做多組設定對同1台設備 (e.g.: 防火牆黑名單設定，一次要設定多筆IP)
-					 *      << 1對多 >>
-					 *
-					 * Case 2. deviceCount > 1
-					 * ==>> 預設為1腳本做1組設定對1台設備 (e.g.: 一次對多台設備做供裝)
-					 *      << 1對1 >>
-					 *
-					 * (目前不支援一次針對多台設備且每1台設備都做多組設定，須調整作法為一次針對1台設備做多組設定)
-					 * << 多對多>>
-					 */
-					if (deviceCount > 1) {
-						final List<String> valueList = deviceVarValueList.get(idx);
-						varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
-
-					} else if (deviceCount == 1) {
-						for (List<String> valueList : deviceVarValueList) {
-							varMapList.add(composeScriptVarMap(script, varKeyList, valueList));
-						}
-					}
-				}
-
-				//Step 3.呼叫共用執行腳本
-				StepServiceVO processVO = null;
-				try {
-					processVO = stepService.doScript(connectionMode, deviceListId, deviceInfo, scriptInfo, varMapList, sysTrigger, triggerBy, triggerRemark);
-
-					masterVO.getDetailVO().addAll(processVO.getPsVO().getDetailVO());
-
-				} catch (Exception e) {
-					log.error(e.toString(), e);
-				}
-
-				if (processVO == null || (processVO != null && !processVO.isSuccess())) {
-					errorSb.append("[" + (idx+1) + "] >> 群組名稱:【" + groupName + "】/設備名稱:【" + deviceName + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
-					failedCount++;
-					continue;
-				}
-
-				if (processVO.getCmdOutputList() != null && !processVO.getCmdOutputList().isEmpty()) {
-					retVO.setCmdOutputList(processVO.getCmdOutputList());
-				}
-
-			} catch (ServiceLayerException sle) {
-				log.error(sle.toString(), sle);
-				errorSb.append("[" + (idx+1) + "] >> 群組ID:【" + groupId + "】/設備ID:【" + deviceId + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
-				failedCount++;
-				continue;
-
-			} catch (Exception e) {
-				log.error(e.toString(), e);
-				errorSb.append("[" + (idx+1) + "] >> 群組ID:【" + groupId + "】/設備ID:【" + deviceId + "】供裝失敗" + Constants.HTML_BREAK_LINE_SYMBOL);
-				failedCount++;
-				continue;
-			}
-
-			successCount++;
-		}
-
-		String msg = "";
-		String[] args = null;
-		if (deviceCount == 1) {
-			if (failedCount == 0) {
-				msg = "供裝成功";
-
-			} else if (failedCount == 1) {
-				msg = "供裝失敗";
-			}
-
-		} else {
-			msg = "選定供裝 {0} 筆設備: 成功 {1} 筆；失敗 {2} 筆";
-			args = new String[] {
-					String.valueOf(deviceCount),
-					String.valueOf(successCount),
-					String.valueOf(failedCount)
-			};
-		}
-
-		masterVO.setEndTime(new Date());
-		masterVO.setResult(CommonUtils.converMsg(msg, args));
-		masterVO.setReason(psVO.getReason());
-
-		provisionService.insertProvisionLog(masterVO);
-
-		retMsg += CommonUtils.converMsg(msg, args) + Constants.HTML_BREAK_LINE_SYMBOL + Constants.HTML_SEPARATION_LINE_SYMBOL + errorSb.toString();
-		retVO.setRetMsg(retMsg);
-
-		return retVO;
 	}
 
 	private Map<String, String> composeScriptVarMap(String script, List<String> varKeyList, List<String> valueList) {

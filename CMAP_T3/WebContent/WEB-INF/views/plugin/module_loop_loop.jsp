@@ -67,7 +67,7 @@
 	<!-- 查詢結果TABLE區塊 -->
 	<div class="row">
 	  <div class="col-sm-12 myTableSection" style="display:none;">
-		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+		<table id="resultTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="seq" /></th>
@@ -79,9 +79,6 @@
 		    </tr>
 		  </thead>
 		  <tbody>
-		  	<tr><td class="center">1</td><td class="center">029. 清安國小</td><td class="left">CA-C2960L-SW1.mlc.edu.tw</td><td class="center">163.19.217.91</td><td class="center">Gi2/0/15</td><td class="center">BLK</td></tr>
-		  	<tr><td class="center">2</td><td class="center">031. 田美國小</td><td class="left">TMES-C2960L-SW1.mil.edu.tw</td><td class="center">120.104.236.85</td><td class="center">Gi2/0/12</td><td class="center">BLK</td></tr>
-		  	<tr><td class="center">3</td><td class="center">036. 內灣國小</td><td class="left">NWES-C2960L-SW4.mlc.edu.tw</td><td class="center">163.19.185.108</td><td class="center">Gi2/0/21</td><td class="center">BLK</td></tr>
 	  	  </tbody>
 		</table>
 	  </div>

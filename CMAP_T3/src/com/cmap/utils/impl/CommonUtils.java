@@ -4,11 +4,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.exception.ServiceLayerException;
@@ -247,6 +245,9 @@ public class CommonUtils {
 		if (cmd.contains(Env.CLI_VAR_DEVICE_FLASH_PATH)) {
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_DEVICE_FLASH_PATH, configInfoVO.getDeviceFlashConfigPath());
 		}
+		if (cmd.contains(Env.CLI_VAR_DEVICE_IMAGE_PATH)) {
+            cmd = StringUtils.replace(cmd, Env.CLI_VAR_DEVICE_IMAGE_PATH, configInfoVO.getDeviceFlashImagePath());
+        }
 		if (cmd.contains(Env.CLI_VAR_PRIORITY)) {
 			cmd = StringUtils.replace(cmd, Env.CLI_VAR_PRIORITY, csVO.getBootInfoPriority());
 		}
@@ -311,6 +312,9 @@ public class CommonUtils {
 			throw e;
 		}
 
+		System.out.println("====================================================================");
+		System.out.println(retString);
+		System.out.println("====================================================================");
 		return retString;
 	}
 

@@ -4,26 +4,24 @@
 <section>
 
   <div class="container-fluid">
-      <!-- [START]操作按鈕bar -->
-      <div class="col-12 action-btn-bar">
-        <div class="container-fluid">
-        	<div class="row">
-        		<div class="col-lg-2 action-btn-bar-style" align="center">
-		  	    	<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnDelivery">派送</button>
-		  	    </div>
-        	</div>
-        </div>
-      </div>
-      <!-- [END]操作按鈕bar -->
+  	<!-- [START]操作按鈕bar -->
+    <div class="col-12 action-btn-bar">
+    	<div class="container-fluid">
+       		<div class="row">
+       			<div class="col-lg-2 action-btn-bar-style" align="center">
+	  	    		<button type="button" class="btn btn-success btn-sm" style="width: 100%" id="btnDelivery"><spring:message code="btn.delivery" /></button>
+	  	    	</div>
+       		</div>
+       	</div>
     </div>
-    <!-- [END]查詢欄位&操作按鈕 for 大型解析度螢幕 -->
+    <!-- [END]操作按鈕bar -->
     
   	<input type="hidden" id="onlyOneScript" value="IP_OPEN_BLOCK" />
   	<div class="container-fluid">
 		<!-- 查詢結果TABLE區塊 -->
 		<div class="row">
-	  	<div class="col-sm-12 myTableSection" style="display:none;">
-			<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+	  	<div class="col-sm-12 myTableSection mainTable" style="display:none;">
+			<table id="resultTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  	<thead class="center">
 		    	<tr>
 			      <th scope="col" nowrap="nowrap"><spring:message code="action" /></th>
@@ -39,6 +37,51 @@
 			  </thead>
 			</table>
 	  	</div>
+		</div>
+  	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<div id="divBlockedTitle" style="width: 100%; padding-top: 50px; color: #ee2525; font-weight: bold; font-size: 1rem;">
+				<spring:message code="blocked.ip.list.sub.title" />:&nbsp;&nbsp;&nbsp;
+				
+				<!-- 若使用者擁有多群組權限則show出群組選單；否則不顯示 -->
+				<c:if test="${fn:length(groupList) gt 1}">
+		   	    	<form:select path="group" id="queryGroup" style="width: 200px;" onchange="findBlockedIpRecordData()">
+		               	<form:option value="" label="=== ALL ===" />
+		                <form:options items="${groupList}" />
+		            </form:select>
+		            &nbsp;&nbsp;&nbsp;
+	            </c:if>
+	            
+	            <!-- 解鎖Button -->
+				<button type="button" style="width: 100px;" class="btn btn-primary btn-sm" id="btnIpOpen" disabled="disabled"><spring:message code="btn.ip.open" /></button>
+			</div>
+		</div>
+	</div>
+  	<!-- IP封鎖紀錄 -->
+  	<div id="divBlockedIpRecord" class="container-fluid">
+		<!-- 查詢結果TABLE區塊 -->
+		<div class="row">
+		  	<div class="col-sm-12 myTableSection" style="display:none;">
+				<table id="resultTable_blockedIpRecord" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+			  	<thead class="center">
+			    	<tr>
+				      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="seq"><spring:message code="seq" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="groupName"><spring:message code="group.name" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="ipAddress"><spring:message code="ip.address" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="status"><spring:message code="status" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="blockTime"><spring:message code="block.time" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="blockReason"><spring:message code="block.reason" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="blockBy"><spring:message code="block.by" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="openTime"><spring:message code="open.time" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="openReason"><spring:message code="open.reason" /></th>
+				      <th scope="col" nowrap="nowrap" data-field="openBy"><spring:message code="open.by" /></th>
+				    </tr>
+				  </thead>
+				</table>
+		  	</div>
 		</div>
   	</div>
   	
@@ -200,3 +243,4 @@
 <!-- Modal [View] end -->
 
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/cmap.delivery.main.min.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/module/cmap.module.ip.open.block.min.js"></script>

@@ -5,7 +5,7 @@ feather.replace();
 
 var _ctx = $("meta[name='ctx']").attr("content");
 var _timeout = $("meta[name='timeout']").attr("content");
-var resutTable;					//DataTable
+var resultTable;				//DataTable
 var funcTitleHeight;			//功能名稱標題區塊高度
 var navAndMenuAndFooterHeight;	//導覽列+Mobile選單+Footer區塊高度
 var deductHeight;				//額外扣除高度 for DataTable資料呈顯區塊高度
@@ -51,45 +51,38 @@ $(document).ready(function() {
 
 	//縮放視窗大小時，延遲1秒後重算DataTable區塊高度 & 重繪DataTable
     $(window).resize(_.debounce(function() {
-    	if (typeof resutTable !== "undefined") {
+    	if (typeof resultTable !== "undefined") {
+    		if (typeof startNum !== "undefined") {
+        		startNum = 0;
+        	}
+    		
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-			resutTable.ajax.reload();
-			
-			if (typeof $("#checkAll") !== "undefined") {
-				$('input[name=checkAll]').prop('checked', false);
-			}
-			
-			if (typeof initActionBar === 'function') {
-				initActionBar();
-			}
+			resultTable.ajax.reload();
     	}
-    	if (typeof resutTable_errorLog !== "undefined") {
+    	if (typeof resultTable_errorLog !== "undefined") {
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-    		resutTable_errorLog.ajax.reload();
-			
-			if (typeof $("#checkAll") !== "undefined") {
-				$('input[name=checkAll]').prop('checked', false);
-			}
-			
-			if (typeof initActionBar === 'function') {
-				initActionBar();
-			}
+    		resultTable_errorLog.ajax.reload();
     	}
-    	if (typeof resutTable_jobLog !== "undefined") {
+    	if (typeof resultTable_jobLog !== "undefined") {
     		calHeight();
     		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
-    		resutTable_jobLog.ajax.reload();
-			
-			if (typeof $("#checkAll") !== "undefined") {
-				$('input[name=checkAll]').prop('checked', false);
-			}
-			
-			if (typeof initActionBar === 'function') {
-				initActionBar();
-			}
+    		resultTable_jobLog.ajax.reload();
     	}
+    	if (typeof resultTable_blockedIpRecord !== "undefined") {
+    		calBlockedIpSectionHeight();
+    		$('.dataTables_scrollBody').css('max-height', dataTableHeight);
+    		resultTable_blockedIpRecord.ajax.reload();
+    	}
+    	
+    	if (typeof $("#checkAll") !== "undefined") {
+			$('input[name=checkAll]').prop('checked', false).change();
+		}
+		
+		if (typeof initActionBar === 'function') {
+			initActionBar();
+		}
     	
     	if ($('#chkbox').length > 0) {
     		var chooseIdx = [];
@@ -112,12 +105,18 @@ $(document).ready(function() {
   	//全選 or 取消全選
     $('#checkAll').click(function (e) {
     	if ($(this).is(':checked')) {
-			$('input[name=chkbox]').prop('checked', true);
-			$('tbody > tr').addClass('mySelected');
+			$('input[name=chkbox]').prop('checked', true).change();
+			
+			if ($('input[name=chkbox]').length > 0) {
+				$($('input[name=chkbox]').get(0)).closest('tbody').find('tr').addClass('mySelected');
+			}
 			
 		} else {
-			$('input[name=chkbox]').prop('checked', false);
-			$('tbody > tr').removeClass('mySelected');
+			$('input[name=chkbox]').prop('checked', false).change();
+			
+			if ($('input[name=chkbox]').length > 0) {
+				$($('input[name=chkbox]').get(0)).closest('tbody').find('tr').removeClass('mySelected');
+			}
 		}
     });
   
@@ -278,10 +277,11 @@ function initCheckedItems() {
  *** 將TABLE查詢結果，各資料內容TR加上click事件 (點擊該列資料任一位置時將該筆資料checkbox勾選)
  **********************************************************************************************************/
 function bindTrEvent() {
+	$('.dataTable tbody tr').off('click');
 	$('.dataTable tbody tr').click(function(event) {
         if (event.target.tagName !== 'A' && event.target.type !== 'checkbox' && event.target.type !== 'radio') {
           $(':checkbox', this).trigger('click');
-          $(':radio', this).prop('checked', ($(':radio', this).is(':checked') ? false : true));
+          $(':radio', this).prop('checked', ($(':radio', this).is(':checked') ? false : true)).change();
           
           if ($('#chkbox',this).attr('type') === 'radio') {
         	  changeTrBgColor($('#chkbox',this).get(0));
@@ -290,12 +290,32 @@ function bindTrEvent() {
     });
 }
 
+function bindTrEventOnlyRadio() {
+	$('.dataTable tbody tr').click(function(event) {
+        if (event.target.tagName !== 'A' && event.target.type !== 'checkbox' && event.target.type !== 'radio') {
+            $(':radio', this).prop('checked', ($(':radio', this).is(':checked') ? false : true)).change();
+            
+            if ($('#chkbox',this).attr('type') === 'radio') {
+          	  changeTrBgColor($('#chkbox',this).get(0));
+            }
+        }
+    });
+}
+
+function bindTrEventOnlyCheckbox() {
+	$('.dataTable tbody tr').click(function(event) {
+        if (event.target.tagName !== 'A' && event.target.type !== 'checkbox' && event.target.type !== 'radio') {
+          $(':checkbox', this).trigger('click');
+        }
+    });
+}
+
 /**********************************************************************************************************
  *** 用來將TABLE內容，所有項目checkbox(含checkAll本身)取消勾選
  **********************************************************************************************************/
 function uncheckAll() {
-	$('input[name=checkAll]').prop('checked', false);
-	$('input[name=chkbox]').prop('checked', false);
+	$('input[name=checkAll]').prop('checked', false).change();
+	$('input[name=chkbox]').prop('checked', false).change();
 	$('tbody > tr').removeClass('mySelected');
 	
 }
@@ -350,9 +370,8 @@ function changeMenuIconColor() {
  *** 勾選項目時調整該列資料<TR>底色
  **********************************************************************************************************/
 function changeTrBgColor(obj) {
-
 	if ($(obj).attr("type") == "radio") {
-		$('tbody > tr').removeClass('mySelected');
+		$(obj).closest('tbody').find('tr').removeClass('mySelected');
 	}
 	
 	setTimeout(function() {

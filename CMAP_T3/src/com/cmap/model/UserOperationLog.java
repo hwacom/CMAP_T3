@@ -1,12 +1,16 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * USER_OPERATION_LOG Entity
+ * @author Ken Lin
+ *
+ */
 @Entity
 @Table(name="user_operation_log")
 public class UserOperationLog implements java.io.Serializable {

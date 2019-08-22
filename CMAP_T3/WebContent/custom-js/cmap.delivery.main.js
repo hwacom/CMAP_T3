@@ -57,6 +57,61 @@ $(document).ready(function() {
 	findData('WEB');
 });
 
+/*
+ * 從「IP開通/封鎖」功能頁點擊「解鎖」按鈕事件
+ * 依照使用者於頁面上勾選要解鎖的IP列表，取得群組、IP(解鎖腳本變數)、供裝目標設備(該群組的L3 switch)
+ * PS: 解鎖腳本依各群組L3 switch設備版本決定
+ */
+//TODO
+function showDeliveryPanelByBtnIpOpen() {
+	window.sessionStorage.clear();
+	var scriptInfoId = $(':radio:checked').val();
+	$.ajax({
+		url : _ctx + '/delivery/getScriptInfo.json',
+		data : {
+			"scriptInfoId" : scriptInfoId
+		},
+		type : "POST",
+		dataType : 'json',
+		async: true,
+		success : function(resp) {
+			if (resp.code == '200') {
+				/* **************************************************************************
+				 * 派送Modal開啟前 >> 紀錄群組設備選單內容、腳本變數Key
+				 * **************************************************************************/
+				window.sessionStorage.setItem(_DELIVERY_SCRIPT_SYSTEM_VERSION_, resp.data.systemVersion);
+				window.sessionStorage.setItem(_DELIVERY_DEVICE_MENU_JSON_STR_, resp.data.groupDeviceMenuJsonStr);
+				window.sessionStorage.setItem(_DELIVERY_VAR_KEY_, resp.data.actionScriptVariable);
+				
+				initStepPanel(3);
+				
+				STEP_NUM = 3;
+				initStepSection();
+				initStepBtn();
+				initStepImg();
+				initStepModalInput();
+				
+				/* **************************************************************************
+				 * 派送Modal開啟 >> 紀錄腳本ID、代碼、名稱
+				 * **************************************************************************/
+				window.sessionStorage.setItem(_DELIVERY_SCRIPT_INFO_ID_, scriptInfoId);
+				window.sessionStorage.setItem(_DELIVERY_SCRIPT_CODE_, resp.data.scriptCode);
+				window.sessionStorage.setItem(_DELIVERY_SCRIPT_NAME_, resp.data.scriptName);
+				
+				$('#stepModal').modal({
+					backdrop : 'static'
+				});
+				
+			} else {
+				alert(resp.message);
+			}
+		},
+		error : function(xhr, ajaxOptions, thrownError) {
+			ajaxErrorHandler();
+		},
+	});
+}
+
 function showDeliveryPanel() {
 	if ($(':radio:checked').length == 0) {
 		alert("請先選擇腳本!!");
@@ -828,14 +883,14 @@ function showFullScript(jObj) {
 function findData(from) {
 	$('#queryFrom').val(from);
 	
-	if (typeof resutTable !== "undefined") {
+	if (typeof resultTable !== "undefined") {
 		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $('#resutTable').DataTable(
+		resultTable = $('#resultTable').DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -906,6 +961,13 @@ function findData(from) {
 				
 				bindTrEvent();
 				initCheckedItems();
+				
+				if (typeof findBlockedIpRecordData === 'function') {
+					findBlockedIpRecordData();
+					bindTrEventOnlyRadio();
+				} else {
+					bindTrEvent();
+				}
 			},
 			"columns" : [
 				{},{},
@@ -926,7 +988,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="chkbox" name="chkbox" onclick="changeTrBgColor(this)" value='+row.scriptInfoId+'>';
+								 var html = '<input type="radio" id="radioBox" name="radioBox" onclick="changeTrBgColor(this)" value='+row.scriptInfoId+'>';
 								 return html;
 							 }
 				},

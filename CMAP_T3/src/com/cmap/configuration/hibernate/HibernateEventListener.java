@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitDeleteEventListener;
 import org.hibernate.event.spi.PostCommitInsertEventListener;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.cmap.Constants;
+import com.cmap.Env;
 import com.cmap.annotation.Log;
 import com.cmap.dao.impl.BaseDaoHibernate;
 import com.cmap.model.ProvisionLogDetail;
@@ -135,19 +137,21 @@ public class HibernateEventListener extends BaseDaoHibernate implements PostComm
 	}
 
 	public void saveLog(Session session, String tableName, Serializable targetId, StringBuffer des, String updateBy){
-		UserOperationLog entity = new UserOperationLog();
-		entity.setLogId(UUID.randomUUID().toString());
-		entity.setUserName(updateBy);
-		entity.setTableName(tableName);
-		entity.setTargetId(targetId.toString());
-		entity.setDescription(des.toString());
-		entity.setOperateTime(new Timestamp((new Date()).getTime()));
+		if (StringUtils.equals(Env.ENABLE_LOG_USER_OPERATIONS, Constants.DATA_Y)) {
+			UserOperationLog entity = new UserOperationLog();
+			entity.setLogId(UUID.randomUUID().toString());
+			entity.setUserName(updateBy);
+			entity.setTableName(tableName);
+			entity.setTargetId(targetId.toString());
+			entity.setDescription(des.toString());
+			entity.setOperateTime(new Timestamp((new Date()).getTime()));
 
-		Session logSession = session.getSessionFactory().openSession(); //重新打开一个新的Hibernate session，并在使用完进行关闭，不可使用原session。
-		logSession.beginTransaction();
-		logSession.save(entity);
-		logSession.getTransaction().commit();
-		logSession.close();
+			Session logSession = session.getSessionFactory().openSession(); //重新打开一个新的Hibernate session，并在使用完进行关闭，不可使用原session。
+			logSession.beginTransaction();
+			logSession.save(entity);
+			logSession.getTransaction().commit();
+			logSession.close();
+		}
 	}
 
 	/**

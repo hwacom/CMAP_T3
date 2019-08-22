@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.cmap.AppResponse;
 import com.cmap.Constants;
 import com.cmap.DatatableResponse;
 import com.cmap.Env;
@@ -63,6 +61,8 @@ public class NetFlowController extends BaseController {
 
 			model.addAttribute("userInfo", SecurityUtil.getSecurityUser().getUsername());
 			model.addAttribute("timeout", Env.TIMEOUT_4_NET_FLOW_QUERY);
+
+			model.addAttribute("pageLength", Env.NET_FLOW_PAGE_LENGTH);
 		}
 	}
 
@@ -105,8 +105,27 @@ public class NetFlowController extends BaseController {
 //			tableTitleField.add("Group_Id");
 			tableTitleField.addAll(dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_TARGET));
 
-			if (tableTitleField != null && !tableTitleField.isEmpty()) {
-				retVal = (orderColIdx < tableTitleField.size()) ? tableTitleField.get(orderColIdx) : retVal;
+			List<String> newTableTitleField = new ArrayList<>();
+			for (String columnName : tableTitleField) {
+			    String newName = null;
+			    switch (columnName) {
+			        case "Now":
+			            newName = "Now_Time";
+			            break;
+			        case "From_Date_Time":
+			            newName = "From_Time";
+                        break;
+			        case "To_Date_Time":
+			            newName = "To_Time";
+                        break;
+                    default:
+                        newName = columnName;
+                        break;
+			    }
+			    newTableTitleField.add(newName);
+			}
+			if (newTableTitleField != null && !newTableTitleField.isEmpty()) {
+				retVal = (orderColIdx < newTableTitleField.size()) ? newTableTitleField.get(orderColIdx) : retVal;
 			}
 
 		} catch (ServiceLayerException e) {
@@ -115,6 +134,176 @@ public class NetFlowController extends BaseController {
 
 		return retVal;
 	}
+
+	/**
+	 * 取得查詢條件下總流量
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param queryGroup
+	 * @param querySourceIp
+	 * @param queryDestinationIp
+	 * @param querySenderIp
+	 * @param querySourcePort
+	 * @param queryDestinationPort
+	 * @param queryMac
+	 * @param queryDateBegin
+	 * @param queryDateEnd
+	 * @param queryTimeBegin
+	 * @param queryTimeEnd
+	 * @param searchValue
+	 * @return
+	 */
+	@RequestMapping(value = "getTotalTraffic.json", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getTotalTraffic(
+            Model model, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam(name="queryGroup", required=true, defaultValue="") String queryGroup,
+            @RequestParam(name="querySourceIp", required=false, defaultValue="") String querySourceIp,
+            @RequestParam(name="queryDestinationIp", required=false, defaultValue="") String queryDestinationIp,
+            @RequestParam(name="querySenderIp", required=false, defaultValue="") String querySenderIp,
+            @RequestParam(name="querySourcePort", required=false, defaultValue="") String querySourcePort,
+            @RequestParam(name="queryDestinationPort", required=false, defaultValue="") String queryDestinationPort,
+            @RequestParam(name="queryMac", required=false, defaultValue="") String queryMac,
+            @RequestParam(name="queryDateBegin", required=true, defaultValue="") String queryDateBegin,
+            @RequestParam(name="queryDateEnd", required=false, defaultValue="") String queryDateEnd,
+            @RequestParam(name="queryTimeBegin", required=true, defaultValue="") String queryTimeBegin,
+            @RequestParam(name="queryTimeEnd", required=false, defaultValue="") String queryTimeEnd,
+            @RequestParam(name="searchValue", required=false, defaultValue="") String searchValue) {
+
+	    String retVal = "N/A";
+	    NetFlowVO nfVO;
+	    try {
+	        List<String> targetFieldList = new ArrayList<>();
+            targetFieldList.add("Group_Id");
+            targetFieldList.addAll(dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_TARGET));
+
+            nfVO = new NetFlowVO();
+            nfVO.setQueryGroupId(queryGroup);
+            nfVO.setQuerySourceIp(querySourceIp);
+            nfVO.setQuerySourcePort(querySourcePort);
+            nfVO.setQueryDestinationIp(queryDestinationIp);
+            nfVO.setQueryDestinationPort(queryDestinationPort);
+            nfVO.setQuerySenderIp(querySenderIp);
+            nfVO.setQueryDateBegin(queryDateBegin);
+            nfVO.setQueryTimeBegin(queryTimeBegin);
+            nfVO.setQueryTimeEnd(queryTimeEnd);
+            nfVO.setQueryDateStr(queryDateBegin.replace("-", ""));
+            nfVO.setQueryTimeBeginStr(queryTimeBegin.replace(":", ""));
+            nfVO.setQueryTimeEndStr(queryTimeEnd.replace(":", ""));
+            nfVO.setSearchValue(searchValue);
+
+            String storeMethod = dataPollerService.getStoreMethodByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
+
+            if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_FILE)) {
+                /*
+                 * Option 1. 走 FILE 模式查詢
+                 */
+
+            } else if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_DB)) {
+                /*
+                 * Option 2. 走 DB 模式查詢
+                 */
+                retVal = netFlowService.getTotalTraffic(nfVO, targetFieldList);
+            }
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "SUCCESS");
+            app.putData(Constants.APP_DATA_KEY_TTL_TRAFFIC, retVal);
+            return app;
+
+	    } catch (Exception e) {
+	        log.error(e.toString(), e);
+
+	        AppResponse app = new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "ERROR");
+            app.putData(Constants.APP_DATA_KEY_TTL_TRAFFIC, retVal);
+            return app;
+	    }
+	}
+
+	/**
+	 * 取得查詢條件下總筆數
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param queryGroup
+	 * @param querySourceIp
+	 * @param queryDestinationIp
+	 * @param querySenderIp
+	 * @param querySourcePort
+	 * @param queryDestinationPort
+	 * @param queryMac
+	 * @param queryDateBegin
+	 * @param queryDateEnd
+	 * @param queryTimeBegin
+	 * @param queryTimeEnd
+	 * @param searchValue
+	 * @return
+	 */
+	@RequestMapping(value = "getTotalFilteredCount.json", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getTotalFilteredCount(
+            Model model, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam(name="queryGroup", required=true, defaultValue="") String queryGroup,
+            @RequestParam(name="querySourceIp", required=false, defaultValue="") String querySourceIp,
+            @RequestParam(name="queryDestinationIp", required=false, defaultValue="") String queryDestinationIp,
+            @RequestParam(name="querySenderIp", required=false, defaultValue="") String querySenderIp,
+            @RequestParam(name="querySourcePort", required=false, defaultValue="") String querySourcePort,
+            @RequestParam(name="queryDestinationPort", required=false, defaultValue="") String queryDestinationPort,
+            @RequestParam(name="queryMac", required=false, defaultValue="") String queryMac,
+            @RequestParam(name="queryDateBegin", required=true, defaultValue="") String queryDateBegin,
+            @RequestParam(name="queryDateEnd", required=false, defaultValue="") String queryDateEnd,
+            @RequestParam(name="queryTimeBegin", required=true, defaultValue="") String queryTimeBegin,
+            @RequestParam(name="queryTimeEnd", required=false, defaultValue="") String queryTimeEnd,
+            @RequestParam(name="searchValue", required=false, defaultValue="") String searchValue) {
+
+	    String retVal = "N/A";
+	    long filteredTotal = 0;
+        NetFlowVO nfVO;
+        try {
+            List<String> targetFieldList = new ArrayList<>();
+            targetFieldList.add("Group_Id");
+            targetFieldList.addAll(dataPollerService.getFieldName(Env.SETTING_ID_OF_NET_FLOW, DataPollerService.FIELD_TYPE_TARGET));
+
+            nfVO = new NetFlowVO();
+            nfVO.setQueryGroupId(queryGroup);
+            nfVO.setQuerySourceIp(querySourceIp);
+            nfVO.setQuerySourcePort(querySourcePort);
+            nfVO.setQueryDestinationIp(queryDestinationIp);
+            nfVO.setQueryDestinationPort(queryDestinationPort);
+            nfVO.setQuerySenderIp(querySenderIp);
+            nfVO.setQueryDateBegin(queryDateBegin);
+            nfVO.setQueryTimeBegin(queryTimeBegin);
+            nfVO.setQueryTimeEnd(queryTimeEnd);
+            nfVO.setQueryDateStr(queryDateBegin.replace("-", ""));
+            nfVO.setQueryTimeBeginStr(queryTimeBegin.replace(":", ""));
+            nfVO.setQueryTimeEndStr(queryTimeEnd.replace(":", ""));
+            nfVO.setSearchValue(searchValue);
+
+            String storeMethod = dataPollerService.getStoreMethodByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
+
+            if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_FILE)) {
+                /*
+                 * Option 1. 走 FILE 模式查詢
+                 */
+
+            } else if (StringUtils.equals(storeMethod, Constants.STORE_METHOD_OF_DB)) {
+                /*
+                 * Option 2. 走 DB 模式查詢
+                 */
+                filteredTotal = netFlowService.countNetFlowRecordFromDB(nfVO, targetFieldList);
+                retVal = Constants.NUMBER_FORMAT_THOUSAND_SIGN.format(filteredTotal);
+            }
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "SUCCESS");
+            app.putData(Constants.APP_DATA_KEY_FILTERED_COUNT, retVal);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_NOT_ACCEPTABLE, "ERROR");
+            app.putData(Constants.APP_DATA_KEY_FILTERED_COUNT, retVal);
+            return app;
+        }
+    }
 
 	@RequestMapping(value = "getNetFlowData.json", method = RequestMethod.POST)
 	public @ResponseBody DatatableResponse getNetFlowData(
@@ -131,13 +320,13 @@ public class NetFlowController extends BaseController {
 			@RequestParam(name="queryTimeBegin", required=true, defaultValue="") String queryTimeBegin,
 			@RequestParam(name="queryTimeEnd", required=false, defaultValue="") String queryTimeEnd,
 			@RequestParam(name="start", required=false, defaultValue="0") Integer startNum,
-			@RequestParam(name="length", required=false, defaultValue="10") Integer pageLength,
+			@RequestParam(name="length", required=false, defaultValue="100") Integer pageLength,
 			@RequestParam(name="search[value]", required=false, defaultValue="") String searchValue,
 			@RequestParam(name="order[0][column]", required=false, defaultValue="2") Integer orderColIdx,
 			@RequestParam(name="order[0][dir]", required=false, defaultValue="desc") String orderDirection) {
 
 		long total = 0;
-		long filterdTotal = 0;
+		long filteredTotal = 0;
 		String totalFlow = "";
 		List<NetFlowVO> dataList = new ArrayList<>();
 		NetFlowVO nfVO;
@@ -175,7 +364,8 @@ public class NetFlowController extends BaseController {
 			nfVO.setStartNum(startNum);
 			nfVO.setPageLength(pageLength);
 			nfVO.setSearchValue(searchValue);
-			nfVO.setOrderColumn(getOrderColumnName(orderColIdx));
+			//nfVO.setOrderColumn(getOrderColumnName(orderColIdx)); //效能issue，暫定限制僅能用From_Date_Time排序
+			nfVO.setOrderColumn("From_Time");
 			nfVO.setOrderDirection(orderDirection);
 
 			String storeMethod = dataPollerService.getStoreMethodByDataType(Constants.DATA_TYPE_OF_NET_FLOW);
@@ -186,7 +376,7 @@ public class NetFlowController extends BaseController {
 				 */
 				NetFlowVO retVO = netFlowService.findNetFlowRecordFromFile(nfVO, startNum, pageLength);
 
-				filterdTotal = retVO.getMatchedList().size();
+				filteredTotal = retVO.getMatchedList().size();
 				dataList = retVO.getMatchedList();
 				total = retVO.getTotalCount();
 
@@ -194,17 +384,20 @@ public class NetFlowController extends BaseController {
 				/*
 				 * Option 2. 走 DB 模式查詢
 				 */
-				filterdTotal = netFlowService.countNetFlowRecordFromDB(nfVO, targetFieldList);
+			    dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
 
-				if (filterdTotal != 0) {
-					dataList = netFlowService.findNetFlowRecordFromDB(nfVO, startNum, pageLength, targetFieldList);
+			    /*
+			     * Y190729, 總筆數、總流量透過另外兩個AJAX分別查詢，提升查詢效率
+				filteredTotal = netFlowService.countNetFlowRecordFromDB(nfVO, targetFieldList);
 
+				if (filteredTotal != 0) {
 					totalFlow = dataList.get(0).getTotalFlow();	// 總流量記在第一筆資料VO內
 				}
 
 				NetFlowVO newVO = new NetFlowVO();
 				newVO.setQueryGroupId(queryGroup);
 				total = netFlowService.countNetFlowRecordFromDB(newVO, targetFieldList);
+				*/
 			}
 
 		} catch (ServiceLayerException sle) {
@@ -212,6 +405,6 @@ public class NetFlowController extends BaseController {
 			log.error(e.toString(), e);
 		}
 
-		return new DatatableResponse(total, dataList, filterdTotal, null, totalFlow);
+		return new DatatableResponse(total, dataList, filteredTotal, null, totalFlow);
 	}
 }

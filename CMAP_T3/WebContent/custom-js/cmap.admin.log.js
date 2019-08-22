@@ -2,8 +2,8 @@
  * 
  */
 var isModify = false;
-var resutTable_errorLog;		//DataTable
-var resutTable_jobLog;			//DataTable
+var resultTable_errorLog;		//DataTable
+var resultTable_jobLog;			//DataTable
 var remarkShowLength = 50;		//設定欄位顯示內容最大長度
 
 $(document).ready(function() {
@@ -38,6 +38,12 @@ function viewDetail(key) {
 		type : "POST",
 		dataType : 'json',
 		async: true,
+		beforeSend : function() {
+			showProcessing();
+		},
+		complete : function() {
+			hideProcessing();
+		},
 		success : function(resp) {
 			if (resp.code == '200') {
 				$("#detailsModal").modal();
@@ -66,12 +72,12 @@ function findErrorLogData(from) {
 	$("#divErrorLog").show();
 	$("#divJobLog").hide();
 		
-	if (typeof resutTable_errorLog !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable_errorLog.ajax.reload();
+	if (typeof resultTable_errorLog !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable_errorLog.ajax.reload();
 		
 	} else {
-		resutTable_errorLog = $("#resutTable_errorLog").DataTable(
+		resultTable_errorLog = $("#resultTable_errorLog").DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -99,16 +105,20 @@ function findErrorLogData(from) {
 				"url" : _ctx + "/admin/log/getErrorLog.json",
 				"type" : "POST",
 				"data" : function ( d ) {},
+				"beforeSend" : function() {
+					showProcessing();
+				},
+				"complete" : function() {
+					hideProcessing();
+				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
 					ajaxErrorHandler();
 				}
 			},
 			"order": [[1 , "desc" ]],
 			"pageLength": 100,
-			/*
 			"initComplete": function(settings, json){
             },
-            */
 			"drawCallback" : function(settings) {
 				$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass("col-sm-12");
@@ -121,8 +131,8 @@ function findErrorLogData(from) {
 				$("div.dataTables_paginate").parent().removeClass("col-sm-12");
 				$("div.dataTables_paginate").parent().addClass("col-sm-6");
 				
-				bindTrEvent();
 				feather.replace();
+				bindTrEvent();
 			},
 			"columns" : [
 				{},
@@ -180,12 +190,12 @@ function findJobLogData(from) {
 	$("#divErrorLog").hide();
 	$("#divJobLog").show();
 		
-	if (typeof resutTable_jobLog !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable_jobLog.ajax.reload();
+	if (typeof resultTable_jobLog !== "undefined") {
+		//resultTable.clear().draw(); server-side is enabled.
+		resultTable_jobLog.ajax.reload();
 		
 	} else {
-		resutTable_jobLog = $("#resutTable_jobLog").DataTable(
+		resultTable_jobLog = $("#resultTable_jobLog").DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -206,12 +216,20 @@ function findJobLogData(from) {
 				"url" : _ctx + "/admin/log/getJobLog.json",
 				"type" : "POST",
 				"data" : function ( d ) {},
+				"beforeSend" : function() {
+					showProcessing();
+				},
+				"complete" : function() {
+					hideProcessing();
+				},
 				"error" : function(xhr, ajaxOptions, thrownError) {
 					ajaxErrorHandler();
 				}
 			},
 			"order": [[1 , "desc" ]],
 			"pageLength": 100,
+			"initComplete": function(settings, json){
+            },
 			"drawCallback" : function(settings) {
 				$.fn.dataTable.tables( { visible: true, api: true } ).columns.adjust();
 				$("div.dataTables_length").parent().removeClass("col-sm-12");

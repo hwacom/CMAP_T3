@@ -1,7 +1,7 @@
 /**
  * 
  */
-var scriptShowMaxLine = 1;
+var scriptShowMaxLine = 2;
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_script");
@@ -34,7 +34,7 @@ function showScriptContent(scriptInfoId, type) {
 		*/
 		success : function(resp) {
 			if (resp.code == '200') {
-				$('#viewScriptModal_scriptName').text(resp.data.script);
+				$('#viewScriptModal_scriptName').val(resp.data.script);
 				$('#viewScriptModal_scriptContent').html("<pre>" + resp.data.content + "</pre>");
 				
 				$('#viewScriptModal').modal('show');
@@ -82,14 +82,14 @@ function findData(from) {
 		$('#collapseExample').collapse('hide');
 	}
 	
-	if (typeof resutTable !== "undefined") {
-		resutTable.clear().draw();
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		resultTable.clear().draw();
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $('#resutTable').DataTable(
+		resultTable = $('#resultTable').DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -141,8 +141,8 @@ function findData(from) {
 				$("div.dataTables_paginate").parent().removeClass('col-sm-12');
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
 				
-				bindTrEvent();
 				initCheckedItems();
+				bindTrEvent();
 			},
 			"createdRow": function( row, data, dataIndex ) {
 				if (data.enableModify == false) {
@@ -163,7 +163,7 @@ function findData(from) {
 			"columns" : [
 				{},{},
 				{ "data" : "scriptName" },
-				{ "data" : "scriptTypeName" , "className" : "left" },
+				{ "data" : "scriptTypeName" , "className" : "center" },
 				{ "data" : "systemVersion" , "className" : "center" },
 				{},
 				{ "data" : "actionScriptRemark"},
@@ -181,7 +181,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="chkbox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.scriptTypeId+'>';
+								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.scriptTypeId+'>';
 								 return html;
 							 }
 				},

@@ -120,7 +120,6 @@ public class FtpFileUtils implements FileUtils {
 			}
 
 			ftp.changeWorkingDirectory(targetDirPath);
-
 			returnCode = ftp.getReplyCode();
 			if (returnCode == FTPReply.FILE_UNAVAILABLE) {
 				//若目標路徑目錄不存在，則依循路徑建立資料夾
@@ -230,7 +229,7 @@ public class FtpFileUtils implements FileUtils {
 			iStream = ftp.retrieveFileStream(ciVO.getFileFullName());
 
 			if (iStream == null || returnCode == FTPReply.FILE_UNAVAILABLE) {
-				throw new Exception("[FTP]下載檔案異常 >> 「" + ftp.printWorkingDirectory() + "\\" + ciVO.getFileFullName() + "」檔案不存在");
+				throw new Exception("[FTP]下載檔案異常 >> 「" + ciVO.getRemoteFileDirPath() + "/" + ciVO.getFileFullName() + "」檔案不存在");
 
 			} else {
 				fileContentList = new ArrayList<>();
@@ -358,4 +357,11 @@ public class FtpFileUtils implements FileUtils {
 		ftp.enterLocalPassiveMode();
 		return ftp.retrieveFile(fileName, fos);
 	}
+
+    @Override
+    public boolean connectAndLogin(String hostIp, Integer hostPort, String account, String password)
+            throws Exception {
+        // TODO 自動產生的方法 Stub
+        return false;
+    }
 }

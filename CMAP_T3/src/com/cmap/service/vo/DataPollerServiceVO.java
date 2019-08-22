@@ -1,5 +1,6 @@
 package com.cmap.service.vo;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	private String targetFieldType;
 	private String targetValueFormat;
 	private String voFieldName;
+
+	private File targetFile;
 
 	private String retTableName;
 	private String retOriFileName;
@@ -113,4 +116,10 @@ public class DataPollerServiceVO extends CommonServiceVO {
 	public void setSourceEntryMapList(List<Map<String, String>> sourceEntryMapList) {
 		this.sourceEntryMapList = sourceEntryMapList;
 	}
+    public File getTargetFile() {
+        return targetFile;
+    }
+    public void setTargetFile(File targetFile) {
+        this.targetFile = targetFile;
+    }
 }

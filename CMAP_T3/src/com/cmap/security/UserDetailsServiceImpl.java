@@ -1,10 +1,8 @@
 package com.cmap.security;
 
 import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.model.User;
@@ -100,7 +97,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	private boolean chkCanAccessOrNot(HttpServletRequest request, String account) {
-        return userService.checkUserCanAccess(request, Constants.DATA_STAR_SYMBOL, null, account);
+        return userService.checkUserCanAccess(request, true, Constants.DATA_STAR_SYMBOL, null, account);
 	}
 
 	public ArrayList<GrantedAuthority> getAuthorities(String... roles) {

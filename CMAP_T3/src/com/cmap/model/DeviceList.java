@@ -1,14 +1,12 @@
 package com.cmap.model;
 
 import java.sql.Timestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -47,8 +45,11 @@ public class DeviceList {
 	@Column(name = "device_ip", nullable = true)
 	private String deviceIp;
 
-	@Column(name = "system_version", nullable = true)
-	private String systemVersion;
+	@Column(name = "device_model", nullable = true)
+    private String deviceModel;
+
+	@Column(name = "device_layer", nullable = true)
+    private String deviceLayer;
 
 	@Column(name = "config_file_dir_path", nullable = false)
 	private String configFileDirPath;
@@ -81,172 +82,182 @@ public class DeviceList {
 		super();
 	}
 
-	public DeviceList(String deviceListId, String groupId, String groupName, String groupEngName, String deviceId,
-			String deviceName, String deviceEngName, String deviceIp, String systemVersion, String configFileDirPath,
-			String remoteFileDirPath, String deleteFlag, Timestamp deleteTime, String deleteBy, Timestamp createTime,
-			String createBy, Timestamp updateTime, String updateBy) {
-		super();
-		this.deviceListId = deviceListId;
-		this.groupId = groupId;
-		this.groupName = groupName;
-		this.groupEngName = groupEngName;
-		this.deviceId = deviceId;
-		this.deviceName = deviceName;
-		this.deviceEngName = deviceEngName;
-		this.deviceIp = deviceIp;
-		this.systemVersion = systemVersion;
-		this.configFileDirPath = configFileDirPath;
-		this.remoteFileDirPath = remoteFileDirPath;
-		this.deleteFlag = deleteFlag;
-		this.deleteTime = deleteTime;
-		this.deleteBy = deleteBy;
-		this.createTime = createTime;
-		this.createBy = createBy;
-		this.updateTime = updateTime;
-		this.updateBy = updateBy;
-	}
+    public DeviceList(String deviceListId, String groupId, String groupName, String groupEngName,
+            String deviceId, String deviceName, String deviceEngName, String deviceIp,
+            String deviceModel, String deviceLayer, String configFileDirPath,
+            String remoteFileDirPath, String deleteFlag, Timestamp deleteTime, String deleteBy,
+            Timestamp createTime, String createBy, Timestamp updateTime, String updateBy) {
+        super();
+        this.deviceListId = deviceListId;
+        this.groupId = groupId;
+        this.groupName = groupName;
+        this.groupEngName = groupEngName;
+        this.deviceId = deviceId;
+        this.deviceName = deviceName;
+        this.deviceEngName = deviceEngName;
+        this.deviceIp = deviceIp;
+        this.deviceModel = deviceModel;
+        this.deviceLayer = deviceLayer;
+        this.configFileDirPath = configFileDirPath;
+        this.remoteFileDirPath = remoteFileDirPath;
+        this.deleteFlag = deleteFlag;
+        this.deleteTime = deleteTime;
+        this.deleteBy = deleteBy;
+        this.createTime = createTime;
+        this.createBy = createBy;
+        this.updateTime = updateTime;
+        this.updateBy = updateBy;
+    }
 
-	public String getDeviceListId() {
-		return deviceListId;
-	}
+    public String getDeviceListId() {
+        return deviceListId;
+    }
 
-	public void setDeviceListId(String deviceListId) {
-		this.deviceListId = deviceListId;
-	}
+    public void setDeviceListId(String deviceListId) {
+        this.deviceListId = deviceListId;
+    }
 
-	public String getGroupId() {
-		return groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
-	public String getGroupName() {
-		return groupName;
-	}
+    public String getGroupName() {
+        return groupName;
+    }
 
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 
-	public String getGroupEngName() {
-		return groupEngName;
-	}
+    public String getGroupEngName() {
+        return groupEngName;
+    }
 
-	public void setGroupEngName(String groupEngName) {
-		this.groupEngName = groupEngName;
-	}
+    public void setGroupEngName(String groupEngName) {
+        this.groupEngName = groupEngName;
+    }
 
-	public String getDeviceId() {
-		return deviceId;
-	}
+    public String getDeviceId() {
+        return deviceId;
+    }
 
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
 
-	public String getDeviceName() {
-		return deviceName;
-	}
+    public String getDeviceName() {
+        return deviceName;
+    }
 
-	public void setDeviceName(String deviceName) {
-		this.deviceName = deviceName;
-	}
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
 
-	public String getDeviceEngName() {
-		return deviceEngName;
-	}
+    public String getDeviceEngName() {
+        return deviceEngName;
+    }
 
-	public void setDeviceEngName(String deviceEngName) {
-		this.deviceEngName = deviceEngName;
-	}
+    public void setDeviceEngName(String deviceEngName) {
+        this.deviceEngName = deviceEngName;
+    }
 
-	public String getDeviceIp() {
-		return deviceIp;
-	}
+    public String getDeviceIp() {
+        return deviceIp;
+    }
 
-	public void setDeviceIp(String deviceIp) {
-		this.deviceIp = deviceIp;
-	}
+    public void setDeviceIp(String deviceIp) {
+        this.deviceIp = deviceIp;
+    }
 
-	public String getSystemVersion() {
-		return systemVersion;
-	}
+    public String getDeviceModel() {
+        return deviceModel;
+    }
 
-	public void setSystemVersion(String systemVersion) {
-		this.systemVersion = systemVersion;
-	}
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
 
-	public String getConfigFileDirPath() {
-		return configFileDirPath;
-	}
+    public String getDeviceLayer() {
+        return deviceLayer;
+    }
 
-	public void setConfigFileDirPath(String configFileDirPath) {
-		this.configFileDirPath = configFileDirPath;
-	}
+    public void setDeviceLayer(String deviceLayer) {
+        this.deviceLayer = deviceLayer;
+    }
 
-	public String getRemoteFileDirPath() {
-		return remoteFileDirPath;
-	}
+    public String getConfigFileDirPath() {
+        return configFileDirPath;
+    }
 
-	public void setRemoteFileDirPath(String remoteFileDirPath) {
-		this.remoteFileDirPath = remoteFileDirPath;
-	}
+    public void setConfigFileDirPath(String configFileDirPath) {
+        this.configFileDirPath = configFileDirPath;
+    }
 
-	public String getDeleteFlag() {
-		return deleteFlag;
-	}
+    public String getRemoteFileDirPath() {
+        return remoteFileDirPath;
+    }
 
-	public void setDeleteFlag(String deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
+    public void setRemoteFileDirPath(String remoteFileDirPath) {
+        this.remoteFileDirPath = remoteFileDirPath;
+    }
 
-	public Timestamp getDeleteTime() {
-		return deleteTime;
-	}
+    public String getDeleteFlag() {
+        return deleteFlag;
+    }
 
-	public void setDeleteTime(Timestamp deleteTime) {
-		this.deleteTime = deleteTime;
-	}
+    public void setDeleteFlag(String deleteFlag) {
+        this.deleteFlag = deleteFlag;
+    }
 
-	public String getDeleteBy() {
-		return deleteBy;
-	}
+    public Timestamp getDeleteTime() {
+        return deleteTime;
+    }
 
-	public void setDeleteBy(String deleteBy) {
-		this.deleteBy = deleteBy;
-	}
+    public void setDeleteTime(Timestamp deleteTime) {
+        this.deleteTime = deleteTime;
+    }
 
-	public Timestamp getCreateTime() {
-		return createTime;
-	}
+    public String getDeleteBy() {
+        return deleteBy;
+    }
 
-	public void setCreateTime(Timestamp createTime) {
-		this.createTime = createTime;
-	}
+    public void setDeleteBy(String deleteBy) {
+        this.deleteBy = deleteBy;
+    }
 
-	public String getCreateBy() {
-		return createBy;
-	}
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
 
-	public void setCreateBy(String createBy) {
-		this.createBy = createBy;
-	}
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
 
-	public Timestamp getUpdateTime() {
-		return updateTime;
-	}
+    public String getCreateBy() {
+        return createBy;
+    }
 
-	public void setUpdateTime(Timestamp updateTime) {
-		this.updateTime = updateTime;
-	}
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
 
-	public String getUpdateBy() {
-		return updateBy;
-	}
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
 
-	public void setUpdateBy(String updateBy) {
-		this.updateBy = updateBy;
-	}
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
 }

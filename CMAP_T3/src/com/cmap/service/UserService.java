@@ -1,7 +1,6 @@
 package com.cmap.service;
 
 import javax.servlet.http.HttpServletRequest;
-
 import com.cmap.exception.ServiceLayerException;
 
 public interface UserService {
@@ -13,7 +12,7 @@ public interface UserService {
 	 * @return
 	 * @throws ServiceLayerException
 	 */
-	boolean checkUserCanAccess(HttpServletRequest request, String belongGroup, String[] roles, String account);
+	boolean checkUserCanAccess(HttpServletRequest request, boolean firstRound, String belongGroup, String[] roles, String account);
 
 	/**
 	 * 設定使用者可使用功能

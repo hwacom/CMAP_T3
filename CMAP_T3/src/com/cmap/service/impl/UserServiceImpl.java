@@ -1,15 +1,12 @@
 package com.cmap.service.impl;
 
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.annotation.Log;
 import com.cmap.comm.BaseAuthentication;
@@ -28,10 +25,10 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Override
-	public boolean checkUserCanAccess(HttpServletRequest request, String belongGroup, String[] roles, String account) {
+	public boolean checkUserCanAccess(HttpServletRequest request, boolean firstRound, String belongGroup, String[] roles, String account) {
 		boolean canAccess = false;
 		try {
-			List<UserRightSetting> entities = userDAO.findUserRightSetting(belongGroup, roles, account);
+		    List<UserRightSetting> entities = userDAO.findUserRightSetting(belongGroup, roles, account);
 
 			if (entities == null || (entities != null && entities.isEmpty())) {
 
@@ -47,7 +44,7 @@ public class UserServiceImpl implements UserService {
 						belongGroup = Constants.DATA_STAR_SYMBOL;
 					}
 
-					return checkUserCanAccess(request, belongGroup, roles, account);
+					return checkUserCanAccess(request, false, belongGroup, roles, account);
 				}
 			} else {
 				// 可能符合多個腳色權限設定，逐筆掃描
@@ -57,7 +54,11 @@ public class UserServiceImpl implements UserService {
 					if (StringUtils.equals(setting.getIsAdmin(), Constants.DATA_Y)) {
 						// ADMIN
 						canAccess = StringUtils.equals(denyAccess, Constants.DATA_Y) ? false : true;
-						BaseAuthentication.setAdminRole2Session(request);
+
+						if (canAccess) {
+						    BaseAuthentication.setAdminRole2Session(request);
+						}
+
 						break;
 					}
 					if (StringUtils.equals(denyAccess, Constants.DATA_N)) {

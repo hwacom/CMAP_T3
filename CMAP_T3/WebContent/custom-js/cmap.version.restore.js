@@ -1,7 +1,7 @@
 /**
  * 
  */
-var resutTable;
+var resultTable;
 
 $(document).ready(function() {
 	initMenuStatus("toggleMenu_cm", "toggleMenu_cm_items", "cm_restore");
@@ -63,12 +63,12 @@ function showRestorePanel() {
 			},
 			success : function(resp) {
 				if (resp.code == '200') {
-					$("#viewVersionModal_versionSelect option").remove();
+					$("#viewScriptModal_versionSelect option").remove();
 					
 					var obj = resp.data.versionList;
 					var idx = 1;
 					$.each(obj, function(key, vo) {
-						$("#viewVersionModal_versionSelect")
+						$("#viewScriptModal_versionSelect")
 							.append($("<option></option>")
 											.attr("value", vo.deviceListId+"@~"+vo.versionId)
 											.text("(" + idx + ") " + vo.configVersion));
@@ -89,7 +89,7 @@ function showRestorePanel() {
 }
 
 function doRestore() {
-	var selectVal = $('#viewVersionModal_versionSelect').val();
+	var selectVal = $('#viewScriptModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -100,7 +100,7 @@ function doRestore() {
 }
 
 function doRestoreGo() {
-	var selectVal = $('#viewVersionModal_versionSelect').val();
+	var selectVal = $('#viewScriptModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -142,7 +142,7 @@ function doRestoreGo() {
 }
 
 function pressViewConfig() {
-	var selectVal = $('#viewVersionModal_versionSelect').val();
+	var selectVal = $('#viewScriptModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要預覽的版本號");
@@ -162,14 +162,14 @@ function findData(from) {
 		$('#collapseExample').collapse('hide');
 	}
 	
-	if (typeof resutTable !== "undefined") {
-		//resutTable.clear().draw(); server-side is enabled.
-		resutTable.ajax.reload();
+	if (typeof resultTable !== "undefined") {
+		resultTable.clear().draw();
+		resultTable.ajax.reload();
 		
 	} else {
 		$(".myTableSection").show();
 		
-		resutTable = $('#resutTable').DataTable(
+		resultTable = $('#resultTable').DataTable(
 		{
 			"autoWidth" 	: true,
 			"paging" 		: true,
@@ -194,12 +194,12 @@ function findData(from) {
 					d.maxCountByDevice = true;
 					
 					if ($('#queryFrom').val() == 'WEB') {
-						d.queryGroup = $("#queryGroup1").val(),
-						d.queryDevice = $("#queryDevice1").val()
+						d.queryGroup1 = $("#queryGroup1").val(),
+						d.queryDevice1 = $("#queryDevice1").val()
 					
 					} else if ($('#queryFrom').val() == 'MOBILE') {
-						d.queryGroup = $("#queryGroup1_mobile").val(),
-						d.queryDevice = $("#queryDevice1_mobile").val()
+						d.queryGroup1 = $("#queryGroup1_mobile").val(),
+						d.queryDevice1 = $("#queryDevice1_mobile").val()
 					}
 					
 					return d;
@@ -225,8 +225,8 @@ function findData(from) {
 				$("div.dataTables_paginate").parent().removeClass('col-sm-12');
 				$("div.dataTables_paginate").parent().addClass('col-sm-6');
 				
-				bindTrEvent();
 				initCheckedItems();
+				bindTrEvent();
 			},
 			"columns" : [
 				{},{},
@@ -241,7 +241,7 @@ function findData(from) {
 					"searchable": false,
 					"orderable": false,
 					"render" : function(data, type, row) {
-								 var html = '<input type="radio" id="chkbox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.deviceListId+'>';
+								 var html = '<input type="radio" id="radiobox" name="radiobox" onclick="resetTrBgColor();changeTrBgColor(this)" value='+row.deviceListId+'>';
 								 return html;
 							 }
 				},

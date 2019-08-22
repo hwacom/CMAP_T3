@@ -2,14 +2,12 @@ package com.cmap.dao.impl;
 
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.vo.DeviceDAOVO;
@@ -34,9 +32,24 @@ public class DeviceDAOImpl extends BaseDaoHibernate implements DeviceDAO {
 	    Query<?> q = session.createQuery(sb.toString());
 	    q.setParameter("deviceListId", deviceListId);
 
-	    List<DeviceList> returnList = (List<DeviceList>)q.list();
-		return returnList.isEmpty() ? null : returnList.get(0);
+		return (DeviceList)q.uniqueResult();
 	}
+
+	@Override
+    public DeviceList findDeviceListByDeviceIp(String deviceIp) {
+	    StringBuffer sb = new StringBuffer();
+        sb.append(" from DeviceList dl ")
+          .append(" where 1=1 ")
+          .append(" and dl.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
+          .append(" and dl.deviceIp = :deviceIp ");
+
+        Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+        Query<?> q = session.createQuery(sb.toString());
+        q.setParameter("deviceIp", deviceIp);
+
+        List<DeviceList> returnList = (List<DeviceList>)q.list();
+        return returnList.isEmpty() ? null : returnList.get(0);
+    }
 
 	@Override
 	public DeviceList findDeviceListByGroupAndDeviceId(String groupId, String deviceId) {
@@ -129,7 +142,7 @@ public class DeviceDAOImpl extends BaseDaoHibernate implements DeviceDAO {
 			  .append("       or ")
 			  .append("       dl.DEVICE_NAME like :searchValue ")
 			  .append("       or ")
-			  .append("       dl.SYSTEM_VERSION like :searchValue ")
+			  .append("       dl.DEVICE_MODEL like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.CONFIG_VERSION like :searchValue ")
 			  .append("     ) ");
@@ -214,7 +227,7 @@ public class DeviceDAOImpl extends BaseDaoHibernate implements DeviceDAO {
 			  .append("       or ")
 			  .append("       dl.DEVICE_NAME like :searchValue ")
 			  .append("       or ")
-			  .append("       dl.SYSTEM_VERSION like :searchValue ")
+			  .append("       dl.DEVICE_MODEL like :searchValue ")
 			  .append("       or ")
 			  .append("       cvi.CONFIG_VERSION like :searchValue ")
 			  .append("     ) ");
@@ -492,4 +505,46 @@ public class DeviceDAOImpl extends BaseDaoHibernate implements DeviceDAO {
 		List<DeviceLoginInfo> returnList = (List<DeviceLoginInfo>)q.list();
 		return returnList.isEmpty() ? null : returnList.get(0);
 	}
+
+    @Override
+    public List<DeviceList> findDeviceListByDAOVO(DeviceDAOVO dlDAOVO) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" from DeviceList dl ")
+          .append(" where 1=1 ")
+          .append(" and dl.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ");
+        if (StringUtils.isNotBlank(dlDAOVO.getGroupId())) {
+            sb.append(" and dl.groupId = :groupId ");
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceId())) {
+            sb.append(" and dl.deviceId = :deviceId ");
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceIp())) {
+            sb.append(" and dl.deviceIp = :deviceIp ");
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceModel())) {
+            sb.append(" and dl.deviceModel = :deviceModel ");
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceLayer())) {
+            sb.append(" and dl.deviceLayer = :deviceLayer ");
+        }
+
+        Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
+        Query<?> q = session.createQuery(sb.toString());
+        if (StringUtils.isNotBlank(dlDAOVO.getGroupId())) {
+            q.setParameter("groupId", dlDAOVO.getGroupId());
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceId())) {
+            q.setParameter("deviceId", dlDAOVO.getDeviceId());
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceIp())) {
+            q.setParameter("deviceIp", dlDAOVO.getDeviceIp());
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceModel())) {
+            q.setParameter("deviceModel", dlDAOVO.getDeviceModel());
+        }
+        if (StringUtils.isNotBlank(dlDAOVO.getDeviceLayer())) {
+            q.setParameter("deviceLayer", dlDAOVO.getDeviceLayer());
+        }
+        return (List<DeviceList>)q.list();
+    }
 }

@@ -26,7 +26,10 @@ public class JobServiceVO extends CommonServiceVO {
 	private String inputFtpPassword;
 	private List<String> inputSysCheckSql = new ArrayList<>();
 	private String inputDataPollerSettingId;
+	private String inputDataPollerOperatorSettingId;
 	private String inputLocalFileOperationSettingId;
+	private String inputMailSenderSettingId;
+	private String inputIpMacPortMappingPollerGroupId;
 
 	private List<JobServiceVO> jobKeySet = new ArrayList<>();
 	private String jobKeyName;
@@ -45,6 +48,8 @@ public class JobServiceVO extends CommonServiceVO {
 	private String sysCheckSqlStr;
 	private String dataPollerSettingId;
 	private String localFileOperationSettingId;
+	private String mailSenderSettingId;
+	private String ipMacPortMappingPollerGroupId;
 
 	private String schedType;
 	private String schedTypeName;
@@ -309,10 +314,12 @@ public class JobServiceVO extends CommonServiceVO {
 	public void setJobGroup(String jobGroup) {
 		this.jobGroup = jobGroup;
 	}
-	public String getDescription() {
+	@Override
+    public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
+	@Override
+    public void setDescription(String description) {
 		this.description = description;
 	}
 	public String get_nextFireTime() {
@@ -432,5 +439,35 @@ public class JobServiceVO extends CommonServiceVO {
 	}
 	public void setLocalFileOperationSettingId(String localFileOperationSettingId) {
 		this.localFileOperationSettingId = localFileOperationSettingId;
+	}
+    public String getInputDataPollerOperatorSettingId() {
+        return inputDataPollerOperatorSettingId;
+    }
+    public void setInputDataPollerOperatorSettingId(String inputDataPollerOperatorSettingId) {
+        this.inputDataPollerOperatorSettingId = inputDataPollerOperatorSettingId;
+    }
+    public String getInputMailSenderSettingId() {
+        return inputMailSenderSettingId;
+    }
+    public void setInputMailSenderSettingId(String inputMailSenderSettingId) {
+        this.inputMailSenderSettingId = inputMailSenderSettingId;
+    }
+    public String getMailSenderSettingId() {
+        return mailSenderSettingId;
+    }
+    public void setMailSenderSettingId(String mailSenderSettingId) {
+        this.mailSenderSettingId = mailSenderSettingId;
+    }
+	public String getInputIpMacPortMappingPollerGroupId() {
+		return inputIpMacPortMappingPollerGroupId;
+	}
+	public void setInputIpMacPortMappingPollerGroupId(String inputIpMacPortMappingPollerGroupId) {
+		this.inputIpMacPortMappingPollerGroupId = inputIpMacPortMappingPollerGroupId;
+	}
+	public String getIpMacPortMappingPollerGroupId() {
+		return ipMacPortMappingPollerGroupId;
+	}
+	public void setIpMacPortMappingPollerGroupId(String ipMacPortMappingPollerGroupId) {
+		this.ipMacPortMappingPollerGroupId = ipMacPortMappingPollerGroupId;
 	}
 }

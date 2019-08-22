@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
-
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,10 +35,10 @@ public class ConnectionFactory {
 					}
 
 					dataSource = new BasicDataSource();
-					dataSource.setDriverClassName(prop.getProperty("jdbc.driverClassName"));
-					dataSource.setUrl(prop.getProperty("jdbc.url"));
-					dataSource.setUsername(prop.getProperty("jdbc.username"));
-					dataSource.setPassword(prop.getProperty("jdbc.password"));
+					dataSource.setDriverClassName(prop.getProperty("primary.jdbc.driverClassName"));
+					dataSource.setUrl(prop.getProperty("primary.jdbc.url"));
+					dataSource.setUsername(prop.getProperty("primary.jdbc.username"));
+					dataSource.setPassword(prop.getProperty("primary.jdbc.password"));
 
 				} catch (Exception e) {
 					throw e;

@@ -1,14 +1,12 @@
 package com.cmap.dao.impl;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.cmap.Constants;
 import com.cmap.Env;
 import com.cmap.dao.ScriptInfoDAO;
@@ -50,7 +48,7 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 			  .append("       or ")
 			  .append("       si.scriptType.scriptTypeName like :searchValue ")
 			  .append("       or ")
-			  .append("       si.systemVersion like :searchValue ")
+			  .append("       si.deviceModel like :searchValue ")
 			  .append("       or ")
 			  .append("       si.actionScript like :searchValue ")
 			  .append("       or ")
@@ -123,7 +121,7 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 			  .append("       or ")
 			  .append("       si.scriptType.scriptTypeName like :searchValue ")
 			  .append("       or ")
-			  .append("       si.systemVersion like :searchValue ")
+			  .append("       si.deviceModel like :searchValue ")
 			  .append("       or ")
 			  .append("       si.actionScript like :searchValue ")
 			  .append("       or ")
@@ -206,7 +204,7 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 	}
 
 	@Override
-	public ScriptInfo findDefaultScriptInfoByScriptTypeAndSystemVersion(String scriptType, String systemVersion) throws ServiceLayerException {
+	public ScriptInfo findDefaultScriptInfoByScriptTypeAndSystemVersion(String scriptType, String deviceModel) throws ServiceLayerException {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" select si ")
 		  .append(" from ScriptInfo si ")
@@ -216,12 +214,12 @@ public class ScriptInfoDAOImpl extends BaseDaoHibernate implements ScriptInfoDAO
 		  .append(" and si.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
 		  .append(" and sdm.deleteFlag = '").append(Constants.DATA_MARK_NOT_DELETE).append("' ")
 		  .append(" and sdm.scriptType = :scriptType ")
-		  .append(" and sdm.systemVersion = :systemVersion ");
+		  .append(" and sdm.deviceModel = :deviceModel ");
 
 		Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 		Query<?> q = session.createQuery(sb.toString());
 		q.setParameter("scriptType", scriptType);
-		q.setParameter("systemVersion", systemVersion);
+		q.setParameter("deviceModel", deviceModel);
 
 		List<ScriptInfo> retList = (List<ScriptInfo>)q.list();
 		return (retList != null && !retList.isEmpty()) ? retList.get(0) : null;

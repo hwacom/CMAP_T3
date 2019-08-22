@@ -14,10 +14,10 @@ $(document).ready(function() {
 function findData(from) {
 	$(".myTableSection").show();
 	
-	if (typeof resutTable !== "undefined") {
+	if (typeof resultTable !== "undefined") {
 		
 	} else {
-		resutTable = $('#resutTable').DataTable({
+		resultTable = $('#resultTable').DataTable({
 			"autoWidth" 	: true,
 			"paging" 		: true,
 			"bFilter" 		: true,

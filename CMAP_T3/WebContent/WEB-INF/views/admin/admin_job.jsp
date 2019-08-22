@@ -75,7 +75,7 @@
 	<!-- 查詢結果TABLE區塊 -->
 	<div class="row">
 	  <div class="col-12 myTableSection" style="display:none;">
-		<table id="resutTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
+		<table id="resultTable" class="dataTable myTable table-striped table-hover table-sm table-responsive-sm nowrap" style="width:100%;">
 		  <thead class="center">
 		    <tr>
 		      <th scope="col" nowrap="nowrap"><spring:message code="action" />&nbsp;<input type="checkbox" id="checkAll" name="checkAll" /></th>
@@ -287,6 +287,34 @@
 	            </div>
 	            <!-- [END]本地檔案操作 -->
 	            
+	            <!-- MAIL Sender -->
+	            <div id="sec_mailSender" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputDataPollerNames" class="col-12 col-form-label"><span style="color:yellow">*** Mail Sender 參數設定 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputMailSenderSettingId" class="col-2 col-form-label">Setting IDs<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-10">
+		            		<input type="text" class="form-control form-control-sm" id="inputMailSenderSettingId" name="inputMailSenderSettingId" placeholder="多組ID以「,」區隔；區間以「ID1~ID2」表示"></input>
+		                </div>
+		            </div>
+	            </div>
+	            <!-- [END]MAIL Sender -->
+	            
+	            <!-- IP/MAC/Port Poller -->
+	            <div id="sec_ipMacPortMappingPoller" style="display: none">
+	            	<div class="form-group row">
+		              	<label for="inputDataPollerNames" class="col-12 col-form-label"><span style="color:yellow">*** IP/MAC/Port Poller 參數設定 ***</span></label>
+		            </div>
+		            <div class="form-group row">
+		            	<label for="inputIpMacPortMappingPollerGroupId" class="col-2 col-form-label">Group IDs<span class="pull-right" style="color: red;">＊ </span></label>
+		            	<div class="col-10">
+		            		<input type="text" class="form-control form-control-sm" id="inputIpMacPortMappingPollerGroupId" name="inputIpMacPortMappingPollerGroupId" placeholder="多組ID以「,」區隔；區間以「ID1~ID2」表示"></input>
+		                </div>
+		            </div>
+	            </div>
+	            <!-- [END]IP/MAC/Port Poller -->
+	            
 	            <input type="hidden" id="jobKeyName" name="jobKeyName">
 	            <input type="hidden" id="jobKeyGroup" name="jobKeyGroup">
 	            
@@ -340,20 +368,20 @@
        	  	<!-- 組態檔備份 -->
        	  	<div id="sec_detail_backupConfig" style="display: none">
        	  		<div class="form-group row">
-	            	<label for="viewDetailConfigType" class="col-2 col-form-label">Config_Type:</label>
-	            	<div class="col-10">
+	            	<label for="viewDetailConfigType" class="col-3 col-form-label">Config_Type:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailConfigType" readonly>
 	            	</div>
 	            </div>     
 	            <div class="form-group row">
-	            	<label for="viewDetailGroupIds" class="col-2 col-form-label">Group_ID:</label>
-	            	<div class="col-10" style="padding-left: 7px;">
+	            	<label for="viewDetailGroupIds" class="col-3 col-form-label">Group_ID:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
 	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewDetailGroupIds" style="height: 120px;" readonly></textarea>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="viewDetailDeviceIds" class="col-2 col-form-label">Device_ID:</label>
-	            	<div class="col-10" style="padding-left: 7px;">
+	                <label for="viewDetailDeviceIds" class="col-3 col-form-label">Device_ID:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
 	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewDetailDeviceIds" style="height: 120px;" readonly></textarea>
 	                </div>
 	            </div>
@@ -363,38 +391,38 @@
             <!-- 組態檔異地備援(FTP) -->
             <div id="sec_detail_uploadBackupConfigFile2FTP" style="display: none">
             	<div class="form-group row">
-	            	<label for="viewDetailConfigType" class="col-2 col-form-label">Config_Type:</label>
-	            	<div class="col-10">
+	            	<label for="viewDetailConfigType" class="col-3 col-form-label">Config_Type:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailConfigType" readonly>
 	            	</div>
 	            </div>     
 	            <div class="form-group row">
-	            	<label for="viewDetailFtpName" class="col-2 col-form-label">FTP_Name:</label>
-	            	<div class="col-10">
+	            	<label for="viewDetailFtpName" class="col-3 col-form-label">FTP_Name:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailFtpName" readonly>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="viewDetailFtpHost" class="col-2 col-form-label">FTP_Host:</label>
-	            	<div class="col-10">
+	                <label for="viewDetailFtpHost" class="col-3 col-form-label">FTP_Host:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailFtpHost" readonly>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="viewDetailFtpPort" class="col-2 col-form-label">FTP_Port:</label>
-	            	<div class="col-10">
+	                <label for="viewDetailFtpPort" class="col-3 col-form-label">FTP_Port:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailFtpPort" readonly>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="viewDetailFtpAccount" class="col-2 col-form-label">Account:</label>
-	            	<div class="col-10">
+	                <label for="viewDetailFtpAccount" class="col-3 col-form-label">Account:</label>
+	            	<div class="col-9">
 	            		<input type="text" class="form-control form-control-sm w-90p" id="viewDetailFtpAccount" readonly>
 	                </div>
 	            </div>
 	            <div class="form-group row">
-	                <label for="viewDetailFtpPassword" class="col-2 col-form-label">Password:</label>
-	            	<div class="col-10">
+	                <label for="viewDetailFtpPassword" class="col-3 col-form-label">Password:</label>
+	            	<div class="col-9">
 	            		<input type="password" class="form-control form-control-sm w-90p" id="viewDetailFtpPassword" readonly>
 	                </div>
 	            </div>
@@ -404,8 +432,8 @@
             <!-- 系統檢核 -->
        	  	<div id="sec_detail_sysCheck" style="display: none">
 	            <div class="form-group row">
-	            	<label for="viewDetailSysCheckSql" class="col-2 col-form-label">SQL:</label>
-	            	<div class="col-10" style="padding-left: 7px;">
+	            	<label for="viewDetailSysCheckSql" class="col-3 col-form-label">SQL:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
 	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewDetailSysCheckSql" style="height: 120px;" readonly></textarea>
 	                </div>
 	            </div>
@@ -423,16 +451,46 @@
        	  	</div>
        	  	<!-- [END]Data Poller -->
        	  	
+       	  	<!-- IP Traffic Statistics -->
+       	  	<div id="sec_detail_ipTrafficStatistics" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewDataPollerSettingId" class="col-md-12 col-sm-12 col-form-label">無參數設定</label>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]IP Traffic Statistics -->
+       	  	
        	  	<!-- 本地檔案操作 -->
        	  	<div id="sec_detail_localFileOperation" style="display: none">
 	            <div class="form-group row">
-	            	<label for="viewLocalFileOperationSettingId" class="col-2 col-form-label">Job_File_Operation_Setting.ID:</label>
-	            	<div class="col-10" style="padding-left: 7px;">
+	            	<label for="viewLocalFileOperationSettingId" class="col-3 col-form-label">Job_File_Operation_Setting.ID:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
 	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewLocalFileOperationSettingId" style="height: 120px;" readonly></textarea>
 	                </div>
 	            </div>
        	  	</div>
        	  	<!-- [END]本地檔案操作 -->
+            
+       	  	<!-- Mail Sender -->
+       	  	<div id="sec_detail_mailSender" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewMailSenderSettingId" class="col-3 col-form-label">Mail_Sender_Setting.ID:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
+	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewMailSenderSettingId" style="height: 120px;" readonly></textarea>
+	                </div>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]Mail Sender -->
+       	  	
+       	  	<!-- IP/MAC/Port Poller -->
+       	  	<div id="sec_detail_ipMacPortMappingPoller" style="display: none">
+	            <div class="form-group row">
+	            	<label for="viewIpMacPortMappingPollerGroupId" class="col-3 col-form-label">IP/MAC/Port_Poller_Group.ID:</label>
+	            	<div class="col-9" style="padding-left: 7px;">
+	            		<textarea rows="5" class="form-control form-control-sm w-90p" id="viewIpMacPortMappingPollerGroupId" style="height: 120px;" readonly></textarea>
+	                </div>
+	            </div>
+       	  	</div>
+       	  	<!-- [END]IP/MAC/Port Poller -->
             
           </div>
 		</div>
