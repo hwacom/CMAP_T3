@@ -4,6 +4,8 @@
 var odd, timer;
 
 $(document).ready(function() {
+	initMenuStatus("toggleMenu_am", "toggleMenu_am_items", "am_failure");
+	
 	odd = 0;
 	timer = null;
 	initMapSter();

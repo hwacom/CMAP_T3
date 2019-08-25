@@ -10,6 +10,9 @@ var URI_NET_FLOW_SUMMARY = "getPrtgNetFlowSummaryUri";
 var URI_NET_FLOW_OUTPUT = "getPrtgNetFlowOutputUri";
 var URI_NET_FLOW_OUTPUT_CORE = "getPrtgNetFlowOutputCoreUri";
 var URI_DEVICE_FAILURE = "getPrtgDeviceFailureUri";
+var URI_DEVICE_FAILURE_REPORT = "getPrtgDeviceFailureReportUri";
+var URI_PERFORMANCE = "getPrtgPerformanceUri";
+var URI_PERFORMANCE_REPORT = "getPrtgPerformanceReportUri";
 var URI_ABNORMAL_TRAFFIC = "getPrtgAbnormalTrafficUri";
 var URI_EMAIL_UPDATE = "getEmailUpdateUri";
 

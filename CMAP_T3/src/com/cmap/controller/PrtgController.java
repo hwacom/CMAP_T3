@@ -508,6 +508,66 @@ public class PrtgController extends BaseController {
 		}
 	}
 
+	@RequestMapping(value = "getPrtgDeviceFailureReportUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgDeviceFailureReportUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            String deviceFailureReportMapUrl = Env.PRTG_DEFAULT_DEVICE_FAILURE_REPORT_URI;  //如果沒設定則取得預設MAP
+            deviceFailureReportMapUrl = composePrtgUrl(request, deviceFailureReportMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", deviceFailureReportMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
+	@RequestMapping(value = "getPrtgPerformanceUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgPerformanceUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            String performanceMapUrl = Env.PRTG_DEFAULT_PERFORMANCE_URI;  //如果沒設定則取得預設MAP
+            performanceMapUrl = composePrtgUrl(request, performanceMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", performanceMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
+    @RequestMapping(value = "getPrtgPerformanceReportUri", method = RequestMethod.POST)
+    public @ResponseBody AppResponse getPrtgPerformanceReportUri(
+            Model model, HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            String performanceReportMapUrl = Env.PRTG_DEFAULT_PERFORMANCE_REPORT_URI;  //如果沒設定則取得預設MAP
+            performanceReportMapUrl = composePrtgUrl(request, performanceReportMapUrl);
+
+            AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");
+            app.putData("uri", performanceReportMapUrl);
+            return app;
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+            return new AppResponse(super.getLineNumber(), e.getMessage());
+
+        } finally {
+        }
+    }
+
 	@RequestMapping(value = "getPrtgAbnormalTrafficUri", method = RequestMethod.POST)
 	public @ResponseBody AppResponse getPrtgAbnormalTrafficUri(
 			Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -665,6 +725,39 @@ public class PrtgController extends BaseController {
 		}
 		return "prtg/device_failure";
 	}
+
+	@RequestMapping(value = "/deviceFailure/report", method = RequestMethod.GET)
+    public String prtgDeviceFailureReport(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/device_failure_report";
+    }
+
+	@RequestMapping(value = "/performance", method = RequestMethod.GET)
+    public String prtgPerformance(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/performance";
+    }
+
+    @RequestMapping(value = "/performance/report", method = RequestMethod.GET)
+    public String prtgPerformanceReport(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            init(model);
+
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
+        return "prtg/performance_report";
+    }
 
 	@RequestMapping(value = "/abnormalTraffic", method = RequestMethod.GET)
 	public String prtgAbnormalTraffic(Model model, Principal principal, HttpServletRequest request, HttpServletResponse response) {

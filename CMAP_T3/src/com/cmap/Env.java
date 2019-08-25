@@ -320,6 +320,9 @@ public class Env {
 	public static String PRTG_DEFAULT_NET_FLOW_OUTPUT_URI;
 	public static String PRTG_DEFAULT_NET_FLOW_OUTPUT_CORE_URI;
 	public static String PRTG_DEFAULT_DEVICE_FAILURE_URI;
+	public static String PRTG_DEFAULT_DEVICE_FAILURE_REPORT_URI;
+	public static String PRTG_DEFAULT_PERFORMANCE_URI;
+    public static String PRTG_DEFAULT_PERFORMANCE_REPORT_URI;
 	public static String PRTG_DEFAULT_ABNORMAL_TRAFFIC_URI;
 	public static String PRTG_DEFAULT_EMAIL_UPDATE_URI;
 	public static String PRTG_LOGOUT_URI;

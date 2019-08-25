@@ -125,7 +125,7 @@
 			<ul>
 				<!-- [障礙即時監控] START -->
                 <c:if test="${Env.SHOW_MENU_ITEM_DEVICE_FAILURE eq __SHOW__}">
-                	<li data-li-id="am_failure"><a id="am_failure" href="${pageContext.request.contextPath}/prtg/deviceFailure"><span>即時監控</span></a></li>
+                	<li data-li-id="am_failure"><a id="am_failure" href="${pageContext.request.contextPath}/dashboard"><span>即時監控</span></a></li>
                 </c:if>
                 <!-- [障礙即時監控] END -->
                 
