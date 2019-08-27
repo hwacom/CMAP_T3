@@ -20,6 +20,7 @@ $(document).ready(function() {
 
 //查詢按鈕動作
 function findData(from) {
+	console.log("dataTableHeight: " + dataTableHeight);
 	$('#queryFrom').val(from);
 	
 	if (typeof resultTable !== "undefined") {

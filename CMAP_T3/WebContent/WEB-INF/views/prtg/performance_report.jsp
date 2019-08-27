@@ -11,8 +11,9 @@
    
 <section>
 	<div class="main">
-		<p class="content-title">報表管理</p>
-		<iframe id="prtgFrame" class="scrollbar-macosx" width=100% height=700 frameborder="0" src="${IFRAME_URI }">
+		<p class="content-title">效能管理 > 報表管理</p>
+		
+		<iframe id="prtgFrame" class="scrollbar-macosx" width=100% height=610 frameborder="0" src="${IFRAME_URI }">
 			Failed to open PRTG main page.
 	   	</iframe>
 	

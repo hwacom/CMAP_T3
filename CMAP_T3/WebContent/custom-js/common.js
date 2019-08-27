@@ -81,7 +81,7 @@ function confirm(msg, callback) {
 				$(".ui-widget-overlay").css('z-index', 1999);
 				$(".ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").hide();
 				$(".ui-button.ui-corner-all.ui-widget").css({"width": "45%", "padding": "0"});
-				$(".ui-dialog-buttonset").css({"margin-left": "10%", "float": "none !important"});
+				$(".ui-dialog-buttonset").css({"margin-left": "10%", "float": "revert"});
 			},
 	     buttons : {
 	          "確認" : function() {

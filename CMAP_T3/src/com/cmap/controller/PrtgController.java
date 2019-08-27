@@ -483,17 +483,8 @@ public class PrtgController extends BaseController {
 	public @ResponseBody AppResponse getPrtgDeviceFailureUri(
 			Model model, HttpServletRequest request, HttpServletResponse response) {
 
-		HttpSession session = request.getSession();
 		try {
-			final String schoolId = Objects.toString(session.getAttribute(Constants.OIDC_SCHOOL_ID), null);
-			//final String schoolId = "054649";
-
-			String deviceFailureMapUrl = prtgService.getMapUrlBySourceIdAndType(schoolId, Constants.MAP_URL_OF_DEVICE_FAILURE);
-
-			if (StringUtils.isBlank(deviceFailureMapUrl)) {
-				deviceFailureMapUrl = Env.PRTG_DEFAULT_DEVICE_FAILURE_URI;	//如果沒設定則取得預設MAP
-			}
-
+			String deviceFailureMapUrl = Env.PRTG_DEFAULT_DEVICE_FAILURE_URI;	//如果沒設定則取得預設MAP
 			deviceFailureMapUrl = composePrtgUrl(request, deviceFailureMapUrl);
 
 			AppResponse app = new AppResponse(HttpServletResponse.SC_OK, "success");

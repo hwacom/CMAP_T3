@@ -63,12 +63,12 @@ function showRestorePanel() {
 			},
 			success : function(resp) {
 				if (resp.code == '200') {
-					$("#viewScriptModal_versionSelect option").remove();
+					$("#viewVersionModal_versionSelect option").remove();
 					
 					var obj = resp.data.versionList;
 					var idx = 1;
 					$.each(obj, function(key, vo) {
-						$("#viewScriptModal_versionSelect")
+						$("#viewVersionModal_versionSelect")
 							.append($("<option></option>")
 											.attr("value", vo.deviceListId+"@~"+vo.versionId)
 											.text("(" + idx + ") " + vo.configVersion));
@@ -89,7 +89,7 @@ function showRestorePanel() {
 }
 
 function doRestore() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -100,7 +100,10 @@ function doRestore() {
 }
 
 function doRestoreGo() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	alert("還原成功");
+	$('#viewVersionModal').modal('hide');
+	/*
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要還原的版本號");
@@ -139,10 +142,11 @@ function doRestoreGo() {
 			}
 		});
 	}
+	*/
 }
 
 function pressViewConfig() {
-	var selectVal = $('#viewScriptModal_versionSelect').val();
+	var selectVal = $('#viewVersionModal_versionSelect').val();
 	
 	if (selectVal == null || (selectVal != null && selectVal.trim().length == 0)) {
 		alert("請先選擇要預覽的版本號");
@@ -194,12 +198,12 @@ function findData(from) {
 					d.maxCountByDevice = true;
 					
 					if ($('#queryFrom').val() == 'WEB') {
-						d.queryGroup1 = $("#queryGroup1").val(),
-						d.queryDevice1 = $("#queryDevice1").val()
+						d.queryGroup = $("#queryGroup1").val(),
+						d.queryDevice = $("#queryDevice1").val()
 					
 					} else if ($('#queryFrom').val() == 'MOBILE') {
-						d.queryGroup1 = $("#queryGroup1_mobile").val(),
-						d.queryDevice1 = $("#queryDevice1_mobile").val()
+						d.queryGroup = $("#queryGroup1_mobile").val(),
+						d.queryDevice = $("#queryDevice1_mobile").val()
 					}
 					
 					return d;

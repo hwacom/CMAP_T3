@@ -212,6 +212,11 @@ function deleteData() {
 }
 
 function deleteDataGO() {
+	clearDialog();
+	alert("刪除成功");
+	
+	findData($('#queryFrom').val());
+	/*
 	var checkedItem = $('input[name=chkbox]:checked');
 	var checkedObjArray = new Array();
 	var obj;
@@ -244,6 +249,7 @@ function deleteDataGO() {
 			ajaxErrorHandler();
 		}
 	});
+	*/
 }
 
 //查詢按鈕動作

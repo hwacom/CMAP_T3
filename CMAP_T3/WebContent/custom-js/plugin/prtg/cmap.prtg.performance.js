@@ -14,5 +14,5 @@ $(document).ready(function() {
 	
 	/*getLoginUri();*/
 	closeOpenWindow();
-	getPrtgUri(URI_ABNORMAL_TRAFFIC, OPEN_METHOD_IFRAME);
+	getPrtgUri(URI_PERFORMANCE, OPEN_METHOD_IFRAME);
 });

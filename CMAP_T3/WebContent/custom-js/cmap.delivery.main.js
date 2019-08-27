@@ -778,6 +778,12 @@ function checkDeliveryParameters() {
 }
 
 function doDelivery() {
+	alert("供裝派送成功");
+	
+	setTimeout(function() {
+		$('#stepModal').modal('hide');
+	}, 500);
+	/*
 	var scriptInfoId = window.sessionStorage.getItem(_DELIVERY_SCRIPT_INFO_ID_);
 	var scriptCode = window.sessionStorage.getItem(_DELIVERY_SCRIPT_CODE_);
 	var groupId = $.parseJSON(window.sessionStorage.getItem(_DELIVERY_GROUP_ID_));
@@ -826,6 +832,7 @@ function doDelivery() {
 			ajaxErrorHandler();
 		}
 	});
+	*/
 }
 
 function initStepImg() {

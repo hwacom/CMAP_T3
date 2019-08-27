@@ -8,16 +8,16 @@
 				<span>即時地理位置告警圖</span>
 			</div>
 			<div style="margin-left: 0px; width: 820px;">
-				<!-- 
-	      		<iframe width="820px" height="335px" frameborder="0"
-					src="http://127.0.0.1:8888/public/mapshow.htm?id=2167&mapid=5495CCB1-9026-409D-BD3F-186FCB053FD3">
+				<iframe id="prtgIframe" width="820px" height="325px" frameborder="0" style="display:none;" 
+					src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2204&mapid=FEE8D2F0-1F96-4A6E-ACCC-FA661D5ECE9E">
 				</iframe> 
-				-->
+				
 				<img id="deviceSiteImg" class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/left_top.png" width="820px" height="325px" usemap="#sitemap"/>
-				<a id="a_deviceSiteImg" href="#"><label id="label_deviceSiteImg" for="deviceSiteImg" class="mapLabel" style="display: none">回上一層</label></a>
+				<a id="a_deviceSiteImg" href="#" style="position: absolute;"><label id="label_deviceSiteImg" for="deviceSiteImg" class="mapLabel" style="display: none">回上一層</label></a>
 				
 				<map name="sitemap" id="sitemap">
-				  <area shape="rect" coords="612, 155, 692, 215" href="#" title="E8" alt="E8" onclick="jumpTo('E8', 2)">
+				  <area data-key="room" shape="rect" coords="612, 155, 692, 215" href="#" title="ROOM" alt="ROOM" onclick="jumpTo('ROOM', 2)">
+				  <area data-key="prtg" shape="rect" coords="530, 113, 564, 145" href="#" title="PRTG" alt="PRTG" onclick="jumpTo('PRTG', 3)">
 				</map>
 	      	</div>
 	      	

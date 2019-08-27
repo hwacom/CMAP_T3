@@ -28,6 +28,14 @@ $(document).ready(function() {
 });
 
 function doBackup() {
+	alert("備份成功");
+	findData($('#queryFrom').val());
+	
+	setTimeout(function(){
+		$("#backupDialogModal").modal('hide');
+		
+	}, 500);
+	/*
 	var checkedItem = $('input[name=chkbox]:checked');
 	var configType = $('#queryConfigType').val();
 
@@ -76,6 +84,7 @@ function doBackup() {
 			ajaxErrorHandler();
 		}
 	});
+	*/
 }
 
 

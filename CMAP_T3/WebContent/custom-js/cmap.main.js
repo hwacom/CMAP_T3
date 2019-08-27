@@ -407,15 +407,17 @@ function calHeight() {
 	navAndMenuAndFooterHeight = 0;
 	if ($('.search-bar-large').css('display') != 'none') {
 		navAndMenuAndFooterHeight += $('.search-bar-large').outerHeight();
-		deductHeight = 260;
+		deductHeight = 310;
 	} else {
-		deductHeight = 350;
+		deductHeight = 400;
 	}
 	
 	dataTableHeight = (window.innerHeight - funcTitleHeight - navAndMenuAndFooterHeight - deductHeight);
 	
 	//避免手機裝置橫向狀態下高度縮太小無法閱讀資料，設定最小高度限制為165px
 	dataTableHeight = dataTableHeight < 165 ? 165 : dataTableHeight;
+	
+	console.log("dataTableHeight: " + dataTableHeight);
 }
 
 /**********************************************************************************************************

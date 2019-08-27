@@ -8,11 +8,19 @@
   	 }
    </style>
 
-   <iframe id="prtgFrame" class="scrollbar-macosx" width=100% height=700 frameborder="0" src="${IFRAME_URI }">
-  	 Failed to open PRTG main page.
-   </iframe>
-  
-   <div id="uriFrame" style="width: 100%; height: 450px;" >&nbsp;</div>
-   
+<!DOCTYPE html>
+<section>
+	<div class="main">
+		<p class="content-title">障礙管理 > 報表管理</p>
+		
+		<iframe id="prtgFrame" class="scrollbar-macosx" width=100% height=610 frameborder="0" src="${IFRAME_URI }">
+			Failed to open PRTG main page.
+		</iframe>
+		  
+		<div id="uriFrame" style="width: 100%; height: 450px;" >&nbsp;</div>
+	</div>
+</section>
+
+
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.common.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/custom/min/plugin/prtg/cmap.prtg.deviceFailure.report.min.js"></script>

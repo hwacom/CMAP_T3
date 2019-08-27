@@ -14,5 +14,5 @@ $(document).ready(function() {
 	
 	/*getLoginUri();*/
 	closeOpenWindow();
-	getPrtgUri(URI_DEVICE_FAILURE, OPEN_METHOD_IFRAME);
+	getPrtgUri(URI_PERFORMANCE_REPORT, OPEN_METHOD_IFRAME);
 });
