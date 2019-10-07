@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.beanutils.BeanUtils;
@@ -19,6 +20,7 @@ import com.cmap.annotation.Log;
 import com.cmap.dao.DeviceDAO;
 import com.cmap.dao.vo.DeviceDAOVO;
 import com.cmap.exception.ServiceLayerException;
+import com.cmap.i18n.DatabaseMessageSourceBase;
 import com.cmap.model.DeviceList;
 import com.cmap.model.DeviceLoginInfo;
 import com.cmap.model.MibOidMapping;
@@ -41,6 +43,9 @@ public class IpMappingServiceImpl extends CommonServiceImpl implements IpMapping
 
     @Autowired
     private NetFlowService netFlowService;
+
+    @Autowired
+    private DatabaseMessageSourceBase messageSource;
 
     /**
      * 逐筆Device撈取ArpTable資料
@@ -286,6 +291,7 @@ public class IpMappingServiceImpl extends CommonServiceImpl implements IpMapping
             startTime = System.currentTimeMillis();
             // Step 2. 撈取MacTable資料 (僅針對L2 switch撈取)
             daovo.setDeviceLayer(Env.DEVICE_LAYER_L2);
+
             List<DeviceList> deviceL2 = deviceDAO.findDeviceListByDAOVO(daovo);
             if (deviceL2 != null && !deviceL2.isEmpty()) {
                 L2MacTableMap = pollingMacTable(deviceL2);
@@ -583,6 +589,7 @@ public class IpMappingServiceImpl extends CommonServiceImpl implements IpMapping
 	@Override
 	public IpMappingServiceVO findMappingDataFromNetFlow(String groupId, String dataId, String fromDateTime, String type) throws ServiceLayerException {
 		IpMappingServiceVO retVO = new IpMappingServiceVO();
+		String msg = "";
 		try {
 			// Step 1. 先取得該筆 NET_FLOW 資料
 			NetFlowVO nfVO = netFlowService.findNetFlowRecordByGroupIdAndDataId(groupId, dataId, fromDateTime);
@@ -633,7 +640,9 @@ public class IpMappingServiceImpl extends CommonServiceImpl implements IpMapping
 				retVO.setDeviceModel("N/A");
 				retVO.setIpAddress(ipAddress);
 				retVO.setPortName("N/A");
-				retVO.setShowMsg("查無此IP對應Port紀錄");
+
+				msg = messageSource.getMessage("msg.unknown.device", Locale.TAIWAN, null);  // 未知的設備
+				retVO.setShowMsg(msg);
 
 			} else {
 				Object[] data = dataList.get(0);
@@ -646,7 +655,8 @@ public class IpMappingServiceImpl extends CommonServiceImpl implements IpMapping
 
 		} catch (Exception e) {
 			log.error(e.toString(), e);
-			retVO.setShowMsg("查找資料異常，請重新操作");
+			msg = messageSource.getMessage("msg.query.exception.please.retry", Locale.TAIWAN, null); // 查找資料異常，請重新操作
+			retVO.setShowMsg(msg);
 		}
 		return retVO;
 	}
