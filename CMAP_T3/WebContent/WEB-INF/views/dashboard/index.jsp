@@ -17,18 +17,18 @@
 					<span>即時地理位置告警圖</span>
 				</div>
 				<div id="prtgImgFrame" class="row" style="width: 100%; height: 325px; background-color: #fff;">
-					<iframe id="prtgIframe" width="100%" height="325px" frameborder="0" style="display:none;" 
-						src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2204&mapid=FEE8D2F0-1F96-4A6E-ACCC-FA661D5ECE9E">
+					<iframe id="prtgIframe" width="100%" height="580px" frameborder="0" style="display:none;" 
+						src="https://msi:1443/public/mapshow.htm?id=2234&mapid=F5DFD747-2802-4A32-862D-2C11EF7B6040">
 					</iframe> 
 					
 					<div id="imgFrame">
-						<img id="mapImg" class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/map_layer_1.png" width="100%" height="325px" usemap="#sitemap"/>
+						<img id="mapImg" class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/map_layer_1.png" width="820px" height="325px" usemap="#sitemap"/>
 					</div>
 					
 					<div id="buildingFrames" style="display: none;">
 						<div id="buildingFrame_4F" style="display: block;position: absolute;left: 363px;width: 882px;height: 185px;top: 103px;border-bottom: 1px gray dashed">
 							<iframe id="buildingIframe_4F" width="100%" height="100%" frameborder="0" 
-								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2231&mapid=912BFC26-F648-4D69-BD35-DB8C25B1DEC2">
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2240&mapid=601D64D3-E265-418A-81F7-BB706E7CC653">
 							</iframe> 
 						</div>
 						
@@ -40,7 +40,7 @@
 						
 						<div id="buildingFrame_1F" style="display: block;position: absolute;left: 363px;width: 882px;height: 185px;top: 485px;">
 							<iframe id="buildingIframe_1F" width="100%" height="100%" frameborder="0" 
-								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2230&mapid=C96192D8-AC43-48A5-B718-54B0BF03A483">
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2241&mapid=724383FB-2E45-4D65-9709-6D1200A54876">
 							</iframe> 
 						</div>
 					</div>
