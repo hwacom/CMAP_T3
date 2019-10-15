@@ -534,7 +534,7 @@ area:focus {
 .mapLabel {
 	position: relative;
 	left: 3px;
-	top: -351px;
+	top: 4px;
 	background-color: rgba(19,118,187,1);
 	z-index: 9999;
 	font-weight: bold;

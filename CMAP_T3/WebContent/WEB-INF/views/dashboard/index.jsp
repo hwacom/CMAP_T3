@@ -4,24 +4,63 @@
 	<div class="main">
 		<p class="content-title">監控總覽</p>
 		<div style="display: flex; flex-wrap: wrap;">
-			<div style="margin-left: 0px; width: 820px; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
-				<span>即時地理位置告警圖</span>
+			<div data-sec="prtg" style="margin-left: 0px; width: 820px;">
+				<div>
+					<a id="a_mapImg" href="#" style="position: absolute;">
+						<label id="label_mapImg" for="mapImg" class="mapLabel" style="display: none">回上一層</label>
+					</a>
+				</div>
+				<div style="position: absolute; color: yellow; padding-top: 4px; padding-left: 95px;">
+					<span id="bread"></span>
+				</div>
+				<div id="prtgIframeTitle" style="width: 100%; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
+					<span>即時地理位置告警圖</span>
+				</div>
+				<div id="prtgImgFrame" class="row" style="width: 100%; height: 325px; background-color: #fff;">
+					<iframe id="prtgIframe" width="100%" height="325px" frameborder="0" style="display:none;" 
+						src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2204&mapid=FEE8D2F0-1F96-4A6E-ACCC-FA661D5ECE9E">
+					</iframe> 
+					
+					<div id="imgFrame">
+						<img id="mapImg" class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/map_layer_1.png" width="100%" height="325px" usemap="#sitemap"/>
+					</div>
+					
+					<div id="buildingFrames" style="display: none;">
+						<div id="buildingFrame_4F" style="display: block;position: absolute;left: 363px;width: 882px;height: 185px;top: 103px;border-bottom: 1px gray dashed">
+							<iframe id="buildingIframe_4F" width="100%" height="100%" frameborder="0" 
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2231&mapid=912BFC26-F648-4D69-BD35-DB8C25B1DEC2">
+							</iframe> 
+						</div>
+						
+						<div id="buildingFrame_3F" style="display: block;position: absolute;left: 363px;width: 882px;height: 185px;top: 292px;border-bottom: 1px gray dashed">
+							<iframe id="buildingIframe_3F" width="100%" height="100%" frameborder="0" 
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2232&mapid=9E54A5E3-0C3D-433D-94A8-1CECAA285C22">
+							</iframe> 
+						</div>
+						
+						<div id="buildingFrame_1F" style="display: block;position: absolute;left: 363px;width: 882px;height: 185px;top: 485px;">
+							<iframe id="buildingIframe_1F" width="100%" height="100%" frameborder="0" 
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2230&mapid=C96192D8-AC43-48A5-B718-54B0BF03A483">
+							</iframe> 
+						</div>
+					</div>
+					
+					<div id="floorFrames" style="display: none;">
+						<div id="floorFrame_3F" style="display: block;position: absolute;left: 67px;width: 1180px;height: 185px;top: 499px;">
+							<iframe id="floorIframe_3F" width="100%" height="100%" frameborder="0" 
+								src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2233&mapid=2F28D931-B5C3-466D-9515-F55DB2EDCBC2">
+							</iframe> 
+						</div>
+					</div>
+					
+					<map name="sitemap" id="sitemap">
+					  <area data-building="building" shape="rect" coords="432, 155, 612, 215" href="#" title="BUILDING" alt="BUILDING" onclick="jumpTo('ALL', 'BUILDING', 2)">
+					  <area data-floor="floor" shape="rect" coords="17, 553, 203, 615" href="#" title="FLOOR" alt="FLOOR" onclick="jumpTo('BUILDING', 'FLOOR', 3)">
+					  <area data-room="room" shape="rect" coords="530, 93, 564, 123" href="#" title="ROOM" alt="ROOM" onclick="jumpTo('FLOOR', 'ROOM', 4)">
+					</map>
+		      	</div>
 			</div>
-			<div style="margin-left: 0px; width: 820px;">
-				<iframe id="prtgIframe" width="820px" height="325px" frameborder="0" style="display:none;" 
-					src="https://cmap.hwacom.dev:1443/public/mapshow.htm?id=2204&mapid=FEE8D2F0-1F96-4A6E-ACCC-FA661D5ECE9E">
-				</iframe> 
-				
-				<img id="deviceSiteImg" class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/left_top.png" width="820px" height="325px" usemap="#sitemap"/>
-				<a id="a_deviceSiteImg" href="#" style="position: absolute;"><label id="label_deviceSiteImg" for="deviceSiteImg" class="mapLabel" style="display: none">回上一層</label></a>
-				
-				<map name="sitemap" id="sitemap">
-				  <area data-key="room" shape="rect" coords="612, 155, 692, 215" href="#" title="ROOM" alt="ROOM" onclick="jumpTo('ROOM', 2)">
-				  <area data-key="prtg" shape="rect" coords="530, 113, 564, 145" href="#" title="PRTG" alt="PRTG" onclick="jumpTo('PRTG', 3)">
-				</map>
-	      	</div>
-	      	
-	      	<div style="margin-left: 10px; width: 360px; margin-top: -30px;">
+	      	<div data-sec="others" style="margin-left: 10px; width: 360px;">
 	      		<div style="width: 360px; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
 	      			<span>整體網路流量</span>
 	      		</div>
@@ -47,7 +86,7 @@
 	      		</div>
 	      	</div>
 	      	
-	      	<div style="margin-left: 0px; width: 590px;">
+	      	<div data-sec="others" style="margin-left: 0px; width: 590px;">
 	      		<div style="width: 590px; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
 	      			<span>設備狀態</span>
 	      		</div>
@@ -60,7 +99,7 @@
 					<img class="img" src="${pageContext.request.contextPath}/resources/images/dashboard/left_bottom.png" width="590px" height="210px" />
 	      		</div>
 	      	</div>
-	      	<div style="margin-left: 10px; width: 590px;">
+	      	<div data-sec="others" style="margin-left: 10px; width: 590px;">
 	      		<div style="width: 590px; background-color: #232832; color:#fff; line-height:30px; font-size: 20px; text-align: center;">
 	      			<span>統一威脅管理平台</span>
 	      		</div>
